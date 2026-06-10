@@ -2,6 +2,8 @@
 
 /// The maximum length a path can be on Darwin (MacOS/some BSD) machines.
 #define MAX_PATH_LEN __DARWIN_MAXPATHLEN
+/// The maximum length a filename can be on Darwin (MacOS/some BSD) machines.
+#define MAX_NAME_LEN MAXNAMLEN
 /// The length of the human-readable mode string +1 (e.g. `drwxr-xr-x`).
 #define MAX_MODE_LEN 12
 

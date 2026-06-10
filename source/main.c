@@ -11,16 +11,16 @@
 
 static inline char* getType(const struct dirent *entry) {
 	switch (entry->d_type) {
-		case DT_UNKNOWN	: return "unknown"			;
-		case DT_FIFO	: return "named pipe"		;
-		case DT_CHR		: return "character device"	;
-		case DT_DIR		: return "directory"		;
-		case DT_BLK		: return "block device"		;
-		case DT_REG		: return "regular file"		;
-		case DT_LNK		: return "symbolic link"	;
-		case DT_SOCK	: return "socket"			;
-		case DT_WHT		: return "whiteout"			;
-		default			: return ""					;
+		case DT_UNKNOWN	: return "unknown"		;
+		case DT_FIFO	: return "named pipe"	;
+		case DT_CHR		: return "char device"	;
+		case DT_DIR		: return "directory"	;
+		case DT_BLK		: return "block device"	;
+		case DT_REG		: return "regular file"	;
+		case DT_LNK		: return "symlink"		;
+		case DT_SOCK	: return "socket"		;
+		case DT_WHT		: return "whiteout"		;
+		default			: return ""				;
 	}
 }
 
@@ -68,41 +68,43 @@ static inline void getMode(const struct stat info, char mode_str[MAX_MODE_LEN]) 
 }
 
 int main(const int argc, const char *argv[]) {
-	char target_dir[MAXNAMLEN];
+	const char *ARG_ZERO = argv[0];
+
+	char target_dir[MAX_NAME_LEN];
 
 	if (argc < 2) strncpy(target_dir, ".", 2);
-	else snprintf(target_dir, MAXNAMLEN, "%s", argv[1]);
+	else snprintf(target_dir, MAX_NAME_LEN, "%s", argv[1]);
 
 	DIR *directory = opendir(target_dir);
 
 	if (directory == NULL) {
-		fprintf(stderr, "Unable to read directory `%s`\n", target_dir);
+		fprintf(stderr, "%s: Unable to read directory `%s`\n", ARG_ZERO, target_dir);
 		return EXIT_FAILURE;
 	}
 
 	struct dirent *entry;
 	struct stat info;
-	char target_path[MAXPATHLEN];
-	char mode_str[PERMS_LEN];
+	char target_path[MAX_PATH_LEN];
+	char mode_str[MAX_MODE_LEN];
 
-	printf("%-*snlink\tsize\tuid\tgid\tflags\tmtime\t\ttype\t\tname\n", PERMS_LEN, "mode");
+	printf("%-*s nlink\tsize\tuid\tgid\t%-10s  mtime\t%-12s  name\n", MAX_MODE_LEN, "mode", "flags", "type");
 
 	while ((entry = readdir(directory)) != NULL) {
 		if DO_IGNORE_FILE(entry) continue;
 
-		snprintf(target_path, MAXPATHLEN, "%s/%s", target_dir, entry->d_name);
+		snprintf(target_path, MAX_PATH_LEN, "%s/%s", target_dir, entry->d_name);
 		stat(target_path, &info);
 
 		getMode(info, mode_str);
 
-		printf("%-*s"	, PERMS_LEN, mode_str		); // Mode of file
-		printf("%d\t"	, info.st_nlink				); // Number of hard links
+		printf("%-*s "	, MAX_MODE_LEN, mode_str	); // Mode of file
+		printf("%d\t\t"	, info.st_nlink				); // Number of hard links
 		printf("%lld\t"	, info.st_size				); // file size, in bytes
 		printf("%d\t"	, info.st_uid				); // User ID of the file
 		printf("%d\t"	, info.st_gid				); // Group ID of the file
-		printf("%d\t"	, info.st_flags				); // user defined flags for file
+		printf("%-10d  ", info.st_flags				); // user defined flags for file
 		printf("%ld\t"	, info.st_mtimespec.tv_sec	); // time of last data modification
-		printf("%s\t"	, getType(entry)			); // file type
+		printf("%-12s  ", getType(entry)			); // file type
 		printf("%s\t"	, entry->d_name				); // entry name (up to MAXPATHLEN bytes)
 
 		printf("\n");
