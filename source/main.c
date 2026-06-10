@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-// #include <sys/stat.h>
+#include <sys/stat.h>
 
 #include "main.h"
+
+#define MAXPATHLEN __DARWIN_MAXPATHLEN
 
 char* getType(const struct dirent *entry) {
 	switch (entry->d_type) {
@@ -37,36 +39,42 @@ int main(const int argc, const char *argv[]) {
 	}
 
 	struct dirent *entry;
-	// struct stat file_info;
+	struct stat info;
+	char target_path[MAXPATHLEN];
 
 	while ((entry = readdir(directory)) != NULL) {
 		if IS_DOT(entry) continue;
-		printf("———————————————————————————\n");
-		printf("name    : %s\n",	entry->d_name	);
-		printf("type    : %s\n",	getType(entry)	);
-		printf("ino     : %llu\n",	entry->d_ino	);
-		printf("seekoff : %llu\n",	entry->d_seekoff);
-		printf("reclen  : %d\n",	entry->d_reclen	);
-		printf("namlen  : %d\n",	entry->d_namlen	);
+
+		snprintf(target_path, MAXPATHLEN, "%s/%s", target_dir, entry->d_name);
+		stat(target_path, &info);
+
+		printf("\n———————————————————————————\n");
+		printf("name    : %s\n",	entry->d_name	); // entry name (up to MAXPATHLEN bytes)
+		printf("type    : %s\n",	getType(entry)	); // file type
+		printf("ino     : %llu\n",	entry->d_ino	); // file number of entry
+		printf("seekoff : %llu\n",	entry->d_seekoff); // seek offset (optional, used by servers)
+		printf("reclen  : %d\n",	entry->d_reclen	); // length of this record
+		printf("namlen  : %d\n",	entry->d_namlen	); // length of string in d_name
+		printf("\n");
+		printf("access  : %ld\n",	info.st_atimespec.tv_sec	); // time of last access
+		printf("modify  : %ld\n",	info.st_mtimespec.tv_sec	); // time of last data modification
+		printf("change  : %ld\n",	info.st_ctimespec.tv_sec	); // time of last status change
+		printf("birth   : %ld\n",	info.st_birthtimespec.tv_sec); // time of file creation (birth)
+		printf("\n");
+		printf("dev     : %d\n",	info.st_dev			); // ID of device containing file
+		printf("mode    : %04o\n",	info.st_mode & 0777	); // Mode of file (see below)
+		printf("nlink   : %d\n",	info.st_nlink		); // Number of hard links
+		printf("ino     : %llu\n",	info.st_ino			); // File serial number
+		printf("uid     : %d\n",	info.st_uid			); // User ID of the file
+		printf("gid     : %d\n",	info.st_gid			); // Group ID of the file
+		printf("rdev    : %d\n",	info.st_rdev		); // Device ID
+		printf("size    : %lld\n",	info.st_size		); // file size, in bytes
+		printf("blocks  : %lld\n",	info.st_blocks		); // blocks allocated for file
+		printf("blksize : %d\n",	info.st_blksize		); // optimal blocksize for I/O
+		printf("flags   : %d\n",	info.st_flags		); // user defined flags for file
+		printf("gen     : %d\n",	info.st_gen			); // file generation number
 	}
 
 	closedir(directory);
 	return EXIT_SUCCESS;
 }
-
-/*
-st_dev
-st_mode
-st_nlink
-st_ino
-st_uid
-st_gid
-st_rdev
-st_size
-st_blocks
-st_blksize
-st_flags
-st_gen
-st_lspare
-st_qspare
-*/
