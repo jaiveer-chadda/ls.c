@@ -1,6 +1,10 @@
 .DS_Store
+Icon?
 .vscode/
+
 out/
 archive/
 tests/
-Icon?
+
+resources/options/
+resources/POSIX/ls.html
