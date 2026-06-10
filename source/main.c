@@ -8,8 +8,6 @@
 
 #include "main.h"
 
-#define MAXPATHLEN __DARWIN_MAXPATHLEN
-
 char* getType(const struct dirent *entry) {
 	switch (entry->d_type) {
 		case DT_UNKNOWN	: return "unknown"			;
@@ -23,6 +21,16 @@ char* getType(const struct dirent *entry) {
 		case DT_WHT		: return "whiteout"			;
 		default			: return ""					;
 	}
+}
+
+void getMode(const struct stat info, char mode_str[PERMS_LEN]) {
+	const int oct_mode	= info.st_mode;
+	const int oct_perms	= oct_mode & PERM_MASK;
+
+	char type_char;
+	GET_TYPE_CHAR(oct_mode, type_char);
+
+	snprintf(mode_str, PERMS_LEN, "%c %04o", type_char, oct_perms);
 }
 
 int main(const int argc, const char *argv[]) {
@@ -41,16 +49,19 @@ int main(const int argc, const char *argv[]) {
 	struct dirent *entry;
 	struct stat info;
 	char target_path[MAXPATHLEN];
+	char mode_str[PERMS_LEN];
 
-	printf("mode\tnlink\tsize\tuid\tgid\tflags\tmtime\t\ttype\t\tname\n");
+	printf("%-*snlink\tsize\tuid\tgid\tflags\tmtime\t\ttype\t\tname\n", PERMS_LEN, "mode");
 
 	while ((entry = readdir(directory)) != NULL) {
-		if IS_DOT(entry) continue;
+		if DO_IGNORE_FILE(entry) continue;
 
 		snprintf(target_path, MAXPATHLEN, "%s/%s", target_dir, entry->d_name);
 		stat(target_path, &info);
 
-		printf("%04o\t"	, info.st_mode & 0777		); // Mode of file (see below)
+		getMode(info, mode_str);
+
+		printf("%-*s\t"	, PERMS_LEN, mode_str		); // Mode of file
 		printf("%d\t"	, info.st_nlink				); // Number of hard links
 		printf("%lld\t"	, info.st_size				); // file size, in bytes
 		printf("%d\t"	, info.st_uid				); // User ID of the file
@@ -71,3 +82,5 @@ int main(const int argc, const char *argv[]) {
 st_mode		st_nlink	st_size	st_uid	st_gid	st_flags	st_mtimespec.tv_sec		d_name	d_type
 drwxr-xr-x@	4			37		jv		staff	hidden		Wed 10 Jun '26 01:15	source	/
 */
+
+// spell:ignoreRegExp /%[-*.\d]*[a-z]\B/gi
