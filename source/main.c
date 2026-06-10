@@ -3,12 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <dirent.h>
 #include <sys/stat.h>
 
 #include "main.h"
 
-char* getType(const struct dirent *entry) {
+static inline char* getType(const struct dirent *entry) {
 	switch (entry->d_type) {
 		case DT_UNKNOWN	: return "unknown"			;
 		case DT_FIFO	: return "named pipe"		;
@@ -23,8 +24,8 @@ char* getType(const struct dirent *entry) {
 	}
 }
 
-/// Gets the character representing the filetype specified by an octal type integer.
-static inline char get_type_char(mode_t mode) {
+/// @brief Gets the character representing the filetype specified by an octal type integer.
+static inline char get_type_char(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
 		case S_IFIFO:	return '|'; /* named pipe	('|' or 'p')	*/
 		case S_IFCHR:	return 'c'; /* char device					*/
@@ -38,11 +39,33 @@ static inline char get_type_char(mode_t mode) {
 	}
 }
 
-void getMode(const struct stat info, char mode_str[PERMS_LEN]) {
-	const mode_t oct_mode	= info.st_mode;
-	const mode_t oct_perms	= oct_mode & PERM_MASK;
+static inline void get_perm_str(const mode_t oct_digit, char *perm_str) {
+	strcpy(perm_str, "---");
 
-	snprintf(mode_str, PERMS_LEN, "%c %04o", get_type_char(oct_mode), oct_perms);
+	if (oct_digit & 04) perm_str[0] = 'r';
+	if (oct_digit & 02) perm_str[1] = 'w';
+	if (oct_digit & 01) perm_str[2] = 'x';
+}
+
+static inline void getMode(const struct stat info, char mode_str[PERMS_LEN]) {
+	const mode_t oct_mode = info.st_mode;
+	
+	const mode_t // Note: 3 = log2(8)
+		// ext_oct = (oct_mode & EXT_MASK) >> (3 * 3), // .--s--s--t / .--S--S--T
+		usr_oct = (oct_mode & USR_MASK) >> (3 * 2), // `drwx------` == `700`
+		grp_oct = (oct_mode & GRP_MASK) >> (3 * 1), // `d---rwx---` == `070`
+		oth_oct = (oct_mode & OTH_MASK) >> (3 * 0); // `d------rwx` == `007`
+
+	char usr_str[4], grp_str[4], oth_str[4];
+	get_perm_str(usr_oct, usr_str);
+	get_perm_str(grp_oct, grp_str);
+	get_perm_str(oth_oct, oth_str);
+
+	snprintf(
+		mode_str, PERMS_LEN,
+		"%c%s%s%s", 
+		get_type_char(oct_mode), usr_str, grp_str, oth_str
+	);
 }
 
 int main(const int argc, const char *argv[]) {
