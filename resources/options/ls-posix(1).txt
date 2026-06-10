@@ -1,0 +1,27 @@
+-1      Force output to be one entry per line.
+
+-a      Write out all directory entries, including those whose names begin with a <period> ('.').
+-A      Write out all directory entries, including those whose names begin with a '.' but excluding `.` and `..`.
+-c      Use time of last modification of the file status information for sorting (-t) or writing (-l).
+-C      Write multi-text-column output with entries sorted down the columns, according to the collating sequence.
+-d      Do not follow symbolic links named as operands unless the -H or -L options are specified.
+-f      List the entries in directory operands in the order they appear in the directory.
+-F      Do not follow symbolic links named as operands unless the -H or -L options are specified.
+-g      Turn on the -l option, but disable writing the file's owner name or number.
+-H      Evaluate the file info and type for symlinks specified on the command line to be those referenced by the link.
+-i      For each file, write the file's file serial number.
+-k      Set the block size for the -s option and the per-dir block count for -l, -n, -s, -g, and -o opts to 1024 bytes.
+-l      Do not follow symbolic links named as operands unless the -H or -L options are specified.
+-L      Evaluate the file information and type for all symlinks to be those of the file referenced by the link.
+-m      Stream output format; list pathnames across the page, separated by a <comma> followed by a <space> character.
+-n      Turn on the -l option, but when writing the file's owner or group, write the file's numeric UID or GID.
+-o      Turn on the -l option, but disable writing the file's group name or number. Disable the -C, -m, and -x options.
+-p      Write a <slash> ('/') after each pathname if that file is a directory.
+-q      Force each instance of non-printable filename characters to be written as the <question-mark> ('?') character.
+-r      Reverse the order of the sort to get reverse collating sequence, oldest first, or smallest file size first.
+-R      Recursively list subdirectories encountered.
+-s      Indicate the total number of file system blocks consumed by each file displayed.
+-S      Sort with the primary key being file size (decreasing) and the secondary key being filename (increasing).
+-t      Sort with the primary key being time modified (most recently first) and the secondary key being filename.
+-u      Use time of last access instead of last modification of the file for sorting (-t) or writing (-l).
+-x      The same as -C, except that the multi-text-column output is produced with entries sorted across.
