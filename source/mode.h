@@ -4,3 +4,5 @@
 #define MAX_MODE_LEN 12
 
 void getMode(const struct stat info, char mode_str[MAX_MODE_LEN]);
+
+char get_type_suffix(const mode_t mode);

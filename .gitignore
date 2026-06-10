@@ -4,6 +4,6 @@ Icon?
 
 out/
 archive/
-tests/
+_test_*
 
 resources/POSIX/ls.html
