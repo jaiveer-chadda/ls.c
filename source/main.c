@@ -47,24 +47,23 @@ static inline void get_perm_str(const mode_t oct_digit, char *perm_str) {
 	if (oct_digit & 01) perm_str[2] = 'x';
 }
 
-static inline void getMode(const struct stat info, char mode_str[PERMS_LEN]) {
+static inline void getMode(const struct stat info, char mode_str[MAX_MODE_LEN]) {
 	const mode_t oct_mode = info.st_mode;
-	
-	const mode_t // Note: 3 = log2(8)
-		// ext_oct = (oct_mode & EXT_MASK) >> (3 * 3), // .--s--s--t / .--S--S--T
-		usr_oct = (oct_mode & USR_MASK) >> (3 * 2), // `drwx------` == `700`
-		grp_oct = (oct_mode & GRP_MASK) >> (3 * 1), // `d---rwx---` == `070`
-		oth_oct = (oct_mode & OTH_MASK) >> (3 * 0); // `d------rwx` == `007`
 
 	char usr_str[4], grp_str[4], oth_str[4];
-	get_perm_str(usr_oct, usr_str);
-	get_perm_str(grp_oct, grp_str);
-	get_perm_str(oth_oct, oth_str);
+	const mode_t // Note: 3 = log2(8)
+		ext_oct = (oct_mode & EXT_MASK) >> (3 * 3), // `d--s--s--t` == `7000`
+		usr_oct = (oct_mode & USR_MASK) >> (3 * 2), // `drwx------` == `0700`
+		grp_oct = (oct_mode & GRP_MASK) >> (3 * 1), // `d---rwx---` == `0070`
+		oth_oct = (oct_mode & OTH_MASK) >> (3 * 0); // `d------rwx` == `0007`
+
+	PARSE_PERM(04, 's', usr);
+	PARSE_PERM(02, 's', grp);
+	PARSE_PERM(01, 't', oth);
 
 	snprintf(
-		mode_str, PERMS_LEN,
-		"%c%s%s%s", 
-		get_type_char(oct_mode), usr_str, grp_str, oth_str
+		mode_str, MAX_MODE_LEN,
+		"%c%s%s%s", get_type_char(oct_mode), usr_str, grp_str, oth_str
 	);
 }
 
