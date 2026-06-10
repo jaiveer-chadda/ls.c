@@ -23,14 +23,26 @@ char* getType(const struct dirent *entry) {
 	}
 }
 
+/// Gets the character representing the filetype specified by an octal type integer.
+static inline char get_type_char(mode_t mode) {
+	switch (mode & TYPE_MASK) {
+		case S_IFIFO:	return '|'; /* named pipe	('|' or 'p')	*/
+		case S_IFCHR:	return 'c'; /* char device					*/
+		case S_IFDIR:	return 'd'; /* directory					*/
+		case S_IFBLK:	return 'b'; /* block device					*/
+		case S_IFREG:	return '.'; /* regular file	('.' or '-')	*/
+		case S_IFLNK:	return 'l'; /* symbolic link				*/
+		case S_IFSOCK:	return 's'; /* socket						*/
+		case S_IFWHT:	return '%'; /* whiteout		('%' or 'w')	*/
+		default:		return ' '; /* unknown						*/
+	}
+}
+
 void getMode(const struct stat info, char mode_str[PERMS_LEN]) {
-	const int oct_mode	= info.st_mode;
-	const int oct_perms	= oct_mode & PERM_MASK;
+	const mode_t oct_mode	= info.st_mode;
+	const mode_t oct_perms	= oct_mode & PERM_MASK;
 
-	char type_char;
-	GET_TYPE_CHAR(oct_mode, type_char);
-
-	snprintf(mode_str, PERMS_LEN, "%c %04o", type_char, oct_perms);
+	snprintf(mode_str, PERMS_LEN, "%c %04o", get_type_char(oct_mode), oct_perms);
 }
 
 int main(const int argc, const char *argv[]) {
@@ -61,7 +73,7 @@ int main(const int argc, const char *argv[]) {
 
 		getMode(info, mode_str);
 
-		printf("%-*s\t"	, PERMS_LEN, mode_str		); // Mode of file
+		printf("%-*s"	, PERMS_LEN, mode_str		); // Mode of file
 		printf("%d\t"	, info.st_nlink				); // Number of hard links
 		printf("%lld\t"	, info.st_size				); // file size, in bytes
 		printf("%d\t"	, info.st_uid				); // User ID of the file
