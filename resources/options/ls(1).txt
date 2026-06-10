@@ -1,0 +1,50 @@
+ls [-@ABCFGHILOPRSTUWabcdefghiklmnopqrstuvwxy1%,] [--color=when] [-D format] [file ...]
+
+--color=<when> May be set to either always, auto, or never.
+
+-1      Force output to be one entry per line. This is the default when output is not to a terminal.
+-@      Display extended attribute keys and sizes in long (-l) output.
+-%      Distinguish dataless files and directories with a '%' character in long (-l) output, and don't materialize dataless directories when listing them.
+-,      When the -l option is set, print file sizes grouped and separated by thousands using the non-monetary separator returned by localeconv(3).
+
+-a      Include directory entries whose names begin with a dot ('.').
+-A      Include directory entries whose names begin with a dot ('.') except for `.` and `..`.
+-b      As -B, but use C escape codes whenever possible.
+-B      Force printing of non-printable characters (as defined by ctype(3) & $LOCALE) in file names as \xxx (octal).
+-c      Use time when file status was last changed for sorting or printing.
+-C      Force multi-column output; this is the default when output is to a terminal.
+-d      Directories are listed as plain files (not searched recursively).
+-D <format> When printing in the long (-l) format, use format (strftime(3)) to format the date and time output.
+-e      Print the Access Control List (ACL) associated with the file, if present, in long (-l) output.
+-f      Output is not sorted. This option turns on -a.
+-F      Display icons ('/', '*', '=', etc.) immediately after filenames.
+-g      This option has no effect. It's for compat. with 4.3BSD, where it was used to display the group name in the long (-l) format output.
+-G      Enable colorized output.
+-h      When used with the -l option, use human-readable size suffixes
+-H      Symbolic links on the command line are followed.
+-i      For each file, print the file's file serial number (inode number).
+-I      Prevent -A from being automatically set for the super-user.
+-k      This has the same effect as setting environment variable BLOCKSIZE to 1024, except that it also nullifies any -h options to its left.
+-l      List files in the long format.
+-L      Follow all symlinks to final target and list the file or directory referenced, rather than the link itself.
+-m      Stream output format; list files across the page, separated by commas.
+-n      Display user and group IDs numerically rather than converting to a user or group name in a long (-l) output.
+-o      List in long format, but omit the group id.
+-O      Include the file flags in a long (-l) output.
+-p      Write a slash ('/') after each filename if that file is a directory.
+-P      If argument is a symlink, list the link itself rather than the object the link references.
+-q      Force printing of non-graphic characters in file names as the character '?'; this is the default when output is to a terminal.
+-r      Reverse the order of the sort.
+-R      Recursively list subdirectories encountered.
+-s      Display the number of blocks used in the file system by each file.
+-S      Sort by size (largest file first) before sorting the operands in lexicographical order.
+-t      Sort by descending time modified (most recently modified first).
+-T      When printing with `-l`, display complete time info, including month, day, hour, minute, second, and year.
+-u      Use time of last access, instead of time of last modification of the file for sorting (-t) or long printing (-l).
+-U      Use time when file was created for sorting or printing.
+-v      Force unedited printing of non-graphic characters; this is the default when output is not to a terminal.
+-w      Force raw printing of non-printable characters.  This is the default when output is not to a terminal.
+-W      Display whiteouts when scanning directories.
+-x      The same as -C, except that the multi-column output is produced with entries sorted across, rather than down, the columns.
+-X      When `-R` is set, don't descend into directories that have a different device number.
+-y      When the -t option is set, sort the alphabetical output in the same order as the time output (eqv to setting $LS_SAMESORT). See `-t` for more details.

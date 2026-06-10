@@ -1,0 +1,59 @@
+opt	POS	ls	gls	eza	available
+-1	v	v	v	v	X
+-@		v		v	-
+-%		v			~
+-,		v			~
+───	───	───	───	───	─────────
+-a	v	v	v	v	X
+-A	v	v	v	v	X
+-b		v	v	v	x
+-B		v	v	v	x
+-c	v	v	v		X
+-C	v	v	v		X
+-d	v	v	v	v	X
+-D		v	v	v	x
+-e		v			~
+-E					
+-f	v	v	v	v	X
+-F	v	v	v	v	X
+-g	v	v	v	v	X
+-G		v	v	v	x
+-h		v	v	v	x
+-H	v	v	v	v	X
+-i	v	v	v	v	X
+-I		v	v	v	x
+-j					
+-J					
+-k	v	v	v		X
+-K					
+-l	v	v	v	v	X
+-L	v	v	v	v	X
+-m	v	v	v	v	X
+-M				v	~
+-n	v	v	v	v	X
+-N			v		~
+-o	v	v	v	v	X
+-O		v		v	-
+-p	v	v	v		X
+-P		v			~
+-q	v	v	v		X
+-Q			v		~
+-r	v	v	v	v	X
+-R	v	v	v	v	X
+-s	v	v	v	v	X
+-S	v	v	v	v	X
+-t	v	v	v	v	X
+-T		v	v	v	x
+-u	v	v	v	v	X
+-U		v	v	v	x
+-v		v	v		-
+-V					
+-w		v	v	v	x
+-W		v			~
+-x	v	v	v	v	X
+-X		v	v	v	x
+-y		v			~
+-Y					
+-z					
+-Z			v	v	-
+					

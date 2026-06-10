@@ -1,0 +1,58 @@
+opt	ls	gls	eza
+-1	one entry per line	
+-@	show xattr keys	
+-%	show dataless	
+-,	use ,s for sizes	
+───	──────────────────	──────────────────	──────────────────
+-a	all	
+-A	all exc ./..	
+-b	non-print as C	
+-B	non-print as oct	
+-c	change time	
+-C	multi-column	
+-d	dirs as plain files	
+-D	<opt> date format	
+-e	access control list	
+-E		
+-f	no sort	
+-F	filetype chars	
+-g	no effect	
+-G	colour	
+-h	human-readable nos	
+-H	follow symlinks	
+-i	print inode	
+-I	disable -A for su	
+-j		
+-J		
+-k	blocksize=1024	
+-K		
+-l	long	
+-L	foll. sym to final	
+-m	stream with commas	
+-M		
+-n	numeric uid/gid	
+-N		
+-o	no gid	
+-O	flags
+-p	/ after filename
+-P	de-ref symlinks
+-q	non-print as ?
+-Q	
+-r	reverse sort
+-R	recurse into dirs
+-s	num blocks
+-S	sort by size
+-t	sort by mod - desc
+-T	complete time info
+-u	access time
+-U	sort by creation
+-v	non-print as raw
+-V	
+-w	non-print as raw
+-W	show whtout in dirs
+-x	as -C, but across
+-X	stay in same dev no
+-y	set $LS_SAMESORT
+-Y	
+-z	
+-Z	
