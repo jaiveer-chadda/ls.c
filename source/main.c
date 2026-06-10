@@ -45,7 +45,7 @@ int main(const int argc, const char *argv[]) {
 	char target_path[MAX_PATH_LEN];
 	char mode_str[MAX_MODE_LEN];
 
-	printf("%-*s nlink\tsize\tuid\tgid\t%-10s  mtime\t%-12s  name\n", MAX_MODE_LEN, "mode", "flags", "type");
+	printf("%-*s nlink\tsize\tuid\tgid\t%-10s  mtime\tname\n", MAX_MODE_LEN, "mode", "flags");
 
 	while ((entry = readdir(directory)) != NULL) {
 		if DO_IGNORE_FILE(entry) continue;
@@ -62,7 +62,6 @@ int main(const int argc, const char *argv[]) {
 		printf("%d\t"	, info.st_gid				); // Group ID of the file
 		printf("%-10d  ", info.st_flags				); // user defined flags for file
 		printf("%ld\t"	, info.st_mtimespec.tv_sec	); // time of last data modification
-		printf("%-12s  ", getType(entry)			); // file type
 		printf("%s"		, entry->d_name				); // entry name (up to MAXPATHLEN bytes)
 		printf("%c"		, get_type_suffix(info.st_mode)); // the filetype indicator
 
