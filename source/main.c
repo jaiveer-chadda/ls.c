@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "model/stat-model.h"
-#include "pwd/pwd.h"
+#include "path/path.h"
 #include "main.h"
 #include "time.h"
 #include "mode.h"
@@ -27,7 +27,7 @@ int main(const int argc, const char *argv[]) {
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-	(void)printPWD();
+	(void)resolvePath();
 	PRINT_HEADER;
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
