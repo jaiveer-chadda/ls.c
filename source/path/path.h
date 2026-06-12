@@ -1,3 +1,3 @@
 /// @file path/path.h
 
-int resolvePath(void);
+int printAbsolutePath(const char path[MAX_PATH_LEN]);

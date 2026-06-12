@@ -15,8 +15,12 @@
 int main(const int argc, const char *argv[]) {
 	char target_dir[MAX_NAME_LEN];
 
-	if (argc <= 1 || strlen(argv[1]) == 0) strcpy(target_dir, ".");
-	else strncpy(target_dir, argv[1], strlen(argv[1]));
+	if (argc <= 1 || strlen(argv[1]) == 0) {
+		strcpy(target_dir, ".\0");
+	} else {
+		strncpy(target_dir, argv[1], strlen(argv[1]));
+		target_dir[strlen(argv[1])] = '\0';
+	}
 
 	DIR *directory = opendir(target_dir);
 
@@ -27,7 +31,7 @@ int main(const int argc, const char *argv[]) {
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-	(void)resolvePath();
+	(void) printAbsolutePath(target_dir);
 	PRINT_HEADER;
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
