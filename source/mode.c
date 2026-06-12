@@ -43,8 +43,8 @@ static inline char getModeType(const mode_t mode) {
 		case S_IFDIR:	return 'd'; // directory
 		case S_IFBLK:	return 'b'; // block device
 		case S_IFREG:	return '.'; // regular file	('.' or '-')
-		case S_IFLNK:	return 'l'; // symbolic link
-		case S_IFSOCK:	return 's'; // socket
+		case S_IFLNK:	return '>'; // symbolic link
+		case S_IFSOCK:	return '='; // socket
 		case S_IFWHT:	return '%'; // whiteout		('%' or 'w')
 		default:		return ' '; // unknown
 	}
