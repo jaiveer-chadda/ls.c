@@ -24,10 +24,10 @@
 	str[2] = str[2] == 'x' ? chr : chr - ('a' - 'A')
 
 #define PARSE_PERM(location, ext_char, type) \
-	get_perm_str(type##_oct, type##_str); \
+	getPermStr(type##_oct, type##_str); \
 	if (ext_oct & location) SET_EXT_BIT(type##_str, ext_char)
 
-static inline void get_perm_str(const mode_t oct_digit, char *perm_str) {
+static inline void getPermStr(const mode_t oct_digit, char *perm_str) {
 	strcpy(perm_str, "---");
 
 	if (oct_digit & 04) perm_str[0] = 'r';
@@ -36,7 +36,7 @@ static inline void get_perm_str(const mode_t oct_digit, char *perm_str) {
 }
 
 /// @brief Gets the character representing the filetype specified by an octal type integer.
-static inline char get_mode_type(const mode_t mode) {
+static inline char getModeType(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
 		case S_IFIFO:	return '|'; // named pipe	('|' or 'p')
 		case S_IFCHR:	return 'c'; // char device
@@ -50,7 +50,7 @@ static inline char get_mode_type(const mode_t mode) {
 	}
 }
 
-char get_type_suffix(const mode_t mode) {
+char getTypeSuffix(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
 		case S_IFDIR:	return '/';		// directory
 		case S_IFIFO:	return '|';		// named pipe
@@ -77,6 +77,6 @@ void getMode(const struct stat info, char mode_str[MAX_MODE_LEN]) {
 
 	snprintf(
 		mode_str, MAX_MODE_LEN,
-		"%c%s%s%s", get_mode_type(oct_mode), usr_str, grp_str, oth_str
+		"%c%s%s%s", getModeType(oct_mode), usr_str, grp_str, oth_str
 	);
 }

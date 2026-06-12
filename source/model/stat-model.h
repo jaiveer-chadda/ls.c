@@ -1,17 +1,25 @@
 /// @file model/stat-model.h
 
 /// An arbitrary upper bound on how many file's we're going to accept.
-#define MAX_FILES_IN_DIR 1 << 11
+#define MAX_FILES_IN_DIR 1 << 12
 
 /// The maximum number of possible user and super user flags on MacOS.
 #define MAX_FLAG_NUM 17
 /// The longest flag name on MacOS ("uimmutable") + 1.
 #define MAX_FLAG_LEN 11
 
-/** Given that the maximum filesize on MacOS is `( 1 << ( ( 1 << 6 ) - 1 ) ) - 1` == `2^63 - 1`,
- * the longest string would be "9,223,372,036,854,775,806 b" (27 chars) + 1. */
-#define MAX_SIZE_LEN 28
-#define MAX_UGID_LEN 1 << 8
+/**
+ * Given that the maximum filesize on MacOS is `( 1 << ( ( 1 << 6 ) - 1 ) ) - 1` == `2^63 - 1`,
+ *  the longest string would be "9,223,372,036,854,775,806 b" (27 chars) + 1.
+ * I'm not going to keep it that long though, so 10 bytes should be plenty.
+ */
+#define MAX_SIZE_LEN 10
+
+/**
+ * This also doesn't hit the theoretical max (2^8), but nothing's ever gonna be that long,
+ *  and MacOS' GUI only allows you to create usernames of length 2^5 anyways.
+ */
+#define MAX_UGID_LEN 1 << 5
 
 typedef char type_t;
 typedef char name_t[MAX_NAME_LEN];
@@ -40,8 +48,5 @@ typedef struct {
 	uid_t uid;		ugidstr usr_name;
 	gid_t gid;		ugidstr grp_name;
 
-	time_t atime;	timestr atime_str;
-	time_t mtime;	timestr mtime_str;
-	time_t ctime;	timestr ctime_str;
-	time_t btime;	timestr btime_str;
+	time_t time;	timestr time_str;
 } FileInfo;

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -12,18 +13,30 @@
 #include "time.h"
 #include "model/stat-model.h"
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define PRINT_HEADER \
 	printf("%-12s nlink\tsize\tuid\tgid\t%-10s  %-20s  name\n", "mode", "flags", "mtime")
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+#define PRINT_FILE_INFO(file) \
+	printf("%-12s "	, file.mode_str	); /* Mode of file			*/ \
+	printf("%d\t\t"	, file.nlink	); /* Number of hard links	*/ \
+	printf("%lld\t"	, file.size		); /* file size, in bytes	*/ \
+	printf("%d\t"	, file.uid		); /* User ID of the file	*/ \
+	printf("%d\t"	, file.gid		); /* Group ID of the file	*/ \
+	printf("%-10d  ", file.flags	); /* user defined flags	*/ \
+	printf("%-20s  ", file.time_str	); /* time last modified	*/ \
+	printf("%s"		, file.name		); /* entry name			*/ \
+	printf("%c"		, file.suffix	); /* filetype indicator	*/ \
+	printf("\n")
+
+/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 int main(const int argc, const char *argv[]) {
 	char target_dir[MAX_NAME_LEN];
 
-	if (argc < 2) strncpy(target_dir, ".", 2);
-	else snprintf(target_dir, MAX_NAME_LEN, "%s", argv[1]);
+	if (argc < 2) strcpy(target_dir, ".");
+	else strncpy(target_dir, argv[1], strlen(argv[1]));
 
 	DIR *directory = opendir(target_dir);
 
@@ -34,59 +47,56 @@ int main(const int argc, const char *argv[]) {
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+	FileInfo all_files[MAX_FILES_IN_DIR];
+
 	struct dirent *entry;
 	struct stat info;
 
-	char target_path[MAX_PATH_LEN];
-	FileInfo all_files[MAX_FILES_IN_DIR];
-	int count = -1;	// starting at -1 so the first value in the loop is 0
+	int count = 0;
+	int retcode;
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 	PRINT_HEADER;
 
-	while ( (entry = readdir(directory)) != NULL  &&  ++count <= MAX_FILES_IN_DIR ) {
+	while (
+		(entry = readdir(directory)) != NULL &&
+		count++ <= MAX_FILES_IN_DIR
+	) {
 		if DO_IGNORE_FILE(entry) continue;
 
-		snprintf(target_path, MAX_PATH_LEN, "%s/%s", target_dir, entry->d_name);
-		if (stat(target_path, &info) == -1) continue;
+		FileInfo file = {0};
 
-		FileInfo file_info = {
-			.nlink	= info.st_nlink,
-			.size	= info.st_size,
-			.uid	= info.st_uid,
-			.gid	= info.st_gid,
-			.flags	= info.st_flags,
-			.mode	= info.st_mode,
-			.suffix	= get_type_suffix(info.st_mode),
-		};
+		strcpy(file.name, entry->d_name);
+		snprintf(file.path, MAX_PATH_LEN, "%s/%s", target_dir, file.name);
 
-		strcpy(file_info.name, entry->d_name);
-		getMode(info, file_info.mode_str);
-		parseTime(info.st_mtimespec.tv_sec, file_info.mtime_str);
-
-		all_files[count] = file_info;
+		retcode = stat(file.path, &info);
+		if (retcode == -1) continue;
 
 		/* ——————————————————————————————————————————————————————————————————————— */
 
-		printf("%-12s "	, file_info.mode_str	); // Mode of file
-		printf("%d\t\t"	, file_info.nlink		); // Number of hard links
-		printf("%lld\t"	, file_info.size		); // file size, in bytes
-		printf("%d\t"	, file_info.uid			); // User ID of the file
-		printf("%d\t"	, file_info.gid			); // Group ID of the file
-		printf("%-10d  ", file_info.flags		); // user defined flags for file
-		printf("%-20s  ", file_info.mtime_str	); // time of last data modification
-		printf("%s"		, file_info.name		); // entry name (up to MAXPATHLEN bytes)
-		printf("%c"		, file_info.suffix		); // the filetype indicator
+		file.nlink	= info.st_nlink,
+		file.size	= info.st_size,
+		file.uid	= info.st_uid,
+		file.gid	= info.st_gid,
+		file.flags	= info.st_flags,
+		file.mode	= info.st_mode,
+		file.suffix	= getTypeSuffix(info.st_mode);
 
-		printf("\n");
+		getMode(info, file.mode_str);
+		parseTime(info.st_mtimespec.tv_sec, file.time_str);
+
+		/* ——————————————————————————————————————————————————————————————————————— */
+
+		all_files[count - 1] = file;
+		PRINT_FILE_INFO(file);
 	}
 
 	closedir(directory);
 	return EXIT_SUCCESS;
 }
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /*
 st_mode		st_nlink	st_size	st_uid	st_gid	st_flags	st_mtimespec.tv_sec		d_name	d_type
