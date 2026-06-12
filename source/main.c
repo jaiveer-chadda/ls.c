@@ -4,26 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/stat.h>
-
-#include "main.h"
-#include "mode.h"
-#include "time.h"
 #include "model/stat-model.h"
-
-/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-int printPWD(void) {
-	char *PWD = malloc(MAX_PATH_LEN);
-
-	if (PWD == NULL)						{			 perror("malloc"); return 1; }
-	if (getcwd(PWD, MAX_PATH_LEN) == NULL)	{ free(PWD); perror("getcwd"); return 1; }
-
-	puts(PWD); free(PWD);
-	return 0;
-}
+#include "pwd/pwd.h"
+#include "main.h"
+#include "time.h"
+#include "mode.h"
 
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

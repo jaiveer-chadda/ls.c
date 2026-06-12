@@ -1,12 +1,31 @@
 /// @file model/stat-model.h
 
-/// An arbitrary upper bound on how many file's we're going to accept.
-#define MAX_FILES_IN_DIR 1 << 12
+#ifndef STAT_MODEL_INITIALISED
+#define STAT_MODEL_INITIALISED
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#include <dirent.h>
+#include <sys/stat.h>
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
+
+/// The maximum length a filename can be on Darwin (MacOS/some BSD) machines.
+#define MAX_NAME_LEN MAXNAMLEN
+
+/// The maximum length a path can be on Darwin (MacOS/some BSD) machines.
+#define MAX_PATH_LEN __DARWIN_MAXPATHLEN
 
 /// The maximum number of possible user and super user flags on MacOS.
 #define MAX_FLAG_NUM 17
 /// The longest flag name on MacOS ("uimmutable") + 1.
 #define MAX_FLAG_LEN 11
+
+/// The length of the human-readable mode string +1 (e.g. `drwxr-xr-x`).
+#define MAX_MODE_LEN 12
+
+/// An arbitrary upper bound on how many file's we're going to accept.
+#define MAX_FILES_IN_DIR 1 << 12
 
 /**
  * Given that the maximum filesize on MacOS is `( 1 << ( ( 1 << 6 ) - 1 ) ) - 1` == `2^63 - 1`,
@@ -21,6 +40,11 @@
  */
 #define MAX_UGID_LEN 1 << 5
 
+/// The maximum size an evaluated time format string is allowed to be.
+#define MAX_TIME_LEN 1 << 5
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 typedef char type_t;
 typedef char name_t[MAX_NAME_LEN];
 typedef char path_t[MAX_PATH_LEN];
@@ -32,21 +56,28 @@ typedef char ugidstr[MAX_UGID_LEN];
 typedef char flagstr[MAX_FLAG_LEN];
 typedef char sizestr[MAX_SIZE_LEN];
 
+/* ———————————————————————————————————————————————————————————————————————————————— */
+
 typedef struct {
-	name_t name;
-	path_t path;
-	type_t suffix;
+	name_t	name	;
+	path_t	path	;
+	type_t	suffix	;
 
-	nlink_t nlink;
-	dev_t dev_no;
-	ino_t inode;
+	nlink_t	nlink	;
+	dev_t	dev_no	;
+	ino_t	inode	;
 
-	flag_t flags;	flagstr flags_strs[MAX_FLAG_NUM];
-	mode_t mode;	modestr mode_str;
-	off_t size;		sizestr size_str;
+	flag_t	flags	;	flagstr flags_strs[MAX_FLAG_NUM];
+	mode_t	mode	;	modestr mode_str;
+	off_t	size	;	sizestr size_str;
 
-	uid_t uid;		ugidstr usr_name;
-	gid_t gid;		ugidstr grp_name;
+	uid_t	uid		;	ugidstr usr_name;
+	gid_t	gid		;	ugidstr grp_name;
 
-	time_t time;	timestr time_str;
+	time_t	time	;	timestr time_str;
+
 } FileInfo;
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#endif /* !STAT_MODEL_INITIALISED */

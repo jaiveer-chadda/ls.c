@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <sys/stat.h>
 
+#include "model/stat-model.h"
 #include "time.h"
 
 #define TIME_FMT "%a %e %b %y  %R"
