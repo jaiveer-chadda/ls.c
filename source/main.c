@@ -5,7 +5,9 @@
 #include <string.h>
 
 #include "model/stat-model.h"
+#include "flags/flags.h"
 #include "path/path.h"
+
 #include "main.h"
 #include "time.h"
 #include "mode.h"
@@ -67,6 +69,7 @@ int main(const int argc, const char *argv[]) {
 
 		getMode(info, file.mode_str);
 		parseTime(info.st_mtimespec.tv_sec, file.time_str);
+		parseFlags(file.flag_str, info.st_flags);
 
 		/* ——————————————————————————————————————————————————————————————————————— */
 

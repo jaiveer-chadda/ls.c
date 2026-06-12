@@ -17,7 +17,7 @@
 #define MAX_PATH_LEN __DARWIN_MAXPATHLEN
 
 /// The maximum number of possible user and super user flags on MacOS.
-#define MAX_FLAG_NUM 17
+#define MAX_FLAG_NUM 14
 /// The longest flag name on MacOS ("uimmutable") + 1.
 #define MAX_FLAG_LEN 11
 
@@ -53,8 +53,8 @@ typedef unsigned int flag_t;
 typedef char modestr[MAX_MODE_LEN];
 typedef char timestr[MAX_TIME_LEN];
 typedef char ugidstr[MAX_UGID_LEN];
-typedef char flagstr[MAX_FLAG_LEN];
 typedef char sizestr[MAX_SIZE_LEN];
+typedef char flagstr[MAX_FLAG_LEN * MAX_FLAG_NUM];
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
@@ -67,7 +67,7 @@ typedef struct {
 	dev_t	dev_no	;
 	ino_t	inode	;
 
-	flag_t	flags	;	flagstr flags_strs[MAX_FLAG_NUM];
+	flag_t	flags	;	flagstr flag_str;
 	mode_t	mode	;	modestr mode_str;
 	off_t	size	;	sizestr size_str;
 
