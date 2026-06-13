@@ -6,7 +6,7 @@
 
 #include <sys/stat.h>
 
-#include "model/stat-model.h"
+#include "../model/stat-model.h"
 #include "mode.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

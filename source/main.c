@@ -9,8 +9,8 @@
 #include "path/path.h"
 
 #include "main.h"
-#include "time.h"
-#include "mode.h"
+#include "time/time.h"
+#include "mode/mode.h"
 
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
