@@ -14,24 +14,29 @@
 
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-int main(const int argc, const char *argv[]) {
-	char target_dir[MAX_NAME_LEN];
-
+DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
 	if (argc <= 1 || strlen(argv[1]) == 0) {
-		strcpy(target_dir, ".\0");
+		strcpy(target_dir, "."); 
 	} else {
-		strncpy(target_dir, argv[1], strlen(argv[1]));
-		target_dir[strlen(argv[1])] = '\0';
+		strncpy(target_dir, argv[1], MAX_NAME_LEN - 1);
+		target_dir[MAX_NAME_LEN - 1] = '\0';
 	}
 
 	DIR *directory = opendir(target_dir);
+	if (directory == NULL) perror("opendir");
 
-	if (directory == NULL) {
-		fprintf(stderr, "%s: Unable to read directory `%s`\n", argv[0], target_dir);
-		return EXIT_FAILURE;
-	}
+	return directory;
+}
 
-	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+int main(const int argc, const char *argv[]) {
+	char target_dir[MAX_NAME_LEN];
+
+	const DIR *directory = getDirectory(target_dir, argc, argv);
+	if (directory == NULL) return EXIT_FAILURE;
+
+	/* ——————————————————————————————————————————————————————————————————————— */
 
 	(void) printAbsolutePath(target_dir);
 	PRINT_HEADER;
@@ -45,7 +50,7 @@ int main(const int argc, const char *argv[]) {
 
 	int count = 0;
 
-	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+	/* ——————————————————————————————————————————————————————————————————————— */
 
 	while ((entry = readdir(directory)) != NULL && count <= MAX_FILES_IN_DIR) {
 		if DO_IGNORE_FILE(entry) continue;
@@ -57,7 +62,7 @@ int main(const int argc, const char *argv[]) {
 
 		if (stat(file.path, &info) == -1) continue;
 
-		/* ——————————————————————————————————————————————————————————————————————— */
+		/* ——————————————————————————————————————————————————————————————————— */
 
 		file.nlink	= info.st_nlink,
 		file.size	= info.st_size,
@@ -71,7 +76,7 @@ int main(const int argc, const char *argv[]) {
 		parseTime(info.st_mtimespec.tv_sec, file.time_str);
 		parseFlags(file.flag_str, info.st_flags);
 
-		/* ——————————————————————————————————————————————————————————————————————— */
+		/* ——————————————————————————————————————————————————————————————————— */
 
 		PRINT_FILE_INFO(file);
 		all_files[count++] = file;
