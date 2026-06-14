@@ -35,21 +35,12 @@ static const flagpair all_flags[MAX_FLAG_NUM] = {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#ifndef DO_SHORT
-#	define DO_SHORT 0
-#	define WHICH_NAME name
-#else
-#	if DO_SHORT == 1
-#		define WHICH_NAME short_name
-#	else
-#		define WHICH_NAME name
-#	endif
-#endif
+#define FLAG_NAME (DO_SHORT_FLAGS ? all_flags[i].short_name : all_flags[i].name)
 
 void parseFlags(flagstr flag_string, const flag_t raw_flags) {
 	for (int i = 0; i < MAX_FLAG_NUM; i++) {
 		if (raw_flags & all_flags[i].mask) {
-			strcat(flag_string, all_flags[i].WHICH_NAME);
+			strcat(flag_string, FLAG_NAME);
 			strcat(flag_string, ",");
 		}
 	}

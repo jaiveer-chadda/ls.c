@@ -11,6 +11,7 @@
 #include "main.h"
 #include "time/time.h"
 #include "mode/mode.h"
+#include "options/options.h"
 
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -38,12 +39,6 @@ int main(const int argc, const char *argv[]) {
 
 	DIR *directory = getDirectory(target_dir, argc, argv);
 	if (directory == NULL) return EXIT_FAILURE;
-
-	/* ——————————————————————————————————————————————————————————————————————— */
-
-	// casting to void, since we don't rly care whether the path is printed - it's honestly just a bonus.
-	(void) printAbsolutePath(target_dir);
-	PRINT_HEADER;
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -100,10 +95,48 @@ int main(const int argc, const char *argv[]) {
 	// the directory info isn't needed anymore, so it can be closed now
 	closedir(directory);
 
+	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	// casting to void, since we don't rly care whether the path is printed - it's honestly just a bonus.
+	(void) printAbsolutePath(target_dir);
+
+	if (DO_HEADER) printf(
+
+		"%-12s "	// mode
+		"nlink "	// nlink
+		"%12s  "	// size
+		"uid\t"		// uid
+		"gid\t"		// gid
+		"%-12s  "	// flags
+		"%-20s  "	// mtime
+		"name\n",	// name
+
+		"mode",
+		"size",
+		"flags",
+		"mtime"
+	);
+
+	/* ——————————————————————————————————————————————————————————————————————— */
+
 	// run through all the files and print them out in the `ls --long` format
 	for (int i = 0; i < count; i++) {
 		FileInfo file = all_files[i];
-		PRINT_FILE_INFO(file);
+
+		printf(
+			"%-12s "	// mode
+			"%-5d "		// nlink
+			"%12lld  "	// size
+			"%d\t"		// uid
+			"%d\t"		// gid
+			"%-12s  "	// flags
+			"%-20s  "	// mtime
+			"%s"		// name
+			"%c\n",
+
+			file.mode_str, file.nlink, file.size, file.uid, file.gid, file.flag_str, file.time_str,
+			file.name, file.suffix
+		);
 	}
 
 	return EXIT_SUCCESS;

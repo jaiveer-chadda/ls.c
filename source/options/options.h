@@ -1,3 +1,9 @@
 /// @file options/options.h
 
-#define DO_SHORT 1
+#ifndef FLAGS_INITIALIASED
+#define FLAGS_INITIALIASED
+
+extern const int DO_SHORT_FLAGS;
+extern const int DO_HEADER;
+
+#endif
