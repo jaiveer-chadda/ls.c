@@ -10,6 +10,8 @@
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
+#define FIELD_COUNT 17
+
 /// The maximum length a filename can be on Darwin (MacOS/some BSD) machines.
 #define MAX_NAME_LEN MAXNAMLEN
 
@@ -60,12 +62,10 @@ typedef char flagstr[MAX_FLAG_LEN * MAX_FLAG_NUM];
 
 typedef struct {
 	name_t	name	;
-	path_t	path	;
 	type_t	suffix	;
 
 	nlink_t	nlink	;
-	dev_t	dev_no	;
-	ino_t	inode	;
+	dev_t	dev_no	;	ino_t	inode	;
 
 	flag_t	flags	;	flagstr flag_str;
 	mode_t	mode	;	modestr mode_str;

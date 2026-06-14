@@ -35,6 +35,30 @@ static inline DIR* getDirectory(char *target_dir, const int argc, const char *ar
 	return directory;
 }
 
+char* get_fmt_str(const char *field) {
+	// suffix == char == %c
+	if (strcmp(field, "suffix") == 0) return "%c";
+
+	// name, usr_name, grp_name, size_str, flag_str, mode_str, time_str 
+	//  == char* == %s
+	const char *str_to_cmp = field + (strlen(field) - 4);
+	if ( strcmp(str_to_cmp, "name") == 0 ||
+		 strcmp(str_to_cmp, "_str") == 0 ) return "%s";
+
+	// dev_no, time, size, inode, nlink, flags, mode, uid, gid
+	//  == [unsigned] (int | long [long]) ≈≈ %lld
+	return "%lld";
+
+	// so technically the types are:
+	//	- dev_no				:			int
+	//	- nlink,flags,mode,ugid	:  unsigned	int
+	//	- time					:			long
+	//	- size					:			long long
+	//	- inode					:  unsigned	long long
+	// but I can't be arsed to do a proper check for all of those,
+	//  and since `%lld` should work for them all, this is just easier
+}
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 int main(const int argc, const char *argv[]) {
@@ -51,6 +75,7 @@ int main(const int argc, const char *argv[]) {
 
 	struct dirent *entry;
 	struct stat info;
+	path_t path;
 
 	int count = 0;
 
@@ -67,11 +92,11 @@ int main(const int argc, const char *argv[]) {
 		strcpy(file.name, entry->d_name);
 
 		// concatenate the target dir together with the filename to get the absolute path to the file
-		snprintf(file.path, MAX_PATH_LEN, "%s/%s", target_dir, file.name);
+		snprintf(path, MAX_PATH_LEN, "%s/%s", target_dir, file.name);
 
 		// run the `stat` syscall, and assign it to `info`
 		//  if there's an error (returns -1), the skip the file.
-		if (stat(file.path, &info) == -1) continue;
+		if (stat(path, &info) == -1) continue;
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
@@ -82,6 +107,7 @@ int main(const int argc, const char *argv[]) {
 		file.gid	= info.st_gid,
 		file.flags	= info.st_flags,
 		file.mode	= info.st_mode,
+		file.inode	= info.st_ino,
 
 		// get the character that'll be put at the end of the filename (`/`, `*`, `=`, etc.)
 		file.suffix	= getTypeSuffix(info.st_mode);
@@ -105,43 +131,67 @@ int main(const int argc, const char *argv[]) {
 	// casting to void, since we don't rly care whether the path is printed - it's honestly just a bonus.
 	(void) printAbsolutePath(target_dir);
 
-	if (DO_HEADER) printf(
+	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-		"%-12s "	// mode
-		"nlink "	// nlink
-		"%12s  "	// size
-		"uid\t"		// uid
-		"gid\t"		// gid
-		"%-12s  "	// flags
-		"%-20s  "	// mtime
-		"name\n",	// name
+	initLengths();
 
-		"mode",
-		"size",
-		"flags",
-		"mtime"
-	);
+	size_t len;
+	char fmt_str[5];
+	char elem_as_str[64];
+
+	#define PARSE_LEN(field) \
+		if (do_##field) { \
+			strcpy(fmt_str, get_fmt_str(#field)); \
+			sprintf(elem_as_str, fmt_str, file.field);\
+			len = strlen(elem_as_str); \
+			if (len > field_lengths.field) field_lengths.field = len; \
+		}
+
+	// run through all the files' fields and calculate their maximum lengths
+	for (int i = 0; i < count; i++) {
+		FileInfo file = all_files[i];
+		PARSE_LEN(mode_str);
+		PARSE_LEN(nlink);
+		PARSE_LEN(size);
+		PARSE_LEN(uid);
+		PARSE_LEN(gid);
+		PARSE_LEN(flag_str);
+		PARSE_LEN(time_str);
+		PARSE_LEN(name);
+		PARSE_LEN(suffix);
+	}
 
 	/* ——————————————————————————————————————————————————————————————————————— */
 
-	// run through all the files and print them out in the `ls --long` format
+	if (DO_HEADER) {
+		if (do_mode_str)	printf("%-*s  "	, (int)field_lengths.mode_str,	  MODE_STR_TITLE );
+		if (do_nlink)		printf("%-*s  "	, (int)field_lengths.nlink,		  NLINK_TITLE	 );
+		if (do_size)		printf("%-*s  "	, (int)field_lengths.size,		  SIZE_TITLE	 );
+		if (do_uid)			printf("%-*s  "	, (int)field_lengths.uid,		  UID_TITLE		 );
+		if (do_gid)			printf("%-*s  "	, (int)field_lengths.gid,		  GID_TITLE		 );
+		if (do_flag_str)	printf("%-*s  "	, (int)field_lengths.flag_str,	  FLAG_STR_TITLE );
+		if (do_time_str)	printf("%-*s  "	, (int)field_lengths.time_str,	  TIME_STR_TITLE );
+		if (do_name)		printf("%*s"	, (int)field_lengths.name,		  NAME_TITLE	 );
+
+		printf("\n");
+	}
+
+	/* ——————————————————————————————————————————————————————————————————————— */
+
 	for (int i = 0; i < count; i++) {
 		FileInfo file = all_files[i];
 
-		printf(
-			"%-12s "	// mode
-			"%-5d "		// nlink
-			"%12lld  "	// size
-			"%d\t"		// uid
-			"%d\t"		// gid
-			"%-12s  "	// flags
-			"%20s  "	// mtime
-			"%s"		// name
-			"%c\n",
+		if (do_mode_str)	printf("%-*s" "  ", (int)field_lengths.mode_str	, file.mode_str	);
+		if (do_nlink)		printf("%-*d" "  ", (int)field_lengths.nlink	, file.nlink	);
+		if (do_size)		printf("%*lld""  ", (int)field_lengths.size		, file.size		);
+		if (do_uid)			printf("%-*d" "  ", (int)field_lengths.uid		, file.uid		);
+		if (do_gid)			printf("%-*d" "  ", (int)field_lengths.gid		, file.gid		);
+		if (do_flag_str)	printf("%-*s" "  ", (int)field_lengths.flag_str	, file.flag_str	);
+		if (do_time_str)	printf("%*s"  "  ", (int)field_lengths.time_str	, file.time_str	);
+		if (do_name)		printf("%*s"	  , (int)field_lengths.name		, file.name		);
+		if (do_suffix)		printf("%c"		  , file.suffix);
 
-			file.mode_str, file.nlink, file.size, file.uid, file.gid, file.flag_str, file.time_str,
-			file.name, file.suffix
-		);
+		printf("\n");
 	}
 
 	return EXIT_SUCCESS;
