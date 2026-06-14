@@ -14,6 +14,7 @@
 #include "main.h"
 #include "time/time.h"
 #include "mode/mode.h"
+#include "ugid/ugid.h"
 #include "options/options.h"
 
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -116,6 +117,8 @@ int main(const int argc, const char *argv[]) {
 		getMode(info, file.mode_str);
 		parseTime(info.st_mtimespec.tv_sec, file.time_str);
 		parseFlags(file.flag_str, info.st_flags);
+		getUser(file.usr_name, file.uid);
+		getGroup(file.grp_name, file.gid);
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
@@ -154,7 +157,9 @@ int main(const int argc, const char *argv[]) {
 		PARSE_LEN(nlink);
 		PARSE_LEN(size);
 		PARSE_LEN(uid);
+		PARSE_LEN(usr_name);
 		PARSE_LEN(gid);
+		PARSE_LEN(grp_name);
 		PARSE_LEN(flag_str);
 		PARSE_LEN(time_str);
 		PARSE_LEN(name);
@@ -168,7 +173,9 @@ int main(const int argc, const char *argv[]) {
 		if (do_nlink)		printf("%-*s  "	, (int)field_lengths.nlink,		  NLINK_TITLE	 );
 		if (do_size)		printf("%-*s  "	, (int)field_lengths.size,		  SIZE_TITLE	 );
 		if (do_uid)			printf("%-*s  "	, (int)field_lengths.uid,		  UID_TITLE		 );
+		if (do_usr_name)	printf("%-*s  "	, (int)field_lengths.usr_name,	  USR_NAME_TITLE );
 		if (do_gid)			printf("%-*s  "	, (int)field_lengths.gid,		  GID_TITLE		 );
+		if (do_grp_name)	printf("%-*s  "	, (int)field_lengths.grp_name,	  GRP_NAME_TITLE );
 		if (do_flag_str)	printf("%-*s  "	, (int)field_lengths.flag_str,	  FLAG_STR_TITLE );
 		if (do_time_str)	printf("%-*s  "	, (int)field_lengths.time_str,	  TIME_STR_TITLE );
 		if (do_name)		printf("%*s"	, (int)field_lengths.name,		  NAME_TITLE	 );
@@ -185,7 +192,9 @@ int main(const int argc, const char *argv[]) {
 		if (do_nlink)		printf("%-*d" "  ", (int)field_lengths.nlink	, file.nlink	);
 		if (do_size)		printf("%*lld""  ", (int)field_lengths.size		, file.size		);
 		if (do_uid)			printf("%-*d" "  ", (int)field_lengths.uid		, file.uid		);
+		if (do_usr_name)	printf("%-*s" "  ", (int)field_lengths.usr_name	, file.usr_name	);
 		if (do_gid)			printf("%-*d" "  ", (int)field_lengths.gid		, file.gid		);
+		if (do_grp_name)	printf("%-*s" "  ", (int)field_lengths.grp_name	, file.grp_name	);
 		if (do_flag_str)	printf("%-*s" "  ", (int)field_lengths.flag_str	, file.flag_str	);
 		if (do_time_str)	printf("%*s"  "  ", (int)field_lengths.time_str	, file.time_str	);
 		if (do_name)		printf("%*s"	  , (int)field_lengths.name		, file.name		);

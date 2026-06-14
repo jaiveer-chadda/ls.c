@@ -18,8 +18,8 @@ const bool
 	do_flags	= false,	do_flag_str	= true,
 	do_mode		= false,	do_mode_str	= true,
 	do_size		= true,		do_size_str	= false,
-	do_uid		= true,		do_usr_name	= false,
-	do_gid		= true,		do_grp_name	= false,
+	do_uid		= false,	do_usr_name	= true,
+	do_gid		= false,	do_grp_name	= true,
 	do_time		= false,	do_time_str	= true;
 
 Lengths field_lengths;
