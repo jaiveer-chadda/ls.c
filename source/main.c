@@ -17,6 +17,27 @@
 #include "ugid/ugid.h"
 #include "options/options.h"
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define INTERFIELD_PADDING "  "
+
+#define PARSE_LEN(field) \
+	if (do_##field) { \
+		sprintf(elem_as_str, fmt_strs_short.field, file.field);\
+		len = strlen(elem_as_str); \
+		if (len > field_lengths.field) field_lengths.field = len; \
+	}
+
+#define ADD_FIELD(field) \
+	if (do_##field) { \
+		strcpy(fmt_str, fmt_strs_long.field); \
+		strcat(fmt_str, INTERFIELD_PADDING); \
+		printf(fmt_str, (int)field_lengths.field, file.field); \
+	}
+
+#define ADD_HEADER(field) \
+	if (do_##field)	printf("%-*s" INTERFIELD_PADDING, (int)field_lengths.field, field##_TITLE)
+
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
@@ -34,30 +55,6 @@ static inline DIR* getDirectory(char *target_dir, const int argc, const char *ar
 	if (directory == NULL) perror("opendir");
 
 	return directory;
-}
-
-char* get_fmt_str(const char *field) {
-	// suffix == char == %c
-	if (strcmp(field, "suffix") == 0) return "%c";
-
-	// name, usr_name, grp_name, size_str, flag_str, mode_str, time_str 
-	//  == char* == %s
-	const char *str_to_cmp = field + (strlen(field) - 4);
-	if ( strcmp(str_to_cmp, "name") == 0 ||
-		 strcmp(str_to_cmp, "_str") == 0 ) return "%s";
-
-	// dev_no, time, size, inode, nlink, flags, mode, uid, gid
-	//  == [unsigned] (int | long [long]) ≈≈ %lld
-	return "%lld";
-
-	// so technically the types are:
-	//	- dev_no				:			int
-	//	- nlink,flags,mode,ugid	:  unsigned	int
-	//	- time					:			long
-	//	- size					:			long long
-	//	- inode					:  unsigned	long long
-	// but I can't be arsed to do a proper check for all of those,
-	//  and since `%lld` should work for them all, this is just easier
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -102,23 +99,23 @@ int main(const int argc, const char *argv[]) {
 		/* ——————————————————————————————————————————————————————————————————— */
 
 		// move all the stat info that we're copying over to `file`
-		file.nlink	= info.st_nlink,
-		file.size	= info.st_size,
-		file.uid	= info.st_uid,
-		file.gid	= info.st_gid,
-		file.flags	= info.st_flags,
-		file.mode	= info.st_mode,
-		file.inode	= info.st_ino,
-
-		// get the character that'll be put at the end of the filename (`/`, `*`, `=`, etc.)
-		file.suffix	= getTypeSuffix(info.st_mode);
+		if (do_suffix	) file.suffix	= getTypeSuffix(info.st_mode);
+		if (do_nlink	) file.nlink	= info.st_nlink;
+		if (do_dev_no	) file.dev_no	= info.st_dev;
+		if (do_inode	) file.inode	= info.st_ino;
+		if (do_flags	) file.flags	= info.st_flags;
+		if (do_mode		) file.mode		= info.st_mode;
+		if (do_size		) file.size		= info.st_size;
+		if (do_uid		) file.uid		= info.st_uid;
+		if (do_gid		) file.gid		= info.st_gid;
 
 		// parse the raw stat information into more human-readable formats.
-		getMode(file.mode_str, info.st_mode);
-		parseTime(file.time_str, info.st_mtimespec.tv_sec);
-		parseFlags(file.flag_str, info.st_flags);
-		getUser(file.usr_name, file.uid);
-		getGroup(file.grp_name, file.gid);
+		if (do_flag_str	) parseFlags(	file.flag_str, info.st_flags);
+		// if (do_size_str	) parseSize(	file.size_str, info.st_size);
+		if (do_mode_str	) getMode(		file.mode_str, info.st_mode);
+		if (do_usr_name	) getUser(		file.usr_name, info.st_uid);
+		if (do_grp_name	) getGroup(		file.grp_name, info.st_gid);
+		if (do_time_str	) parseTime(	file.time_str, info.st_mtimespec.tv_sec);
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
@@ -139,47 +136,34 @@ int main(const int argc, const char *argv[]) {
 	initLengths();
 
 	size_t len;
-	char fmt_str[5];
-	char elem_as_str[64];
-
-	#define PARSE_LEN(field) \
-		if (do_##field) { \
-			strcpy(fmt_str, get_fmt_str(#field)); \
-			sprintf(elem_as_str, fmt_str, file.field);\
-			len = strlen(elem_as_str); \
-			if (len > field_lengths.field) field_lengths.field = len; \
-		}
+	char fmt_str[8], elem_as_str[64];
 
 	// run through all the files' fields and calculate their maximum lengths
 	for (int i = 0; i < count; i++) {
 		FileInfo file = all_files[i];
-		PARSE_LEN(mode_str);
 		PARSE_LEN(nlink);
-		PARSE_LEN(size);
-		PARSE_LEN(uid);
-		PARSE_LEN(usr_name);
-		PARSE_LEN(gid);
-		PARSE_LEN(grp_name);
-		PARSE_LEN(flag_str);
-		PARSE_LEN(time_str);
-		PARSE_LEN(name);
-		PARSE_LEN(suffix);
+		PARSE_LEN(inode);	PARSE_LEN(dev_no);
+		PARSE_LEN(flags);	PARSE_LEN(flag_str);
+		// mode & mode string have constant lengths
+		PARSE_LEN(size);	PARSE_LEN(size_str);
+		PARSE_LEN(uid);		PARSE_LEN(usr_name);
+		PARSE_LEN(gid);		PARSE_LEN(grp_name);
+		PARSE_LEN(time);	PARSE_LEN(time_str);
 	}
 
 	/* ——————————————————————————————————————————————————————————————————————— */
 
 	if (DO_HEADER) {
-		if (do_mode_str)	printf("%-*s  "	, (int)field_lengths.mode_str,	  MODE_STR_TITLE );
-		if (do_nlink)		printf("%-*s  "	, (int)field_lengths.nlink,		  NLINK_TITLE	 );
-		if (do_size)		printf("%-*s  "	, (int)field_lengths.size,		  SIZE_TITLE	 );
-		if (do_uid)			printf("%-*s  "	, (int)field_lengths.uid,		  UID_TITLE		 );
-		if (do_usr_name)	printf("%-*s  "	, (int)field_lengths.usr_name,	  USR_NAME_TITLE );
-		if (do_gid)			printf("%-*s  "	, (int)field_lengths.gid,		  GID_TITLE		 );
-		if (do_grp_name)	printf("%-*s  "	, (int)field_lengths.grp_name,	  GRP_NAME_TITLE );
-		if (do_flag_str)	printf("%-*s  "	, (int)field_lengths.flag_str,	  FLAG_STR_TITLE );
-		if (do_time_str)	printf("%-*s  "	, (int)field_lengths.time_str,	  TIME_STR_TITLE );
-		if (do_name)		printf("%*s"	, (int)field_lengths.name,		  NAME_TITLE	 );
+		ADD_HEADER(inode);	ADD_HEADER(dev_no);
+		ADD_HEADER(mode);	ADD_HEADER(mode_str);
+		ADD_HEADER(nlink);
+		ADD_HEADER(size);	ADD_HEADER(size_str);
+		ADD_HEADER(uid);	ADD_HEADER(usr_name);
+		ADD_HEADER(gid);	ADD_HEADER(grp_name);
+		ADD_HEADER(flags);	ADD_HEADER(flag_str);
+		ADD_HEADER(time);	ADD_HEADER(time_str);
 
+		if (do_name) printf("%s", name_TITLE);
 		printf("\n");
 	}
 
@@ -188,18 +172,17 @@ int main(const int argc, const char *argv[]) {
 	for (int i = 0; i < count; i++) {
 		FileInfo file = all_files[i];
 
-		if (do_mode_str)	printf("%-*s" "  ", (int)field_lengths.mode_str	, file.mode_str	);
-		if (do_nlink)		printf("%-*d" "  ", (int)field_lengths.nlink	, file.nlink	);
-		if (do_size)		printf("%*lld""  ", (int)field_lengths.size		, file.size		);
-		if (do_uid)			printf("%-*d" "  ", (int)field_lengths.uid		, file.uid		);
-		if (do_usr_name)	printf("%-*s" "  ", (int)field_lengths.usr_name	, file.usr_name	);
-		if (do_gid)			printf("%-*d" "  ", (int)field_lengths.gid		, file.gid		);
-		if (do_grp_name)	printf("%-*s" "  ", (int)field_lengths.grp_name	, file.grp_name	);
-		if (do_flag_str)	printf("%-*s" "  ", (int)field_lengths.flag_str	, file.flag_str	);
-		if (do_time_str)	printf("%*s"  "  ", (int)field_lengths.time_str	, file.time_str	);
-		if (do_name)		printf("%*s"	  , (int)field_lengths.name		, file.name		);
-		if (do_suffix)		printf("%c"		  , file.suffix);
+		ADD_FIELD(inode);	ADD_FIELD(dev_no);
+		ADD_FIELD(mode);	ADD_FIELD(mode_str);
+		ADD_FIELD(nlink);
+		ADD_FIELD(size);	ADD_FIELD(size_str);
+		ADD_FIELD(uid);		ADD_FIELD(usr_name);
+		ADD_FIELD(gid);		ADD_FIELD(grp_name);
+		ADD_FIELD(flags);	ADD_FIELD(flag_str);
+		ADD_FIELD(time);	ADD_FIELD(time_str);
 
+		if (do_name)	printf(fmt_strs_long.name	, file.name);
+		if (do_suffix)	printf(fmt_strs_long.suffix	, file.suffix);
 		printf("\n");
 	}
 

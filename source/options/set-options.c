@@ -23,22 +23,51 @@ const bool
 	do_time		= false,	do_time_str	= true;
 
 Lengths field_lengths;
+FmtStrs fmt_strs_short, fmt_strs_long;
 
 void initLengths(void) {
 	if (DO_HEADER) {
 		// these will be precomputed when compiler optimisation is set to `-O2` or `-O3`
 		field_lengths = (Lengths){
-			.name	= strlen(NAME_TITLE),
+			.nlink	= strlen(nlink_TITLE),
+			.dev_no	= strlen(dev_no_TITLE),	.inode	  =	strlen(inode_TITLE),
 
-			.nlink	= strlen(NLINK_TITLE),
-			.dev_no	= strlen(DEV_NO_TITLE),	.inode	  =	strlen(INODE_TITLE),
-
-			.flags	= strlen(FLAGS_TITLE),	.flag_str =	strlen(FLAG_STR_TITLE),
-			.mode	= strlen(MODE_TITLE),	.mode_str =	strlen(MODE_STR_TITLE),
-			.size	= strlen(SIZE_TITLE),	.size_str =	strlen(SIZE_STR_TITLE),
-			.uid	= strlen(UID_TITLE),	.usr_name =	strlen(USR_NAME_TITLE),
-			.gid	= strlen(GID_TITLE),	.grp_name =	strlen(GRP_NAME_TITLE),
-			.time	= strlen(TIME_TITLE),	.time_str =	strlen(TIME_STR_TITLE),
+			.mode	= 6,					.mode_str =	11,
+			.flags	= strlen(flags_TITLE),	.flag_str =	strlen(flag_str_TITLE),
+			.size	= strlen(size_TITLE),	.size_str =	strlen(size_str_TITLE),
+			.uid	= strlen(uid_TITLE),	.usr_name =	strlen(usr_name_TITLE),
+			.gid	= strlen(gid_TITLE),	.grp_name =	strlen(grp_name_TITLE),
+			.time	= strlen(time_TITLE),	.time_str =	strlen(time_str_TITLE),
 		};
 	}
+
+	fmt_strs_short = (FmtStrs){
+		.name	= "%s",
+		.suffix	= "%c",
+
+		.nlink	= "%d"	,
+		.dev_no	= "%d"	, .inode	= "%llu",
+
+		.flags	= "%u"	, .flag_str	= "%s",
+		.mode	= "%u"	, .mode_str	= "%s",
+		.size	= "%lld", .size_str	= "%s",
+		.uid	= "%d"	, .usr_name	= "%s",
+		.gid	= "%d"	, .grp_name	= "%s",
+		.time	= "%ld"	, .time_str	= "%s",
+	};
+
+	fmt_strs_long = (FmtStrs){
+		.name	= "%s",
+		.suffix	= "%c",
+
+		.nlink	= "%-*d"	,
+		.dev_no	= "%*d"		, .inode	= "%*llu",
+
+		.flags	= "%-*u"	, .flag_str	= "%-*s",
+		.mode	= "%-*u"	, .mode_str	= "%-*s",
+		.size	= "%*lld"	, .size_str	= "%*s",
+		.uid	= "%-*d"	, .usr_name	= "%-*s",
+		.gid	= "%-*d"	, .grp_name	= "%-*s",
+		.time	= "%*ld"	, .time_str	= "%*s",
+	};
 }

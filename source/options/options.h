@@ -28,9 +28,30 @@ typedef struct {
 	size_t	time	;	size_t time_str;
 } Lengths;
 
+extern Lengths field_lengths;
+
 /* ——————————————————————————————————————————————————————— */
 
-extern Lengths field_lengths;
+typedef char fmt_spec[6];
+
+typedef struct {
+	fmt_spec name	;
+	fmt_spec suffix	;
+
+	fmt_spec nlink	;
+	fmt_spec dev_no	;	fmt_spec inode	;
+
+	fmt_spec flags	;	fmt_spec flag_str;
+	fmt_spec mode	;	fmt_spec mode_str;
+	fmt_spec size	;	fmt_spec size_str;
+	fmt_spec uid	;	fmt_spec usr_name;
+	fmt_spec gid	;	fmt_spec grp_name;
+	fmt_spec time	;	fmt_spec time_str;
+} FmtStrs;
+
+extern FmtStrs fmt_strs_short, fmt_strs_long;
+
+/* ——————————————————————————————————————————————————————— */
 
 extern const bool
 	do_name,
@@ -64,29 +85,29 @@ extern const bool
 
 /* ——————————————————————————————————————————————————————— */
 
-#define NAME_TITLE		"Name"
-#define SUFFIX_TITLE	""
+#define name_TITLE		"Name"
+#define suffix_TITLE	""
 
-#define NLINK_TITLE		"Links"
-#define DEV_NO_TITLE	"Device No."
-#define INODE_TITLE		"Inode"
+#define nlink_TITLE		"Links"
+#define dev_no_TITLE	"Device No."
+#define inode_TITLE		"Inode"
 
-#define FLAGS_TITLE		"Flags"
-#define FLAG_STR_TITLE	"Flags"
+#define flags_TITLE		"Flags"
+#define flag_str_TITLE	"Flags"
 
-#define MODE_TITLE		"Mode"
-#define MODE_STR_TITLE	"Permissions"
+#define mode_TITLE		"Mode"
+#define mode_str_TITLE	"Permissions"
 
-#define SIZE_TITLE		"Size"
-#define SIZE_STR_TITLE	"Size"
+#define size_TITLE		"Size"
+#define size_str_TITLE	"Size"
 
-#define UID_TITLE		"UID"
-#define USR_NAME_TITLE	"User"
+#define uid_TITLE		"UID"
+#define usr_name_TITLE	"User"
 
-#define GID_TITLE		"GID"
-#define GRP_NAME_TITLE	"Group"
+#define gid_TITLE		"GID"
+#define grp_name_TITLE	"Group"
 
-#define TIME_TITLE		"MTime"
-#define TIME_STR_TITLE	"Modified"
+#define time_TITLE		"MTime"
+#define time_str_TITLE	"Modified"
 
 #endif
