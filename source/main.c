@@ -15,6 +15,7 @@
 #include "time/time.h"
 #include "mode/mode.h"
 #include "ugid/ugid.h"
+#include "size/size.h"
 #include "options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -36,7 +37,12 @@
 	}
 
 #define ADD_HEADER(field) \
-	if (do_##field)	printf("%-*s" INTERFIELD_PADDING, (int)field_lengths.field, field##_TITLE)
+	if (do_##field)	{ \
+		if (strcmp(field##_TITLE, "Size") == 0) \
+			printf("%*s"  INTERFIELD_PADDING, (int)field_lengths.field, field##_TITLE); \
+		else \
+			printf("%-*s" INTERFIELD_PADDING, (int)field_lengths.field, field##_TITLE); \
+	}
 
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -111,7 +117,7 @@ int main(const int argc, const char *argv[]) {
 
 		// parse the raw stat information into more human-readable formats.
 		if (do_flag_str	) parseFlags(	file.flag_str, info.st_flags);
-		// if (do_size_str	) parseSize(	file.size_str, info.st_size);
+		if (do_size_str	) parseSize(	file.size_str, info.st_size, info.st_rdev);
 		if (do_mode_str	) getMode(		file.mode_str, info.st_mode);
 		if (do_usr_name	) getUser(		file.usr_name, info.st_uid);
 		if (do_grp_name	) getGroup(		file.grp_name, info.st_gid);
