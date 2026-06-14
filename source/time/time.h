@@ -6,6 +6,6 @@
 #include <time.h>
 
 void initTime(void);
-void parseTime(const time_t file_time, char time_str[MAX_TIME_LEN]);
+void parseTime(char time_str[MAX_TIME_LEN], const time_t file_time);
 
 #endif /* !TIME_H_INITIALISED */

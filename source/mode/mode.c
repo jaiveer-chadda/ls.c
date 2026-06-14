@@ -70,9 +70,7 @@ char getTypeSuffix(const mode_t mode) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void getMode(const struct stat info, char mode_str[MAX_MODE_LEN]) {
-	const mode_t oct_mode = info.st_mode;
-
+void getMode(char mode_str[MAX_MODE_LEN], const mode_t oct_mode) {
 	char usr_str[4], grp_str[4], oth_str[4];
 	const mode_t // Note: 3 = log2(8)
 		ext_oct = (oct_mode & EXT_MASK) >> (3 * 3), // `d--s--s--t` == `7000`

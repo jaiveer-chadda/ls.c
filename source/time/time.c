@@ -27,7 +27,7 @@ void initTime(void) {
 		(cur_time_tm->tm_sec);
 }
 
-void parseTime(const time_t file_time, char time_str[MAX_TIME_LEN]) {
+void parseTime(char time_str[MAX_TIME_LEN], const time_t file_time) {
 	/// How many seconds ago the file was modified.
 	const time_t t_diff = current_time - file_time;
 	const struct tm *pTime = localtime(&file_time);

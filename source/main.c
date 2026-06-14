@@ -114,8 +114,8 @@ int main(const int argc, const char *argv[]) {
 		file.suffix	= getTypeSuffix(info.st_mode);
 
 		// parse the raw stat information into more human-readable formats.
-		getMode(info, file.mode_str);
-		parseTime(info.st_mtimespec.tv_sec, file.time_str);
+		getMode(file.mode_str, info.st_mode);
+		parseTime(file.time_str, info.st_mtimespec.tv_sec);
 		parseFlags(file.flag_str, info.st_flags);
 		getUser(file.usr_name, file.uid);
 		getGroup(file.grp_name, file.gid);
