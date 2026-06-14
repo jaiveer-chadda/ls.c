@@ -1,4 +1,7 @@
-/// @file main.c
+/**
+ * @mainpage
+ * @file main.c
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +42,8 @@ int main(const int argc, const char *argv[]) {
 
 	DIR *directory = getDirectory(target_dir, argc, argv);
 	if (directory == NULL) return EXIT_FAILURE;
+
+	initTime();
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -130,7 +135,7 @@ int main(const int argc, const char *argv[]) {
 			"%d\t"		// uid
 			"%d\t"		// gid
 			"%-12s  "	// flags
-			"%-20s  "	// mtime
+			"%20s  "	// mtime
 			"%s"		// name
 			"%c\n",
 
