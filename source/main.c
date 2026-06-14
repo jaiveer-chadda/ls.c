@@ -14,7 +14,7 @@
 
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
+static inline DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
 	if (argc <= 1 || strlen(argv[1]) == 0) {
 		strcpy(target_dir, "."); 
 	} else {
@@ -33,7 +33,7 @@ DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
 int main(const int argc, const char *argv[]) {
 	char target_dir[MAX_NAME_LEN];
 
-	const DIR *directory = getDirectory(target_dir, argc, argv);
+	DIR *directory = getDirectory(target_dir, argc, argv);
 	if (directory == NULL) return EXIT_FAILURE;
 
 	/* ——————————————————————————————————————————————————————————————————————— */
@@ -78,11 +78,16 @@ int main(const int argc, const char *argv[]) {
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
-		PRINT_FILE_INFO(file);
 		all_files[count++] = file;
 	}
 
 	closedir(directory);
+
+	for (int i = 0; i < count; i++) {
+		FileInfo file = all_files[i];
+		PRINT_FILE_INFO(file);
+	}
+
 	return EXIT_SUCCESS;
 }
 
