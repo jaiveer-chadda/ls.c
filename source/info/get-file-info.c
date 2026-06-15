@@ -64,7 +64,7 @@ void getAllFileInfo(
 		// then, if we need to get the link's info ...
 		if (do_link_to) {
 			// find and assign the target's suffix to the struct
-			if (do_suffix) file.ln_suf = getTypeSuffix(info.st_mode);
+			file.ln_suf = getTypeSuffix(info.st_mode);
 
 			// and then run the `lstat` syscall to get the link's information
 			lstat_did_fail = lstat(path, &info) == -1;
@@ -104,8 +104,11 @@ void getAllFileInfo(
 		/* ——————————————————————————————————————————————————————————————————— */
 
 		// add the FileInfo object to the end of its respective array
-		if (IS_DIRECTORY(info))	 dirs[(* dir_count)++] = file;
-		else					files[(*file_count)++] = file;
+		if (IS_DIRECTORY(info) || (do_link_to && IS_SYMLINK(info) && file.ln_suf == '/')) {
+			dirs[(*dir_count)++] = file;
+		} else {
+			files[(*file_count)++] = file;
+		}
 	}
 
 	// the directory info isn't needed anymore, so it can be closed now
