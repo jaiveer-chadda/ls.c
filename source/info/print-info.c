@@ -1,4 +1,4 @@
-/// @file info/parse-info.c
+/// @file info/print-info.c
 
 #include <stdio.h>
 #include <string.h>
@@ -52,7 +52,9 @@ void printHeader(void) {
 	}
 
 #define COLOUR_NAME(output, name, colour) \
-	sprintf(output, "\33[%d%sm%s" RESET, colour, colour > 40 ? ";1;30" : "", name)
+	if (DO_COLOUR && colour != NORMAL) { \
+		sprintf(output, "\33[%sm%s" RESET, file_colour_esc[colour], name); \
+	} else strcpy(coloured_name, name)
 
 void printFields(const FileInfo *all_files, const int *count) {
 	char fmt_str[8];

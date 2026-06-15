@@ -62,23 +62,32 @@ typedef char flagstr[MAX_FLAG_LEN * MAX_FLAG_NUM];
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
+// use the macro `X`, on the expectation that it'll be defined later
+#define FILE_COLOUR_TABLE \
+	X(NORMAL,	""			) /* \e[37m */ \
+	X(DIRECT,	"36;1"		) /* \e[36m */ \
+	X(SYMLINK,	"35"		) /* \e[35m */ \
+	X(EXEC,		"31"		) /* \e[31m */ \
+	X(PIPE,		"33"		) /* \e[33m */ \
+	X(SOCKET,	"32"		) /* \e[32m */ \
+	X(MOUNT,	"34"		) /* \e[34m */ \
+	X(CHR_DEV,	"43;1;30"	) /* \e[43m */ \
+	X(BLK_DEV,	"46;1;30"	) /* \e[46m */ \
+	X(OW_DIR,	"42;1;30"	) /* \e[42m */ \
+	X(SUID,		"41;1;30"	) /* \e[41m */ \
+	X(SGID,		"45;1;30"	) /* \e[45m */ \
+	X(STICKY,	"44;1;30"	) /* \e[44m */ \
+	X(DATALESS,	"47;30"		) /* \e[47m */ \
+	X(WHITEOUT,"107;1;30"	) /*\e[107m */
+
 typedef enum {
-	NORMAL,			// \e[37m	-v-
-	DIRECT	 = 36,	// \e[36m	-v-
-	SYMLINK	 = 35,	// \e[35m	-v-
-	EXEC	 = 31,	// \e[31m	-x-
-	PIPE	 = 33,	// \e[33m	-v-
-	SOCKET	 = 32,	// \e[32m	-v-
-	MOUNT	 = 34,	// \e[34m	-x-
-	CHR_DEV	 = 43,	// \e[43m	-v-
-	BLK_DEV	 = 46,	// \e[46m	-v-
-	OW_DIR	 = 42,	// \e[42m	-x-
-	SUID	 = 41,	// \e[41m	-x-
-	SGID	 = 45,	// \e[45m	-x-
-	STICKY	 = 44,	// \e[44m	-x-
-	DATALESS = 47,	// \e[47m	-x-
-	WHITEOUT = 107,	// \e[107m	-v-
+	#define X(name, esc) name,	// only unpack the names
+	FILE_COLOUR_TABLE
+	#undef X
+	COLOUR_COUNT	// a final element so we can figure out how many enum entires there were
 } FileColour;
+
+extern const char *const file_colour_esc[COLOUR_COUNT];
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 // const char *HOME = getenv("HOME");
