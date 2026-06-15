@@ -23,9 +23,17 @@
 #define IS_SYMLINK(file_info) \
 	((file_info.st_mode & TYPE_MASK) == S_IFLNK)
 
+#define IS_DIRECTORY(file_info) \
+	((file_info.st_mode & TYPE_MASK) == S_IFDIR)
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void getAllFileInfo(FileInfo *all_files, int *count, DIR *directory, const char *target_dir) {
+void getAllFileInfo(
+	FileInfo *dirs, FileInfo *files,
+	int *dir_count, int *file_count,
+	DIR *directory, const char *target_dir
+) {
+	*dir_count = 0, *file_count = 0;
 
 	bool stat_did_fail, lstat_did_fail;
 	struct dirent *entry;
@@ -33,7 +41,7 @@ void getAllFileInfo(FileInfo *all_files, int *count, DIR *directory, const char 
 	path_t path;
 
 	// while there are still files to read, and while we haven't reached the maximum file limit
-	while ((entry = readdir(directory)) != NULL && *count <= MAX_FILES_IN_DIR) {
+	while ((entry = readdir(directory)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
 		if DO_IGNORE_FILE(entry) continue;
 
 		// initialise the struct so we can assign to it later
@@ -91,15 +99,13 @@ void getAllFileInfo(FileInfo *all_files, int *count, DIR *directory, const char 
 		if (do_usr_name	) getUser(		file.usr_name, info.st_uid);
 		if (do_grp_name	) getGroup(		file.grp_name, info.st_gid);
 		if (do_time_str	) parseTime(	file.time_str, info.st_mtimespec.tv_sec);
-
-		if (do_link_to && IS_SYMLINK(info)) {
-			getLink(file.link_to, path);
-		}
+		if (do_link_to && IS_SYMLINK(info)) getLink(file.link_to, path);
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
-		// add the FileInfo object to the end of the array
-		all_files[(*count)++] = file;
+		// add the FileInfo object to the end of its respective array
+		if (IS_DIRECTORY(info))	 dirs[(* dir_count)++] = file;
+		else					files[(*file_count)++] = file;
 	}
 
 	// the directory info isn't needed anymore, so it can be closed now

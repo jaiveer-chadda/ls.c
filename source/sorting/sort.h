@@ -2,4 +2,4 @@
 
 #include "../model/stat-model.h"
 
-void sortFiles(FileInfo *all_files, const int *count);
+void sortFiles(FileInfo *dirs, FileInfo *files, const int *dir_count, const int *file_count);

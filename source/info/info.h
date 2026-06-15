@@ -8,7 +8,11 @@ DIR* getDirectory(char *target_dir, const int argc, const char *argv[]);
 
 // get-file-info.c
 
-void getAllFileInfo(FileInfo *all_files, int *count, DIR *directory, const char *target_dir);
+void getAllFileInfo(
+	FileInfo *dirs, FileInfo *files,
+	int *dir_count, int *file_count,
+	DIR *directory, const char *target_dir
+);
 
 // parse-info.c
 

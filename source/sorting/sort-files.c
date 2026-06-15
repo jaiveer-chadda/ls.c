@@ -12,6 +12,7 @@ static int compare_names(const void *file_1, const void *file_2) {
 	return strcmp(f1->name, f2->name);
 }
 
-void sortFiles(FileInfo *all_files, const int *count) {
-	qsort(all_files, *count, sizeof(FileInfo), compare_names);
+void sortFiles(FileInfo *dirs, FileInfo *files, const int *dir_count, const int *file_count) {
+	qsort( dirs,  *dir_count, sizeof(FileInfo), compare_names);
+	qsort(files, *file_count, sizeof(FileInfo), compare_names);
 }

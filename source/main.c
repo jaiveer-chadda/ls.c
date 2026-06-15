@@ -3,6 +3,8 @@
  * @file main.c
  */
 
+#include <string.h>
+
 #include "info/info.h"
 
 #include "path/path.h"
@@ -24,15 +26,27 @@ int main(const int argc, const char *argv[]) {
 
 	/* ——————————————————————————————————————————————————————————————————————— */
 
-	FileInfo all_files[MAX_FILES_IN_DIR];
-	int count = 0;
+	FileInfo dirs[MAX_FILES_IN_DIR], files[MAX_FILES_IN_DIR];
+	int dir_count, file_count;
 
 	// Run the `stat` and `lstat` syscalls, and start parsing the files' information
-	getAllFileInfo(all_files, &count, directory, target_dir);
+	getAllFileInfo(
+		dirs, files,
+		&dir_count, &file_count,
+		directory, target_dir
+	);
 
 	/* ——————————————————————————————————————————————————————————————————————— */
 
-	sortFiles(all_files, &count);
+	sortFiles(dirs, files, &dir_count, &file_count);
+
+	/* ——————————————————————————————————————————————————————————————————————— */
+
+	const int count = dir_count + file_count;
+    FileInfo all_files[count];
+
+    memcpy(all_files,			   dirs,  dir_count * sizeof(FileInfo));
+    memcpy(all_files + dir_count, files, file_count * sizeof(FileInfo));
 
 	/* ——————————————————————————————————————————————————————————————————————— */
 
