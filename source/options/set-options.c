@@ -26,7 +26,7 @@ const bool
 Lengths field_lengths;
 FmtStrs fmt_strs_short, fmt_strs_long;
 
-void initLengths(void) {
+void initFormatting(void) {
 	if (DO_HEADER) {
 		// these will be precomputed when compiler optimisation is set to `-O2` or `-O3`
 		field_lengths = (Lengths){

@@ -1,4 +1,4 @@
-/// @file get-info.c
+/// @file info/get-info.c
 
 #include <stdio.h>
 #include <string.h>

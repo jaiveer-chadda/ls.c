@@ -1,6 +1,6 @@
 /// @file options/options.h
 
-void initLengths(void);
+void initFormatting(void);
 
 #ifndef FLAGS_INITIALIASED
 #define FLAGS_INITIALIASED
