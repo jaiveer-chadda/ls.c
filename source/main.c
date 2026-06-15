@@ -45,6 +45,9 @@
 			printf("%-*s" INTERFIELD_PADDING, (int)field_lengths.field, field##_TITLE); \
 	}
 
+#define IS_SYMLINK(file_info) \
+	((file_info.st_mode & TYPE_MASK) == S_IFLNK)
+
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline DIR* getDirectory(char *target_dir, const int argc, const char *argv[]);
@@ -126,8 +129,9 @@ int main(const int argc, const char *argv[]) {
 
 		if (do_name)	printf(fmt_strs_long.name	, file.name);
 		if (do_suffix)	printf(fmt_strs_long.suffix	, file.suffix);
-
 		if (do_link_to)	printf(fmt_strs_long.link_to, file.link_to);
+		if (do_suffix)	printf(fmt_strs_long.suffix	, file.ln_suf);
+
 		printf("\n");
 	}
 
@@ -156,6 +160,8 @@ static inline DIR* getDirectory(char *target_dir, const int argc, const char *ar
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void getAllInfo(FileInfo *all_files, int *count, DIR *directory, const char *target_dir) {
+
+	bool stat_did_fail, lstat_did_fail;
 	struct dirent *entry;
 	struct stat info;
 	path_t path;
@@ -173,9 +179,31 @@ static inline void getAllInfo(FileInfo *all_files, int *count, DIR *directory, c
 		// concatenate the target dir together with the filename to get the absolute path to the file
 		snprintf(path, MAX_PATH_LEN, "%s/%s", target_dir, file.name);
 
-		// run the `stat` syscall, and assign it to `info`
-		//  if there's an error (returns -1), the skip the file.
-		if (lstat(path, &info) == -1) continue;
+		/* ——————————————————————————————————————————————————————————————————— */
+
+		// always run the `stat` syscall, because we need to know the type of the file being pointed to.
+		// if it fails, it means 1 of two things:
+		//	1. it's a symlink, and the target is broken/doesn't exist
+		//	2. there are some permission issues
+		stat_did_fail = stat(path, &info) == -1;
+
+		// then, if we need to get the link's info ...
+		if (do_link_to) {
+			// find and assign the target's suffix to the struct
+			if (do_suffix) file.ln_suf = getTypeSuffix(info.st_mode);
+
+			// and then run the `lstat` syscall to get the link's information
+			lstat_did_fail = lstat(path, &info) == -1;
+
+			// if anything failed, or if the file isn't a symlink, then remove the target's suffix
+			if (!IS_SYMLINK(info) || stat_did_fail || lstat_did_fail) file.ln_suf = '\0';
+
+			// if neither of the stat calls worked, then we don't have any information - so skip this file
+			if (stat_did_fail && lstat_did_fail) continue;
+
+		} else {
+			if (stat_did_fail) continue;
+		}
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
@@ -198,7 +226,7 @@ static inline void getAllInfo(FileInfo *all_files, int *count, DIR *directory, c
 		if (do_grp_name	) getGroup(		file.grp_name, info.st_gid);
 		if (do_time_str	) parseTime(	file.time_str, info.st_mtimespec.tv_sec);
 
-		if (do_link_to && ((info.st_mode & S_IFMT) == S_IFLNK)) {
+		if (do_link_to && IS_SYMLINK(info)) {
 			getLink(file.link_to, path);
 		}
 

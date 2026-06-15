@@ -63,7 +63,9 @@ typedef char flagstr[MAX_FLAG_LEN * MAX_FLAG_NUM];
 typedef struct {
 	name_t	name	;
 	type_t	suffix	;
+
 	path_t	link_to ;
+	type_t	ln_suf	;
 
 	nlink_t	nlink	;
 	dev_t	dev_no	;	ino_t	inode	;

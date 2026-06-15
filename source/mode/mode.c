@@ -11,14 +11,11 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define NULLBYTE '\0'
-
 #define EXT_MASK 0007000	/// A mask to get the extended bits (4,2,1 = uid, gid, sticky) from octal permissions.
 #define USR_MASK S_IRWXU	/// A mask to get the user octal permissions.
 #define GRP_MASK S_IRWXG	/// A mask to get the group octal permissions.
 #define OTH_MASK S_IRWXO	/// A mask to get the other octal permissions.
 
-#define TYPE_MASK S_IFMT	/// A mask to keep just the type information from the Unix octal permissions - (0o170000).
 #define EXEC_MASK 0000111	/// A mask to tell whether a file is an executable or not.
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
@@ -26,9 +23,10 @@
 #define SET_EXT_BIT(str, chr) /* exec == lowercase, non-exec == uppercase */ \
 	str[2] = str[2] == 'x' ? chr : chr - ('a' - 'A')
 
-#define PARSE_PERM(location, ext_char, type) \
-	getPermStr(type##_oct, type##_str); \
-	if (ext_oct & location) SET_EXT_BIT(type##_str, ext_char)
+#define PARSE_PERM(location, ext_char, type) do { \
+		getPermStr(type##_oct, type##_str); \
+		if (ext_oct & location) SET_EXT_BIT(type##_str, ext_char); \
+	} while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -49,7 +47,7 @@ static inline char getModeType(const mode_t mode) {
 		case S_IFBLK:	return 'b'; // block device
 		case S_IFREG:	return '.'; // regular file	('.' or '-')
 		case S_IFLNK:	return 'l'; // symbolic link
-		case S_IFSOCK:	return '='; // socket
+		case S_IFSOCK:	return '='; // socket		('=' or 's')
 		case S_IFWHT:	return '%'; // whiteout		('%' or 'w')
 		default:		return ' '; // unknown
 	}
@@ -59,13 +57,14 @@ static inline char getModeType(const mode_t mode) {
 
 char getTypeSuffix(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
+		case S_IFLNK:	return '@';		// symlink
 		case S_IFDIR:	return '/';		// directory
 		case S_IFIFO:	return '|';		// named pipe
 		case S_IFSOCK:	return '=';		// socket
 		case S_IFWHT:	return '%';		// whiteout
 	}
 	if (mode & EXEC_MASK) return '*';	// executable
-	return NULLBYTE;						// other/unknown
+	return '\0';						// other/unknown
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
