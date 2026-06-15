@@ -46,77 +46,8 @@
 
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
-	// if there's no input, or the input is empty, then the target directory is `.`
-	if (argc <= 1 || strlen(argv[1]) == 0) {
-		strcpy(target_dir, "."); 
-	// otherwise, copy the user's input verbatim into `target_dir`
-	} else {
-		strncpy(target_dir, argv[1], MAX_NAME_LEN - 1);
-		target_dir[MAX_NAME_LEN - 1] = '\0';
-	}
-
-	DIR *directory = opendir(target_dir);
-	// if we couldn't open the directory (usually if it doesn't exist), then exit with an error
-	if (directory == NULL) perror("opendir");
-
-	return directory;
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-void getAllInfo(FileInfo *all_files, int *count, DIR *directory, const char *target_dir) {
-	struct dirent *entry;
-	struct stat info;
-	path_t path;
-
-	// while there are still files to read, and while we haven't reached the maximum file limit
-	while ((entry = readdir(directory)) != NULL && *count <= MAX_FILES_IN_DIR) {
-		if DO_IGNORE_FILE(entry) continue;
-
-		// initialise the struct so we can assign to it later
-		FileInfo file = {0};
-
-		// get the raw filename stored in `entry`
-		strcpy(file.name, entry->d_name);
-
-		// concatenate the target dir together with the filename to get the absolute path to the file
-		snprintf(path, MAX_PATH_LEN, "%s/%s", target_dir, file.name);
-
-		// run the `stat` syscall, and assign it to `info`
-		//  if there's an error (returns -1), the skip the file.
-		if (stat(path, &info) == -1) continue;
-
-		/* ——————————————————————————————————————————————————————————————————— */
-
-		// move all the stat info that we're copying over to `file`
-		if (do_suffix	) file.suffix	= getTypeSuffix(info.st_mode);
-		if (do_nlink	) file.nlink	= info.st_nlink;
-		if (do_dev_no	) file.dev_no	= info.st_dev;
-		if (do_inode	) file.inode	= info.st_ino;
-		if (do_flags	) file.flags	= info.st_flags;
-		if (do_mode		) file.mode		= info.st_mode;
-		if (do_size		) file.size		= info.st_size;
-		if (do_uid		) file.uid		= info.st_uid;
-		if (do_gid		) file.gid		= info.st_gid;
-
-		// parse the raw stat information into more human-readable formats.
-		if (do_flag_str	) parseFlags(	file.flag_str, info.st_flags);
-		if (do_size_str	) parseSize(	file.size_str, info.st_size, info.st_rdev);
-		if (do_mode_str	) getMode(		file.mode_str, info.st_mode);
-		if (do_usr_name	) getUser(		file.usr_name, info.st_uid);
-		if (do_grp_name	) getGroup(		file.grp_name, info.st_gid);
-		if (do_time_str	) parseTime(	file.time_str, info.st_mtimespec.tv_sec);
-
-		/* ——————————————————————————————————————————————————————————————————— */
-
-		// add the FileInfo object to the end of the array
-		all_files[(*count)++] = file;
-	}
-
-	// the directory info isn't needed anymore, so it can be closed now
-	closedir(directory);
-}
+static inline DIR* getDirectory(char *target_dir, const int argc, const char *argv[]);
+static inline void getAllInfo(FileInfo *all_files, int *count, DIR *directory, const char *target_dir);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -201,6 +132,81 @@ int main(const int argc, const char *argv[]) {
 }
 
 /* ——————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
+	// if there's no input, or the input is empty, then the target directory is `.`
+	if (argc <= 1 || strlen(argv[1]) == 0) {
+		strcpy(target_dir, "."); 
+	// otherwise, copy the user's input verbatim into `target_dir`
+	} else {
+		strncpy(target_dir, argv[1], MAX_NAME_LEN - 1);
+		target_dir[MAX_NAME_LEN - 1] = '\0';
+	}
+
+	DIR *directory = opendir(target_dir);
+	// if we couldn't open the directory (usually if it doesn't exist), then exit with an error
+	if (directory == NULL) perror("opendir");
+
+	return directory;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline void getAllInfo(FileInfo *all_files, int *count, DIR *directory, const char *target_dir) {
+	struct dirent *entry;
+	struct stat info;
+	path_t path;
+
+	// while there are still files to read, and while we haven't reached the maximum file limit
+	while ((entry = readdir(directory)) != NULL && *count <= MAX_FILES_IN_DIR) {
+		if DO_IGNORE_FILE(entry) continue;
+
+		// initialise the struct so we can assign to it later
+		FileInfo file = {0};
+
+		// get the raw filename stored in `entry`
+		strcpy(file.name, entry->d_name);
+
+		// concatenate the target dir together with the filename to get the absolute path to the file
+		snprintf(path, MAX_PATH_LEN, "%s/%s", target_dir, file.name);
+
+		// run the `stat` syscall, and assign it to `info`
+		//  if there's an error (returns -1), the skip the file.
+		if (stat(path, &info) == -1) continue;
+
+		/* ——————————————————————————————————————————————————————————————————— */
+
+		// move all the stat info that we're copying over to `file`
+		if (do_suffix	) file.suffix	= getTypeSuffix(info.st_mode);
+		if (do_nlink	) file.nlink	= info.st_nlink;
+		if (do_dev_no	) file.dev_no	= info.st_dev;
+		if (do_inode	) file.inode	= info.st_ino;
+		if (do_flags	) file.flags	= info.st_flags;
+		if (do_mode		) file.mode		= info.st_mode;
+		if (do_size		) file.size		= info.st_size;
+		if (do_uid		) file.uid		= info.st_uid;
+		if (do_gid		) file.gid		= info.st_gid;
+
+		// parse the raw stat information into more human-readable formats.
+		if (do_flag_str	) parseFlags(	file.flag_str, info.st_flags);
+		if (do_size_str	) parseSize(	file.size_str, info.st_size, info.st_rdev);
+		if (do_mode_str	) getMode(		file.mode_str, info.st_mode);
+		if (do_usr_name	) getUser(		file.usr_name, info.st_uid);
+		if (do_grp_name	) getGroup(		file.grp_name, info.st_gid);
+		if (do_time_str	) parseTime(	file.time_str, info.st_mtimespec.tv_sec);
+		if (do_link_to	) getLink(		file.link_to , path);
+
+		/* ——————————————————————————————————————————————————————————————————— */
+
+		// add the FileInfo object to the end of the array
+		all_files[(*count)++] = file;
+	}
+
+	// the directory info isn't needed anymore, so it can be closed now
+	closedir(directory);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /*
 st_mode		st_nlink	st_size	st_uid	st_gid	st_flags	st_mtimespec.tv_sec		d_name	d_type
