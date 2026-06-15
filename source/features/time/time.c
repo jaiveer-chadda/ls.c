@@ -1,9 +1,9 @@
-/// @file time.h
+/// @file features/time/time.h
 
 #include <stdio.h>
 #include <string.h>
 
-#include "../model/stat-model.h"
+#include "../../model/stat-model.h"
 #include "time.h"
 
 #define DATE_FMT "%a %e %b %y"

@@ -1,3 +1,3 @@
-/// @file flags/flags.h
+/// @file features/flags/flags.h
 
 void parseFlags(flagstr flag_string, const flag_t raw_flags);

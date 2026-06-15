@@ -1,6 +1,6 @@
-/// @file ugid/ugid.h
+/// @file features/ugid/ugid.h
 
-#include "../model/stat-model.h"
+#include "../../model/stat-model.h"
 
 void  getUser(char *usr_str, uid_t uid);
 void getGroup(char *grp_str, gid_t gid);

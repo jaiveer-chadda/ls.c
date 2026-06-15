@@ -1,4 +1,4 @@
-/// @file time.h
+/// @file features/time/time.h
 
 #ifndef TIME_H_INITIALISED
 #define TIME_H_INITIALISED

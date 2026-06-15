@@ -7,8 +7,9 @@
 
 #include "info/info.h"
 
-#include "path/path.h"
-#include "time/time.h"
+#include "features/path/path.h"
+#include "features/time/time.h"
+
 #include "sorting/sort.h"
 #include "options/options.h"
 

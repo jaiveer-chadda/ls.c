@@ -2,11 +2,9 @@
 
 
 #include <string.h>
-#include "options.h"
-
-#ifndef __STDBOOL_H
 #include <stdbool.h>
-#endif
+
+#include "options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

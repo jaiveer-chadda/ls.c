@@ -1,11 +1,11 @@
-/// @file links/symlinks.c
+/// @file features/links/symlinks.c
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
-#include "../model/stat-model.h"
+#include "../../model/stat-model.h"
 #include "../mode/mode.h"
 
 #define ARROW " --> "

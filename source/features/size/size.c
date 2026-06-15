@@ -1,10 +1,10 @@
-/// @file size/size.c
+/// @file features/size/size.c
 
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
 
-#include "../model/stat-model.h"
+#include "../../model/stat-model.h"
 
 void parseSize(char *size_str, const size_t size, const dev_t rdev) {
 	const int maj = major(rdev), min = minor(rdev);

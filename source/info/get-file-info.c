@@ -5,12 +5,13 @@
 
 #include "info.h"
 
-#include "../ugid/ugid.h"
-#include "../size/size.h"
-#include "../time/time.h"
-#include "../mode/mode.h"
-#include "../flags/flags.h"
-#include "../links/symlink.h"
+#include "../features/ugid/ugid.h"
+#include "../features/size/size.h"
+#include "../features/time/time.h"
+#include "../features/mode/mode.h"
+#include "../features/flags/flags.h"
+#include "../features/links/symlink.h"
+
 #include "../options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

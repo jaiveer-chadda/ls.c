@@ -1,3 +1,3 @@
-/// @file path/path.h
+/// @file features/path/path.h
 
 int printAbsolutePath(const char path[MAX_PATH_LEN]);

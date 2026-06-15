@@ -1,4 +1,4 @@
-/// @file ugid/ugid.c
+/// @file features/ugid/ugid.c
 
 #include <string.h>
 #include <pwd.h>

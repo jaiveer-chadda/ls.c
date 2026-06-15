@@ -1,11 +1,11 @@
-/// @file path/path.c
+/// @file features/path/path.c
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
-#include "../model/stat-model.h"
+#include "../../model/stat-model.h"
 
 #define FAILURE(err) do { \
 		perror(err);	   \

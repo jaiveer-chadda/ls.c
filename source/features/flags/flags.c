@@ -1,10 +1,10 @@
-/// @file flags/flags.c
+/// @file features/flags/flags.c
 
 #include <stdio.h>
 #include <string.h>
 
-#include "../model/stat-model.h"
-#include "../options/options.h"
+#include "../../model/stat-model.h"
+#include "../../options/options.h"
 #include "flags.h"
 
 typedef char flagname[MAX_FLAG_LEN];

@@ -1,4 +1,4 @@
-/// @file mode.c
+/// @file features/mode/mode.c
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,7 +6,7 @@
 
 #include <sys/stat.h>
 
-#include "../model/stat-model.h"
+#include "../../model/stat-model.h"
 #include "mode.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
