@@ -6,7 +6,7 @@
 #include "info.h"
 #include "../options/options.h"
 
-#define INTERFIELD_PADDING "  "
+#define INTERFIELD_PADDING " "
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -83,10 +83,13 @@ void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(flags);	PRINT_FIELD(flag_str);
 		PRINT_FIELD(time);	PRINT_FIELD(time_str);
 
-		if (do_name)	printf(fmt_strs_long.name	, file.name);
-		if (do_suffix)	printf(fmt_strs_long.suffix	, file.suffix);
-		if (do_link_to)	printf(fmt_strs_long.link_to, file.link_to);
-		if (do_suffix)	printf(fmt_strs_long.suffix	, file.ln_suf);
+		if (do_name)	printf("%s", file.name);
+		if (do_suffix)	printf("%c", file.suffix);
+
+		if (do_link_to)	{
+			printf("%s", file.link_to);
+			if (do_suffix) printf("%c", file.ln_suf);
+		}
 
 		printf("\n");
 	}

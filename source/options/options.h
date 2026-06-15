@@ -8,16 +8,11 @@ void initFormatting(void);
 #include <stdbool.h>
 #include "../model/stat-model.h"
 
-extern const bool DO_SHORT_FLAGS;
-extern const bool DO_HEADER;
+extern const bool DO_SHORT_FLAGS, DO_TINY_FLAGS, DO_HEADER, SORT_DIRS_FIRST;
 
 /* ——————————————————————————————————————————————————————— */
 
 typedef struct {
-	size_t	name	;
-	size_t	suffix	;
-	size_t	link_to	;
-
 	size_t	nlink	;
 	size_t	dev_no	;	size_t	inode	;
 
@@ -36,10 +31,6 @@ extern Lengths field_lengths;
 typedef char fmt_spec[6];
 
 typedef struct {
-	fmt_spec name	;
-	fmt_spec suffix	;
-	fmt_spec link_to;
-
 	fmt_spec nlink	;
 	fmt_spec dev_no	;	fmt_spec inode	;
 
@@ -90,8 +81,6 @@ extern const bool
 /* ——————————————————————————————————————————————————————— */
 
 #define name_TITLE		"Name"
-#define suffix_TITLE	""
-#define link_to_TITLE	""
 
 #define nlink_TITLE		"Links"
 #define dev_no_TITLE	"Device No."

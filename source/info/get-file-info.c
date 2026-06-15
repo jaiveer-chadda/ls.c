@@ -51,7 +51,7 @@ void getAllFileInfo(
 		strcpy(file.name, entry->d_name);
 
 		// concatenate the target dir together with the filename to get the absolute path to the file
-		snprintf(path, MAX_PATH_LEN, "%s/%s", target_dir, file.name);
+		sprintf(path, "%s/%s", target_dir, file.name);
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
@@ -75,8 +75,8 @@ void getAllFileInfo(
 			// if neither of the stat calls worked, then we don't have any information - so skip this file
 			if (stat_did_fail && lstat_did_fail) continue;
 
-		} else {
-			if (stat_did_fail) continue;
+		} else if (stat_did_fail) {
+			continue;
 		}
 
 		/* ——————————————————————————————————————————————————————————————————— */
@@ -93,18 +93,24 @@ void getAllFileInfo(
 		if (do_gid		) file.gid		= info.st_gid;
 
 		// parse the raw stat information into more human-readable formats.
-		if (do_flag_str	) parseFlags(	file.flag_str, info.st_flags);
-		if (do_size_str	) parseSize(	file.size_str, info.st_size, info.st_rdev);
-		if (do_mode_str	) getMode(		file.mode_str, info.st_mode);
-		if (do_usr_name	) getUser(		file.usr_name, info.st_uid);
-		if (do_grp_name	) getGroup(		file.grp_name, info.st_gid);
-		if (do_time_str	) parseTime(	file.time_str, info.st_mtimespec.tv_sec);
+		if (do_flag_str	) parseFlags(file.flag_str, info.st_flags);
+		if (do_size_str	)  parseSize(file.size_str, info.st_size, info.st_rdev);
+		if (do_mode_str	)	 getMode(file.mode_str, info.st_mode);
+		if (do_usr_name	)	 getUser(file.usr_name, info.st_uid);
+		if (do_grp_name	)	getGroup(file.grp_name, info.st_gid);
+		if (do_time_str	)  parseTime(file.time_str, info.st_mtimespec.tv_sec);
 		if (do_link_to && IS_SYMLINK(info)) getLink(file.link_to, path);
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
 		// add the FileInfo object to the end of its respective array
-		if (IS_DIRECTORY(info) || (do_link_to && IS_SYMLINK(info) && file.ln_suf == '/')) {
+
+		if (
+			IS_DIRECTORY(info) || (	// add to the dirs array if it's a directory,
+				// or if its a symlink, and the file it points to is a directory
+				do_link_to && IS_SYMLINK(info) && file.ln_suf == '/'
+			)
+		) {
 			dirs[(*dir_count)++] = file;
 		} else {
 			files[(*file_count)++] = file;

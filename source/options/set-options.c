@@ -4,8 +4,10 @@
 
 #include "options.h"
 
-const bool DO_HEADER		= true;
+const bool DO_HEADER		= false;
 const bool DO_SHORT_FLAGS	= true;
+const bool DO_TINY_FLAGS	= false;
+const bool SORT_DIRS_FIRST	= true;
 
 const bool
 	do_name		= true,
@@ -43,10 +45,6 @@ void initFormatting(void) {
 	}
 
 	fmt_strs_short = (FmtStrs){
-		.name	= "%s",
-		.suffix	= "%c",
-		.link_to= "%s",
-
 		.nlink	= "%d"	,
 		.dev_no	= "%d"	, .inode	= "%llu",
 
@@ -59,10 +57,6 @@ void initFormatting(void) {
 	};
 
 	fmt_strs_long = (FmtStrs){
-		.name	= "%s",
-		.suffix	= "%c",
-		.link_to= "%s",
-
 		.nlink	= "%-*d"	,
 		.dev_no	= "%*d"		, .inode	= "%*llu",
 

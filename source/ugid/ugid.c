@@ -12,8 +12,8 @@ void getUser(char *usr_str, uid_t uid) {
 }
 
 void getGroup(char *grp_str, gid_t gid) {
-    struct group *grp = getgrgid(gid);
-    if (grp == NULL) { strcpy(grp_str, "-"); return; }
+	struct group *grp = getgrgid(gid);
+	if (grp == NULL) { strcpy(grp_str, "-"); return; }
 
 	strcpy(grp_str, grp->gr_name);
 }
