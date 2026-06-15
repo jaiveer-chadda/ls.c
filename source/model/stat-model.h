@@ -16,7 +16,7 @@
 #define MAX_NAME_LEN MAXNAMLEN
 
 /// The maximum length a path can be on Darwin (MacOS/some BSD) machines.
-#define MAX_PATH_LEN __DARWIN_MAXPATHLEN
+#define MAX_PATH_LEN 255 // __DARWIN_MAXPATHLEN
 
 /// The maximum number of possible user and super user flags on MacOS.
 #define MAX_FLAG_NUM 14
@@ -63,6 +63,7 @@ typedef char flagstr[MAX_FLAG_LEN * MAX_FLAG_NUM];
 typedef struct {
 	name_t	name	;
 	type_t	suffix	;
+	path_t	link_to ;
 
 	nlink_t	nlink	;
 	dev_t	dev_no	;	ino_t	inode	;

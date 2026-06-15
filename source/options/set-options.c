@@ -10,6 +10,7 @@ const bool DO_SHORT_FLAGS	= true;
 const bool
 	do_name		= true,
 	do_suffix	= true,
+	do_link_to	= true,
 
 	do_nlink	= true,
 	do_dev_no	= false,
@@ -44,6 +45,7 @@ void initLengths(void) {
 	fmt_strs_short = (FmtStrs){
 		.name	= "%s",
 		.suffix	= "%c",
+		.link_to= "%s",
 
 		.nlink	= "%d"	,
 		.dev_no	= "%d"	, .inode	= "%llu",
@@ -59,6 +61,7 @@ void initLengths(void) {
 	fmt_strs_long = (FmtStrs){
 		.name	= "%s",
 		.suffix	= "%c",
+		.link_to= "%s",
 
 		.nlink	= "%-*d"	,
 		.dev_no	= "%*d"		, .inode	= "%*llu",

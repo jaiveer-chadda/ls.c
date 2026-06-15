@@ -16,6 +16,7 @@ extern const bool DO_HEADER;
 typedef struct {
 	size_t	name	;
 	size_t	suffix	;
+	size_t	link_to	;
 
 	size_t	nlink	;
 	size_t	dev_no	;	size_t	inode	;
@@ -37,6 +38,7 @@ typedef char fmt_spec[6];
 typedef struct {
 	fmt_spec name	;
 	fmt_spec suffix	;
+	fmt_spec link_to;
 
 	fmt_spec nlink	;
 	fmt_spec dev_no	;	fmt_spec inode	;
@@ -56,6 +58,7 @@ extern FmtStrs fmt_strs_short, fmt_strs_long;
 extern const bool
 	do_name,
 	do_suffix,
+	do_link_to,
 
 	do_nlink,
 	do_dev_no,
@@ -71,6 +74,7 @@ extern const bool
 extern const bool
 	NAME_MIN_LEN,
 	SUFFIX_MIN_LEN,
+	LINK_TO_MIN_LEN,
 
 	NLINK_MIN_LEN,
 	DEV_NO_MIN_LEN,
@@ -87,6 +91,7 @@ extern const bool
 
 #define name_TITLE		"Name"
 #define suffix_TITLE	""
+#define link_to_TITLE	""
 
 #define nlink_TITLE		"Links"
 #define dev_no_TITLE	"Device No."

@@ -16,6 +16,7 @@
 #include "mode/mode.h"
 #include "ugid/ugid.h"
 #include "size/size.h"
+#include "links/symlink.h"
 #include "options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -77,7 +78,7 @@ int main(const int argc, const char *argv[]) {
 
 	size_t len;
 	char elem_as_str[64];
-	
+
 	// run through all the files' fields and calculate their maximum lengths
 	for (int i = 0; i < count; i++) {
 		FileInfo file = all_files[i];
@@ -125,6 +126,8 @@ int main(const int argc, const char *argv[]) {
 
 		if (do_name)	printf(fmt_strs_long.name	, file.name);
 		if (do_suffix)	printf(fmt_strs_long.suffix	, file.suffix);
+
+		if (do_link_to)	printf(fmt_strs_long.link_to, file.link_to);
 		printf("\n");
 	}
 
@@ -172,7 +175,7 @@ static inline void getAllInfo(FileInfo *all_files, int *count, DIR *directory, c
 
 		// run the `stat` syscall, and assign it to `info`
 		//  if there's an error (returns -1), the skip the file.
-		if (stat(path, &info) == -1) continue;
+		if (lstat(path, &info) == -1) continue;
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
@@ -194,7 +197,10 @@ static inline void getAllInfo(FileInfo *all_files, int *count, DIR *directory, c
 		if (do_usr_name	) getUser(		file.usr_name, info.st_uid);
 		if (do_grp_name	) getGroup(		file.grp_name, info.st_gid);
 		if (do_time_str	) parseTime(	file.time_str, info.st_mtimespec.tv_sec);
-		if (do_link_to	) getLink(		file.link_to , path);
+
+		if (do_link_to && ((info.st_mode & S_IFMT) == S_IFLNK)) {
+			getLink(file.link_to, path);
+		}
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
