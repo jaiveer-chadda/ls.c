@@ -8,7 +8,7 @@ void initFormatting(void);
 #include <stdbool.h>
 #include "../model/stat-model.h"
 
-extern const bool DO_SHORT_FLAGS, DO_TINY_FLAGS, DO_HEADER, SORT_DIRS_FIRST;
+extern const bool DO_COLOUR, DO_SHORT_FLAGS, DO_TINY_FLAGS, DO_HEADER, SORT_DIRS_FIRST;
 
 /* ——————————————————————————————————————————————————————— */
 

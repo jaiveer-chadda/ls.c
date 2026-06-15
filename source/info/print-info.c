@@ -5,18 +5,30 @@
 
 #include "info.h"
 #include "../options/options.h"
+#include "../graphics/graphics.h"
 
 #define INTERFIELD_PADDING " "
 
+#define HEADER_HL		UNDER	BOLD
+#define HEADER_HL_OFF	NOUNDER	NOBOLD
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define SHOULD_ALIGN_RIGHT(field) \
+	(strcmp(field##_TITLE, "Size") == 0 || strcmp(field##_TITLE, time_str_TITLE) == 0)
+
 #define PRINT_HEADER(field) \
 	if (do_##field)	{ \
-		if (strcmp(field##_TITLE, "Size") == 0 || strcmp(field##_TITLE, time_str_TITLE) == 0) \
-			printf("%*s"  INTERFIELD_PADDING, (int)field_lengths.field, field##_TITLE); \
-		else \
-			printf("%-*s" INTERFIELD_PADDING, (int)field_lengths.field, field##_TITLE); \
+		printf( \
+			SHOULD_ALIGN_RIGHT(field) ? "%*s" : "%-*s", \
+			(int)field_lengths.field + GRAPHICS_LEN, \
+			HEADER_HL field##_TITLE HEADER_HL_OFF INTERFIELD_PADDING \
+		); \
 	}
 
 void printHeader(void) {
+	const int GRAPHICS_LEN = (int)strlen(HEADER_HL HEADER_HL_OFF INTERFIELD_PADDING);
+
 	PRINT_HEADER(inode);	PRINT_HEADER(dev_no);
 	PRINT_HEADER(mode);		PRINT_HEADER(mode_str);
 	PRINT_HEADER(nlink);
@@ -26,7 +38,7 @@ void printHeader(void) {
 	PRINT_HEADER(flags);	PRINT_HEADER(flag_str);
 	PRINT_HEADER(time);		PRINT_HEADER(time_str);
 
-	if (do_name) printf("%s", name_TITLE);
+	if (do_name) printf("%s", HEADER_HL name_TITLE HEADER_HL_OFF);
 	printf("\n");
 }
 

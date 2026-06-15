@@ -11,7 +11,8 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 const bool
-	DO_HEADER		= false,
+	DO_COLOUR		= true,
+	DO_HEADER		= true,
 	DO_SHORT_FLAGS	= true,
 	DO_TINY_FLAGS	= false,
 	SORT_DIRS_FIRST	= true;
