@@ -183,6 +183,12 @@
   - i.e. the ones they use in Finder to colour/tag folders
   - I don't know how I'm gonna get these, but if I had to guess, it would be some AppleScript program
 
+#### VSCode Integration
+
+- [ ] If there isn't a colour defined for a directory, then look into that dir's `.vscode` directory,
+  into the `settings.json` file, and see if there's a field called `peacock.color`.
+  - [ ] if so, then use that colour to highlight the directory
+
 #### Reimplement `/usr/bin/file`
 - [ ] Find a way to use the same process as `/usr/bin/file` to find out what *specific* type of file smth is
   - i.e. running: `file ~zdd/.zshrc`
