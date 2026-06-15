@@ -97,7 +97,7 @@ void getAllFileInfo(
 		// parse the raw stat information into more human-readable formats.
 		if (do_flag_str	) parseFlags(file.flag_str, info.st_flags);
 		if (do_size_str	)  parseSize(file.size_str, info.st_size, info.st_rdev);
-		if (do_mode_str	)	 getMode(file.mode_str, info.st_mode);
+		if (do_mode_str	)	 getMode(&file, info.st_mode);
 		if (do_usr_name	)	 getUser(file.usr_name, info.st_uid);
 		if (do_grp_name	)	getGroup(file.grp_name, info.st_gid);
 		if (do_time_str	)  parseTime(file.time_str, info.st_mtimespec.tv_sec);

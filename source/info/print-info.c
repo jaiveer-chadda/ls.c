@@ -51,8 +51,12 @@ void printHeader(void) {
 		printf(fmt_str, (int)field_lengths.field, file.field); \
 	}
 
+#define COLOUR_NAME(output, name, colour) \
+	sprintf(output, "\33[%d%sm%s" RESET, colour, colour > 40 ? ";1;30" : "", name)
+
 void printFields(const FileInfo *all_files, const int *count) {
 	char fmt_str[8];
+	name_t coloured_name;
 
 	for (int i = 0; i < *count; i++) {
 		FileInfo file = all_files[i];
@@ -66,7 +70,9 @@ void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(flags);	PRINT_FIELD(flag_str);
 		PRINT_FIELD(time);	PRINT_FIELD(time_str);
 
-		if (do_name)	printf(" %s", file.name);
+		COLOUR_NAME(coloured_name, file.name, file.file_col);
+
+		printf(" %s", coloured_name);
 		if (do_suffix)	printf("%c", file.suffix);
 
 		if (do_link_to)	{
@@ -76,5 +82,4 @@ void printFields(const FileInfo *all_files, const int *count) {
 
 		printf("\n");
 	}
-
 }

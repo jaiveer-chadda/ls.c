@@ -62,6 +62,27 @@ typedef char flagstr[MAX_FLAG_LEN * MAX_FLAG_NUM];
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
+typedef enum {
+	NORMAL,			// \e[37m	-v-
+	DIRECT	 = 36,	// \e[36m	-v-
+	SYMLINK	 = 35,	// \e[35m	-v-
+	EXEC	 = 31,	// \e[31m	-x-
+	PIPE	 = 33,	// \e[33m	-v-
+	SOCKET	 = 32,	// \e[32m	-v-
+	MOUNT	 = 34,	// \e[34m	-x-
+	CHR_DEV	 = 43,	// \e[43m	-v-
+	BLK_DEV	 = 46,	// \e[46m	-v-
+	OW_DIR	 = 42,	// \e[42m	-x-
+	SUID	 = 41,	// \e[41m	-x-
+	SGID	 = 45,	// \e[45m	-x-
+	STICKY	 = 44,	// \e[44m	-x-
+	DATALESS = 47,	// \e[47m	-x-
+	WHITEOUT = 107,	// \e[107m	-v-
+} FileColour;
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
+// const char *HOME = getenv("HOME");
+
 typedef struct {
 	name_t	name	;
 	type_t	suffix	;
@@ -81,6 +102,7 @@ typedef struct {
 
 	time_t	time	;	timestr time_str;
 
+	FileColour file_col;
 } FileInfo;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
