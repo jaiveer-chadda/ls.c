@@ -7,6 +7,7 @@
 
 #include "path/path.h"
 #include "time/time.h"
+#include "sorting/sort.h"
 #include "options/options.h"
 
 int main(const int argc, const char *argv[]) {
@@ -28,6 +29,10 @@ int main(const int argc, const char *argv[]) {
 
 	// Run the `stat` and `lstat` syscalls, and start parsing the files' information
 	getAllFileInfo(all_files, &count, directory, target_dir);
+
+	/* ——————————————————————————————————————————————————————————————————————— */
+
+	sortFiles(all_files, &count);
 
 	/* ——————————————————————————————————————————————————————————————————————— */
 
