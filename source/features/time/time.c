@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "../../model/stat-model.h"
+
 #include "time.h"
 
 #define DATE_FMT "%a %e %b %y"

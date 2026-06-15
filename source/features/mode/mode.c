@@ -4,9 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <sys/stat.h>
-
 #include "../../model/stat-model.h"
+
 #include "mode.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

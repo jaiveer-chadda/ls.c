@@ -6,12 +6,11 @@
 #include <string.h>
 
 #include "info/info.h"
+#include "sorting/sort.h"
+#include "options/options.h"
 
 #include "features/path/path.h"
 #include "features/time/time.h"
-
-#include "sorting/sort.h"
-#include "options/options.h"
 
 int main(const int argc, const char *argv[]) {
 
