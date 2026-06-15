@@ -65,28 +65,13 @@ static inline DIR* getDirectory(char *target_dir, const int argc, const char *ar
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-int main(const int argc, const char *argv[]) {
-	char target_dir[MAX_NAME_LEN];
-
-	DIR *directory = getDirectory(target_dir, argc, argv);
-	if (directory == NULL) return EXIT_FAILURE;
-
-	initTime();
-
-	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-	FileInfo all_files[MAX_FILES_IN_DIR];
-
+void getAllInfo(FileInfo *all_files, int *count, DIR *directory, const char *target_dir) {
 	struct dirent *entry;
 	struct stat info;
 	path_t path;
 
-	int count = 0;
-
-	/* ——————————————————————————————————————————————————————————————————————— */
-
 	// while there are still files to read, and while we haven't reached the maximum file limit
-	while ((entry = readdir(directory)) != NULL && count <= MAX_FILES_IN_DIR) {
+	while ((entry = readdir(directory)) != NULL && *count <= MAX_FILES_IN_DIR) {
 		if DO_IGNORE_FILE(entry) continue;
 
 		// initialise the struct so we can assign to it later
@@ -126,11 +111,29 @@ int main(const int argc, const char *argv[]) {
 		/* ——————————————————————————————————————————————————————————————————— */
 
 		// add the FileInfo object to the end of the array
-		all_files[count++] = file;
+		all_files[(*count)++] = file;
 	}
 
 	// the directory info isn't needed anymore, so it can be closed now
 	closedir(directory);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+int main(const int argc, const char *argv[]) {
+	char target_dir[MAX_NAME_LEN];
+
+	DIR *directory = getDirectory(target_dir, argc, argv);
+	if (directory == NULL) return EXIT_FAILURE;
+
+	initTime();
+
+	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	FileInfo all_files[MAX_FILES_IN_DIR];
+	int count = 0;
+
+	getAllInfo(all_files, &count, directory, target_dir);
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -142,8 +145,8 @@ int main(const int argc, const char *argv[]) {
 	initLengths();
 
 	size_t len;
-	char fmt_str[8], elem_as_str[64];
-
+	char elem_as_str[64];
+	
 	// run through all the files' fields and calculate their maximum lengths
 	for (int i = 0; i < count; i++) {
 		FileInfo file = all_files[i];
@@ -174,6 +177,8 @@ int main(const int argc, const char *argv[]) {
 	}
 
 	/* ——————————————————————————————————————————————————————————————————————— */
+
+	char fmt_str[8];
 
 	for (int i = 0; i < count; i++) {
 		FileInfo file = all_files[i];

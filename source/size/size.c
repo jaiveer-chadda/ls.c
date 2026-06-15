@@ -1,6 +1,7 @@
 /// @file size/size.c
 
 #include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 
 #include "../model/stat-model.h"
@@ -10,6 +11,11 @@ void parseSize(char *size_str, const size_t size, const dev_t rdev) {
 
 	if (maj + min != 0) {
 		sprintf(size_str, "%d,%d", maj, min);
+		return;
+	}
+
+	if (size == 0) {
+		strcpy(size_str, "-");
 		return;
 	}
 
