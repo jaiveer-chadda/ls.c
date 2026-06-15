@@ -1,9 +1,24 @@
 /// @file options/set-options.c
 
-#include <string.h>
 
+#include <string.h>
 #include "options.h"
 
+#ifndef __STDBOOL_H
+#	include <stdbool.h>
+#endif
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define DO_ALL false
+
+#if DO_ALL == true
+const bool
+	DO_HEADER = true, DO_SHORT_FLAGS = false, DO_TINY_FLAGS = false, SORT_DIRS_FIRST = true,
+	do_name   = true, do_suffix   = true, do_link_to = true, do_nlink    = true, do_dev_no = true, do_inode    = true,
+	do_flags  = true, do_flag_str = true, do_mode    = true, do_mode_str = true, do_size   = true, do_size_str = true,
+	do_uid    = true, do_usr_name = true, do_gid     = true, do_grp_name = true, do_time   = true, do_time_str = true;
+#else
 const bool DO_HEADER		= false;
 const bool DO_SHORT_FLAGS	= true;
 const bool DO_TINY_FLAGS	= false;
@@ -24,6 +39,9 @@ const bool
 	do_uid		= false,	do_usr_name	= true,
 	do_gid		= false,	do_grp_name	= true,
 	do_time		= false,	do_time_str	= true;
+#endif
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 Lengths field_lengths;
 FmtStrs fmt_strs_short, fmt_strs_long;
@@ -35,7 +53,7 @@ void initFormatting(void) {
 			.nlink	= strlen(nlink_TITLE),
 			.dev_no	= strlen(dev_no_TITLE),	.inode	  =	strlen(inode_TITLE),
 
-			.mode	= 6,					.mode_str =	11,
+			.mode	= OCT_MODE_LEN,			.mode_str =	MAX_MODE_LEN,
 			.flags	= strlen(flags_TITLE),	.flag_str =	strlen(flag_str_TITLE),
 			.size	= strlen(size_TITLE),	.size_str =	strlen(size_str_TITLE),
 			.uid	= strlen(uid_TITLE),	.usr_name =	strlen(usr_name_TITLE),
@@ -49,7 +67,7 @@ void initFormatting(void) {
 		.dev_no	= "%d"	, .inode	= "%llu",
 
 		.flags	= "%u"	, .flag_str	= "%s",
-		.mode	= "%u"	, .mode_str	= "%s",
+		.mode	= "%o"	, .mode_str	= "%s",
 		.size	= "%lld", .size_str	= "%s",
 		.uid	= "%d"	, .usr_name	= "%s",
 		.gid	= "%d"	, .grp_name	= "%s",
@@ -61,7 +79,7 @@ void initFormatting(void) {
 		.dev_no	= "%*d"		, .inode	= "%*llu",
 
 		.flags	= "%-*u"	, .flag_str	= "%-*s",
-		.mode	= "%-*u"	, .mode_str	= "%-*s",
+		.mode	= "%0*o"	, .mode_str	= "%-*s",
 		.size	= "%*lld"	, .size_str	= "%*s",
 		.uid	= "%-*d"	, .usr_name	= "%-*s",
 		.gid	= "%-*d"	, .grp_name	= "%-*s",

@@ -28,6 +28,7 @@ void getFieldLengths(const FileInfo *all_files, const int *count) {
 		PARSE_LEN(inode);	PARSE_LEN(dev_no);
 		PARSE_LEN(flags);	PARSE_LEN(flag_str);
 		// mode & mode string have constant lengths
+		field_lengths.mode = OCT_MODE_LEN; field_lengths.mode_str = MAX_MODE_LEN;
 		PARSE_LEN(size);	PARSE_LEN(size_str);
 		PARSE_LEN(uid);		PARSE_LEN(usr_name);
 		PARSE_LEN(gid);		PARSE_LEN(grp_name);

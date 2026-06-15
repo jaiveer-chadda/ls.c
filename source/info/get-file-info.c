@@ -91,6 +91,7 @@ void getAllFileInfo(
 		if (do_size		) file.size		= info.st_size;
 		if (do_uid		) file.uid		= info.st_uid;
 		if (do_gid		) file.gid		= info.st_gid;
+		if (do_time		) file.time		= info.st_mtimespec.tv_sec;
 
 		// parse the raw stat information into more human-readable formats.
 		if (do_flag_str	) parseFlags(file.flag_str, info.st_flags);

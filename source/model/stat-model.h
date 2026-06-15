@@ -12,6 +12,8 @@
 
 #define FIELD_COUNT 17
 
+#define OCT_MODE_LEN 6
+
 /// The maximum length a filename can be on Darwin (MacOS/some BSD) machines.
 #define MAX_NAME_LEN MAXNAMLEN
 
@@ -24,7 +26,7 @@
 #define MAX_FLAG_LEN 11
 
 /// The length of the human-readable mode string +1 (e.g. `drwxr-xr-x`).
-#define MAX_MODE_LEN 12
+#define MAX_MODE_LEN 11
 
 /// An arbitrary upper bound on how many file's we're going to accept.
 #define MAX_FILES_IN_DIR 1 << 12

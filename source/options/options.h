@@ -83,7 +83,7 @@ extern const bool
 #define name_TITLE		"Name"
 
 #define nlink_TITLE		"Links"
-#define dev_no_TITLE	"Device No."
+#define dev_no_TITLE	"Dev No"
 #define inode_TITLE		"Inode"
 
 #define flags_TITLE		"Flags"
