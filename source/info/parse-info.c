@@ -84,7 +84,7 @@ void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(flags);	PRINT_FIELD(flag_str);
 		PRINT_FIELD(time);	PRINT_FIELD(time_str);
 
-		if (do_name)	printf("%s", file.name);
+		if (do_name)	printf(" %s", file.name);
 		if (do_suffix)	printf("%c", file.suffix);
 
 		if (do_link_to)	{
