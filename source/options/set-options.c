@@ -5,24 +5,16 @@
 #include "options.h"
 
 #ifndef __STDBOOL_H
-#	include <stdbool.h>
+#include <stdbool.h>
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_ALL false
-
-#if DO_ALL == true
 const bool
-	DO_HEADER = true, DO_SHORT_FLAGS = false, DO_TINY_FLAGS = false, SORT_DIRS_FIRST = true,
-	do_name   = true, do_suffix   = true, do_link_to = true, do_nlink    = true, do_dev_no = true, do_inode    = true,
-	do_flags  = true, do_flag_str = true, do_mode    = true, do_mode_str = true, do_size   = true, do_size_str = true,
-	do_uid    = true, do_usr_name = true, do_gid     = true, do_grp_name = true, do_time   = true, do_time_str = true;
-#else
-const bool DO_HEADER		= false;
-const bool DO_SHORT_FLAGS	= true;
-const bool DO_TINY_FLAGS	= false;
-const bool SORT_DIRS_FIRST	= true;
+	DO_HEADER		= false,
+	DO_SHORT_FLAGS	= true,
+	DO_TINY_FLAGS	= false,
+	SORT_DIRS_FIRST	= true;
 
 const bool
 	do_name		= true,
@@ -39,7 +31,6 @@ const bool
 	do_uid		= false,	do_usr_name	= true,
 	do_gid		= false,	do_grp_name	= true,
 	do_time		= false,	do_time_str	= true;
-#endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
