@@ -86,6 +86,10 @@
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
+#define PUNCT	CSI HL_PUNCT END
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
+
 // use the macro `X`, on the expectation that it'll be defined later
 #define FILE_COLOUR_TABLE \
 	X(FC_REGULAR,		HL_REG			) /* \e[37m */ \
@@ -131,17 +135,32 @@
 	X(TC_THIS_YR, CSI_FG RGB( 35, 106, 204)		 END ) \
 	X(TC_OTHER	, CSI_FG RGB(  4,  65, 145)		 END )
 
+#define SIZE_COLOUR_TABLE \
+	X(SC_Bb, CSI "92"		END ) /* \e[102m */ \
+	X(SC_Bk, CSI "93"		END ) /* \e[103m */ \
+	X(SC_Bm, CSI "38;5;216"	END ) /* #FFAB81 */ \
+	X(SC_Bg, CSI "91"		END ) /* \e[101m */ \
+	X(SC_Bt, CSI "38;5;168"	END ) /* #E85587 */ \
+	\
+	X(SC_Ub, CSI "32"		END ) /* \e[42m  */ \
+	X(SC_Uk, CSI "33"		END ) /* \e[43m  */ \
+	X(SC_Um, CSI "38;5;208"	END ) /* #FF8400 */ \
+	X(SC_Ug, CSI "31"		END ) /* \e[41m  */ \
+	X(SC_Ut, CSI "38;5;125"	END ) /* #BD0060 */
+
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
 #define X(name, esc) name,	// only unpack the names
 typedef enum { FILE_COLOUR_TABLE FILE_COLOUR_COUNT } FileColour;
 typedef enum { PERM_COLOUR_TABLE PERM_COLOUR_COUNT } PermColour;
 typedef enum { TIME_COLOUR_TABLE TIME_COLOUR_COUNT } TimeColour;
+typedef enum { SIZE_COLOUR_TABLE SIZE_COLOUR_COUNT } SizeColour;
 #undef X
 
 extern const char *const file_colour_esc[FILE_COLOUR_COUNT];
 extern const char *const perm_colour_esc[PERM_COLOUR_COUNT];
 extern const char *const time_colour_esc[TIME_COLOUR_COUNT];
+extern const char *const size_colour_esc[SIZE_COLOUR_COUNT];
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -149,6 +168,7 @@ extern const char *const time_colour_esc[TIME_COLOUR_COUNT];
 
 void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
 void printNLink(const nlink_t *nlink, const mode_t *mode, bool *hardln_hl);
+void printSize(const sizestr size_str, const char unit);
 void printModeStr(const modestr str);
 
 #endif /* !GRAPHICS_INITIALIASED */

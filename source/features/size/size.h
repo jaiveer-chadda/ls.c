@@ -2,4 +2,4 @@
 
 #include "../../model/stat-model.h"
 
-void parseSize(char *size_str, const size_t st_size, const dev_t st_rdev);
+void parseSize(char *size_str, char *size_unit, const size_t st_size, const dev_t st_rdev);

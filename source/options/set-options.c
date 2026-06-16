@@ -7,6 +7,7 @@
 
 const bool
 	DO_COLOUR		= true,
+	DO_BYTES		= false,
 	DO_HEADER		= false,
 	DO_SHORT_FLAGS	= true,
 	DO_TINY_FLAGS	= false,

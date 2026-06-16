@@ -43,15 +43,17 @@ inline void printHeader(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_DIM(name, flags) \
-	(DO_DIM_HIDDEN && (name[0] == '.' || flags & UF_HIDDEN))
-
 #define PRINT_FIELD(field) \
 	if (do_##field) { \
 		strcpy(fmt_str, fmt_strs_long.field); \
 		strcat(fmt_str, INTERFIELD_PADDING); \
 		printf(fmt_str, (int)field_lengths.field, file.field); \
 	}
+
+/* ——————————————————————————————————————————————————————————————————————————— */
+
+#define DO_DIM(name, flags) \
+	(DO_DIM_HIDDEN && (name[0] == '.' || flags & UF_HIDDEN))
 
 #define PRINT_NAME(name, colour, do_hln_hl, flags) \
 	putchar(' '); \
@@ -75,6 +77,12 @@ inline void printHeader(void) {
 	if (DO_COLOUR) printNLink(&(file.nlink), &(file.mode), &(file.do_hardlink_hl)); \
 	else PRINT_FIELD(nlink)
 
+#define PRINT_SIZE_STR() \
+	if (DO_COLOUR) printSize(file.size_str, file.size_unit); \
+	else PRINT_FIELD(nlink)
+
+/* ——————————————————————————————————————————————————————————————————————————— */
+
 inline void printFields(const FileInfo *all_files, const int *count) {
 	char fmt_str[16];
 
@@ -85,7 +93,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(mode);	PRINT_MODE_STR();
 
 		PRINT_NLINK();
-		PRINT_FIELD(size);	PRINT_FIELD(size_str);
+		PRINT_FIELD(size);	PRINT_SIZE_STR();
 		PRINT_FIELD(uid);	PRINT_FIELD(usr_name);
 		PRINT_FIELD(gid);	PRINT_FIELD(grp_name);
 		PRINT_FIELD(flags);	PRINT_FIELD(flag_str);
@@ -103,3 +111,5 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		printf("\n");
 	}
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

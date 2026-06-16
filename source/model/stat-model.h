@@ -18,7 +18,7 @@ typedef struct {
 
 	flag_t	flags	;	flagstr flag_str;
 	mode_t	mode	;	modestr mode_str;
-	off_t	size	;	sizestr size_str;
+	off_t	size	;	sizestr size_str;	char size_unit;
 
 	uid_t	uid		;	ugidstr usr_name;
 	gid_t	gid		;	ugidstr grp_name;
