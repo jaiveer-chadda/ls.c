@@ -84,18 +84,18 @@ inline void getAllFileInfo(
 		/* ——————————————————————————————————————————————————————————————————— */
 
 		// move all the stat info that we're copying over to `file`
-		if (do_suffix	) file.suffix	= getTypeSuffix(info.st_mode);
-		if (do_nlink	) file.nlink	= info.st_nlink;
-		if (do_dev_no	) file.dev_no	= info.st_dev;
-		if (do_inode	) file.inode	= info.st_ino;
-		if (do_flags	) file.flags	= info.st_flags;
-		if (do_mode		) file.mode		= info.st_mode;
-		if (do_size		) file.size		= info.st_size;
-		if (do_uid		) file.uid		= info.st_uid;
-		if (do_gid		) file.gid		= info.st_gid;
-		if (do_time		) file.time		= info.st_mtimespec.tv_sec;
+		file.nlink	= info.st_nlink;
+		file.dev_no	= info.st_dev;
+		file.inode	= info.st_ino;
+		file.flags	= info.st_flags;
+		file.mode	= info.st_mode;
+		file.size	= info.st_size;
+		file.uid	= info.st_uid;
+		file.gid	= info.st_gid;
+		file.time	= info.st_mtimespec.tv_sec;
 
 		// parse the raw stat information into more human-readable formats.
+		if (do_suffix	) file.suffix = getTypeSuffix(info.st_mode);
 		if (do_flag_str	) parseFlags(file.flag_str, info.st_flags);
 		if (do_size_str	)  parseSize(file.size_str, info.st_size, info.st_rdev);
 		if (do_mode_str	)	 getMode(file.mode_str, info.st_mode);

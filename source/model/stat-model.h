@@ -116,6 +116,12 @@ extern const char *const perm_colour_esc[PERM_COLOUR_COUNT];
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
+#define NLINK_COL_DIR		"\33[96m"
+#define NLINK_COL_REG_1		"\33[36m"
+#define NLINK_COL_REG_MORE	"\33[1;30;105m"
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
+
 typedef struct {
 	name_t	name	;
 	type_t	suffix	;

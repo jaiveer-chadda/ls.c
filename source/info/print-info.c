@@ -6,6 +6,7 @@
 #include "info.h"
 #include "../options/options.h"
 #include "../graphics/graphics.h"
+#include "../features/mode/mode.h"
 
 #define INTERFIELD_PADDING " "
 
@@ -56,6 +57,22 @@ inline void printHeader(void) {
 		printf("%s%s" RESET, file_colour_esc[colour], name); \
 	} else printf("%s", name)
 
+void printNLink(const nlink_t *nlink, const mode_t *mode) {
+	if (!do_nlink) return;
+
+	char output[16];
+	// using "output" to calculate the strlen of nlink here
+	// then reusing it to hold the colour down below
+	sprintf(output, "%d", *nlink);
+	short int link_len = (short int)strlen(output);
+
+	if ((*mode & TYPE_MASK) == S_IFDIR)	strcpy(output, NLINK_COL_DIR);		// directory
+	else if (*nlink == 1)				strcpy(output, NLINK_COL_REG_1);	// file w 1 link
+	else								strcpy(output, NLINK_COL_REG_MORE);	// file w >1 link
+
+	printf("%*s%s%d%s", (int)field_lengths.nlink - link_len, "", output, *nlink, RESET INTERFIELD_PADDING);
+}
+
 inline void printFields(const FileInfo *all_files, const int *count) {
 	char fmt_str[8];
 
@@ -68,7 +85,9 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		if (DO_COLOUR) printModeStr(file.mode_str);
 		else PRINT_FIELD(mode_str);
 
-		PRINT_FIELD(nlink);
+		if (DO_COLOUR) printNLink(&(file.nlink), &(file.mode));
+		else PRINT_FIELD(nlink);
+
 		PRINT_FIELD(size);	PRINT_FIELD(size_str);
 		PRINT_FIELD(uid);	PRINT_FIELD(usr_name);
 		PRINT_FIELD(gid);	PRINT_FIELD(grp_name);
