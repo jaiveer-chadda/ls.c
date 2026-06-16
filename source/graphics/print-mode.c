@@ -52,5 +52,5 @@ inline void printModeStr(const modestr str) {
 		output[strlen(output) + 1] = '\0';
 	}
 
-	printf("%s%s  ", output, RESET);
+	printf("%s%s" INTERFIELD_PADDING, output, RESET);
 }

@@ -8,8 +8,6 @@
 #include "../graphics/graphics.h"
 #include "../features/mode/mode.h"
 
-#define INTERFIELD_PADDING " "
-
 #define HEADER_HL		UNDER	BOLD
 #define HEADER_HL_OFF	NOUNDER	NOBOLD
 
@@ -53,25 +51,19 @@ inline void printHeader(void) {
 	}
 
 #define PRINT_NAME(name, colour) \
+	putchar(' '); \
 	if (DO_COLOUR && colour != REGULAR) { \
 		printf("%s%s" RESET, file_colour_esc[colour], name); \
 	} else printf("%s", name)
 
-void printNLink(const nlink_t *nlink, const mode_t *mode) {
-	if (!do_nlink) return;
+#define PRINT_MODE_STR() \
+	if (DO_COLOUR) printModeStr(file.mode_str); \
+	else PRINT_FIELD(mode_str)
 
-	char output[16];
-	// using "output" to calculate the strlen of nlink here
-	// then reusing it to hold the colour down below
-	sprintf(output, "%d", *nlink);
-	short int link_len = (short int)strlen(output);
+#define PRINT_NLINK() \
+	if (DO_COLOUR) printNLink(&(file.nlink), &(file.mode)); \
+	else PRINT_FIELD(nlink)
 
-	if ((*mode & TYPE_MASK) == S_IFDIR)	strcpy(output, NLINK_COL_DIR);		// directory
-	else if (*nlink == 1)				strcpy(output, NLINK_COL_REG_1);	// file w 1 link
-	else								strcpy(output, NLINK_COL_REG_MORE);	// file w >1 link
-
-	printf("%*s%s%d%s", (int)field_lengths.nlink - link_len, "", output, *nlink, RESET INTERFIELD_PADDING);
-}
 
 inline void printFields(const FileInfo *all_files, const int *count) {
 	char fmt_str[8];
@@ -80,21 +72,15 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		FileInfo file = all_files[i];
 
 		PRINT_FIELD(inode);	PRINT_FIELD(dev_no);
-		PRINT_FIELD(mode);
+		PRINT_FIELD(mode);	PRINT_MODE_STR();
 
-		if (DO_COLOUR) printModeStr(file.mode_str);
-		else PRINT_FIELD(mode_str);
-
-		if (DO_COLOUR) printNLink(&(file.nlink), &(file.mode));
-		else PRINT_FIELD(nlink);
-
+		PRINT_NLINK();
 		PRINT_FIELD(size);	PRINT_FIELD(size_str);
 		PRINT_FIELD(uid);	PRINT_FIELD(usr_name);
 		PRINT_FIELD(gid);	PRINT_FIELD(grp_name);
 		PRINT_FIELD(flags);	PRINT_FIELD(flag_str);
 		PRINT_FIELD(time);	PRINT_FIELD(time_str);
 
-		putchar(' ');
 		PRINT_NAME(file.name, file.file_col);
 
 		if (do_suffix)	printf("%c", file.suffix);

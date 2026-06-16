@@ -1,7 +1,12 @@
 /// @file graphics/graphics.h
 
 void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
+void printNLink(const nlink_t *nlink, const mode_t *mode);
 void printModeStr(const modestr str);
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define INTERFIELD_PADDING " "
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
