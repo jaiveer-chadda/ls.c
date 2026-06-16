@@ -15,8 +15,6 @@
 #define GRP_MASK S_IRWXG	/// A mask to get the group octal permissions.
 #define OTH_MASK S_IRWXO	/// A mask to get the other octal permissions.
 
-#define EXEC_MASK 0000111	/// A mask to tell whether a file is an executable or not.
-
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
 #define SET_EXT_BIT(str, chr) /* exec == lowercase, non-exec == uppercase */ \

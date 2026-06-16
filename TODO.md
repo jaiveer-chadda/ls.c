@@ -14,27 +14,26 @@
 - [x] Sort files by name
 - [x] Sort entires with directories first
 - [ ] Implement a way to sort them by any category
-  - Probably with the `-s <field>` flag
+  - Probably with the `-s | --sort-by <field>` flag
 
 #### Colour Filenames
-- [ ] Colour filenames based on their types / permissions / other fields
-  - [ ] Initially, read from `$LSCOLORS` ond/or `$LS_COLORS`
-  - [ ] Set the defaults as:
-    - [ ] normal file         ` .--------- ` `\e[37m`
-    - [ ] directory           ` d--------- ` `\e[36m`
-    - [ ] symlink             ` l--------- ` `\e[35m`
-    - [ ] executable          ` .--x--x--x ` `\e[31m`
-    - [ ] named pipe          ` p--------- ` `\e[33m`
-    - [ ] socket              ` s--------- ` `\e[32m`
-    - [ ] mount point                        `\e[34m`
-    - [ ] char device         ` c--------- ` `\e[43m`
-    - [ ] block device        ` b--------- ` `\e[46m`
-    - [ ] other-writable dir  ` .-------w- ` `\e[42m`
-    - [ ] setuid bit set      ` .--s------ ` `\e[41m`
-    - [ ] setgid bit set      ` .-----s--- ` `\e[45m`
-    - [ ] sticky bit set      ` .--------t ` `\e[44m`
-    - [ ] dataless file/dir                  `\e[47m`
-    - [ ] whiteout            ` w--------- ` `\e[07m`
+- [x] Colour filenames based on their types / permissions / other fields
+  - [ ] Read colours from `$LSCOLORS` ond/or `$LS_COLORS`
+  - [x] Set the defaults as:
+    - [x] normal file         ` .--------- ` `\e[37m`
+    - [x] directory           ` d--------- ` `\e[36m`
+    - [x] symlink             ` l--------- ` `\e[35m`
+    - [x] executable          ` .--x--x--x ` `\e[31m`
+    - [x] named pipe          ` p--------- ` `\e[33m`
+    - [x] socket              ` s--------- ` `\e[32m`
+    - [x] char device         ` c--------- ` `\e[43m`
+    - [x] block device        ` b--------- ` `\e[46m`
+    - [x] other-writable dir  ` .-------w- ` `\e[42m`
+    - [x] setuid bit set      ` .--s------ ` `\e[41m`
+    - [x] setgid bit set      ` .-----s--- ` `\e[45m`
+    - [x] sticky bit set      ` .--------t ` `\e[44m`
+    - [x] dataless file/dir                  `\e[47m`
+    - [x] whiteout            ` w--------- ` `\e[07m`
 - [ ] Colour filenames based on their extensions
   - [ ] either use the info from `$EZA_COLORS`,
   - [ ] or make my own variable to store colours in
