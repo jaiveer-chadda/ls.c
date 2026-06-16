@@ -24,5 +24,5 @@ void printNLink(const nlink_t *nlink, const mode_t *mode, bool *hardln_hl) {
 		*hardln_hl = true;
 	}
 
-	printf("%*s%s%d%s", (int)field_lengths.nlink - link_len, "", output, *nlink, RESET INTERFIELD_PADDING);
+	printf("%*s%s%d%s", (int)field_lengths.nlink - link_len, "", output, *nlink, RESET FIELD_PAD);
 }

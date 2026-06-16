@@ -5,7 +5,6 @@
 
 #include "../model/stat-model.h"
 #include "../options/options.h"
-#include "graphics.h"
 
 inline void printModeStr(const modestr str) {
 	if (!do_mode_str) return;
@@ -52,5 +51,5 @@ inline void printModeStr(const modestr str) {
 		output[strlen(output) + 1] = '\0';
 	}
 
-	printf("%s%s" INTERFIELD_PADDING, output, RESET);
+	printf("%s%s" FIELD_PAD, output, RESET);
 }

@@ -21,12 +21,12 @@
 		printf( \
 			SHOULD_ALIGN_RIGHT(field) ? "%*s" : "%-*s", \
 			(int)field_lengths.field + GRAPHICS_LEN, \
-			HEADER_HL field##_TITLE HEADER_HL_OFF INTERFIELD_PADDING \
+			HEADER_HL field##_TITLE HEADER_HL_OFF FIELD_PAD \
 		); \
 	}
 
 inline void printHeader(void) {
-	const int GRAPHICS_LEN = (int)strlen(HEADER_HL HEADER_HL_OFF INTERFIELD_PADDING);
+	const int GRAPHICS_LEN = (int)strlen(HEADER_HL HEADER_HL_OFF FIELD_PAD);
 
 	PRINT_HEADER(inode);	PRINT_HEADER(dev_no);
 	PRINT_HEADER(mode);		PRINT_HEADER(mode_str);
@@ -46,7 +46,7 @@ inline void printHeader(void) {
 #define PRINT_FIELD(field) \
 	if (do_##field) { \
 		strcpy(fmt_str, fmt_strs_long.field); \
-		strcat(fmt_str, INTERFIELD_PADDING); \
+		strcat(fmt_str, FIELD_PAD); \
 		printf(fmt_str, (int)field_lengths.field, file.field); \
 	}
 
@@ -65,7 +65,7 @@ inline void printHeader(void) {
 
 #define PRINT_TIME_STR() \
 	if (DO_COLOUR) { \
-		sprintf(fmt_str, "%%s%s" RESET INTERFIELD_PADDING, fmt_strs_long.time_str); \
+		sprintf(fmt_str, "%%s%s" RESET FIELD_PAD, fmt_strs_long.time_str); \
 		printf(fmt_str, time_colour_esc[file.time_col], (int)field_lengths.time_str, file.time_str); \
 	} else PRINT_FIELD(time_str)
 
