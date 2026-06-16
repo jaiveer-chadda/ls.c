@@ -101,7 +101,7 @@ inline void getAllFileInfo(
 		if (do_mode_str	)	 getMode(file.mode_str, info.st_mode);
 		if (do_usr_name	)	 getUser(file.usr_name, info.st_uid);
 		if (do_grp_name	)	getGroup(file.grp_name, info.st_gid);
-		if (do_time_str	)  parseTime(file.time_str, info.st_mtimespec.tv_sec);
+		if (do_time_str	)  parseTime(file.time_str, info.st_mtimespec.tv_sec, &(file.time_col));
 		if (do_link_to && IS_SYMLINK(info)) getLink(file.link_to, path);
 
 		if (DO_COLOUR) setFileColour(&(file.file_col), info.st_mode, info.st_flags);

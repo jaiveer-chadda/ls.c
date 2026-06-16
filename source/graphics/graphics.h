@@ -27,6 +27,11 @@
 #define CSI "\033["
 #define END "m"
 
+#define CSI_FG	CSI "3"
+#define CSI_BG	CSI "4"
+
+#define RGB(r,g,b) "8;2;" #r ";" #g ";" #b
+
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
 #define RESET		CSI END
@@ -116,15 +121,27 @@
 	X(PC_STICKY_X	, CSI ";" HL_STICKY_X	END	) /* \e[44m */ \
 	X(PC_STICKY_N	, CSI ";" HL_STICKY_N	END	) /*\e[104m */
 
+#define TIME_COLOUR_TABLE \
+	X(TC_NOW	, CSI_FG RGB(203, 210, 242) END	) \
+	X(TC_1MIN	, CSI_FG RGB(193, 199, 244) END	) \
+	X(TC_2MIN	, CSI_FG RGB(183, 188, 245) END	) \
+	X(TC_3MIN	, CSI_FG RGB(172, 178, 247) END	) \
+	X(TC_TODAY	, CSI_FG RGB(160, 167, 248) END	) \
+	X(TC_YESTD	, CSI_FG RGB(148, 156, 249) END	) \
+	X(TC_2DAYS	, CSI_FG RGB(135, 147, 250) END	) \
+	X(TC_OTHER	, CSI_FG RGB(  0,  98, 255) END	)
+
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
 #define X(name, esc) name,	// only unpack the names
 typedef enum { FILE_COLOUR_TABLE FILE_COLOUR_COUNT } FileColour;
 typedef enum { PERM_COLOUR_TABLE PERM_COLOUR_COUNT } PermColour;
+typedef enum { TIME_COLOUR_TABLE TIME_COLOUR_COUNT } TimeColour;
 #undef X
 
 extern const char *const file_colour_esc[FILE_COLOUR_COUNT];
 extern const char *const perm_colour_esc[PERM_COLOUR_COUNT];
+extern const char *const time_colour_esc[TIME_COLOUR_COUNT];
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

@@ -26,7 +26,10 @@ typedef struct {
 	time_t	time	;	timestr time_str;
 
 	FileColour file_col;
+	TimeColour time_col;
+
 	bool do_hardlink_hl;
+
 } FileInfo;
 
 #endif /* !STAT_MODEL_INITIALISED */

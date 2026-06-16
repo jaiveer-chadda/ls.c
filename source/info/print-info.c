@@ -43,15 +43,15 @@ inline void printHeader(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define DO_DIM(name, flags) \
+	(DO_DIM_HIDDEN && (name[0] == '.' || flags & UF_HIDDEN))
+
 #define PRINT_FIELD(field) \
 	if (do_##field) { \
 		strcpy(fmt_str, fmt_strs_long.field); \
 		strcat(fmt_str, INTERFIELD_PADDING); \
 		printf(fmt_str, (int)field_lengths.field, file.field); \
 	}
-
-#define DO_DIM(name, flags) \
-	(DO_DIM_HIDDEN && (name[0] == '.' || flags & UF_HIDDEN))
 
 #define PRINT_NAME(name, colour, do_hln_hl, flags) \
 	putchar(' '); \
@@ -60,6 +60,12 @@ inline void printHeader(void) {
 		if (DO_DIM(name, flags)) printf("%s", DIM); \
 		printf("%s%s" RESET, file_colour_esc[colour], name); \
 	} else printf("%s", name)
+
+#define PRINT_TIME_STR() \
+	if (DO_COLOUR) { \
+		sprintf(fmt_str, "%%s%s" RESET INTERFIELD_PADDING, fmt_strs_long.time_str); \
+		printf(fmt_str, time_colour_esc[file.time_col], (int)field_lengths.time_str, file.time_str); \
+	} else PRINT_FIELD(time_str)
 
 #define PRINT_MODE_STR() \
 	if (DO_COLOUR) printModeStr(file.mode_str); \
@@ -70,7 +76,7 @@ inline void printHeader(void) {
 	else PRINT_FIELD(nlink)
 
 inline void printFields(const FileInfo *all_files, const int *count) {
-	char fmt_str[8];
+	char fmt_str[16];
 
 	for (int i = 0; i < *count; i++) {
 		FileInfo file = all_files[i];
@@ -83,7 +89,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(uid);	PRINT_FIELD(usr_name);
 		PRINT_FIELD(gid);	PRINT_FIELD(grp_name);
 		PRINT_FIELD(flags);	PRINT_FIELD(flag_str);
-		PRINT_FIELD(time);	PRINT_FIELD(time_str);
+		PRINT_FIELD(time);	PRINT_TIME_STR();
 
 		PRINT_NAME(file.name, file.file_col, file.do_hardlink_hl, file.flags);
 
