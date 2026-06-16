@@ -61,8 +61,8 @@
     - [x] non-exec  ` .--------T ` `\e[104m`
 
 ##### `nlink`
-- [ ] there should be a default colour `\e[36m`, and a colour for regular files with 2+ hardlinks `\e[105m`
-- [ ] files with 2+ hardlinks should also have other visual flourishes on their filenames  `\e[21m \e[105m`
+- [x] there should be a default colour `\e[36m`, and a colour for regular files with 2+ hardlinks `\e[105m`
+- [x] files with 2+ hardlinks should also have other visual flourishes on their filenames  `\e[21m \e[105m`
 
 ##### `size`
 - [ ] a gradient of colours for different sized files
@@ -120,7 +120,7 @@
 - [x] Colourise? and underline headers
 
 #### Hidden Files
-- [ ] Dim the filenames of any files starting with a `.`
+- [x] Dim the filenames of any files starting with a `.`
 
 ### Fields
 
@@ -133,7 +133,13 @@
 ### Features
 
 #### Alphanum Sorting
-- [ ] Make sorting work in a way where numbers are sorted logically, and case is insensitive otherwise
+- [x] Make sorting work in a way where numbers are sorted logically, and case is insensitive otherwise
+
+#### Escape control chars
+- [ ] Replace any control characters with their C/Hex equivalents
+- [ ] Probably also highlight them in some colour
+  - [ ] But that being said, I'll have to make sure that their escaped colours
+    don't clash with any other colours being used
 
 #### Options
 - [ ] Implement an options/flags system to turn various features on/off
