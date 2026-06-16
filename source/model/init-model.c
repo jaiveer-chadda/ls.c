@@ -2,9 +2,8 @@
 
 #include "stat-model.h"
 
-const char *const file_colour_esc[] = {
-	// only unpack the escapes
-	#define X(name, esc) esc,
-	FILE_COLOUR_TABLE
-	#undef X
-};
+// only unpack escapes
+#define X(name, esc) esc,
+const char *const file_colour_esc[] = { FILE_COLOUR_TABLE };
+const char *const perm_colour_esc[] = { PERM_COLOUR_TABLE };
+#undef X

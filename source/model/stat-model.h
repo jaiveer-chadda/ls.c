@@ -64,33 +64,57 @@ typedef char flagstr[MAX_FLAG_LEN * MAX_FLAG_NUM];
 
 // use the macro `X`, on the expectation that it'll be defined later
 #define FILE_COLOUR_TABLE \
-	X(NORMAL,	""			) /* \e[37m */ \
-	X(DIRECT,	"36;1"		) /* \e[36m */ \
-	X(SYMLINK,	"35"		) /* \e[35m */ \
-	X(EXEC,		"31"		) /* \e[31m */ \
-	X(PIPE,		"33"		) /* \e[33m */ \
-	X(SOCKET,	"32"		) /* \e[32m */ \
-	X(MOUNT,	"34"		) /* \e[34m */ \
-	X(CHR_DEV,	"43;1;30"	) /* \e[43m */ \
-	X(BLK_DEV,	"46;1;30"	) /* \e[46m */ \
-	X(OW_DIR,	"42;1;30"	) /* \e[42m */ \
-	X(SUID,		"41;1;30"	) /* \e[41m */ \
-	X(SGID,		"45;1;30"	) /* \e[45m */ \
-	X(STICKY,	"44;1;30"	) /* \e[44m */ \
-	X(DATALESS,	"47;30"		) /* \e[47m */ \
-	X(WHITEOUT,"107;1;30"	) /*\e[107m */
+	X(REGULAR,	""				) /* \e[37m */ \
+	X(DIRECT,	"\33[1;36m"		) /* \e[36m */ \
+	X(SYMLINK,	"\33[35m"		) /* \e[35m */ \
+	X(EXEC,		"\33[31m"		) /* \e[31m */ \
+	X(PIPE,		"\33[33m"		) /* \e[33m */ \
+	X(SOCKET,	"\33[32m"		) /* \e[32m */ \
+	X(MOUNT,	"\33[34m"		) /* \e[34m */ \
+	X(CHR_DEV,	"\33[1;30;43m"	) /* \e[43m */ \
+	X(BLK_DEV,	"\33[1;30;46m"	) /* \e[46m */ \
+	X(OW_DIR,	"\33[1;30;42m"	) /* \e[42m */ \
+	X(SUID,		"\33[1;30;41m"	) /* \e[41m */ \
+	X(SGID,		"\33[1;30;45m"	) /* \e[45m */ \
+	X(STICKY,	"\33[1;30;44m"	) /* \e[44m */ \
+	X(DATALESS,	"\33[1;30;47m"	) /* \e[47m */ \
+	X(WHITEOUT, "\33[1;30;107m"	) /*\e[107m */
 
 typedef enum {
 	#define X(name, esc) name,	// only unpack the names
 	FILE_COLOUR_TABLE
 	#undef X
-	COLOUR_COUNT	// a final element so we can figure out how many enum entires there were
+	FILE_COLOUR_COUNT	// a final element so we can figure out how many enum entires there were
 } FileColour;
 
-extern const char *const file_colour_esc[COLOUR_COUNT];
+extern const char *const file_colour_esc[FILE_COLOUR_COUNT];
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
-// const char *HOME = getenv("HOME");
+
+#define PERM_COLOUR_TABLE \
+	X(NONE		, "\33[;90m"		) \
+	X(READ		, "\33[;92m"		) \
+	X(W_USRGRP	, "\33[;93m"		) \
+	X(W_OTHER	, "\33[;1;30;42m"	) \
+	X(X_REG		, "\33[;1;31m"		) \
+	X(X_NREG	, "\33[;91m"		) \
+	X(SUID_X	, "\33[;1;30;41m"	) \
+	X(SUID_N	, "\33[;1;30;101m"	) \
+	X(SGID_X	, "\33[;1;30;45m"	) \
+	X(SGID_N	, "\33[;1;30;105m"	) \
+	X(STICKY_X	, "\33[;1;30;44m"	) \
+	X(STICKY_N	, "\33[;1;30;104m"	)
+
+typedef enum {
+	#define X(name, esc) name,
+	PERM_COLOUR_TABLE
+	#undef X
+	PERM_COLOUR_COUNT
+} PermColour;
+
+extern const char *const perm_colour_esc[PERM_COLOUR_COUNT];
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
 
 typedef struct {
 	name_t	name	;

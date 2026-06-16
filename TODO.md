@@ -41,24 +41,24 @@
 #### Colour Other Fields
 
 ##### `mode_str`
-- [ ] colour the first bit the same colour as its filetype
-- [ ] colour each other bit based on whether its:
-  - [ ] read        ` .r--r--r-- ` `\e[92m`
-  - [ ] write
-    - [ ] user/grp  ` .-w---w--- ` `\e[93m`
-    - [ ] other     ` .-------w- ` `\e[42m`
-  - [ ] exec
-    - [ ] file      ` .--x--x--x ` `\e[31m`
-    - [ ] dir       ` d--x--x--x ` `\e[91m`
-  - [ ] setuid
-    - [ ] exec      ` .--s------ ` `\e[41m`
-    - [ ] non-exec  ` .--S------ ` `\e[45m`
-  - [ ] setgid
-    - [ ] exec      ` .-----s--- ` `\e[101m`
-    - [ ] non-exec  ` .-----S--- ` `\e[105m`
-  - [ ] sticky
-    - [ ] exec      ` .--------t ` `\e[44m`
-    - [ ] non-exec  ` .--------T ` `\e[43m`
+- [x] colour the first bit the same colour as its filetype
+- [x] colour each other bit based on whether its:
+  - [x] read        ` .r--r--r-- ` `\e[92m`
+  - [x] write
+    - [x] user/grp  ` .-w---w--- ` `\e[93m`
+    - [x] other     ` .-------w- ` `\e[42m`
+  - [x] exec
+    - [x] file      ` .--x--x--x ` `\e[31m`
+    - [x] dir       ` d--x--x--x ` `\e[91m`
+  - [x] setuid
+    - [x] exec      ` .--s------ ` `\e[41m`
+    - [x] non-exec  ` .--S------ ` `\e[101m`
+  - [x] setgid
+    - [x] exec      ` .-----s--- ` `\e[45m`
+    - [x] non-exec  ` .-----S--- ` `\e[105m`
+  - [x] sticky
+    - [x] exec      ` .--------t ` `\e[44m`
+    - [x] non-exec  ` .--------T ` `\e[104m`
 
 ##### `nlink`
 - [ ] there should be a default colour `\e[36m`, and a colour for regular files with 2+ hardlinks `\e[105m`
@@ -117,7 +117,7 @@
   - [ ] [No time]
 
 #### Headers
-- [ ] Colourise? and underline headers
+- [x] Colourise? and underline headers
 
 #### Hidden Files
 - [ ] Dim the filenames of any files starting with a `.`

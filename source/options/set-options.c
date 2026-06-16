@@ -1,16 +1,13 @@
 /// @file options/set-options.c
 
-
 #include <string.h>
-#include <stdbool.h>
-
 #include "options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 const bool
 	DO_COLOUR		= true,
-	DO_HEADER		= true,
+	DO_HEADER		= false,
 	DO_SHORT_FLAGS	= true,
 	DO_TINY_FLAGS	= false,
 	SORT_DIRS_FIRST	= true;
