@@ -1,7 +1,5 @@
 /// @file graphics/graphics.h
 
-// #include "../options/options.h"
-
 void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -16,3 +14,20 @@ void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
 
 #define	BOLD	"\33[1m"
 #define NOBOLD	"\33[22m"
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define REGULAR_CHAR	'.'
+#define DIR_CHAR		'd'
+#define SYMLINK_CHAR	'l'
+#define PIPE_CHAR		'|'
+#define SOCKET_CHAR		'='
+#define CHRDEV_CHAR		'c'
+#define BLKDEV_CHAR		'b'
+#define WHITEOUT_CHAR	'%'
+
+#define DIR_SUFFIX		'/'
+#define SYMLINK_SUFFIX	'@'
+#define EXEC_SUFFIX		'*'
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

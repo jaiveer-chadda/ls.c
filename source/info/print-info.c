@@ -52,14 +52,14 @@ static inline void printModeStr(const modestr str) {
 	FileColour type = -1;
 
 	switch (str[0]) {
-		case '|': type = PIPE		; break;
-		case 'c': type = CHR_DEV	; break;
-		case 'd': type = DIRECT		; break;
-		case 'b': type = BLK_DEV	; break;
-		case '.': type = REGULAR	; break;
-		case 'l': type = SYMLINK	; break;
-		case '=': type = SOCKET		; break;
-		case '%': type = WHITEOUT	; break;
+		case PIPE_CHAR:		type = PIPE		; break;
+		case CHRDEV_CHAR:	type = CHR_DEV	; break;
+		case DIR_CHAR:		type = DIRECT	; break;
+		case BLKDEV_CHAR:	type = BLK_DEV	; break;
+		case REGULAR_CHAR:	type = REGULAR	; break;
+		case SYMLINK_CHAR:	type = SYMLINK	; break;
+		case SOCKET_CHAR:	type = SOCKET	; break;
+		case WHITEOUT_CHAR:	type = WHITEOUT	; break;
 	}
 
 	strcat(output, file_colour_esc[type]);

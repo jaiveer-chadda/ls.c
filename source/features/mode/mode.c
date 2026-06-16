@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "../../model/stat-model.h"
+#include "../../graphics/graphics.h"
 
 #include "mode.h"
 
@@ -38,14 +39,14 @@ static inline void getPermStr(const mode_t oct_digit, char *perm_str) {
 /// @brief Gets the character representing the filetype specified by an octal type integer.
 static inline char getModeType(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
-		case S_IFIFO:	return '|'; // named pipe	('|' or 'p')
-		case S_IFCHR:	return 'c'; // char device
-		case S_IFDIR:	return 'd';	// directory
-		case S_IFBLK:	return 'b'; // block device
-		case S_IFREG:	return '.'; // regular file	('.' or '-')
-		case S_IFLNK:	return 'l'; // symbolic link
-		case S_IFSOCK:	return '='; // socket		('=' or 's')
-		case S_IFWHT:	return '%'; // whiteout		('%' or 'w')
+		case S_IFIFO:	return PIPE_CHAR	; // named pipe		('|' or 'p')
+		case S_IFCHR:	return CHRDEV_CHAR	; // char device
+		case S_IFDIR:	return DIR_CHAR		; // directory
+		case S_IFBLK:	return BLKDEV_CHAR	; // block device
+		case S_IFREG:	return REGULAR_CHAR	; // regular file	('.' or '-')
+		case S_IFLNK:	return SYMLINK_CHAR	; // symbolic link
+		case S_IFSOCK:	return SOCKET_CHAR	; // socket			('=' or 's')
+		case S_IFWHT:	return WHITEOUT_CHAR; // whiteout		('%' or 'w')
 		default:		return ' '; // unknown
 	}
 }
@@ -54,14 +55,14 @@ static inline char getModeType(const mode_t mode) {
 
 char getTypeSuffix(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
-		case S_IFLNK:	return '@';		// symlink
-		case S_IFDIR:	return '/';		// directory
-		case S_IFIFO:	return '|';		// named pipe
-		case S_IFSOCK:	return '=';		// socket
-		case S_IFWHT:	return '%';		// whiteout
+		case S_IFLNK:	return SYMLINK_SUFFIX;	// symlink
+		case S_IFDIR:	return DIR_SUFFIX;		// directory
+		case S_IFIFO:	return PIPE_CHAR;		// named pipe
+		case S_IFSOCK:	return SOCKET_CHAR;		// socket
+		case S_IFWHT:	return WHITEOUT_CHAR;	// whiteout
 	}
-	if (mode & EXEC_MASK) return '*';	// executable
-	return '\0';						// other/unknown
+	if (mode & EXEC_MASK) return EXEC_SUFFIX;	// executable
+	return '\0';								// other/unknown
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
