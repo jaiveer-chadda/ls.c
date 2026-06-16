@@ -94,11 +94,11 @@
 	X(FC_BLK_DEV,	CSI	HL_BLKDEV	END	) /* \e[46m */ \
 	X(FC_OW_DIR,	CSI	HL_OW_DIR	END	) /* \e[42m */ \
 	X(FC_SUID_X,	CSI	HL_SUID_X	END	) /* \e[41m */ \
-	X(FC_SUID_N,	CSI	HL_SUID_X	END	) /*\e[101m */ \
+	X(FC_SUID_N,	CSI	HL_SUID_N	END	) /*\e[101m */ \
 	X(FC_SGID_X,	CSI	HL_SGID_X	END	) /* \e[45m */ \
-	X(FC_SGID_N,	CSI	HL_SGID_X	END	) /*\e[105m */ \
+	X(FC_SGID_N,	CSI	HL_SGID_N	END	) /*\e[105m */ \
 	X(FC_STICKY_X,	CSI	HL_STICKY_X	END	) /* \e[44m */ \
-	X(FC_STICKY_N,	CSI	HL_STICKY_X	END	) /*\e[104m */ \
+	X(FC_STICKY_N,	CSI	HL_STICKY_N	END	) /*\e[104m */ \
 	X(FC_DATALESS,	CSI	HL_DATALESS	END	) /* \e[47m */ \
 	X(FC_WHITEOUT,	CSI	HL_WHITEOUT	END	) /*\e[107m */
 
