@@ -15,10 +15,10 @@
 #define HOUR 60 * MIN
 #define DAY  24 * HOUR
 
-static time_t current_time;
-static time_t diff_midn;	/// Number of seconds since midnight.
+time_t current_time;
+time_t diff_midn;	/// Number of seconds since midnight.
 
-void initTime(void) {
+inline void initTime(void) {
 	current_time = time(NULL);
 	const struct tm *cur_time_tm = localtime(&current_time);
 
@@ -28,7 +28,7 @@ void initTime(void) {
 		(cur_time_tm->tm_sec);
 }
 
-void parseTime(char time_str[MAX_TIME_LEN], const time_t file_time) {
+inline void parseTime(char time_str[MAX_TIME_LEN], const time_t file_time) {
 	/// How many seconds ago the file was modified.
 	const time_t t_diff = current_time - file_time;
 	const struct tm *pTime = localtime(&file_time);

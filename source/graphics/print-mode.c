@@ -7,7 +7,7 @@
 #include "../options/options.h"
 #include "graphics.h"
 
-void printModeStr(const modestr str) {
+inline void printModeStr(const modestr str) {
 	if (!do_mode_str) return;
 
 	char output[128] = "";

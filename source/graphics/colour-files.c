@@ -5,7 +5,7 @@
 
 #include "graphics.h"
 
-void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags) {
+inline void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags) {
 	if (flags & SF_DATALESS) { *colour = DATALESS; return; }
 	if (mode & EXEC_MASK) *colour = EXEC;
 

@@ -30,7 +30,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void getAllFileInfo(
+inline void getAllFileInfo(
 	FileInfo *dirs, FileInfo *files,
 	int *dir_count, int *file_count,
 	DIR *directory, const char *target_dir

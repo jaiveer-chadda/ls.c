@@ -26,7 +26,7 @@
 		); \
 	}
 
-void printHeader(void) {
+inline void printHeader(void) {
 	const int GRAPHICS_LEN = (int)strlen(HEADER_HL HEADER_HL_OFF INTERFIELD_PADDING);
 
 	PRINT_HEADER(inode);	PRINT_HEADER(dev_no);
@@ -56,7 +56,7 @@ void printHeader(void) {
 		printf("%s%s" RESET, file_colour_esc[colour], name); \
 	} else printf("%s", name)
 
-void printFields(const FileInfo *all_files, const int *count) {
+inline void printFields(const FileInfo *all_files, const int *count) {
 	char fmt_str[8];
 
 	for (int i = 0; i < *count; i++) {
