@@ -2,6 +2,10 @@
 
 // #include "../options/options.h"
 
+void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #define RESET	"\33[m"
 
 #define NO_FG	"\33[39m"

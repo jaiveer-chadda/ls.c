@@ -38,17 +38,17 @@ static inline void getPermStr(const mode_t oct_digit, char *perm_str) {
 }
 
 /// @brief Gets the character representing the filetype specified by an octal type integer.
-static inline char getModeType(FileColour *colour, const mode_t mode) {
+static inline char getModeType(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
-		case S_IFIFO:	*colour = PIPE		; return '|'; // named pipe		('|' or 'p')
-		case S_IFCHR:	*colour = CHR_DEV	; return 'c'; // char device
-		case S_IFDIR:	*colour = DIRECT	; return 'd'; // directory
-		case S_IFBLK:	*colour = BLK_DEV	; return 'b'; // block device
-		case S_IFREG:	*colour = NORMAL	; return '.'; // regular file	('.' or '-')
-		case S_IFLNK:	*colour = SYMLINK	; return 'l'; // symbolic link
-		case S_IFSOCK:	*colour = SOCKET	; return '='; // socket			('=' or 's')
-		case S_IFWHT:	*colour = WHITEOUT	; return '%'; // whiteout		('%' or 'w')
-		default:		*colour = NORMAL	; return ' '; // unknown
+		case S_IFIFO:	return '|'; // named pipe	('|' or 'p')
+		case S_IFCHR:	return 'c'; // char device
+		case S_IFDIR:	return 'd';	// directory
+		case S_IFBLK:	return 'b'; // block device
+		case S_IFREG:	return '.'; // regular file	('.' or '-')
+		case S_IFLNK:	return 'l'; // symbolic link
+		case S_IFSOCK:	return '='; // socket		('=' or 's')
+		case S_IFWHT:	return '%'; // whiteout		('%' or 'w')
+		default:		return ' '; // unknown
 	}
 }
 
@@ -68,7 +68,7 @@ char getTypeSuffix(const mode_t mode) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void getMode(FileInfo *file, const mode_t oct_mode) {
+void getMode(modestr mode_str, const mode_t oct_mode) {
 	const mode_t // Note: 3 = log2(8)
 		ext_oct = (oct_mode & EXT_MASK) >> (3 * 3), // `d--s--s--t` == `7000`
 		usr_oct = (oct_mode & USR_MASK) >> (3 * 2), // `drwx------` == `0700`
@@ -81,10 +81,7 @@ void getMode(FileInfo *file, const mode_t oct_mode) {
 	PARSE_PERM(02, 's', grp);
 	PARSE_PERM(01, 't', oth);
 
-	snprintf(
-		file->mode_str, MAX_MODE_LEN,
-		"%c%s%s%s", getModeType(&(file->file_col), oct_mode), usr_str, grp_str, oth_str
-	);
+	snprintf(mode_str, MAX_MODE_LEN, "%c%s%s%s", getModeType(oct_mode), usr_str, grp_str, oth_str);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
