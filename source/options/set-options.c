@@ -10,6 +10,7 @@ const bool
 	DO_HEADER		= false,
 	DO_SHORT_FLAGS	= true,
 	DO_TINY_FLAGS	= false,
+	DO_DIM_HIDDEN	= true,
 	SORT_DIRS_FIRST	= true;
 
 const bool

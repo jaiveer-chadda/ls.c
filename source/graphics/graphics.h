@@ -19,6 +19,7 @@ void printModeStr(const modestr str);
 #define NOUNDER	"\33[24m"
 
 #define	BOLD	"\33[1m"
+#define	DIM		"\33[2m"
 #define NOBOLD	"\33[22m"
 
 #define HARDLN_UNDERLINE "\33[1;21;58;5;13m"
