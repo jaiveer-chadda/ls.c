@@ -132,6 +132,9 @@
 
 ### Features
 
+#### Alphanum Sorting
+- [ ] Make sorting work in a way where numbers are sorted logically, and case is insensitive otherwise
+
 #### Options
 - [ ] Implement an options/flags system to turn various features on/off
 
@@ -144,6 +147,9 @@
 #### Width
 - [ ] Find a way to adjust which fields show/dont show
   - [ ] Make it based on the `$COLUMNS` env var
+
+#### Line Separators
+- [ ] Make it so that files with more than 3? 5? `[-–—─]`s in a row get a special format, and act as separators
 
 ### Fields
 
