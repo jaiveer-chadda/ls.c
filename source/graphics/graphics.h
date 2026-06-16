@@ -1,7 +1,7 @@
 /// @file graphics/graphics.h
 
 void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
-void printNLink(const nlink_t *nlink, const mode_t *mode);
+void printNLink(const nlink_t *nlink, const mode_t *mode, bool *hardln_hl);
 void printModeStr(const modestr str);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -20,6 +20,8 @@ void printModeStr(const modestr str);
 
 #define	BOLD	"\33[1m"
 #define NOBOLD	"\33[22m"
+
+#define HARDLN_UNDERLINE "\33[1;21;58;5;13m"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

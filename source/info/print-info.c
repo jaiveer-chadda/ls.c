@@ -50,9 +50,10 @@ inline void printHeader(void) {
 		printf(fmt_str, (int)field_lengths.field, file.field); \
 	}
 
-#define PRINT_NAME(name, colour) \
+#define PRINT_NAME(name, colour, do_hln_hl) \
 	putchar(' '); \
-	if (DO_COLOUR && colour != REGULAR) { \
+	if (DO_COLOUR) { \
+		if (do_hln_hl) printf("%s", HARDLN_UNDERLINE); \
 		printf("%s%s" RESET, file_colour_esc[colour], name); \
 	} else printf("%s", name)
 
@@ -61,9 +62,8 @@ inline void printHeader(void) {
 	else PRINT_FIELD(mode_str)
 
 #define PRINT_NLINK() \
-	if (DO_COLOUR) printNLink(&(file.nlink), &(file.mode)); \
+	if (DO_COLOUR) printNLink(&(file.nlink), &(file.mode), &(file.do_hardlink_hl)); \
 	else PRINT_FIELD(nlink)
-
 
 inline void printFields(const FileInfo *all_files, const int *count) {
 	char fmt_str[8];
@@ -81,7 +81,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(flags);	PRINT_FIELD(flag_str);
 		PRINT_FIELD(time);	PRINT_FIELD(time_str);
 
-		PRINT_NAME(file.name, file.file_col);
+		PRINT_NAME(file.name, file.file_col, file.do_hardlink_hl);
 
 		if (do_suffix)	printf("%c", file.suffix);
 

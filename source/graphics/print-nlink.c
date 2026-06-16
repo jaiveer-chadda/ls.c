@@ -8,7 +8,7 @@
 
 #include "graphics.h"
 
-void printNLink(const nlink_t *nlink, const mode_t *mode) {
+void printNLink(const nlink_t *nlink, const mode_t *mode, bool *hardln_hl) {
 	if (!do_nlink) return;
 
 	char output[16];
@@ -17,9 +17,12 @@ void printNLink(const nlink_t *nlink, const mode_t *mode) {
 	sprintf(output, "%d", *nlink);
 	short int link_len = (short int)strlen(output);
 
-	if (*mode & S_IFDIR)	strcpy(output, NLINK_COL_DIR);		// directory
-	else if (*nlink == 1)	strcpy(output, NLINK_COL_REG_1);	// file w 1 link
-	else					strcpy(output, NLINK_COL_REG_MORE);	// file w >1 link
+	if (*mode & S_IFDIR)	strcpy(output, NLINK_COL_DIR);	// directory
+	else if (*nlink == 1)	strcpy(output, NLINK_COL_REG_1);// file w 1 link
+	else {													// file w >1 link
+		strcpy(output, NLINK_COL_REG_MORE);
+		*hardln_hl = true;
+	}
 
 	printf("%*s%s%d%s", (int)field_lengths.nlink - link_len, "", output, *nlink, RESET INTERFIELD_PADDING);
 }
