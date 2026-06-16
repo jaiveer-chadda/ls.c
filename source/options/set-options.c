@@ -63,7 +63,7 @@ inline void initFormatting(void) {
 	};
 
 	fmt_strs_long = (FmtStrs){
-		.nlink	= "%-*d"	,
+		.nlink	= "%*d"	,
 		.dev_no	= "%*d"		, .inode	= "%*llu",
 
 		.flags	= "%-*u"	, .flag_str	= "%-*s",
