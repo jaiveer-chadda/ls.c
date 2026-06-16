@@ -47,9 +47,9 @@ inline void parseTime(char time_str[MAX_TIME_LEN], const time_t file_time, TimeC
 	size_t b_writ = -1;	// (bytes written)
 
 	if		(t_diff <	  MIN)				{ SET_TIME_TEXT("Now"		); *time_col = TC_NOW	 ; }
-	else if	(t_diff < 2 * MIN)				{ SET_TIME_TEXT("1 min. ago"); *time_col = TC_1MIN	 ; }
-	else if	(t_diff < 3 * MIN)				{ SET_TIME_TEXT("2 mins ago"); *time_col = TC_2MIN	 ; }
-	else if	(t_diff < 4 * MIN)				{ SET_TIME_TEXT("3 mins ago"); *time_col = TC_3MIN	 ; }
+	else if	(t_diff < 2 * MIN)				{ SET_TIME_TEXT("1 min. ago"); *time_col = TC_MIN	 ; }
+	else if	(t_diff < 3 * MIN)				{ SET_TIME_TEXT("2 mins ago"); *time_col = TC_MIN	 ; }
+	else if	(t_diff < 4 * MIN)				{ SET_TIME_TEXT("3 mins ago"); *time_col = TC_MIN	 ; }
 	else if	(t_diff < diff_midn			 )	{ SET_DATE_TEXT("Today"		); *time_col = TC_TODAY	 ; }
 	else if	(t_diff < diff_midn +	  DAY)	{ SET_DATE_TEXT("Yesterday"	); *time_col = TC_YESTD	 ; }
 	else if	(t_diff < diff_midn + 2 * DAY)	{ SET_DATE_TEXT("2 Days Ago"); *time_col = TC_2DAYS	 ; }

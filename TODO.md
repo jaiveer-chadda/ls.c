@@ -99,20 +99,18 @@
 - [ ] and then a grey hyphen for no flags
 
 ##### `time_str`
-- [ ] have a different colour for each named time:
-  - [ ] Now               `\e[38;2;203;210;242m`
-  - [ ] 1 min. ago        `\e[38;2;193;199;244m`
-  - [ ] 2 mins ago        `\e[38;2;183;188;245m`
-  - [ ] 3 mins ago        `\e[38;2;172;178;247m`
-  - [ ] Today             `\e[38;2;160;167;248m`
-  - [ ] Yesterday         `\e[38;2;148;156;249m`
-  - [ ] 2 Days Ago        `\e[38;2;135;147;250m`
-- [ ] and a different time for other time periods which don't have names
-  - [ ] This month        `\e[38;2;121;136;251m`
-  - [ ] Last month        `\e[38;2;105;127;252m`
-  - [ ] This year         `\e[38;2;085;116;253m`
-  - [ ] Last year         `\e[38;2;060;109;254m`
-  - [ ] Before last year  `\e[38;2;000;098;255m`
+- [x] have a different colour for each named time:
+  - [x] Now               `\e[38;2;203;210;242m`
+  - [x] 1 min. ago        `\e[38;2;193;203;240m`
+  - [x] 2 mins ago        `\e[38;2;188;199;240m`
+  - [x] 3 mins ago        `\e[38;2;178;192;238m`
+  - [x] Today             `\e[38;2;152;174;234m`
+  - [x] Yesterday         `\e[38;2;133;161;228m`
+  - [x] 2 Days Ago        `\e[38;2;100;145;225m`
+- [x] and a different time for other time periods which don't have names
+  - [x] This month        `\e[38;2;056;116;212m`
+  - [x] This year         `\e[38;2;035;106;204m`
+  - [x] Before this year  `\e[38;2;005;093;181m`
   - [ ] Birth time??
   - [ ] [No time]
 

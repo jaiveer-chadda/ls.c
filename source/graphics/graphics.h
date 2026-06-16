@@ -66,21 +66,21 @@
 #define HL_PIPE			"33"		//  \e[33m
 #define HL_MOUNT		"34"		//  \e[34m
 #define HL_SOCKET		"32"		//  \e[32m
-#define HL_CHRDEV		"1;30;43"	//  \e[43m
-#define HL_BLKDEV		"1;30;46"	//  \e[46m
-#define HL_OW_DIR		"1;30;42"	//  \e[42m
-#define HL_SUID_X		"1;30;41"	//  \e[41m
-#define HL_SUID_N		"1;30;101"	// \e[101m
-#define HL_SGID_X		"1;30;45"	//  \e[45m
-#define HL_SGID_N		"1;30;105"	// \e[105m
-#define HL_STICKY_X		"1;30;44"	//  \e[44m
-#define HL_STICKY_N		"1;30;104"	// \e[104m
-#define HL_DATALESS		"1;30;47"	//  \e[47m
-#define HL_WHITEOUT		"1;30;107"	// \e[107m
+#define HL_CHRDEV		";1;30;43"	//  \e[43m
+#define HL_BLKDEV		";1;30;46"	//  \e[46m
+#define HL_OW_DIR		";1;30;42"	//  \e[42m
+#define HL_SUID_X		";1;30;41"	//  \e[41m
+#define HL_SUID_N		";1;30;101"	// \e[101m
+#define HL_SGID_X		";1;30;45"	//  \e[45m
+#define HL_SGID_N		";1;30;105"	// \e[105m
+#define HL_STICKY_X		";1;30;44"	//  \e[44m
+#define HL_STICKY_N		";1;30;104"	// \e[104m
+#define HL_DATALESS		";1;30;47"	//  \e[47m
+#define HL_WHITEOUT		";1;30;107"	// \e[107m
 
 #define HL_READ			"92"		//  \e[92m
 #define HL_W_USRGRP		"93"		//  \e[93m
-#define HL_W_OTHER		"1;30;42"	//  \e[42m
+#define HL_W_OTHER		";1;30;42"	//  \e[42m
 #define HL_X_REG		"1;31"		//  \e[31m
 #define HL_X_NREG		"91"		//  \e[91m
 
@@ -122,16 +122,14 @@
 	X(PC_STICKY_N	, CSI ";" HL_STICKY_N	END	) /*\e[104m */
 
 #define TIME_COLOUR_TABLE \
-	X(TC_NOW	, CSI_FG RGB(203, 210, 242) END	) \
-	X(TC_1MIN	, CSI_FG RGB(193, 203, 240) END	) \
-	X(TC_2MIN	, CSI_FG RGB(188, 199, 240) END	) \
-	X(TC_3MIN	, CSI_FG RGB(178, 192, 238) END	) \
-	X(TC_TODAY	, CSI_FG RGB(152, 174, 234) END	) \
-	X(TC_YESTD	, CSI_FG RGB(133, 161, 228) END	) \
-	X(TC_2DAYS	, CSI_FG RGB(100, 145, 225) END	) \
-	X(TC_THIS_MO, CSI_FG RGB( 70, 132, 230) END	) \
-	X(TC_THIS_YR, CSI_FG RGB( 35, 106, 204) END	) \
-	X(TC_OTHER	, CSI_FG RGB(  5,  90, 175) END	)
+	X(TC_NOW	, CSI_FG RGB(203, 210, 242) ";1" END ) \
+	X(TC_MIN	, CSI_FG RGB(200, 208, 241)		 END ) \
+	X(TC_TODAY	, CSI_FG RGB(165, 183, 236)		 END ) \
+	X(TC_YESTD	, CSI_FG RGB(133, 161, 228)		 END ) \
+	X(TC_2DAYS	, CSI_FG RGB(100, 145, 225)		 END ) \
+	X(TC_THIS_MO, CSI_FG RGB( 70, 132, 230)		 END ) \
+	X(TC_THIS_YR, CSI_FG RGB( 35, 106, 204)		 END ) \
+	X(TC_OTHER	, CSI_FG RGB(  4,  65, 145)		 END )
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
