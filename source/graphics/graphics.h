@@ -24,59 +24,94 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define RESET	"\33[m"
+#define CSI "\033["
+#define END "m"
 
-#define NO_FG	"\33[39m"
-#define NO_BG	"\33[49m"
+/* ———————————————————————————————————————————————————————————————————————————————— */
 
-#define	UNDER	"\33[4m"
-#define NOUNDER	"\33[24m"
+#define RESET		CSI END
 
-#define	BOLD	"\33[1m"
-#define	DIM		"\33[2m"
-#define NOBOLD	"\33[22m"
+#define NO_FG		CSI	"39" END
+#define NO_BG		CSI	"49" END
 
-#define HARDLN_UNDERLINE "\33[1;21;58;5;13m"
+#define	UNDER		CSI	 "4" END
+#define	DUNDER		CSI	"21" END
+#define NOUNDER		CSI	"24" END
+
+#define	BOLD		CSI	 "1" END
+#define	DIM			CSI	 "2" END
+#define NOBOLD		CSI	"22" END
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define NLINK_COL_DIR		CSI	"1;96"			END	// \e[96m
+#define NLINK_COL_REG_1		CSI	"36"			END	// \e[36m
+#define NLINK_COL_REG_MORE	CSI	"1;30;105"		END	// \e[105m
+
+#define HARDLN_UNDERLINE	CSI	"1;21;58;5;13"	END	// \e[21m \e[95m
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define NLINK_COL_DIR		"\33[96m"
-#define NLINK_COL_REG_1		"\33[36m"
-#define NLINK_COL_REG_MORE	"\33[1;30;105m"
+#define HL_REG			""			//  \e[37m
+#define HL_PUNCT		"90"		//  \e[90m
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+#define HL_DIR			"1;36"		//  \e[36m
+#define HL_LINK			"35"		//  \e[35m
+#define HL_EXEC			"31"		//  \e[31m
+#define HL_PIPE			"33"		//  \e[33m
+#define HL_MOUNT		"34"		//  \e[34m
+#define HL_SOCKET		"32"		//  \e[32m
+#define HL_CHRDEV		"1;30;43"	//  \e[43m
+#define HL_BLKDEV		"1;30;46"	//  \e[46m
+#define HL_OW_DIR		"1;30;42"	//  \e[42m
+#define HL_SUID_X		"1;30;41"	//  \e[41m
+#define HL_SUID_N		"1;30;101"	// \e[101m
+#define HL_SGID_X		"1;30;45"	//  \e[45m
+#define HL_SGID_N		"1;30;105"	// \e[105m
+#define HL_STICKY_X		"1;30;44"	//  \e[44m
+#define HL_STICKY_N		"1;30;104"	// \e[104m
+#define HL_DATALESS		"1;30;47"	//  \e[47m
+#define HL_WHITEOUT		"1;30;107"	// \e[107m
+
+#define HL_READ			"92"		//  \e[92m
+#define HL_W_USRGRP		"93"		//  \e[93m
+#define HL_W_OTHER		"1;30;42"	//  \e[42m
+#define HL_X_REG		"1;31"		//  \e[31m
+#define HL_X_NREG		"91"		//  \e[91m
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
 
 // use the macro `X`, on the expectation that it'll be defined later
 #define FILE_COLOUR_TABLE \
-	X(REGULAR,	""				) /* \e[37m */ \
-	X(DIRECT,	"\33[1;36m"		) /* \e[36m */ \
-	X(SYMLINK,	"\33[35m"		) /* \e[35m */ \
-	X(EXEC,		"\33[31m"		) /* \e[31m */ \
-	X(PIPE,		"\33[33m"		) /* \e[33m */ \
-	X(SOCKET,	"\33[32m"		) /* \e[32m */ \
-	X(MOUNT,	"\33[34m"		) /* \e[34m */ \
-	X(CHR_DEV,	"\33[1;30;43m"	) /* \e[43m */ \
-	X(BLK_DEV,	"\33[1;30;46m"	) /* \e[46m */ \
-	X(OW_DIR,	"\33[1;30;42m"	) /* \e[42m */ \
-	X(SUID,		"\33[1;30;41m"	) /* \e[41m */ \
-	X(SGID,		"\33[1;30;45m"	) /* \e[45m */ \
-	X(STICKY,	"\33[1;30;44m"	) /* \e[44m */ \
-	X(DATALESS,	"\33[1;30;47m"	) /* \e[47m */ \
-	X(WHITEOUT, "\33[1;30;107m"	) /*\e[107m */
+	X(REGULAR,	""					) /* \e[37m */ \
+	X(DIRECT,	CSI	HL_DIR		END	) /* \e[36m */ \
+	X(SYMLINK,	CSI	HL_LINK		END	) /* \e[35m */ \
+	X(EXEC,		CSI	HL_EXEC		END	) /* \e[31m */ \
+	X(PIPE,		CSI	HL_PIPE		END	) /* \e[33m */ \
+	X(SOCKET,	CSI	HL_SOCKET	END	) /* \e[32m */ \
+	X(MOUNT,	CSI	HL_MOUNT	END	) /* \e[34m */ \
+	X(CHR_DEV,	CSI	HL_CHRDEV	END	) /* \e[43m */ \
+	X(BLK_DEV,	CSI	HL_BLKDEV	END	) /* \e[46m */ \
+	X(OW_DIR,	CSI	HL_OW_DIR	END	) /* \e[42m */ \
+	X(SUID,		CSI	HL_SUID_X	END	) /* \e[41m */ \
+	X(SGID,		CSI	HL_SGID_X	END	) /* \e[45m */ \
+	X(STICKY,	CSI	HL_STICKY_X	END	) /* \e[44m */ \
+	X(DATALESS,	CSI	HL_DATALESS	END	) /* \e[47m */ \
+	X(WHITEOUT, CSI	HL_WHITEOUT	END	) /*\e[107m */
 
 #define PERM_COLOUR_TABLE \
-	X(NONE		, "\33[;90m"		) /* \e[90m */ \
-	X(READ		, "\33[;92m"		) /* \e[92m */ \
-	X(W_USRGRP	, "\33[;93m"		) /* \e[93m */ \
-	X(W_OTHER	, "\33[;1;30;42m"	) /* \e[42m */ \
-	X(X_REG		, "\33[;1;31m"		) /* \e[31m */ \
-	X(X_NREG	, "\33[;91m"		) /* \e[91m */ \
-	X(SUID_X	, "\33[;1;30;41m"	) /* \e[41m */ \
-	X(SUID_N	, "\33[;1;30;101m"	) /*\e[101m */ \
-	X(SGID_X	, "\33[;1;30;45m"	) /* \e[45m */ \
-	X(SGID_N	, "\33[;1;30;105m"	) /*\e[105m */ \
-	X(STICKY_X	, "\33[;1;30;44m"	) /* \e[44m */ \
-	X(STICKY_N	, "\33[;1;30;104m"	) /*\e[104m */
+	X(NONE		, CSI ";" HL_PUNCT		END	) /* \e[90m */ \
+	X(READ		, CSI ";" HL_READ		END	) /* \e[92m */ \
+	X(W_USRGRP	, CSI ";" HL_W_USRGRP	END	) /* \e[93m */ \
+	X(W_OTHER	, CSI ";" HL_W_OTHER	END	) /* \e[42m */ \
+	X(X_REG		, CSI ";" HL_X_REG		END	) /* \e[31m */ \
+	X(X_NREG	, CSI ";" HL_X_NREG		END	) /* \e[91m */ \
+	X(SUID_X	, CSI ";" HL_SUID_X		END	) /* \e[41m */ \
+	X(SUID_N	, CSI ";" HL_SUID_N		END	) /*\e[101m */ \
+	X(SGID_X	, CSI ";" HL_SGID_X		END	) /* \e[45m */ \
+	X(SGID_N	, CSI ";" HL_SGID_N		END	) /*\e[105m */ \
+	X(STICKY_X	, CSI ";" HL_STICKY_X	END	) /* \e[44m */ \
+	X(STICKY_N	, CSI ";" HL_STICKY_N	END	) /*\e[104m */
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
