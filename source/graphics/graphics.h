@@ -1,6 +1,7 @@
 /// @file graphics/graphics.h
 
 void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
+void printModeStr(const modestr str);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
