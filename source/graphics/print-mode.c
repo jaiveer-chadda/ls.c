@@ -15,14 +15,14 @@ inline void printModeStr(const modestr str) {
 	FileColour type = -1;
 
 	switch (str[0]) {
-		case PIPE_CHAR:		type = PIPE		; break;
-		case CHRDEV_CHAR:	type = CHR_DEV	; break;
-		case DIR_CHAR:		type = DIRECT	; break;
-		case BLKDEV_CHAR:	type = BLK_DEV	; break;
-		case REGULAR_CHAR:	type = REGULAR	; break;
-		case SYMLINK_CHAR:	type = SYMLINK	; break;
-		case SOCKET_CHAR:	type = SOCKET	; break;
-		case WHITEOUT_CHAR:	type = WHITEOUT	; break;
+		case PIPE_CHAR:		type = FC_PIPE		; break;
+		case CHRDEV_CHAR:	type = FC_CHR_DEV	; break;
+		case DIR_CHAR:		type = FC_DIRECT	; break;
+		case BLKDEV_CHAR:	type = FC_BLK_DEV	; break;
+		case REGULAR_CHAR:	type = FC_REGULAR	; break;
+		case SYMLINK_CHAR:	type = FC_SYMLINK	; break;
+		case SOCKET_CHAR:	type = FC_SOCKET	; break;
+		case WHITEOUT_CHAR:	type = FC_WHITEOUT	; break;
 	}
 
 	strcat(output, file_colour_esc[type]);
@@ -36,14 +36,14 @@ inline void printModeStr(const modestr str) {
 		last_esc = esc;
 
 		switch (str[i]) {
-			case '-': esc = NONE; break;
-			case 'r': esc = READ; break;
-			case 't': esc = STICKY_X; break;
-			case 'T': esc = STICKY_N; break;
-			case 's': esc = i == 3 ? SUID_X : SGID_X; break;
-			case 'S': esc = i == 3 ? SUID_N : SGID_N; break;
-			case 'w': esc = i == 8 ? W_OTHER : W_USRGRP; break;
-			case 'x': esc = str[0] == '.' ? X_REG : X_NREG; break;
+			case '-': esc = PC_NONE		; break;
+			case 'r': esc = PC_READ		; break;
+			case 't': esc = PC_STICKY_X	; break;
+			case 'T': esc = PC_STICKY_N	; break;
+			case 's': esc = i == 3 ? PC_SUID_X	: PC_SGID_X		; break;
+			case 'S': esc = i == 3 ? PC_SUID_N	: PC_SGID_N		; break;
+			case 'w': esc = i == 8 ? PC_W_OTHER	: PC_W_USRGRP	; break;
+			case 'x': esc = str[0] == '.' ? PC_X_REG : PC_X_NREG; break;
 		}
 
 		if (last_esc != esc) strcat(output, perm_colour_esc[esc]);
