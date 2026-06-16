@@ -1,6 +1,6 @@
-/// @file model/init-model.c
+/// @file graphics/init-graphics.c
 
-#include "stat-model.h"
+#include "graphics.h"
 
 // only unpack escapes
 #define X(name, esc) esc,
