@@ -35,11 +35,11 @@ inline void initTime(void) {
 		(cur_time_tm->tm_min  * MIN	) +
 		(cur_time_tm->tm_sec		);
 
-	diff_month	= diff_midn + (cur_time_tm->tm_mday * DAY);
-	diff_year	= diff_midn + (cur_time_tm->tm_yday * DAY);
+	diff_month	= diff_midn + ((cur_time_tm->tm_mday - 1) * DAY);
+	diff_year	= diff_midn + ((cur_time_tm->tm_yday - 1) * DAY);
 }
 
-inline void parseTime(char time_str[MAX_TIME_LEN], const time_t file_time, TimeColour *time_col) {
+inline void parseTime(timestr time_str, const time_t file_time, TimeColour *time_col) {
 	/// How many seconds ago the file was modified.
 	const time_t t_diff = current_time - file_time;
 	const struct tm *pTime = localtime(&file_time);
