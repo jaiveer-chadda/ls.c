@@ -7,9 +7,7 @@
 #include "../../model/stat-model.h"
 #include "size.h"
 
-#define NO_SIZE_STR "-"
-
-void parseSize(char *size_str, char *size_unit, const size_t size, const dev_t rdev) {
+inline void parseSize(char *size_str, char *size_unit, const size_t size, const dev_t rdev) {
 	const int maj = major(rdev), min = minor(rdev);
 
 	if (maj + min != 0) {
@@ -29,7 +27,7 @@ void parseSize(char *size_str, char *size_unit, const size_t size, const dev_t r
 	int unit = 0;
 	long double abbr_size = (long double)size;
 
-	while (abbr_size > 1000) {
+	while (abbr_size > 1000 && (unsigned long) unit <= strlen(SUFFIXES)) {
 		abbr_size /= 1000;
 		unit++;
 	}

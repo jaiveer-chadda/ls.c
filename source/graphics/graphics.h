@@ -6,6 +6,13 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define FIELD_PAD " "
+#define SYMLINK_ARROW " --> "
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
+
+#define NO_SIZE_STR "-"
+#define NO_FLAG_STR "-"
+#define NO_PERM_STR "-"
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
@@ -95,24 +102,24 @@
 
 // use the macro `X`, on the expectation that it'll be defined later
 #define FILE_COLOUR_TABLE \
-	X(FC_REGULAR,		HL_REG			) /* \e[37m */ \
-	X(FC_DIRECT,	CSI	HL_DIR		END	) /* \e[36m */ \
-	X(FC_SYMLINK,	CSI	HL_LINK		END	) /* \e[35m */ \
-	X(FC_EXEC,		CSI	HL_EXEC		END	) /* \e[31m */ \
-	X(FC_PIPE,		CSI	HL_PIPE		END	) /* \e[33m */ \
-	X(FC_SOCKET,	CSI	HL_SOCKET	END	) /* \e[32m */ \
-	X(FC_MOUNT,		CSI	HL_MOUNT	END	) /* \e[34m */ \
-	X(FC_CHR_DEV,	CSI	HL_CHRDEV	END	) /* \e[43m */ \
-	X(FC_BLK_DEV,	CSI	HL_BLKDEV	END	) /* \e[46m */ \
-	X(FC_OW_DIR,	CSI	HL_OW_DIR	END	) /* \e[42m */ \
-	X(FC_SUID_X,	CSI	HL_SUID_X	END	) /* \e[41m */ \
-	X(FC_SUID_N,	CSI	HL_SUID_N	END	) /*\e[101m */ \
-	X(FC_SGID_X,	CSI	HL_SGID_X	END	) /* \e[45m */ \
-	X(FC_SGID_N,	CSI	HL_SGID_N	END	) /*\e[105m */ \
-	X(FC_STICKY_X,	CSI	HL_STICKY_X	END	) /* \e[44m */ \
-	X(FC_STICKY_N,	CSI	HL_STICKY_N	END	) /*\e[104m */ \
-	X(FC_DATALESS,	CSI	HL_DATALESS	END	) /* \e[47m */ \
-	X(FC_WHITEOUT,	CSI	HL_WHITEOUT	END	) /*\e[107m */
+	X(FC_REGULAR	,		HL_REG			) /* \e[37m */ \
+	X(FC_DIRECT		, CSI	HL_DIR		END	) /* \e[36m */ \
+	X(FC_SYMLINK	, CSI	HL_LINK		END	) /* \e[35m */ \
+	X(FC_EXEC		, CSI	HL_EXEC		END	) /* \e[31m */ \
+	X(FC_PIPE		, CSI	HL_PIPE		END	) /* \e[33m */ \
+	X(FC_SOCKET		, CSI	HL_SOCKET	END	) /* \e[32m */ \
+	X(FC_MOUNT		, CSI	HL_MOUNT	END	) /* \e[34m */ \
+	X(FC_CHR_DEV	, CSI	HL_CHRDEV	END	) /* \e[43m */ \
+	X(FC_BLK_DEV	, CSI	HL_BLKDEV	END	) /* \e[46m */ \
+	X(FC_OW_DIR		, CSI	HL_OW_DIR	END	) /* \e[42m */ \
+	X(FC_SUID_X		, CSI	HL_SUID_X	END	) /* \e[41m */ \
+	X(FC_SUID_N		, CSI	HL_SUID_N	END	) /*\e[101m */ \
+	X(FC_SGID_X		, CSI	HL_SGID_X	END	) /* \e[45m */ \
+	X(FC_SGID_N		, CSI	HL_SGID_N	END	) /*\e[105m */ \
+	X(FC_STICKY_X	, CSI	HL_STICKY_X	END	) /* \e[44m */ \
+	X(FC_STICKY_N	, CSI	HL_STICKY_N	END	) /*\e[104m */ \
+	X(FC_DATALESS	, CSI	HL_DATALESS	END	) /* \e[47m */ \
+	X(FC_WHITEOUT	, CSI	HL_WHITEOUT	END	) /*\e[107m */
 
 #define PERM_COLOUR_TABLE \
 	X(PC_NONE		, CSI ";" HL_PUNCT		END	) /* \e[90m */ \
@@ -139,12 +146,13 @@
 	X(TC_OTHER	, CSI_FG RGB(  4,  65, 145)		 END )
 
 #define SIZE_COLOUR_TABLE \
+	/* value */ \
 	X(SC_Bb, CSI "92"		END ) /* \e[102m */ \
 	X(SC_Bk, CSI "93"		END ) /* \e[103m */ \
 	X(SC_Bm, CSI "38;5;216"	END ) /* #FFAB81 */ \
 	X(SC_Bg, CSI "91"		END ) /* \e[101m */ \
 	X(SC_Bt, CSI "38;5;168"	END ) /* #E85587 */ \
-	\
+	/* units */ \
 	X(SC_Ub, CSI "32"		END ) /* \e[42m  */ \
 	X(SC_Uk, CSI "33"		END ) /* \e[43m  */ \
 	X(SC_Um, CSI "38;5;208"	END ) /* #FF8400 */ \
@@ -168,7 +176,6 @@ extern const char *const size_colour_esc[SIZE_COLOUR_COUNT];
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #include "../model/types.h"
-
 void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
 
 #endif /* !GRAPHICS_INITIALIASED */

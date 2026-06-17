@@ -8,8 +8,6 @@
 #include "../../model/stat-model.h"
 #include "../mode/mode.h"
 
-#define ARROW " --> "
-
 void getLink(char *link_str, path_t link_path) {
 	path_t link;
 
@@ -21,13 +19,14 @@ void getLink(char *link_str, path_t link_path) {
 	const int home_len = strlen(HOME);
 	const int path_len = strlen(link);
 
-	if ( HOME != NULL
+	if (
+		HOME != NULL
 		&& home_len > 0
 		&& home_len < path_len
 		&& strncmp(HOME, link, home_len) == 0
 	) {
-		sprintf(link_str, ARROW "~%s", link + home_len);
+		sprintf(link_str, SYMLINK_ARROW "~%s", link + home_len);
 	} else {
-		sprintf(link_str, ARROW "%s", link);
+		sprintf(link_str, SYMLINK_ARROW "%s", link);
 	}
 }

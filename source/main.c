@@ -6,9 +6,9 @@
 #include <string.h>
 
 #include "info/info.h"
-#include "sorting/sort.h"
 #include "output/output.h"
 #include "options/options.h"
+#include "info/sorting/sort.h"
 
 #include "features/path/path.h"
 #include "features/time/time.h"

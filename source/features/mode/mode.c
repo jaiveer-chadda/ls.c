@@ -29,7 +29,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void getPermStr(const mode_t oct_digit, char *perm_str) {
-	strcpy(perm_str, "---");
+	strcpy(perm_str, NO_PERM_STR NO_PERM_STR NO_PERM_STR);
 
 	if (oct_digit & 04) perm_str[0] = 'r';
 	if (oct_digit & 02) perm_str[1] = 'w';
@@ -53,7 +53,7 @@ static inline char getModeType(const mode_t mode) {
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
-char getTypeSuffix(const mode_t mode) {
+inline char getTypeSuffix(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
 		case S_IFLNK:	return SYMLINK_SUFFIX;	// symlink
 		case S_IFDIR:	return DIR_SUFFIX;		// directory

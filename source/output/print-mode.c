@@ -10,7 +10,6 @@ void printModeStr(const modestr str) {
 	if (!do_mode_str) return;
 
 	char output[128] = "";
-
 	FileColour type = -1;
 
 	switch (str[0]) {
@@ -26,7 +25,7 @@ void printModeStr(const modestr str) {
 
 	strcat(output, file_colour_esc[type]);
 	
-	output[strlen(output)] = str[0];
+	output[strlen(output)	 ] = str[0];
 	output[strlen(output) + 1] = '\0';
 
 	PermColour esc = -1, last_esc;

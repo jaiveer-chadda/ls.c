@@ -16,7 +16,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define SHOULD_ALIGN_RIGHT(field) \
-	(strcmp(field##_TITLE, "Size") == 0 || strcmp(field##_TITLE, time_str_TITLE) == 0)
+	(strcmp(field##_TITLE, size_TITLE) == 0 || strcmp(field##_TITLE, time_str_TITLE) == 0)
 
 #define PRINT_HEADER(field) \
 	if (do_##field)	{ \
@@ -58,7 +58,7 @@ inline void printHeader(void) {
 	(DO_DIM_HIDDEN && (name[0] == '.' || flags & UF_HIDDEN))
 
 #define PRINT_NAME(name, colour, do_hln_hl, flags) \
-	putchar(' '); \
+	putchar(' '); /* names should have an extra space before them */ \
 	if (DO_COLOUR) { \
 		if (do_hln_hl) printf("%s", HARDLN_UNDERLINE); \
 		if (DO_DIM(name, flags)) printf("%s", DIM); \
@@ -103,7 +103,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 
 		PRINT_NAME(file.name, file.file_col, file.do_hardlink_hl, file.flags);
 
-		if (do_suffix)	printf("%c", file.suffix);
+		if (do_suffix) printf("%c", file.suffix);
 
 		if (do_link_to)	{
 			printf("%s", file.link_to);

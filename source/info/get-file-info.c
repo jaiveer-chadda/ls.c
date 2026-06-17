@@ -31,9 +31,9 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 inline void getAllFileInfo(
-	FileInfo *dirs, FileInfo *files,
+	FileInfo dirs[], FileInfo files[],
 	int *dir_count, int *file_count,
-	DIR *directory, const char *target_dir
+	DIR *dir_obj, const char *target_dir
 ) {
 	*dir_count = 0, *file_count = 0;
 
@@ -43,7 +43,7 @@ inline void getAllFileInfo(
 	path_t path;
 
 	// while there are still files to read, and while we haven't reached the maximum file limit
-	while ((entry = readdir(directory)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
+	while ((entry = readdir(dir_obj)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
 		if DO_IGNORE_FILE(entry) continue;
 
 		// initialise the struct so we can assign to it later
@@ -123,5 +123,5 @@ inline void getAllFileInfo(
 	}
 
 	// the directory info isn't needed anymore, so it can be closed now
-	closedir(directory);
+	closedir(dir_obj);
 }

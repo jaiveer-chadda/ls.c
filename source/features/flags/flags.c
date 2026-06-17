@@ -11,7 +11,7 @@
 typedef char flagname[MAX_FLAG_LEN];
 
 typedef struct {
-	flag_t	 mask;
+	flag_t mask;
 	char name[MAX_FLAG_LEN];
 	char short_name[6];
 	char tiny_name[3];
@@ -54,7 +54,7 @@ void parseFlags(flagstr flag_string, const flag_t raw_flags) {
 	char *last_char = &flag_string[strlen(flag_string)-1];
 
 	if (*last_char == ',') *last_char = '\0';
-	else strcpy(flag_string, "-");
+	else strcpy(flag_string, NO_FLAG_STR);
 }
 
 // spell:ignoreRegExp /, "\w+"/g

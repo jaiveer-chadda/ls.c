@@ -15,7 +15,7 @@ static inline void toLower(char *str) {
 	}
 }
 
-static int compareNames(const void *file_1, const void *file_2) {
+static inline int compareNames(const void *file_1, const void *file_2) {
 	const char* name_1 = ((FileInfo *)file_1)->name;
 	const char* name_2 = ((FileInfo *)file_2)->name;
 
@@ -54,6 +54,6 @@ static int compareNames(const void *file_1, const void *file_2) {
 	return adj_name_1[i] == '\0' ? -1 : 1;
 }
 
-void sortFiles(FileInfo *arr, const int *arr_count) {
+void sortFiles(FileInfo arr[], const int *arr_count) {
 	qsort(arr, *arr_count, sizeof(FileInfo), compareNames);
 }

@@ -19,7 +19,7 @@ int printAbsolutePath(const char path[MAX_PATH_LEN]) {
 
 	if (path[0] != '/') {
 		if (getcwd(abs_path, MAX_PATH_LEN) == NULL)				FAILURE("getcwd");	// get PWD
-		if (strlen(abs_path) + strlen(path) + 2 > MAX_PATH_LEN) FAILURE("getcwd");	// make sure we don't overflow
+		if (strlen(abs_path) + strlen(path) + 2 > MAX_PATH_LEN) FAILURE("strlen");	// make sure we don't overflow
 
 		if (strcmp(path, ".") != 0) {
 			strcat(abs_path, path);
