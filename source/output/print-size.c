@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "graphics.h"
+#include "../graphics/graphics.h"
 #include "../options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -20,7 +20,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-inline void printSize(const sizestr size_str, const char unit) {
+void printSize(const sizestr size_str, const char unit) {
 	if (!do_size_str) return;
 
 	const int len = (int)strlen(size_str);

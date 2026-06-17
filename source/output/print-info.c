@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "info.h"
+#include "../info/info.h"
 #include "../options/options.h"
 #include "../graphics/graphics.h"
 #include "../features/mode/mode.h"
+
+#include "output.h"
 
 #define HEADER_HL		UNDER	BOLD
 #define HEADER_HL_OFF	NOUNDER	NOBOLD

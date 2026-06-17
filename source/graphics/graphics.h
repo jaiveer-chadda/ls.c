@@ -170,8 +170,5 @@ extern const char *const size_colour_esc[SIZE_COLOUR_COUNT];
 #include "../model/types.h"
 
 void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
-void printNLink(const nlink_t *nlink, const mode_t *mode, bool *hardln_hl);
-void printSize(const sizestr size_str, const char unit);
-void printModeStr(const modestr str);
 
 #endif /* !GRAPHICS_INITIALIASED */

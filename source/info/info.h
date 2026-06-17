@@ -17,9 +17,3 @@ void getAllFileInfo(
 // parse-info.c
 
 void getFieldLengths(const FileInfo *all_files, const int *count);
-
-// print-info.c
-
-void printHeader(void);
-
-void printFields(const FileInfo *all_files, const int *count);

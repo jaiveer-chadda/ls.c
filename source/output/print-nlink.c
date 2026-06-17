@@ -3,10 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../model/stat-model.h"
 #include "../options/options.h"
-
-#include "graphics.h"
+#include "../model/stat-model.h"
+#include "../graphics/graphics.h"
 
 void printNLink(const nlink_t *nlink, const mode_t *mode, bool *hardln_hl) {
 	if (!do_nlink) return;

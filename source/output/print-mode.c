@@ -6,7 +6,7 @@
 #include "../model/stat-model.h"
 #include "../options/options.h"
 
-inline void printModeStr(const modestr str) {
+void printModeStr(const modestr str) {
 	if (!do_mode_str) return;
 
 	char output[128] = "";

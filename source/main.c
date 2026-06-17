@@ -7,6 +7,7 @@
 
 #include "info/info.h"
 #include "sorting/sort.h"
+#include "output/output.h"
 #include "options/options.h"
 
 #include "features/path/path.h"
