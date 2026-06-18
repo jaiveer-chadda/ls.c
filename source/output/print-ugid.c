@@ -16,7 +16,6 @@
 		strcmp(file_usr_name, "root") == 0 ? USR_ROOT_COL : USR_OTH_COL \
 	)
 
-
 void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name) {
 	if (!do_usr_name) return;
 

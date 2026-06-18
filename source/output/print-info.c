@@ -10,9 +10,6 @@
 
 #include "output.h"
 
-#define HEADER_HL		UNDER	BOLD
-#define HEADER_HL_OFF	NOUNDER	NOBOLD
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define SHOULD_ALIGN_RIGHT(field) \
@@ -39,8 +36,7 @@ inline void printHeader(void) {
 	PRINT_HEADER(flags);	PRINT_HEADER(flag_str);
 	PRINT_HEADER(time);		PRINT_HEADER(time_str);
 
-	if (do_name) printf("%s", HEADER_HL name_TITLE HEADER_HL_OFF);
-	printf("\n");
+	puts(" " HEADER_HL name_TITLE HEADER_HL_OFF);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -54,15 +50,14 @@ inline void printHeader(void) {
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 
-#define DO_DIM(name, flags) \
-	(DO_DIM_HIDDEN && (name[0] == '.' || flags & UF_HIDDEN))
+#define DO_DIM(name, flags) (DO_DIM_HIDDEN && (name[0] == '.' || flags & UF_HIDDEN))
 
-#define PRINT_NAME(name, colour, do_hln_hl, flags) \
-	putchar(' '); /* names should have an extra space before them */ \
-	if (DO_COLOUR) { \
-		if (do_hln_hl) printf("%s", HARDLN_UNDERLINE); \
-		if (DO_DIM(name, flags)) printf("%s", DIM); \
-		printf("%s%s" RESET, file_colour_esc[colour], name); \
+#define PRINT_NAME(name, colour, do_hln_hl, flags)				\
+	putchar(' '); /* names have an extra space before them */	\
+	if (DO_COLOUR) {											\
+		if (do_hln_hl) printf("%s", HARDLN_UNDERLINE);			\
+		if (DO_DIM(name, flags)) printf("%s", DIM);				\
+		printf("%s%s" RESET, file_colour_esc[colour], name);	\
 	} else printf("%s", name)
 
 #define PRINT_TIME_STR() \
@@ -71,20 +66,10 @@ inline void printHeader(void) {
 		printf(fmt_str, time_colour_esc[file.time_col], (int)field_lengths.time_str, file.time_str); \
 	} else PRINT_FIELD(time_str)
 
-#define PRINT_SIZE_STR() \
-	printSize(file.size_str, file.size_unit);
-
-#define PRINT_MODE_STR() \
-	if (DO_COLOUR) printModeStr(file.mode_str); \
-	else PRINT_FIELD(mode_str)
-
-#define PRINT_USR_NAME() \
-	if (DO_COLOUR) printUsrName(&(file.uid), file.usr_name); \
-	else PRINT_FIELD(usr_name)
-
-#define PRINT_GRP_NAME() \
-	if (DO_COLOUR) printGrpName(&(file.gid), file.grp_name); \
-	else PRINT_FIELD(grp_name)
+#define PRINT_MODE_STR() if (DO_COLOUR) printModeStr(file.mode_str)				; else PRINT_FIELD(mode_str)
+#define PRINT_USR_NAME() if (DO_COLOUR) printUsrName(&(file.uid), file.usr_name); else PRINT_FIELD(usr_name)
+#define PRINT_GRP_NAME() if (DO_COLOUR) printGrpName(&(file.gid), file.grp_name); else PRINT_FIELD(grp_name)
+#define PRINT_SIZE_STR()				printSize(file.size_str, file.size_unit)
 
 #define PRINT_NLINK() \
 	if (DO_COLOUR) printNLink(&(file.nlink), &(file.mode), &(file.do_hardlink_hl)); \

@@ -15,7 +15,6 @@ const bool
 	SORT_DIRS_FIRST	= true;
 
 const bool
-	do_name		= true,
 	do_suffix	= true,
 	do_link_to	= true,
 

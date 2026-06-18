@@ -55,6 +55,11 @@
 #define	DIM			CSI	 "2" END
 #define NOBOLD		CSI	"22" END
 
+/* ———————————————————————————————————————————————————————————————————————————————— */
+
+#define HEADER_HL		UNDER	BOLD
+#define HEADER_HL_OFF	NOUNDER	NOBOLD
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define NLINK_COL_DIR		CSI	"1;96"			END	// \e[96m

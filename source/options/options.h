@@ -20,7 +20,7 @@ extern const bool
 
 typedef struct {
 	size_t	nlink	;
-	size_t	dev_no	;	size_t	inode	;
+	size_t	dev_no	;	size_t	inode  ;
 
 	size_t	flags	;	size_t flag_str;
 	size_t	mode	;	size_t mode_str;
@@ -53,7 +53,6 @@ extern FmtStrs fmt_strs_short, fmt_strs_long;
 /* ——————————————————————————————————————————————————————— */
 
 extern const bool
-	do_name,
 	do_suffix,
 	do_link_to,
 
