@@ -17,10 +17,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/// Whether the specified `entry`'s filename is "." or "..".
 #define DO_IGNORE_FILE(entry) \
-	( strcmp(entry->d_name, "." ) == 0 || \
-	  strcmp(entry->d_name, "..") == 0 )
+	strcmp(entry->d_name, ".." ) == 0
 
 #define IS_SYMLINK(file_info) \
 	((file_info.st_mode & TYPE_MASK) == S_IFLNK)
@@ -44,7 +42,7 @@ inline void getAllFileInfo(
 
 	// while there are still files to read, and while we haven't reached the maximum file limit
 	while ((entry = readdir(dir_obj)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
-		if DO_IGNORE_FILE(entry) continue;
+		if (DO_IGNORE_FILE(entry)) continue;
 
 		// initialise the struct so we can assign to it later
 		FileInfo file = {0};

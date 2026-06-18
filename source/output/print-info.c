@@ -41,6 +41,20 @@ inline void printHeader(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define DO_DIM(name, flags)				\
+	DO_DIM_HIDDEN && (					\
+		(								\
+			name[0] == '.'				\
+			&& strcmp(name, ".") != 0	\
+		)								\
+		|| (flags & UF_HIDDEN)			\
+	)
+
+#define GET_NAME(name) \
+	strcmp(name, ".") == 0 ? adjusted_path : name
+
+/* ——————————————————————————————————————————————————————————————————————————— */
+
 #define PRINT_FIELD(field) \
 	if (do_##field) { \
 		strcpy(fmt_str, fmt_strs_long.field); \
@@ -50,14 +64,12 @@ inline void printHeader(void) {
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 
-#define DO_DIM(name, flags) (DO_DIM_HIDDEN && (name[0] == '.' || flags & UF_HIDDEN))
-
-#define PRINT_NAME(name, colour, do_hln_hl, flags)				\
-	putchar(' '); /* names have an extra space before them */	\
-	if (DO_COLOUR) {											\
-		if (do_hln_hl) printf("%s", HARDLN_UNDERLINE);			\
-		if (DO_DIM(name, flags)) printf("%s", DIM);				\
-		printf("%s%s" RESET, file_colour_esc[colour], name);	\
+#define PRINT_NAME(name, colour, do_hln_hl, flags)						\
+	putchar(' '); /* names have an extra space before them */			\
+	if (DO_COLOUR) {													\
+		if (do_hln_hl) printf("%s", HARDLN_UNDERLINE);					\
+		if (DO_DIM(name, flags)) printf("%s", DIM);						\
+		printf("%s%s" RESET, file_colour_esc[colour], GET_NAME(name));	\
 	} else printf("%s", name)
 
 #define PRINT_TIME_STR() \

@@ -6,6 +6,8 @@
 #include "types.h"
 #include "../graphics/graphics.h"
 
+extern path_t adjusted_path;
+
 typedef struct {
 	name_t	name	;
 	type_t	suffix	;

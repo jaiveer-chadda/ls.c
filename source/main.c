@@ -13,6 +13,8 @@
 #include "features/path/path.h"
 #include "features/time/time.h"
 
+path_t adjusted_path;
+
 int main(const int argc, const char *argv[]) {
 
 	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
@@ -22,6 +24,9 @@ int main(const int argc, const char *argv[]) {
 	// Get the target directory from the user's input
 	DIR *dir_obj = getDirectory(target_dir, argc, argv);
 	if (dir_obj == NULL) return 1;
+
+	// Print the target directory, as a title (casting it to void, since it's not rly that important)
+	(void) getAbsolutePath(adjusted_path, target_dir);
 
 	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
 
@@ -67,10 +72,7 @@ int main(const int argc, const char *argv[]) {
 	// Run through each of the fields and find its maximum length
 	getFieldLengths(all_files, &count);
 
-	/* —— Print Headers —————————————————————————————————————————————————————————————————————————— */
-
-	// Print the target directory, as a title (casting it to void, since it's not rly that important)
-	(void) printAbsolutePath(target_dir);
+	/* —— Print Header ——————————————————————————————————————————————————————————————————————————— */
 
 	// Print the fields' headers
 	if (DO_HEADER) printHeader();

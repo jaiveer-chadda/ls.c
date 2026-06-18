@@ -1,3 +1,5 @@
 /// @file features/path/path.h
 
-int printAbsolutePath(const char path[MAX_PATH_LEN]);
+#include "../../model/stat-model.h"
+
+int getAbsolutePath(path_t out_path, const path_t path);

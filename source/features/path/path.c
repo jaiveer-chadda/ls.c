@@ -5,17 +5,16 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "../../model/stat-model.h"
+#include "path.h"
 
-#define FAILURE(err) do { \
-		perror(err);	   \
-		free(abs_path);		\
+#define FAILURE(err) \
+	do { \
+		perror(err); \
 		return EXIT_FAILURE; \
 	} while (0)
 
-int printAbsolutePath(const char path[MAX_PATH_LEN]) {
-	char *abs_path = malloc(MAX_PATH_LEN);
-	if (abs_path == NULL) FAILURE("malloc");	// check if malloc failed
+int getAbsolutePath(path_t out_path, const path_t path) {
+	path_t abs_path;
 
 	if (path[0] != '/') {
 		if (getcwd(abs_path, MAX_PATH_LEN) == NULL)				FAILURE("getcwd");	// get PWD
@@ -38,11 +37,8 @@ int printAbsolutePath(const char path[MAX_PATH_LEN]) {
 		&& home_len < path_len
 		&& strncmp(HOME, abs_path, home_len) == 0
 	) {
-		putchar('~');
-		puts(abs_path + home_len);
+		sprintf(out_path, "~%s", abs_path + home_len);
+	} else strcpy(out_path, abs_path);
 
-	} else puts(abs_path);
-
-	free(abs_path);
 	return EXIT_SUCCESS;
 }
