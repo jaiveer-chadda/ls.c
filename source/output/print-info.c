@@ -108,11 +108,11 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 
 		PRINT_NAME(file.name, file.file_col, file.do_hardlink_hl, file.flags);
 
-		if (do_suffix) printf("%c", file.suffix);
+		if (do_suffix && file.suffix != '\0') printf("%c", file.suffix);
 
 		if (do_link_to)	{
 			printf("%s", file.link_to);
-			if (do_suffix) printf("%c", file.ln_suf);
+			if (do_suffix && file.ln_suf != '\0') printf("%c", file.ln_suf);
 		}
 
 		printf("\n");

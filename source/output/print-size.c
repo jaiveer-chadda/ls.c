@@ -75,23 +75,20 @@ void printSize(const sizestr size_str, const char unit) {
 	getUnitColour(unit_colour, unit);
 
 	printf(
-		"%*s"		// spaces and their length
-		"%s"		// value colour
-		"%s"		// value
-		"%s"		// unit colour
-		"%c"		// unit
-		"%s"		// colour reset
-		FIELD_PAD,	// interfield padding
+		"%*s"	// spaces and their length
+		"%s"	// value colour
+		"%s"	// value
+		"%s",	// unit colour
 
 		spaces, "",
 		IF_COLOUR(value_colour),
 		unit == ',' ? majmin_str : size_str,
-
-		IF_COLOUR(unit_colour),
-		DO_IGNORE_UNIT(unit) ? '\0' : unit,
-
-		IF_COLOUR(RESET)
+		IF_COLOUR(unit_colour)
 	);
+
+	if (!DO_IGNORE_UNIT(unit)) putchar(unit);
+	printf("%s" FIELD_PAD, IF_COLOUR(RESET));
+
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
