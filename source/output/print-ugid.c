@@ -37,7 +37,7 @@ void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name) {
 		in_root_grp ? GRP_ROOT_COL : GRP_OTH_COL \
 	)
 
-int is_user_in_group(const ugidstr usr_name, const gid_t main_usr_gid, const ugidstr grp_name, const gid_t file_gid) {
+bool is_user_in_group(const ugidstr usr_name, const gid_t main_usr_gid, const ugidstr grp_name, const gid_t file_gid) {
     if (main_usr_gid == file_gid) return 1;
 
 	struct group *grp = getgrnam(grp_name);
@@ -59,8 +59,9 @@ void printGrpName(const gid_t *file_gid, const ugidstr file_grp_name) {
 	ugidstr usr_name;
 	strcpy(usr_name, pw->pw_name);
 
-    const int in_usr_grp  = is_user_in_group(usr_name, pw->pw_gid, file_grp_name, *file_gid);
-    const int in_root_grp = is_user_in_group("root",   pw->pw_gid, file_grp_name, *file_gid);
+    const bool in_usr_grp  = is_user_in_group(usr_name, pw->pw_gid, file_grp_name, *file_gid);
+    const bool in_root_grp = strcmp(file_grp_name, "wheel") == 0;
+    // const bool in_root_grp = is_user_in_group("root",   pw->pw_gid, file_grp_name, *file_gid);
 
 	printf("%s%-*s" RESET FIELD_PAD,
 		GET_GRP_NAME_COLOUR(),
