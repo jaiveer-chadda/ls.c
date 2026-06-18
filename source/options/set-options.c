@@ -42,7 +42,7 @@ inline void initFormatting(void) {
 			.nlink	= strlen(nlink_TITLE),
 			.dev_no	= strlen(dev_no_TITLE),	.inode	  =	strlen(inode_TITLE),
 
-			.mode	= OCT_MODE_LEN,			.mode_str =	MAX_MODE_LEN,
+			.mode	= OCT_MODE_LEN,			.mode_str =	MAX_MODE_LEN - 1,
 			.flags	= strlen(flags_TITLE),	.flag_str =	strlen(flag_str_TITLE),
 			.size	= strlen(size_TITLE),	.size_str =	strlen(size_str_TITLE),
 			.uid	= strlen(uid_TITLE),	.usr_name =	strlen(usr_name_TITLE),

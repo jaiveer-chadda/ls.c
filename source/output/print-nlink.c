@@ -16,9 +16,9 @@ void printNLink(const nlink_t *nlink, const mode_t *mode, bool *hardln_hl) {
 	sprintf(output, "%d", *nlink);
 	const short int link_len = (short int)strlen(output);
 
-	if (*mode & S_IFDIR)	strcpy(output, NLINK_COL_DIR);	// directory
-	else if (*nlink == 1)	strcpy(output, NLINK_COL_REG_1);// file w  1 link
-	else {													// file w >1 link
+	if ((*mode & S_IFMT) == S_IFDIR) strcpy(output, NLINK_COL_DIR);		// directory
+	else if (*nlink == 1)			 strcpy(output, NLINK_COL_REG_1);	// file w  1 link
+	else {																// file w >1 link
 		strcpy(output, NLINK_COL_REG_MORE);
 		*hardln_hl = true;
 	}

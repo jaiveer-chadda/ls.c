@@ -21,9 +21,9 @@
 #define PRINT_HEADER(field) \
 	if (do_##field)	{ \
 		printf( \
-			SHOULD_ALIGN_RIGHT(field) ? "%*s" : "%-*s", \
-			(int)field_lengths.field + GRAPHICS_LEN, \
-			HEADER_HL field##_TITLE HEADER_HL_OFF FIELD_PAD \
+			SHOULD_ALIGN_RIGHT(field) ? "%*s%s" : "%-*s%s", \
+			(int)field_lengths.field + GRAPHICS_LEN - (int)strlen(FIELD_PAD), \
+			HEADER_HL field##_TITLE HEADER_HL_OFF, FIELD_PAD \
 		); \
 	}
 
@@ -71,16 +71,15 @@ inline void printHeader(void) {
 		printf(fmt_str, time_colour_esc[file.time_col], (int)field_lengths.time_str, file.time_str); \
 	} else PRINT_FIELD(time_str)
 
+#define PRINT_SIZE_STR() \
+	printSize(file.size_str, file.size_unit);
+
 #define PRINT_MODE_STR() \
 	if (DO_COLOUR) printModeStr(file.mode_str); \
 	else PRINT_FIELD(mode_str)
 
 #define PRINT_NLINK() \
 	if (DO_COLOUR) printNLink(&(file.nlink), &(file.mode), &(file.do_hardlink_hl)); \
-	else PRINT_FIELD(nlink)
-
-#define PRINT_SIZE_STR() \
-	if (DO_COLOUR) printSize(file.size_str, file.size_unit); \
 	else PRINT_FIELD(nlink)
 
 /* ——————————————————————————————————————————————————————————————————————————— */

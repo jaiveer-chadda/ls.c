@@ -50,5 +50,5 @@ void printModeStr(const modestr str) {
 		output[strlen(output) + 1] = '\0';
 	}
 
-	printf("%s%s" FIELD_PAD, output, RESET);
+	printf("%s" RESET FIELD_PAD, output);
 }

@@ -22,7 +22,7 @@ inline void parseSize(char *size_str, char *size_unit, const size_t size, const 
 		return;
 	}
 
-	const char SUFFIXES[] = "bkmgtpezyrq";	// spell:disable-line
+	const char SUFFIXES[] = "\0kmgtpezyrq";	// spell:disable-line
 
 	int unit = 0;
 	long double abbr_size = (long double)size;
@@ -33,5 +33,5 @@ inline void parseSize(char *size_str, char *size_unit, const size_t size, const 
 	}
 
 	*size_unit = SUFFIXES[unit];
-	sprintf(size_str, (unit == 0 ? "%.0Lf%c" : "%.1Lf%c"), abbr_size, *size_unit);
+	sprintf(size_str, (unit == 0 ? "%.0Lf" : "%.1Lf"), abbr_size);
 }

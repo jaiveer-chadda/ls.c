@@ -8,46 +8,90 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define PRINT_SIZE_W_COLOUR(un) \
-	do { \
-		printf( \
-			"%s%.*s%s%c" RESET FIELD_PAD, \
-			size_colour_esc[SC_B##un], \
-			(int)strlen(size_str) - 1, size_str, \
-			size_colour_esc[SC_U##un], unit \
-		); \
-	} while(0)
+#define IF_COLOUR(print) DO_COLOUR ? print : ""
+
+#define DO_IGNORE_UNIT(unit) (unit == '\0' || unit == '-' || unit == ',')
+
+static inline void getUnitColour(char *unit_colour, const char unit) {
+	if (DO_IGNORE_UNIT(unit)) return;
+	switch (unit) {
+		case 'k': strcpy(unit_colour, size_colour_esc[SC_Uk]); return;
+		case 'm': strcpy(unit_colour, size_colour_esc[SC_Um]); return;
+		case 'g': strcpy(unit_colour, size_colour_esc[SC_Ug]); return;
+		default	: strcpy(unit_colour, size_colour_esc[SC_Ut]); return;
+	}
+}
+
+static inline void getValueColour(char *value_colour, const char unit) {
+	switch (unit) {
+		case '-' : strcpy(value_colour, PUNCT)					; return;
+		case '\0': strcpy(value_colour, size_colour_esc[SC_Bb])	; return;
+		case 'k' : strcpy(value_colour, size_colour_esc[SC_Bk])	; return;
+		case 'm' : strcpy(value_colour, size_colour_esc[SC_Bm])	; return;
+		case 'g' : strcpy(value_colour, size_colour_esc[SC_Bg])	; return;
+		default	 : strcpy(value_colour, size_colour_esc[SC_Bt])	; return;
+	}
+}
+
+static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
+	char minor_size[strlen(size_str)-2];
+	int i = 0;
+
+	// copy all of `size_str` to `majmin_str` until the first comma
+	while (i < __INT_MAX__) {
+		if (size_str[i] == ',') break;
+		minor_size[i] = size_str[i];
+		i++;
+	}
+
+	sprintf(majmin_str,
+		"%s"	// maj colour
+		"%s"	// maj size
+		"%s"	// comma (and min colour)
+		"%s",	// min size
+
+		IF_COLOUR(MAJ_COL),
+		minor_size,
+		IF_COLOUR(PUNCT "," MIN_COL),
+		size_str + i + 1
+	);
+}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printSize(const sizestr size_str, const char unit) {
 	if (!do_size_str) return;
 
-	const int len = (int)strlen(size_str);
-	printf("%*c", (int)(field_lengths.size_str - len) + 1, ' ');
-	int i = 0;
-	
-	switch (unit) {
-		case '-': printf(PUNCT "%s" RESET FIELD_PAD, size_str); break;
-		case ',':
-			while (i < __INT_MAX__) {
-				if (size_str[i] == ',') break; // break from the while loop
-				putchar(size_str[i++]);
-			}
+	const int field_len	= (int)field_lengths.size_str;
+	const int str_len	= (int)strlen(size_str);
+	const int spaces	= (DO_IGNORE_UNIT(unit) ? 1 : 0) + ((field_len - 1) - str_len);
 
-			printf(PUNCT "," MIN_COL "%s" RESET FIELD_PAD, size_str + i+1);
-			break;
+	char value_colour[16] = "", unit_colour[16] = "";
+	char majmin_str[32] = "";
 
-		case 'b':
-			if (DO_BYTES) PRINT_SIZE_W_COLOUR(b);
-			else printf(" %s%.*s" RESET FIELD_PAD, size_colour_esc[SC_Bb], (int)strlen(size_str) - 1, size_str);
-			break;
+	if (unit == ',') getMajMinString(majmin_str, size_str);
+	else getValueColour(value_colour, unit);
 
-		case 'k': PRINT_SIZE_W_COLOUR(k); break;
-		case 'm': PRINT_SIZE_W_COLOUR(m); break;
-		case 'g': PRINT_SIZE_W_COLOUR(g); break;
-		default	: PRINT_SIZE_W_COLOUR(t); break;
-	}
+	getUnitColour(unit_colour, unit);
+
+	printf(
+		"%*s"		// spaces and their length
+		"%s"		// value colour
+		"%s"		// value
+		"%s"		// unit colour
+		"%c"		// unit
+		"%s"		// colour reset
+		FIELD_PAD,	// interfield padding
+
+		spaces, "",
+		IF_COLOUR(value_colour),
+		unit == ',' ? majmin_str : size_str,
+
+		IF_COLOUR(unit_colour),
+		DO_IGNORE_UNIT(unit) ? '\0' : unit,
+
+		IF_COLOUR(RESET)
+	);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

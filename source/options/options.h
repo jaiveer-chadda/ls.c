@@ -96,7 +96,7 @@ extern const bool
 #define flag_str_TITLE	"Flags"
 
 #define mode_TITLE		"Mode"
-#define mode_str_TITLE	"Permissions"
+#define mode_str_TITLE	"Perms"
 
 #define size_TITLE		"Size"
 #define size_str_TITLE	"Size"
