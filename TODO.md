@@ -65,20 +65,20 @@
 - [x] files with 2+ hardlinks should also have other visual flourishes on their filenames  `\e[21m \e[105m`
 
 ##### `size`
-- [ ] a gradient of colours for different sized files
+- [x] a gradient of colours for different sized files
   - probably from `\e[92m` to `\e[31m`
 
 ##### `usr_name`
-- [ ] a different colour for:
-  - [ ] you   `#807ded`
-  - [ ] root  `\e[31m`
-  - [ ] other `\e[93m`
+- [x] a different colour for:
+  - [x] you   `#807ded`
+  - [x] root  `\e[31m`
+  - [x] other `\e[93m`
 
 ##### `grp_name`
-- [ ] a different colour for:
-  - [ ] yours   `\e[93m`
-  - [ ] root's  `\e[94m`
-  - [ ] others' `\e[91m`
+- [x] a different colour for:
+  - [x] yours   `\e[93m`
+  - [x] root's  `\e[94m`
+  - [x] others' `\e[91m`
 
 ##### `flag_str`
 - [ ] maybe a different colour for each type of flag??
