@@ -78,6 +78,14 @@ inline void printHeader(void) {
 	if (DO_COLOUR) printModeStr(file.mode_str); \
 	else PRINT_FIELD(mode_str)
 
+#define PRINT_USR_NAME() \
+	if (DO_COLOUR) printUsrName(&(file.uid), file.usr_name); \
+	else PRINT_FIELD(usr_name)
+
+#define PRINT_GRP_NAME() \
+	if (DO_COLOUR) printGrpName(&(file.gid), file.grp_name); \
+	else PRINT_FIELD(grp_name)
+
 #define PRINT_NLINK() \
 	if (DO_COLOUR) printNLink(&(file.nlink), &(file.mode), &(file.do_hardlink_hl)); \
 	else PRINT_FIELD(nlink)
@@ -95,8 +103,8 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 
 		PRINT_NLINK();
 		PRINT_FIELD(size);	PRINT_SIZE_STR();
-		PRINT_FIELD(uid);	PRINT_FIELD(usr_name);
-		PRINT_FIELD(gid);	PRINT_FIELD(grp_name);
+		PRINT_FIELD(uid);	PRINT_USR_NAME();
+		PRINT_FIELD(gid);	PRINT_GRP_NAME();
 		PRINT_FIELD(flags);	PRINT_FIELD(flag_str);
 		PRINT_FIELD(time);	PRINT_TIME_STR();
 
