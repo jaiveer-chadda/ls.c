@@ -28,18 +28,22 @@ const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void parseFlags(flagstr flag_string, const flag_t raw_flags) {
-	for (int i = 0; i < MAX_FLAG_NUM; i++) {
-		if (raw_flags & ALL_FLAGS[i].mask) {
-			strcat(flag_string, GET_FLAG_NAME(ALL_FLAGS[i]));
-			strcat(flag_string, ",");
-		}
+inline void parseFlags(flagstr flag_string, const flag_t raw_flags) {
+	if (raw_flags == 0) {
+		strcpy(flag_string, NO_FLAG_STR);
+		return;
 	}
 
-	char *last_char = &flag_string[strlen(flag_string)-1];
+	bool is_first_flag = true;
 
-	if (*last_char == ',') *last_char = '\0';
-	else strcpy(flag_string, NO_FLAG_STR);
+	for (int i = 0; i < MAX_FLAG_NUM; i++) {
+		if (raw_flags & ALL_FLAGS[i].mask) {
+			if (!is_first_flag) strcat(flag_string, FLAG_SEP_STR);
+			is_first_flag = false;
+
+			strcat(flag_string, GET_FLAG_NAME(ALL_FLAGS[i]));
+		}
+	}
 }
 
 // spell:ignoreRegExp /, "\w+"/g

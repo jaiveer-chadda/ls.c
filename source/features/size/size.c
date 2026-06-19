@@ -10,28 +10,47 @@
 inline void parseSize(sizestr size_str, char *size_unit, const size_t size, const dev_t rdev) {
 	const int maj = major(rdev), min = minor(rdev);
 
+	// if there's any info in the major/minor sizes, then display them instead of the size_t
 	if (maj + min != 0) {
-		sprintf(size_str, "%d,%d", maj, min);
-		*size_unit = ',';
+		sprintf(size_str, "%d" MAJ_MIN_SEP "%d", maj, min);
+		// the "unit" won't be displayed, but it's used here as a note to
+		//  remember that the file size is in the maj,min format
+		*size_unit = UNIT_MAJ_MIN;
 		return;
 	}
 
+	// if the size is 0, don't bother going through the formatting process
 	if (size == 0) {
 		strcpy(size_str, NO_SIZE_STR);
-		*size_unit = '-';
+		// once again, this unit won't be displayed, but it's here to note that the size is 0
+		*size_unit = UNIT_ZERO;
 		return;
 	}
 
-	const char SUFFIXES[] = "\0kMGTPEZYRQ";	// spell:disable-line
+	/* ———————————————————————————————————————————————————————————— */
 
-	int unit = 0;
+	const char SUFFIXES[] = {
+		UNIT_BYTE,		// \0
+		UNIT_KILO,		//  k
+		UNIT_MEGA,		//  M
+		UNIT_GIGA,		//  G
+		UNIT_TERA,		//  T
+		UNIT_PETA,		//  P
+		UNIT_EXA,		//  E
+		UNIT_ZETA,		//  Z
+		UNIT_YOTTA,		//  Y
+		UNIT_RONNA,		//  R
+		UNIT_QUETTA,	//  Q
+	};
+
+	int unit_idx = 0;
 	long double abbr_size = (long double)size;
 
-	while (abbr_size >= 1000 && unit <= (int)sizeof(SUFFIXES) - 1) {
+	while (abbr_size >= 1000 && unit_idx <= (int)sizeof(SUFFIXES) - 1) {
 		abbr_size /= 1000;
-		unit++;
+		unit_idx++;
 	}
 
-	*size_unit = SUFFIXES[unit];
-	sprintf(size_str, (unit == 0 ? "%.0Lf" : "%.1Lf"), abbr_size);
+	*size_unit = SUFFIXES[unit_idx];
+	sprintf(size_str, (unit_idx == 0 ? "%.0Lf" : "%.1Lf"), abbr_size);
 }

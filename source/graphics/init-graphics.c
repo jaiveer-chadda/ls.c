@@ -2,7 +2,7 @@
 
 #include "graphics.h"
 
-// only unpack escapes
+// only unpack the escape characters
 #define X(name, esc) esc,
 const char *const file_colour_esc[] = { FILE_COLOUR_TABLE };
 const char *const perm_colour_esc[] = { PERM_COLOUR_TABLE };

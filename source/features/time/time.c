@@ -8,10 +8,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DATE_FMT "%a %e %b %y"
-#define TIME_FMT "  %R"
-#define TIME_ERR_STR "-"
-
 #define MIN  60
 #define HOUR 60 * MIN
 #define DAY  24 * HOUR

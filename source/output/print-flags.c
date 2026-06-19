@@ -19,7 +19,7 @@ void printFlagStr(const flag_t *flags) {
 		return;
 	}
 
-	char flag_name[MAX_FLAG_LEN];
+	flagstr flag_name;
 	int chars_printed = 0;
 	bool is_first_flag = true;
 
@@ -28,14 +28,13 @@ void printFlagStr(const flag_t *flags) {
 			strcpy(flag_name, GET_FLAG_NAME(ALL_FLAGS[i]));
 
 			if (!is_first_flag) {
-				printf("%s", PUNCT "," RESET);
+				printf("%s", PUNCT FLAG_SEP_STR RESET);
 				chars_printed++;
 			}
+			is_first_flag = false;
 
 			printf("%s%s" RESET, ALL_FLAGS[i].colour, flag_name);
-
 			chars_printed += (int)strlen(flag_name);
-			is_first_flag = false;
 		}
 	}
 

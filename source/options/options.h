@@ -2,8 +2,8 @@
 
 void initFormatting(void);
 
-#ifndef FLAGS_INITIALIASED
-#define FLAGS_INITIALIASED
+#ifndef OPTIONS_INITIALIASED
+#define OPTIONS_INITIALIASED
 
 #include "../model/stat-model.h"
 
@@ -108,4 +108,4 @@ extern const bool
 #define time_TITLE		"MTime"
 #define time_str_TITLE	"Modified"
 
-#endif
+#endif /* !OPTIONS_INITIALIASED */

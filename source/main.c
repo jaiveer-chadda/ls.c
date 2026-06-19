@@ -13,7 +13,7 @@
 #include "features/path/path.h"
 #include "features/time/time.h"
 
-path_t adjusted_path;
+path_t adjusted_path = CURRENT_DIR;
 
 int main(const int argc, const char *argv[]) {
 
@@ -25,8 +25,9 @@ int main(const int argc, const char *argv[]) {
 	DIR *dir_obj = getDirectory(target_dir, argc, argv);
 	if (dir_obj == NULL) return 1;
 
-	// Print the target directory, as a title (casting it to void, since it's not rly that important)
-	(void) getAbsolutePath(adjusted_path, target_dir);
+	// Get the path to the target directory, which'll be used to replace the `.` directory's name
+	//  (casting to void, since there's nth we can rly do if we dont manage to get it)
+	(void) getDirPath(adjusted_path, target_dir);
 
 	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
 

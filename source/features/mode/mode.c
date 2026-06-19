@@ -12,14 +12,14 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define EXT_MASK 0007000	/// A mask to get the extended bits (4,2,1 = uid, gid, sticky) from octal permissions.
-#define USR_MASK S_IRWXU	/// A mask to get the user octal permissions.
+#define USR_MASK S_IRWXU	/// A mask to get the user  octal permissions.
 #define GRP_MASK S_IRWXG	/// A mask to get the group octal permissions.
 #define OTH_MASK S_IRWXO	/// A mask to get the other octal permissions.
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
 #define SET_EXT_BIT(str, chr) /* exec == lowercase, non-exec == uppercase */ \
-	str[2] = str[2] == 'x' ? chr : chr - ('a' - 'A')
+	str[2] = (str[2] == EXEC_BIT_CHAR) ? chr : chr - ('a' - 'A')
 
 #define PARSE_PERM(location, ext_char, type) do { \
 		getPermStr(type##_oct, type##_str); \
@@ -29,11 +29,11 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void getPermStr(const mode_t oct_digit, char *perm_str) {
-	strcpy(perm_str, NO_PERM_STR NO_PERM_STR NO_PERM_STR);
+	strcpy(perm_str, (char[]){NO_PERM_CHAR, NO_PERM_CHAR, NO_PERM_CHAR, '\0'});
 
-	if (oct_digit & 04) perm_str[0] = 'r';
-	if (oct_digit & 02) perm_str[1] = 'w';
-	if (oct_digit & 01) perm_str[2] = 'x';
+	if (oct_digit & 04) perm_str[0] = READ_BIT_CHAR;
+	if (oct_digit & 02) perm_str[1] = WRITE_BIT_CHAR;
+	if (oct_digit & 01) perm_str[2] = EXEC_BIT_CHAR;
 }
 
 /// @brief Gets the character representing the filetype specified by an octal type integer.
@@ -47,7 +47,7 @@ static inline char getModeType(const mode_t mode) {
 		case S_IFLNK:	return SYMLINK_CHAR	; // symbolic link
 		case S_IFSOCK:	return SOCKET_CHAR	; // socket			('=' or 's')
 		case S_IFWHT:	return WHITEOUT_CHAR; // whiteout		('%' or 'w')
-		default:		return ' '; // unknown
+		default:		return UNKNOWN_CHAR	; // unknown
 	}
 }
 
@@ -68,6 +68,7 @@ inline char getTypeSuffix(const mode_t mode) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void getMode(modestr mode_str, const mode_t oct_mode) {
+	// separate oct_mode by bitshifting it, leaving just one digit from 0-7 in each var
 	const mode_t // Note: 3 = log2(8)
 		ext_oct = (oct_mode & EXT_MASK) >> (3 * 3), // `d--s--s--t` == `7000`
 		usr_oct = (oct_mode & USR_MASK) >> (3 * 2), // `drwx------` == `0700`
@@ -76,11 +77,11 @@ void getMode(modestr mode_str, const mode_t oct_mode) {
 
 	char usr_str[4], grp_str[4], oth_str[4];
 
-	PARSE_PERM(04, 's', usr);
-	PARSE_PERM(02, 's', grp);
-	PARSE_PERM(01, 't', oth);
+	PARSE_PERM(04, SUID_X_BIT_CHAR	, usr);
+	PARSE_PERM(02, SGID_X_BIT_CHAR	, grp);
+	PARSE_PERM(01, STICKY_X_BIT_CHAR, oth);
 
-	snprintf(mode_str, MAX_MODE_LEN, "%c%s%s%s", getModeType(oct_mode), usr_str, grp_str, oth_str);
+	sprintf(mode_str, "%c%s%s%s", getModeType(oct_mode), usr_str, grp_str, oth_str);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

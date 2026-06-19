@@ -12,7 +12,7 @@ typedef char name_t[MAX_NAME_LEN];
 typedef char path_t[MAX_PATH_LEN];
 typedef unsigned int flag_t;
 
-typedef char modestr[MAX_MODE_LEN];
+typedef char modestr[MODE_STR_LEN];
 typedef char timestr[MAX_TIME_LEN];
 typedef char ugidstr[MAX_UGID_LEN];
 typedef char sizestr[MAX_SIZE_LEN];

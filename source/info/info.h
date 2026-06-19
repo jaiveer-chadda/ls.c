@@ -2,6 +2,8 @@
 
 #include "../model/stat-model.h"
 
+#define CURRENT_DIR "."
+
 DIR* getDirectory(char *target_dir, const int argc, const char *argv[]);
 
 void getAllFileInfo(

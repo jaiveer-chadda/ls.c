@@ -1,4 +1,4 @@
-/// @file info/get-info.c
+/// @file info/get-file-info.c
 
 #include <stdio.h>
 #include <string.h>
@@ -111,7 +111,7 @@ inline void getAllFileInfo(
 		if (
 			IS_DIRECTORY(info) || (	// add to the dirs array if it's a directory,
 				// or if its a symlink, and the file it points to is a directory
-				do_link_to && IS_SYMLINK(info) && file.ln_suf == '/'
+				do_link_to && IS_SYMLINK(info) && file.ln_suf == DIR_SUFFIX
 			)
 		) {
 			dirs[(*dir_count)++] = file;

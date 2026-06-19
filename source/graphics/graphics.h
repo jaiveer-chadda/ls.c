@@ -4,19 +4,70 @@
 #define GRAPHICS_INITIALIASED
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— —— Chars & Strings —— ———————————————————————————————————————————————————————————————————————————————————————— */
 
 #define FIELD_PAD " "
-#define SYMLINK_ARROW " --> "
 
-/* ———————————————————————————————————————————————————————————————————————————————— */
+/* —— Symlinks ————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define NO_SIZE_STR "-"
-#define NO_FLAG_STR "-"
-#define NO_PERM_STR "-"
+#define SYMLINK_ARROW "  -->  " // "  ——→  "
 
-/* ———————————————————————————————————————————————————————————————————————————————— */
+/* —— Time ————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define DATE_FMT "%a %e %b %y"
+#define TIME_FMT "  %R"
+#define TIME_ERR_STR "-"
+
+/* —— Flags ———————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define NO_FLAG_STR		"-"
+#define FLAG_SEP_STR	","
+
+/* —— File Sizes ——————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define NO_SIZE_STR		"-"
+#define MAJ_MIN_SEP		","
+
+#define UNIT_MAJ_MIN	','
+#define UNIT_ZERO		'-'
+
+#define UNIT_BYTE		'\0'
+#define UNIT_KILO		'k'
+#define UNIT_MEGA		'M'
+#define UNIT_GIGA		'G'
+#define UNIT_TERA		'T'
+#define UNIT_PETA		'P'
+#define UNIT_EXA		'E'
+#define UNIT_ZETA		'Z'
+#define UNIT_YOTTA		'Y'
+#define UNIT_RONNA		'R'
+#define UNIT_QUETTA		'Q'
+
+/* —— Mode / Permissions ——————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define NO_PERM_CHAR		'-'
+
+#define READ_BIT_CHAR		'r'
+#define WRITE_BIT_CHAR		'w'
+#define EXEC_BIT_CHAR		'x'
+
+#define SUGID_X_BIT_CHAR	's'
+#define SUGID_N_BIT_CHAR	'S'
+
+#define STICKY_X_BIT_CHAR	't'
+#define STICKY_N_BIT_CHAR	'T'
+
+#define SUID_N_BIT_CHAR		SUGID_N_BIT_CHAR
+#define SUID_X_BIT_CHAR		SUGID_X_BIT_CHAR
+
+#define SGID_N_BIT_CHAR		SUGID_N_BIT_CHAR
+#define SGID_X_BIT_CHAR		SUGID_X_BIT_CHAR
+
+/* —— Filetypes ———————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define UNKNOWN_CHAR	'?'
 #define REGULAR_CHAR	'.'
+
 #define DIR_CHAR		'd'
 #define SYMLINK_CHAR	'l'
 #define PIPE_CHAR		'|'
@@ -30,7 +81,7 @@
 #define EXEC_SUFFIX		'*'
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— —— General ANSI —— ——————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define CSI "\033["
 #define END "m"
@@ -38,40 +89,39 @@
 #define CSI_FG	CSI "3"
 #define CSI_BG	CSI "4"
 
+#define RESET	CSI END
+
+#define NO_FG	CSI	"39" END
+#define NO_BG	CSI	"49" END
+
 #define RGB(r,g,b) "8;2;" #r ";" #g ";" #b
 
-/* ———————————————————————————————————————————————————————————————————————————————— */
+/* —— ANSI Non-Colour HLs —————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define RESET		CSI END
+#define	UNDER		CSI	 "4" END	// \e[4m
+#define	DUNDER		CSI	"21" END	// \e[21m
+#define NOUNDER		CSI	"24" END	// \e[24m
 
-#define NO_FG		CSI	"39" END
-#define NO_BG		CSI	"49" END
+#define	BOLD		CSI	 "1" END	// \e[1m
+#define	DIM			CSI	 "2" END	// \e[2m
+#define NOBOLD		CSI	"22" END	// \e[22m
 
-#define	UNDER		CSI	 "4" END
-#define	DUNDER		CSI	"21" END
-#define NOUNDER		CSI	"24" END
-
-#define	BOLD		CSI	 "1" END
-#define	DIM			CSI	 "2" END
-#define NOBOLD		CSI	"22" END
-
-/* ———————————————————————————————————————————————————————————————————————————————— */
+/* —— Header Style ————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define HEADER_HL		UNDER	BOLD
 #define HEADER_HL_OFF	NOUNDER	NOBOLD
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— NLink Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define NLINK_COL_DIR		CSI	"1;96"			END	// \e[96m
 #define NLINK_COL_REG_1		CSI	"36"			END	// \e[36m
 #define NLINK_COL_REG_MORE	CSI	"1;30;105"		END	// \e[105m
 
+/* —— Hardlink Colours ————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #define HARDLN_UNDERLINE	CSI	"1;21;58;5;13"	END	// \e[21m \e[95m
 
-#define MAJ_COL				CSI "1;37"			END // \e[37m
-#define MIN_COL				CSI "36"			END // \e[36m
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— UID/GID Colours —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define USR_YOU_COL			CSI "1;38;5;105"	END	// #807DED
 #define USR_ROOT_COL		CSI "31" 			END	// \e[31m
@@ -81,7 +131,7 @@
 #define GRP_ROOT_COL		CSI "94" 			END	// \e[94m
 #define GRP_OTH_COL			CSI "91" 			END	// \e[91m
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— [Internal] Filename Colour Definitions ——————————————————————————————————————————————————————————————————————— */
 
 #define HL_REG			""			//  \e[37m
 #define HL_PUNCT		"90"		//  \e[90m
@@ -110,7 +160,7 @@
 #define HL_X_REG		"1;31"		//  \e[31m
 #define HL_X_NREG		"91"		//  \e[91m
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Flag Colours ————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define FL_U_NODUMP			CSI "94"		END	// \e[94m
 #define FL_U_IMMUTABLE		CSI "92"		END	// \e[92m
@@ -127,11 +177,11 @@
 #define FL_S_NOUNLINK		CSI "36"		END	// \e[36m
 #define FL_S_DATALESS		CSI HL_DATALESS	END	// \e[47m
 
-/* ———————————————————————————————————————————————————————————————————————————————— */
+/* —— Punctuation Colour ——————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define PUNCT	CSI HL_PUNCT END
+#define PUNCT	CSI HL_PUNCT END	// \e[90m
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Filetype Colours ————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // use the macro `X`, on the expectation that it'll be defined later
 #define FILE_COLOUR_TABLE \
@@ -154,6 +204,8 @@
 	X(FC_DATALESS	, CSI	HL_DATALESS	END	) /* \e[47m */ \
 	X(FC_WHITEOUT	, CSI	HL_WHITEOUT	END	) /*\e[107m */
 
+/* —— Permission Colours ——————————————————————————————————————————————————————————————————————————————————————————— */
+
 #define PERM_COLOUR_TABLE \
 	X(PC_NONE		, CSI ";" HL_PUNCT		END	) /* \e[90m */ \
 	X(PC_READ		, CSI ";" HL_READ		END	) /* \e[92m */ \
@@ -168,6 +220,8 @@
 	X(PC_STICKY_X	, CSI ";" HL_STICKY_X	END	) /* \e[44m */ \
 	X(PC_STICKY_N	, CSI ";" HL_STICKY_N	END	) /*\e[104m */
 
+/* —— Time Colours ————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #define TIME_COLOUR_TABLE \
 	X(TC_NOW	, CSI_FG RGB(203, 210, 242) ";1" END ) \
 	X(TC_MIN	, CSI_FG RGB(200, 208, 241)		 END ) \
@@ -178,21 +232,26 @@
 	X(TC_THIS_YR, CSI_FG RGB( 35, 106, 204)		 END ) \
 	X(TC_OTHER	, CSI_FG RGB(  4,  65, 145)		 END )
 
+/* —— File Size Colours ———————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define MAJ_COL		CSI "1;37"	END // \e[37m
+#define MIN_COL		CSI "36"	END // \e[36m
+
 #define SIZE_COLOUR_TABLE \
 	/* value */ \
-	X(SC_Bb, CSI "92"		END ) /* \e[102m */ \
-	X(SC_Bk, CSI "93"		END ) /* \e[103m */ \
-	X(SC_Bm, CSI "38;5;216"	END ) /* #FFAB81 */ \
-	X(SC_Bg, CSI "91"		END ) /* \e[101m */ \
-	X(SC_Bt, CSI "38;5;168"	END ) /* #E85587 */ \
+	X(SC_BB, CSI "92"		END ) /* \e[102m */ \
+	X(SC_BK, CSI "93"		END ) /* \e[103m */ \
+	X(SC_BM, CSI "38;5;216"	END ) /* #FFAB81 */ \
+	X(SC_BG, CSI "91"		END ) /* \e[101m */ \
+	X(SC_BT, CSI "38;5;168"	END ) /* #E85587 */ \
 	/* units */ \
-	X(SC_Ub, CSI "32"		END ) /* \e[42m  */ \
-	X(SC_Uk, CSI "33"		END ) /* \e[43m  */ \
-	X(SC_Um, CSI "38;5;208"	END ) /* #FF8400 */ \
-	X(SC_Ug, CSI "31"		END ) /* \e[41m  */ \
-	X(SC_Ut, CSI "38;5;125"	END ) /* #BD0060 */
+	X(SC_UB, CSI "32"		END ) /* \e[42m  */ \
+	X(SC_UK, CSI "33"		END ) /* \e[43m  */ \
+	X(SC_UM, CSI "38;5;208"	END ) /* #FF8400 */ \
+	X(SC_UG, CSI "31"		END ) /* \e[41m  */ \
+	X(SC_UT, CSI "38;5;125"	END ) /* #BD0060 */
 
-/* ———————————————————————————————————————————————————————————————————————————————— */
+/* —— —— Type Definitions —— ——————————————————————————————————————————————————————————————————————————————————————— */
 
 #define X(name, esc) name,	// only unpack the names
 typedef enum { FILE_COLOUR_TABLE FILE_COLOUR_COUNT } FileColour;
@@ -201,14 +260,17 @@ typedef enum { TIME_COLOUR_TABLE TIME_COLOUR_COUNT } TimeColour;
 typedef enum { SIZE_COLOUR_TABLE SIZE_COLOUR_COUNT } SizeColour;
 #undef X
 
+/* —— —— Colour Enum Declarations —— ——————————————————————————————————————————————————————————————————————————————— */
+
 extern const char *const file_colour_esc[FILE_COLOUR_COUNT];
 extern const char *const perm_colour_esc[PERM_COLOUR_COUNT];
 extern const char *const time_colour_esc[TIME_COLOUR_COUNT];
 extern const char *const size_colour_esc[SIZE_COLOUR_COUNT];
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— —— Function Declarations —— —————————————————————————————————————————————————————————————————————————————————— */
 
 #include "../model/types.h"
+
 void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
 
 #endif /* !GRAPHICS_INITIALIASED */
