@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../info/info.h"
 #include "../options/options.h"
 #include "../graphics/graphics.h"
 #include "../features/mode/mode.h"
@@ -11,20 +10,6 @@
 #include "output.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#define DO_DIM(name, flags)						\
-	DO_DIM_HIDDEN && (							\
-		(										\
-			name[0] == '.'						\
-			&& strcmp(name, CURRENT_DIR) != 0	\
-		)										\
-		|| (flags & UF_HIDDEN)					\
-	)
-
-#define GET_NAME(name) \
-	strcmp(name, CURRENT_DIR) == 0 ? adjusted_path : name
-
-/* ——————————————————————————————————————————————————————————————————————————— */
 
 #define PRINT_FIELD(field)										\
 	if (do_##field) {											\
@@ -34,14 +19,6 @@
 	}
 
 /* ——————————————————————————————————————————————————————————————————————————— */
-
-#define PRINT_NAME(name, colour, do_hln_hl, flags)						\
-	putchar(' '); /* names have an extra space before them */			\
-	if (DO_COLOUR) {													\
-		if (do_hln_hl) printf("%s", HARDLN_UNDERLINE);					\
-		if (DO_DIM(name, flags)) printf("%s", DIM);						\
-		printf("%s%s" RESET, file_colour_esc[colour], GET_NAME(name));	\
-	} else printf("%s", name)
 
 #define PRINT_TIME_STR()																				\
 	if (DO_COLOUR) {																					\
@@ -78,7 +55,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(flags);	PRINT_FLAG_STR();
 		PRINT_FIELD(time);	PRINT_TIME_STR();
 
-		PRINT_NAME(file.name, file.file_col, file.do_hardlink_hl, file.flags);
+		printName(file.name, &(file.file_col), &(file.do_hardlink_hl), &(file.flags));
 
 		if (do_suffix && file.suffix != '\0') printf("%c", file.suffix);
 
