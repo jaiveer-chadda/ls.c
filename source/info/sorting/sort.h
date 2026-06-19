@@ -1,4 +1,4 @@
-/// @file sorting/sort.h
+/// @file info/sorting/sort.h
 
 #include "../../model/stat-model.h"
 

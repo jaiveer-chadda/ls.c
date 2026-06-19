@@ -1,4 +1,4 @@
-/// @file graphics/print-mode.c
+/// @file output/print-mode.c
 
 #include <stdio.h>
 #include <string.h>

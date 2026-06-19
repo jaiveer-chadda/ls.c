@@ -1,4 +1,4 @@
-/// @file features/links/symlinks.c
+/// @file features/links/symlink.c
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,4 +1,4 @@
-/// @file info/print-all-info.c
+/// @file output/print-all-info.c
 
 #include <stdio.h>
 #include <string.h>

@@ -1,4 +1,4 @@
-/// @file graphics/print-nlink.c
+/// @file output/print-nlink.c
 
 #include <stdio.h>
 #include <string.h>

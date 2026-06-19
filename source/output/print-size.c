@@ -1,4 +1,4 @@
-/// @file graphics/print-size.c
+/// @file output/print-size.c
 
 #include <stdio.h>
 #include <string.h>

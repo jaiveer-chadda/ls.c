@@ -1,4 +1,4 @@
-/// @file sorting/sort-files.c
+/// @file info/sorting/sort-files.c
 
 #include <stdio.h>
 #include <stdlib.h>

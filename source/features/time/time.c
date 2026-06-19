@@ -1,4 +1,4 @@
-/// @file features/time/time.h
+/// @file features/time/time.c
 
 #include <stdio.h>
 #include <string.h>
