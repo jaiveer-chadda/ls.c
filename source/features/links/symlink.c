@@ -14,6 +14,11 @@ void getLink(char *link_str, path_t link_path) {
 	const ssize_t nbytes = readlink(link_path, link, sizeof(path_t));
 	link[nbytes] = '\0';
 
+	if (strlen(link) == 0) {
+		strcpy(link_str, " ");
+		return;
+	}
+
 	const char *HOME = getenv("HOME");
 
 	const int home_len = strlen(HOME);
@@ -25,8 +30,8 @@ void getLink(char *link_str, path_t link_path) {
 		&& home_len < path_len
 		&& strncmp(HOME, link, home_len) == 0
 	) {
-		sprintf(link_str, SYMLINK_ARROW "~%s", link + home_len);
+		sprintf(link_str, "~%s", link + home_len);
 	} else {
-		sprintf(link_str, SYMLINK_ARROW "%s", link);
+		sprintf(link_str, "%s", link);
 	}
 }
