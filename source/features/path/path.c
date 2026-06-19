@@ -8,40 +8,72 @@
 #include "path.h"
 #include "../../info/info.h"
 
-#define FAILURE(err) do {	\
-		perror(err);		\
-		return EXIT_FAILURE;\
-	} while (0)
+void abbrPath(path_t out_path, const path_t abs_path) {
+	// by default, copy the abs_path
+	strcpy(out_path, abs_path);
+
+	const char *HOME = getenv("HOME");
+
+	if (HOME != NULL) {
+		const int home_len = strlen(HOME);
+		const int path_len = strlen(abs_path);
+
+		if (
+			home_len > 0								// if `$HOME` has some value,
+			&& home_len < path_len						// and the full path isn't `$HOME` itself
+			&& strncmp(HOME, abs_path, home_len) == 0	// and if it's a prefix of `abs_path`
+		) {
+			// then replace `$HOME` with `~`
+			sprintf(out_path, "~%s", abs_path + home_len);
+		}
+	}
+	// if anything fails, just return the absolute path we got earlier
+}
 
 int getDirPath(path_t out_path, const path_t path) {
 	path_t abs_path;
 
-	// if it isn't already an absolute path
-	if (path[0] != '/') {
-		if (getcwd(abs_path, MAX_PATH_LEN) == NULL)				FAILURE("getcwd");	// get PWD
-		if (strlen(abs_path) + strlen(path) + 2 > MAX_PATH_LEN) FAILURE("strlen");	// make sure we don't overflow
+	// if path is already an absolute path
+	if (path[0] == '/') {
+		// then just copy it over
+		strcpy(abs_path, path);
 
-		if (strcmp(path, CURRENT_DIR) != 0) {
-			strcat(abs_path, path);
+	} else { // if it's not an absolute path:
 
-			abs_path[strlen(abs_path)	 ] = '/';
-			abs_path[strlen(abs_path) + 1] = '\0';
+		// we're getting the env var instead of running `getcwd`,
+		//  since `getcwd` will chase links when finding the absolute path of `path`
+		const char *PWD = getenv("PWD"); // get PWD
+		path_t base_path;
+
+		if (PWD == NULL) {
+			// if `getenv` failed, try `getcwd`, and if that fails, then exit
+			if (getcwd(base_path, MAX_PATH_LEN) == NULL) {
+				perror("getenv,getcwd");
+				return EXIT_FAILURE;
+			}
+
+		} else {
+			strncpy(base_path, PWD, MAX_PATH_LEN - 1);
+			base_path[MAX_PATH_LEN - 1] = '\0';
 		}
 
-	} else strcpy(abs_path, path);
+		// if path == `.`, copy the path we just calculated over to `abs_path`
+		if (strcmp(path, CURRENT_DIR) == 0) {
+			strncpy(abs_path, base_path, MAX_PATH_LEN);
 
-	const char *HOME = getenv("HOME");
+		} else {
+			// if path != `.` , concatenate abs_path and base_path together
+			//  and make sure the buffer doesn't overflow
+			if (sprintf(abs_path, "%s/%s", base_path, path) >= MAX_PATH_LEN) {
+				perror("path buffer overflow");
+				return EXIT_FAILURE;
+			}
+		}
+	}
 
-	const int home_len = strlen(HOME);
-	const int path_len = strlen(abs_path);
+	// once we've gotten the absolute path, try and abbreviate it by replacing $HOME with `~`.
+	abbrPath(out_path, abs_path);
 
-	if (HOME != NULL
-		&& home_len > 0
-		&& home_len < path_len
-		&& strncmp(HOME, abs_path, home_len) == 0
-	) {
-		sprintf(out_path, "~%s", abs_path + home_len);
-	} else strcpy(out_path, abs_path);
-
+	// abbrPath will always succeed, so return with success
 	return EXIT_SUCCESS;
 }
