@@ -9,7 +9,6 @@ void initFormatting(void);
 
 extern const bool
 	DO_COLOUR,
-	DO_BYTES,
 	DO_SHORT_FLAGS,
 	DO_TINY_FLAGS,
 	DO_HEADER,

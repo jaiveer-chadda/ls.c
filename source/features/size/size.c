@@ -7,7 +7,7 @@
 #include "../../model/stat-model.h"
 #include "size.h"
 
-inline void parseSize(char *size_str, char *size_unit, const size_t size, const dev_t rdev) {
+inline void parseSize(sizestr size_str, char *size_unit, const size_t size, const dev_t rdev) {
 	const int maj = major(rdev), min = minor(rdev);
 
 	if (maj + min != 0) {
@@ -22,12 +22,12 @@ inline void parseSize(char *size_str, char *size_unit, const size_t size, const 
 		return;
 	}
 
-	const char SUFFIXES[] = "\0kmgtpezyrq";	// spell:disable-line
+	const char SUFFIXES[] = "\0kMGTPEZYRQ";	// spell:disable-line
 
 	int unit = 0;
 	long double abbr_size = (long double)size;
 
-	while (abbr_size > 1000 && (unsigned long) unit <= strlen(SUFFIXES)) {
+	while (abbr_size >= 1000 && unit <= (int)sizeof(SUFFIXES) - 1) {
 		abbr_size /= 1000;
 		unit++;
 	}

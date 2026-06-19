@@ -16,8 +16,8 @@ static inline void getUnitColour(char *unit_colour, const char unit) {
 	if (DO_IGNORE_UNIT(unit)) return;
 	switch (unit) {
 		case 'k': strcpy(unit_colour, size_colour_esc[SC_Uk]); return;
-		case 'm': strcpy(unit_colour, size_colour_esc[SC_Um]); return;
-		case 'g': strcpy(unit_colour, size_colour_esc[SC_Ug]); return;
+		case 'M': strcpy(unit_colour, size_colour_esc[SC_Um]); return;
+		case 'G': strcpy(unit_colour, size_colour_esc[SC_Ug]); return;
 		default	: strcpy(unit_colour, size_colour_esc[SC_Ut]); return;
 	}
 }
@@ -27,8 +27,8 @@ static inline void getValueColour(char *value_colour, const char unit) {
 		case '-' : strcpy(value_colour, PUNCT)					; return;
 		case '\0': strcpy(value_colour, size_colour_esc[SC_Bb])	; return;
 		case 'k' : strcpy(value_colour, size_colour_esc[SC_Bk])	; return;
-		case 'm' : strcpy(value_colour, size_colour_esc[SC_Bm])	; return;
-		case 'g' : strcpy(value_colour, size_colour_esc[SC_Bg])	; return;
+		case 'M' : strcpy(value_colour, size_colour_esc[SC_Bm])	; return;
+		case 'G' : strcpy(value_colour, size_colour_esc[SC_Bg])	; return;
 		default	 : strcpy(value_colour, size_colour_esc[SC_Bt])	; return;
 	}
 }
