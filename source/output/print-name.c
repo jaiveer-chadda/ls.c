@@ -9,23 +9,20 @@
 
 #include "output.h"
 
-#define DO_DIM(name, flags)						\
-	DO_DIM_HIDDEN && (							\
-		(										\
-			name[0] == '.'						\
-			&& strcmp(name, CURRENT_DIR) != 0	\
-		)										\
-		|| (flags & UF_HIDDEN)					\
-	)
+#define DO_DIM(name, flags) \
+	(DO_DIM_HIDDEN && ((flags & UF_HIDDEN) || (name[0] == '.' && strcmp(name, CURRENT_DIR) != 0)))
 
 #define GET_NAME(name)	(strcmp(name, CURRENT_DIR) == 0 ? adjusted_path : name)
 #define GET_DIM_HL()	(DO_DIM(name, *flags) ? DIM : "")
 #define GET_HARDLN_UL()	(*do_hln_hl ? HARDLN_UNDERLINE : "")
 
+#define DO_OCT_ESC(chr) (0 <= chr && chr <= 7)
+#define DO_HEX_ESC(chr) ((7 < chr && chr <= 31) || chr == 127)
+
 typedef unsigned char u_char;
 typedef unsigned int  u_int;
 
-bool getEscSequence(char *esc_seq, const char orig_char) {
+static inline bool getEscSequence(char *esc_seq, const char orig_char) {
 	u_char chr = (u_char)orig_char;
 	switch (chr) {
 		case '\\'	: strcpy(esc_seq, "\\\\");	return true;
@@ -39,43 +36,72 @@ bool getEscSequence(char *esc_seq, const char orig_char) {
 		case '\x1b'	: strcpy(esc_seq, "\\e");	return true;
 	}
 
-	if (0 <= chr && chr <= 7)					{ sprintf(esc_seq, "\\%u", (u_int)chr); return true; }
-	if ((7 < chr && chr <= 31) || chr == 127)	{ sprintf(esc_seq, "\\x%02x",	  chr); return true; }
+	if DO_OCT_ESC(chr) { sprintf(esc_seq, "\\%u", (u_int)chr); return true; }
+	if DO_HEX_ESC(chr) { sprintf(esc_seq, "\\x%02X",	 chr); return true; }
 
 	return false;
 }
 
-void printName(const name_t name, const FileColour *colour, const bool *do_hln_hl, const flag_t *flags) {
-	putchar(' '); // names have an extra space before them
+static inline bool doesSetBackground(const char *colour) {
+	for (int i = 0; i < (int) strlen(colour); i++) {
+		if ((colour[i	 ] == ';' || colour[i	 ] == '[' ) && (
+			(colour[i + 1] == '4' &&
+			(colour[i + 2] >= '0' && colour[i + 2] <= '9' ) &&
+			(colour[i + 3] == ';' || colour[i + 3] == 'm')) ||
+			(colour[i + 1] == '1' &&
+			(colour[i + 2] == '0' &&
+			(colour[i + 3] >= '0' && colour[i + 3] <= '9')) &&
+			(colour[i + 4] == ';' || colour[i + 4] == 'm'))
+		)) return true;
+	}
+	return false;
+}
 
-	name_t escaped_name;
+void printName(const name_t name, const FileColour *colour, const bool *do_hln_hl, const flag_t *flags) {
+	const char *file_colour = file_colour_esc[*colour];
 	const char *raw_name = GET_NAME(name);
+
+	const bool colour_sets_bg = doesSetBackground(file_colour);
+	name_t escaped_name;
+
 	int read_idx = 0, write_idx = 0;
 
 	while (raw_name[read_idx] != '\0') {
 		const char chr = raw_name[read_idx++];
-		char esc_seq[6]; // big enough for \xNN + null byte
+		char esc_seq[32];
 
-		if (getEscSequence(esc_seq, chr)) {
-			const int esc_len = strlen(esc_seq);
-			strcpy(escaped_name + write_idx, esc_seq);
-			write_idx += esc_len;
-
-		} else {
+		if (!getEscSequence(esc_seq, chr)) {
 			escaped_name[write_idx++] = chr;
+			continue;
 		}
+
+		if (DO_COLOUR) {
+			char temp[32];
+			// if the file colour sets the bg, then make the esc seq also uses a bg highlight, and vice versa
+			sprintf(temp, "%s%s%s" "%s%s" "%s",
+				CSI ";1;", colour_sets_bg ? "4" : "3", ESC_CHAR_COLOUR,
+				esc_seq, RESET,
+				file_colour
+			);
+			strcpy(esc_seq, temp);
+		}
+
+		const int esc_len = strlen(esc_seq);
+
+		strcpy(escaped_name + write_idx, esc_seq);
+		write_idx += esc_len;
 	}
 
 	escaped_name[write_idx] = '\0';
 
 	if (DO_COLOUR) {
-		printf("%s%s" "%s%s" "%s",
+		printf(" %s%s" "%s%s" "%s",
 			GET_HARDLN_UL(), GET_DIM_HL(),
-			file_colour_esc[*colour], escaped_name,
+			file_colour, escaped_name,
 			RESET
 		);
 
 	} else {
-		printf("%s", escaped_name);
+		printf(" %s", escaped_name);
 	}
 }
