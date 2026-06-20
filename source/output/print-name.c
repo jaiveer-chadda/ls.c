@@ -42,16 +42,28 @@ static inline bool getEscSequence(char *esc_seq, const char orig_char) {
 	return false;
 }
 
+/**
+ * @brief Checks whether an ANSI escape sequence will set the background colour.
+ *
+ * This function only work for sequences using `\\e[4.m`, `\\e[10.m` or `\\e[48;[25];...m` background escape codes.
+ *
+ * It shouldn't have any false negatives, but it will have false positives on inputs like:
+ *  `\\e[38;5;105m` or `\\e[38;2;250;40;125m`
+ *
+ * @param colour[in] The ANSI escape sequence to check.
+ * @return true if `colour` will set the background colour, false otherwise.
+ */
 static inline bool doesSetBackground(const char *colour) {
 	for (int i = 0; i < (int) strlen(colour); i++) {
-		if ((colour[i	 ] == ';' || colour[i	 ] == '[' ) && (
-			(colour[i + 1] == '4' &&
-			(colour[i + 2] >= '0' && colour[i + 2] <= '9' ) &&
-			(colour[i + 3] == ';' || colour[i + 3] == 'm')) ||
-			(colour[i + 1] == '1' &&
-			(colour[i + 2] == '0' &&
-			(colour[i + 3] >= '0' && colour[i + 3] <= '9')) &&
-			(colour[i + 4] == ';' || colour[i + 4] == 'm'))
+		if ((colour[i	 ] == ';' || colour[i	 ] == '[' ) && (// only look at substrings starting with `;` or '['
+			(colour[i + 1] == '4' &&							// look for a `4`
+			(colour[i + 2] >= '0' && colour[i + 2] <= '9' ) &&	// with another digit after it
+			(colour[i + 3] == ';' || colour[i + 3] == 'm')) ||	// and then end the substring
+			// OR
+			(colour[i + 1] == '1' &&							// look for		`1`
+			(colour[i + 2] == '0' &&							// followed by	`0` (i.e. a `10`)
+			(colour[i + 3] >= '0' && colour[i + 3] <= '9')) &&	// followed by a digit
+			(colour[i + 4] == ';' || colour[i + 4] == 'm'))		// then and the substring
 		)) return true;
 	}
 	return false;
