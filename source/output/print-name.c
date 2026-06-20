@@ -80,7 +80,7 @@ void printName(const name_t name, const FileColour *colour, const bool *do_hln_h
 
 	while (raw_name[read_idx] != '\0') {
 		const char chr = raw_name[read_idx++];
-		char esc_seq[32];
+		char esc_seq[48];
 
 		if (!getEscSequence(esc_seq, chr)) {
 			escaped_name[write_idx++] = chr;
@@ -88,7 +88,7 @@ void printName(const name_t name, const FileColour *colour, const bool *do_hln_h
 		}
 
 		if (DO_COLOUR) {
-			char temp[32];
+			char temp[48];
 			// if the file colour sets the bg, then make the esc seq also uses a bg highlight, and vice versa
 			sprintf(temp, "%s%s%s" "%s%s" "%s",
 				CSI ";1;", colour_sets_bg ? "4" : "3", ESC_CHAR_COLOUR,
