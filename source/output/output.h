@@ -4,7 +4,7 @@
 
 void  printHeader(void);
 
-void    printName(const name_t	  name		, const FileColour	*colour, const bool *do_hln_hl, const flag_t *flags);
+void	printName(const name_t	  name		, const FileColour	*colour, const bool *do_hln_hl, const flag_t *flags);
 void   printNLink(const nlink_t	 *nlink		, const mode_t		*mode,		   bool *hardln_hl);
 void  printFields(const FileInfo *all_files	, const int			*count);
 void printUsrName(const uid_t	 *uid		, const ugidstr		 usr_name);

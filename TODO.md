@@ -210,7 +210,7 @@
 ### Features
 
 #### Recursive Directory Searching
-- [ ] Implement a very similar feature to `eza`'s tree search, 
+- [ ] Implement a very similar feature to `eza`'s tree search,
   - in which you can see the recursive tree structure of a directory up to a certain depth
 
 -----------------------------------------------------------------------------------------------------------------------

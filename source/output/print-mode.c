@@ -36,7 +36,7 @@ void printModeStr(const modestr str) {
 	}
 
 	strcat(output, file_colour_esc[type]);
-	
+
 	output[strlen(output)	 ] = str[0];
 	output[strlen(output) + 1] = '\0';
 
