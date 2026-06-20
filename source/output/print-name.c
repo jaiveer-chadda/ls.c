@@ -1,7 +1,9 @@
 /// @file output/print-name.c
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/ioctl.h>
 
 #include "../info/info.h"
 #include "../options/options.h"
@@ -9,11 +11,13 @@
 
 #include "output.h"
 
+#define STDOUT_FILENO 1
+
 #define DO_DIM(name, flags) \
 	(DO_DIM_HIDDEN && ((flags & UF_HIDDEN) || (name[0] == '.' && strcmp(name, CURRENT_DIR) != 0)))
 
 #define GET_NAME(name)	(strcmp(name, CURRENT_DIR) == 0 ? adjusted_path : name)
-#define GET_DIM_HL()	(DO_DIM(name, *flags) ? DIM : "")
+#define GET_DIM_HL()	((DO_DIM(name, *flags) || do_divider) ? DIM : "")
 #define GET_HARDLN_UL()	(*do_hln_hl ? HARDLN_UNDERLINE : "")
 
 #define DO_OCT_ESC(chr) (0 <= chr && chr <= 7)
@@ -45,7 +49,7 @@ static inline bool getEscSequence(char *esc_seq, const char orig_char) {
 /**
  * @brief Checks whether an ANSI escape sequence will set the background colour.
  *
- * This function only work for sequences using `\\e[4.m`, `\\e[10.m` or `\\e[48;[25];...m` background escape codes.
+ * This function only works for sequences using `\\e[4Nm`, `\\e[10Nm` or `\\e[48;[25];...m` background escape codes.
  *
  * It shouldn't have any false negatives, but it will have false positives on inputs like:
  *  `\\e[38;5;105m` or `\\e[38;2;250;40;125m`
@@ -74,6 +78,7 @@ void printName(const name_t name, const FileColour *colour, const bool *do_hln_h
 	const char *raw_name = GET_NAME(name);
 
 	const bool colour_sets_bg = doesSetBackground(file_colour);
+	bool does_have_escape = false;
 	name_t escaped_name;
 
 	int read_idx = 0, write_idx = 0;
@@ -98,6 +103,7 @@ void printName(const name_t name, const FileColour *colour, const bool *do_hln_h
 			strcpy(esc_seq, temp);
 		}
 
+		does_have_escape = true;
 		const int esc_len = strlen(esc_seq);
 
 		strcpy(escaped_name + write_idx, esc_seq);
@@ -106,14 +112,34 @@ void printName(const name_t name, const FileColour *colour, const bool *do_hln_h
 
 	escaped_name[write_idx] = '\0';
 
+	bool do_divider = false;
+	char div_char[4] = "";
+
+	if (!does_have_escape && (colour == FC_REGULAR || strlen(file_colour) == 0)) {
+		if		(strstr(name, "─────") != NULL) { do_divider = true; strcpy(div_char, "─"); }
+		else if	(strstr(name, "—————") != NULL) { do_divider = true; strcpy(div_char, "—"); }
+	}
+
 	if (DO_COLOUR) {
 		printf(" %s%s" "%s%s" "%s",
 			GET_HARDLN_UL(), GET_DIM_HL(),
 			file_colour, escaped_name,
-			RESET
+			do_divider ? "" : RESET
 		);
 
 	} else {
 		printf(" %s", escaped_name);
 	}
+
+	if (do_divider) {
+		struct winsize window;
+
+		if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == 0) {
+			printf("%s", RMAM);
+			for (int i = 0; i < window.ws_col; i++) printf("%s", div_char);
+			printf("%s%s", DO_COLOUR ? RESET : "", SMAM);
+		}
+	}
 }
+
+// spell:ignoreRegExp /-W\B/g
