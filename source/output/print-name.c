@@ -117,7 +117,13 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 	bool do_divider = false;
 	char div_char[4] = "";
 
-	if (!does_have_escape && (*colour == FC_DIRECT || *colour == FC_REGULAR || strlen(file_colour) == 0)) {
+	if (DO_DIVIDERS
+		&& !does_have_escape
+		&& (strlen(file_colour) == 0
+			|| *colour == FC_REGULAR
+			|| *colour == FC_DIRECT
+		)
+	) {
 		if		(strstr(name, "─────") != NULL) { do_divider = true; strcpy(div_char, "─"); NO_SUFFIX(); }
 		else if	(strstr(name, "—————") != NULL) { do_divider = true; strcpy(div_char, "—"); NO_SUFFIX(); }
 	}

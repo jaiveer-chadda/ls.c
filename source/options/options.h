@@ -9,9 +9,10 @@ void initFormatting(void);
 
 extern const bool
 	DO_COLOUR,
+	DO_HEADER,
+	DO_DIVIDERS,
 	DO_SHORT_FLAGS,
 	DO_TINY_FLAGS,
-	DO_HEADER,
 	DO_DIM_HIDDEN,
 	SORT_DIRS_FIRST;
 

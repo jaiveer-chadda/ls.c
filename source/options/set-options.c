@@ -8,6 +8,7 @@
 const bool
 	DO_COLOUR		= true,
 	DO_HEADER		= false,
+	DO_DIVIDERS		= true,
 	DO_SHORT_FLAGS	= true,
 	DO_TINY_FLAGS	= false,
 	DO_DIM_HIDDEN	= true,
