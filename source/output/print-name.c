@@ -9,8 +9,6 @@
 
 #include "output.h"
 
-typedef unsigned char u_char;
-
 #define DO_DIM(name, flags)						\
 	DO_DIM_HIDDEN && (							\
 		(										\
@@ -24,31 +22,50 @@ typedef unsigned char u_char;
 #define GET_DIM_HL()	(DO_DIM(name, *flags) ? DIM : "")
 #define GET_HARDLN_UL()	(*do_hln_hl ? HARDLN_UNDERLINE : "")
 
-#define DELETE 0x7F
-#define IS_UNPRINTABLE(chr) ((0x0 <= (u_char)chr && (u_char)chr <= 0x1F) || chr == DELETE)
+typedef unsigned char u_char;
+typedef unsigned int  u_int;
+
+bool getEscSequence(char *esc_seq, const char orig_char) {
+	u_char chr = (u_char)orig_char;
+	switch (chr) {
+		case '\\'	: strcpy(esc_seq, "\\\\");	return true;
+		case '\a'	: strcpy(esc_seq, "\\a");	return true;
+		case '\b'	: strcpy(esc_seq, "\\b");	return true;
+		case '\t'	: strcpy(esc_seq, "\\t");	return true;
+		case '\n'	: strcpy(esc_seq, "\\n");	return true;
+		case '\v'	: strcpy(esc_seq, "\\v");	return true;
+		case '\f'	: strcpy(esc_seq, "\\f");	return true;
+		case '\r'	: strcpy(esc_seq, "\\r");	return true;
+		case '\x1b'	: strcpy(esc_seq, "\\e");	return true;
+	}
+
+	if (0 <= chr && chr <= 7)					{ sprintf(esc_seq, "\\%u", (u_int)chr); return true; }
+	if ((7 < chr && chr <= 31) || chr == 127)	{ sprintf(esc_seq, "\\x%02x",	  chr); return true; }
+
+	return false;
+}
 
 void printName(const name_t name, const FileColour *colour, const bool *do_hln_hl, const flag_t *flags) {
 	putchar(' '); // names have an extra space before them
 
-	const char *raw_name = GET_NAME(name);
 	name_t escaped_name;
-
+	const char *raw_name = GET_NAME(name);
 	int read_idx = 0, write_idx = 0;
 
-	// iterate until we hit the null terminator of the original string
 	while (raw_name[read_idx] != '\0') {
-		const char chr = raw_name[read_idx];
+		const char chr = raw_name[read_idx++];
+		char esc_seq[6]; // big enough for \xNN + null byte
 
-		if (IS_UNPRINTABLE(chr)) {
-			// `sprintf` returns the number of characters written
-			write_idx += sprintf(escaped_name + write_idx, "\\x%02x", (u_char)chr);
+		if (getEscSequence(esc_seq, chr)) {
+			const int esc_len = strlen(esc_seq);
+			strcpy(escaped_name + write_idx, esc_seq);
+			write_idx += esc_len;
+
 		} else {
 			escaped_name[write_idx++] = chr;
 		}
-		read_idx++;
 	}
 
-	// Properly null-terminate at the *new* total length
 	escaped_name[write_idx] = '\0';
 
 	if (DO_COLOUR) {
