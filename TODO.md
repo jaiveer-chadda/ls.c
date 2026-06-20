@@ -81,22 +81,22 @@
   - [x] others' `\e[91m`
 
 ##### `flag_str`
-- [ ] maybe a different colour for each type of flag??
-  - [ ] nodump      `\e[35m`
-  - [ ] uimmutable  `\e[92m`
-  - [ ] uappend     `\e[93m`
-  - [ ] opaque      `\e[97m`
-  - [ ] compressed  `\e[91m`
-  - [ ] tracked     `\e[94m`
-  - [ ] datavault   `\e[100m`
-  - [ ] hidden      `\e[02m`
-  - [ ] archived    `\e[42m`
-  - [ ] simmutable  `\e[32m`
-  - [ ] sappend     `\e[33m`
-  - [ ] restricted  `\e[41m`
-  - [ ] nounlink    `\e[46m`
-  - [ ] dataless    `\e[07m`
-- [ ] and then a grey hyphen for no flags
+- [x] maybe a different colour for each type of flag??
+  - [x] nodump      `\e[35m`
+  - [x] uimmutable  `\e[92m`
+  - [x] uappend     `\e[93m`
+  - [x] opaque      `\e[97m`
+  - [x] compressed  `\e[91m`
+  - [x] tracked     `\e[94m`
+  - [x] datavault   `\e[100m`
+  - [x] hidden      `\e[02m`
+  - [x] archived    `\e[42m`
+  - [x] simmutable  `\e[32m`
+  - [x] sappend     `\e[33m`
+  - [x] restricted  `\e[41m`
+  - [x] nounlink    `\e[46m`
+  - [x] dataless    `\e[07m`
+- [x] and then a grey hyphen for no flags
 
 ##### `time_str`
 - [x] have a different colour for each named time:
@@ -126,7 +126,7 @@
 - [ ] Add an ampersand `@` to see whether a file has extended permissions or not
 
 #### Symlinks
-- [ ] Figure out whether a symlink is valid or not, and adjust the visualisation based on that
+- [x] Figure out whether a symlink is valid or not, and adjust the visualisation based on that
 
 ### Features
 
@@ -134,9 +134,9 @@
 - [x] Make sorting work in a way where numbers are sorted logically, and case is insensitive otherwise
 
 #### Escape control chars
-- [ ] Replace any control characters with their C/Hex equivalents
-- [ ] Probably also highlight them in some colour
-  - [ ] But that being said, I'll have to make sure that their escaped colours
+- [x] Replace any control characters with their C/Hex equivalents
+- [x] Probably also highlight them in some colour
+  - [x] But that being said, I'll have to make sure that their escaped colours
     don't clash with any other colours being used
 
 #### Options
@@ -150,10 +150,10 @@
 
 #### Width
 - [ ] Find a way to adjust which fields show/dont show
-  - [ ] Make it based on the `$COLUMNS` env var
+  - [ ] Make it based on the terminal's `$COLUMNS`
 
 #### Line Separators
-- [ ] Make it so that files with more than 3? 5? `[-–—─]`s in a row get a special format, and act as separators
+- [x] Make it so that files with more than 3? 5? `[-–—─]`s in a row get a special format, and act as separators
 
 ### Fields
 
@@ -198,7 +198,7 @@
   into the `settings.json` file, and see if there's a field called `peacock.color`.
   - [ ] if so, then use that colour to highlight the directory
 
-#### Reimplement `/usr/bin/file`
+#### Re-implement `/usr/bin/file`
 - [ ] Find a way to use the same process as `/usr/bin/file` to find out what *specific* type of file smth is
   - i.e. running: `file ~zdd/.zshrc`
   - yields: `.../zsh/.zshrc: a /usr/bin/env zsh script text executable, Unicode text, UTF-8 text`
@@ -227,11 +227,11 @@
 
 #### Compression
 - [ ] See if there's a way where, if some fields have too much extra space to their sides,
-  - they can be squished together to fit nicer, and take up less room
+  - they can be squished together to fit nicer, and take up less room.
 
+> For example:
+<!-- spell:disable -->
 ```sh
-# spell:disable
-# e.g.:
 ...
 drwxr-xr-x  5    160 jv   staff -              2 Days Ago  14:52  archive/
 drwxr-xr-x  3     96 jv   staff -                            Now  out/
@@ -244,8 +244,11 @@ crw-r--r--  1    1,0 root staff -           Thu 11 Jun 26  01:34  _test_char_dev
 .rwxr--r--  1  12.3k jv   admin track          2 Days Ago  23:51  _test_exe*
 lrwxr-xr-x  1     19 jv   staff -               Yesterday  14:36  _test_link@ --> ~/.zprofile
 lrwxr-xr-x  1     28 jv   staff -               Yesterday  15:58  _test_link_3@ --> ~/.config/bash/bash_*
+```
 
-# becomes something like:
+> becomes something like:
+
+```sh
 ...
 drwxr-xr-x  5   160 jv   staff -         2 Days Ago  14:52  archive/
 drwxr-xr-x  3    96 jv   staff -                       Now  out/
@@ -258,8 +261,8 @@ crw-r--r--  1   1,0 root staff -      Thu 11 Jun 26  01:34  _test_char_dev
 .rwxr--r--  1 12.3k jv   admin track     2 Days Ago  23:51  _test_exe*
 lrwxr-xr-x  1    19 jv   staff -          Yesterday  14:36  _test_link@ --> ~/.zprofile
 lrwxr-xr-x  1    28 jv   staff -          Yesterday  15:58  _test_link_3@ --> ~/.config/bash/bash_*
-# spell:enable
 ```
+<!-- spell:enable -->
 
 -----------------------------------------------------------------------------------------------------------------------
 
