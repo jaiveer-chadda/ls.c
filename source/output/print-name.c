@@ -115,7 +115,7 @@ void printName(const name_t name, const FileColour *colour, const bool *do_hln_h
 	bool do_divider = false;
 	char div_char[4] = "";
 
-	if (!does_have_escape && (colour == FC_REGULAR || strlen(file_colour) == 0)) {
+	if (!does_have_escape && (colour == FC_DIRECT || colour == FC_REGULAR || strlen(file_colour) == 0)) {
 		if		(strstr(name, "─────") != NULL) { do_divider = true; strcpy(div_char, "─"); }
 		else if	(strstr(name, "—————") != NULL) { do_divider = true; strcpy(div_char, "—"); }
 	}
