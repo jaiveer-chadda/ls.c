@@ -55,7 +55,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(flags);	PRINT_FLAG_STR();
 		PRINT_FIELD(time);	PRINT_TIME_STR();
 
-		printName(file.name, &(file.file_col), &(file.do_hardlink_hl), &(file.flags));
+		printName(file.name, &(file.file_col), &(file.do_hardlink_hl), &(file.flags), &(file.suffix));
 
 		if (do_suffix && file.suffix != '\0') printf("%c", file.suffix);
 

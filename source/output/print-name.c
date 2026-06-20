@@ -18,10 +18,12 @@
 
 #define GET_NAME(name)	(strcmp(name, CURRENT_DIR) == 0 ? adjusted_path : name)
 #define GET_DIM_HL()	((DO_DIM(name, *flags) || do_divider) ? DIM : "")
-#define GET_HARDLN_UL()	(*do_hln_hl ? HARDLN_UNDERLINE : "")
+#define GET_HARDLN_UL()	(*is_hln ? HARDLN_UNDERLINE : "")
 
 #define DO_OCT_ESC(chr) (0 <= chr && chr <= 7)
 #define DO_HEX_ESC(chr) ((7 < chr && chr <= 31) || chr == 127)
+
+#define NO_SUFFIX() if (*colour == FC_DIRECT) *suffix = '\0'
 
 typedef unsigned char u_char;
 typedef unsigned int  u_int;
@@ -73,7 +75,7 @@ static inline bool doesSetBackground(const char *colour) {
 	return false;
 }
 
-void printName(const name_t name, const FileColour *colour, const bool *do_hln_hl, const flag_t *flags) {
+void printName(const name_t name, const FileColour *colour, const bool *is_hln, const flag_t *flags, type_t *suffix) {
 	const char *file_colour = file_colour_esc[*colour];
 	const char *raw_name = GET_NAME(name);
 
@@ -115,9 +117,9 @@ void printName(const name_t name, const FileColour *colour, const bool *do_hln_h
 	bool do_divider = false;
 	char div_char[4] = "";
 
-	if (!does_have_escape && (colour == FC_DIRECT || colour == FC_REGULAR || strlen(file_colour) == 0)) {
-		if		(strstr(name, "─────") != NULL) { do_divider = true; strcpy(div_char, "─"); }
-		else if	(strstr(name, "—————") != NULL) { do_divider = true; strcpy(div_char, "—"); }
+	if (!does_have_escape && (*colour == FC_DIRECT || *colour == FC_REGULAR || strlen(file_colour) == 0)) {
+		if		(strstr(name, "─────") != NULL) { do_divider = true; strcpy(div_char, "─"); NO_SUFFIX(); }
+		else if	(strstr(name, "—————") != NULL) { do_divider = true; strcpy(div_char, "—"); NO_SUFFIX(); }
 	}
 
 	if (DO_COLOUR) {
@@ -136,7 +138,7 @@ void printName(const name_t name, const FileColour *colour, const bool *do_hln_h
 
 		if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == 0) {
 			printf("%s", RMAM);
-			for (int i = 0; i < window.ws_col; i++) printf("%s", div_char);
+			for (int i = 0; i < window.ws_col - 2; i++) printf("%s", div_char);
 			printf("%s%s", DO_COLOUR ? RESET : "", SMAM);
 		}
 	}
