@@ -172,16 +172,16 @@
 
 /* —— Flag Colours ————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define FL_U_NODUMP			CSI "94"		END	// \e[94m
-#define FL_U_IMMUTABLE		CSI "92"		END	// \e[92m
+#define FL_U_NODUMP			CSI "92"		END	// \e[92m
+#define FL_U_IMMUTABLE		CSI "94"		END	// \e[94m
 #define FL_U_APPEND			CSI "93"		END	// \e[93m
 #define FL_U_OPAQUE			CSI "97"		END	// \e[97m
 #define FL_U_COMPRESSED		CSI "95"		END	// \e[95m
 #define FL_U_TRACKED		CSI "91"		END	// \e[91m
 #define FL_U_DATAVAULT		CSI "1;7"		END	// \e[07m
 #define FL_U_HIDDEN			CSI "2"			END	// \e[02m
-#define FL_S_ARCHIVED		CSI "34"		END	// \e[34m
-#define FL_S_IMMUTABLE		CSI "32"		END	// \e[32m
+#define FL_S_ARCHIVED		CSI "32"		END	// \e[32m
+#define FL_S_IMMUTABLE		CSI "34"		END	// \e[34m
 #define FL_S_APPEND			CSI "33"		END	// \e[33m
 #define FL_S_RESTRICTED		CSI "31"		END	// \e[31m
 #define FL_S_NOUNLINK		CSI "36"		END	// \e[36m
