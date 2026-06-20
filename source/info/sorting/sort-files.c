@@ -27,6 +27,12 @@ static inline int compareNames(const void *file_1, const void *file_2) {
 	long num_1, num_2;
 
 	while (adj_name_1[i] != '\0' && adj_name_2[j] != '\0') {
+		// make sure dotfiles always sort above other files
+		if (adj_name_1[i] != adj_name_2[j]) {
+			if (adj_name_1[i] == '.') return -1;
+			if (adj_name_2[j] == '.') return  1;
+		}
+
 		if (IS_DIGIT(adj_name_1[i]) && IS_DIGIT(adj_name_2[j])) {
 			char int_buf_1[32], int_buf_2[32];
 			len_1 = 0, len_2 = 0;
