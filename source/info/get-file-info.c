@@ -26,15 +26,25 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/**
+ * @brief Get the All File Info object
+ * 
+ * @param dirs[out]
+ * @param files[out]
+ * @param dir_count[out]
+ * @param file_count[out]
+ * @param dir_obj[in,[out]]
+ * @param target_dir[in]
+ */
 inline void getAllFileInfo(
 	FileInfo dirs[], FileInfo files[],
 	int *dir_count, int *file_count,
 	DIR *dir_obj, const char *target_dir
 ) {
 	*dir_count = 0, *file_count = 0;
+	struct dirent *entry;
 
 	// while there are still files to read, and while we haven't reached the maximum file limit
-	struct dirent *entry;
 	while ((entry = readdir(dir_obj)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
 		if (DO_IGNORE_FILE(entry)) continue;
 
@@ -55,7 +65,8 @@ inline void getAllFileInfo(
 		//	1. it's a symlink, and the target is broken/doesn't exist
 		//	2. there are some permission issues
 		struct stat info;
-		bool stat_did_fail = stat(path, &info) == -1;
+		bool  stat_did_fail = stat(path, &info) == -1;
+		bool lstat_did_fail = false;
 
 		// then, if we need to get the link's info ...
 		if (do_link_to) {
@@ -63,16 +74,22 @@ inline void getAllFileInfo(
 			file.ln_suf = IS_VALID_LINK(path) ? getTypeSuffix(info.st_mode) : INVALID_LINK;
 
 			// and then run the `lstat` syscall to get the link's information
-			bool lstat_did_fail = lstat(path, &info) == -1;
+			lstat_did_fail = lstat(path, &info) == -1;
 
 			// if the file isn't a symlink then remove the target's suffix
 			if (!IS_SYMLINK(info)) file.ln_suf = NOT_LINK;
+		}
 
-			// if neither of the stat calls worked, then we don't have any information - so skip this file
-			if (stat_did_fail && lstat_did_fail) continue;
+		// if none of the stat calls that ran, worked, then we don't have any extra information
+		//  so extract just the info that we can get from `dirent`, and parse things from there
+		if ((!do_link_to && stat_did_fail) || (do_link_to && stat_did_fail && lstat_did_fail)) {
+			info = (struct stat){0};
+			file = (FileInfo){0};
 
-		} else if (stat_did_fail) {
-			continue;
+			strcpy(file.name, entry->d_name);
+			info.st_mode = DTTOIF(entry->d_type);
+			info.st_ino  = entry->d_ino;
+			file.ln_suf  = entry->d_type == DT_LNK ? INVALID_LINK : NOT_LINK;
 		}
 
 		/* ——————————————————————————————————————————————————————————————————— */

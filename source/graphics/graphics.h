@@ -14,9 +14,11 @@
 
 /* —— Time ————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DATE_FMT "%a %e %b %y"
-#define TIME_FMT "  %R"
-#define TIME_ERR_STR "—  –– ––"
+#define DATETIME_SPACE	"  "
+#define TIME_ERR_STR	"--" DATETIME_SPACE "-- --"
+
+#define DATE_FMT		"%a %e %b %y"
+#define TIME_FMT		DATETIME_SPACE "%R"
 
 /* —— Flags ———————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
