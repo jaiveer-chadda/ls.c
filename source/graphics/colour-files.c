@@ -16,7 +16,7 @@ inline void setFileColour(FileColour *colour, const mode_t mode, const flag_t fl
 	// `exec` has the lowest priority, so set the colour to exec, but it can be overwritten by anything else below
 	if (mode & EXEC_MASK) *colour = FC_EXEC;
 
-	// colour the file based on its type
+	// colour the file based on its type - filetype has the next highest priority after dataless
 	switch (mode & TYPE_MASK) {
 		case S_IFIFO:	*colour = FC_PIPE		; return; // named pipe
 		case S_IFCHR:	*colour = FC_CHR_DEV	; return; // char device
@@ -32,7 +32,7 @@ inline void setFileColour(FileColour *colour, const mode_t mode, const flag_t fl
 	}
 
 	// finally, colour the file based on the suid/sgid bits
-	// note: directories with the suid/sgid bit are purposely not coloured with the suid/sgid colours
+	// note: directories with the suid/sgid bit are intentionally not coloured by these suid/sgid colours
 	if (mode & S_ISUID) { *colour = GET_SUID_COLOUR(mode); return; } // file w/ suid bit set
 	if (mode & S_ISGID) { *colour = GET_SGID_COLOUR(mode); return; } // file w/ sgid bit set
 }

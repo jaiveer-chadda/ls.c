@@ -7,7 +7,7 @@
 
 #include "../options/options.h"
 
-#define IF_COLOUR(print) (DO_COLOUR ? print : "")
+#define IF_COLOUR(str) (DO_COLOUR ? (str) : "")
 #define GET_COLOUR(var) IF_COLOUR(is_valid_path ? VALID_##var##_COLOUR : INVALID_##var##_COLOUR)
 
 void printSymlink(const path_t target_path, const type_t suffix) {
@@ -20,7 +20,5 @@ void printSymlink(const path_t target_path, const type_t suffix) {
 		IF_COLOUR(RESET)
 	);
 
-	if (do_suffix && suffix != INVALID_LINK && suffix != '\0') {
-		printf("%c", suffix);
-	}
+	if (do_suffix && is_valid_path && suffix != '\0') printf("%c", suffix);
 }

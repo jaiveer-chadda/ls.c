@@ -43,7 +43,7 @@ static inline bool is_user_in_group(
 ) {
 	if (main_usr_gid == file_gid) return true;
 
-	struct group *grp = getgrnam(grp_name);
+	const struct group *grp = getgrnam(grp_name);
 	if (grp == NULL) return false;
 
 	for (int i = 0; grp->gr_mem[i] != NULL; i++) {

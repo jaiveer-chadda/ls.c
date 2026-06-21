@@ -12,22 +12,21 @@
 void printNLink(const nlink_t *nlink, const mode_t *mode, bool *is_hln) {
 	if (!do_nlink) return;
 
-	// using "output" to calculate the strlen of nlink here
-	// then reusing it to hold the colour down below
-	char output[16];
-	sprintf(output, "%d", *nlink);
+	// using "nlink_str" to calculate the strlen of nlink
+	char nlink_str[16], colour[16];
 
-	const short int link_len = (short int)strlen(output);
+	sprintf(nlink_str, "%d", *nlink);
+	const short int link_len = (short int)strlen(nlink_str);
 
-	if		( IS_DIR(mode) && *nlink == 2)	strcpy(output, LN_COL_DIR_EMPTY);					// empty directory
-	else if	( IS_DIR(mode) && *nlink >= 3)	strcpy(output, LN_COL_DIR);							// non-empty dir
-	else if (!IS_DIR(mode) && *nlink == 1)	strcpy(output, LN_COL_REG_1);						// file w   1 link
-	else if (!IS_DIR(mode) && *nlink >= 2){	strcpy(output, LN_COL_REG_MORE); *is_hln = true; }	// file w > 1 link
-	else									strcpy(output, LN_COL_OTHER); // a dir w 1 link or dir/file w < 1 link
+	if		( IS_DIR(mode) && *nlink == 2)	strcpy(colour, LN_COL_DIR_EMPTY);					// empty directory
+	else if	( IS_DIR(mode) && *nlink >= 3)	strcpy(colour, LN_COL_DIR);							// non-empty dir
+	else if (!IS_DIR(mode) && *nlink == 1)	strcpy(colour, LN_COL_REG_1);						// file w   1 link
+	else if (!IS_DIR(mode) && *nlink >= 2){	strcpy(colour, LN_COL_REG_MORE); *is_hln = true; }	// file w > 1 link
+	else									strcpy(colour, LN_COL_OTHER); // a dir w 1 link or dir/file w < 1 link
 
-	printf("%*s" "%s%d" "%s",
+	printf("%*s" "%s%s" "%s",
 		(int)field_lengths.nlink - link_len, "",
-		output, *nlink,
+		colour, nlink_str,
 		RESET FIELD_PAD
 	);
 }
