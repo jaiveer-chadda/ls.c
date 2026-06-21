@@ -10,13 +10,13 @@
 
 ### Visual
 
-#### Sorting
+#### [~¿] Sorting
 - [x] Sort files by name
 - [x] Sort entires with directories first
 - [ ] Implement a way to sort them by any category
   - Probably with the `-s | --sort-by <field>` flag
 
-#### Colour Filenames
+#### [~¿] Colour Filenames
 - [x] Colour filenames based on their types / permissions / other fields
   - [ ] Read colours from `$LSCOLORS` ond/or `$LS_COLORS`
   - [x] Set the defaults as:
@@ -38,9 +38,9 @@
   - [ ] either use the info from `$EZA_COLORS`,
   - [ ] or make my own variable to store colours in
 
-#### Colour Other Fields
+#### [√] Colour Other Fields
 
-##### `mode_str`
+##### [√] `mode_str`
 - [x] colour the first bit the same colour as its filetype
 - [x] colour each other bit based on whether its:
   - [x] read        ` .r--r--r-- ` `\e[92m`
@@ -60,27 +60,27 @@
     - [x] exec      ` .--------t ` `\e[44m`
     - [x] non-exec  ` .--------T ` `\e[104m`
 
-##### `nlink`
+##### [√] `nlink`
 - [x] there should be a default colour `\e[36m`, and a colour for regular files with 2+ hardlinks `\e[105m`
 - [x] files with 2+ hardlinks should also have other visual flourishes on their filenames  `\e[21m \e[105m`
 
-##### `size`
+##### [√] `size`
 - [x] a gradient of colours for different sized files
   - probably from `\e[92m` to `\e[31m`
 
-##### `usr_name`
+##### [√] `usr_name`
 - [x] a different colour for:
   - [x] you   `#807ded`
   - [x] root  `\e[31m`
   - [x] other `\e[93m`
 
-##### `grp_name`
+##### [√] `grp_name`
 - [x] a different colour for:
   - [x] yours   `\e[93m`
   - [x] root's  `\e[94m`
   - [x] others' `\e[91m`
 
-##### `flag_str`
+##### [√] `flag_str`
 - [x] maybe a different colour for each type of flag??
   - [x] nodump      `\e[35m`
   - [x] uimmutable  `\e[92m`
@@ -98,7 +98,7 @@
   - [x] dataless    `\e[07m`
 - [x] and then a grey hyphen for no flags
 
-##### `time_str`
+##### [√] `time_str`
 - [x] have a different colour for each named time:
   - [x] Now               `\e[38;2;203;210;242m`
   - [x] 1 min. ago        `\e[38;2;193;203;240m`
@@ -114,10 +114,10 @@
   - [ ] Birth time??
   - [ ] [No time]
 
-#### Headers
+#### [√] Headers
 - [x] Colourise? and underline headers
 
-#### Hidden Files
+#### [√] Hidden Files
 - [x] Dim the filenames of any files starting with a `.`
 
 ### Fields
@@ -125,15 +125,15 @@
 #### Permissions
 - [ ] Add an ampersand `@` to see whether a file has extended permissions or not
 
-#### Symlinks
+#### [√] Symlinks
 - [x] Figure out whether a symlink is valid or not, and adjust the visualisation based on that
 
 ### Features
 
-#### Alphanum Sorting
+#### [√] Alphanum Sorting
 - [x] Make sorting work in a way where numbers are sorted logically, and case is insensitive otherwise
 
-#### Escape control chars
+#### [√] Escape control chars
 - [x] Replace any control characters with their C/Hex equivalents
 - [x] Probably also highlight them in some colour
   - [x] But that being said, I'll have to make sure that their escaped colours
@@ -141,6 +141,8 @@
 
 #### Options
 - [ ] Implement an options/flags system to turn various features on/off
+
+#### [[END]]
 
 -----------------------------------------------------------------------------------------------------------------------
 
@@ -152,7 +154,7 @@
 - [ ] Find a way to adjust which fields show/dont show
   - [ ] Make it based on the terminal's `$COLUMNS`
 
-#### Line Separators
+#### [√] Line Separators
 - [x] Make it so that files with more than 3? 5? `[-–—─]`s in a row get a special format, and act as separators
 
 ### Fields
@@ -172,6 +174,11 @@
 - [ ] And whether the current branch is behind/ahead of the remote
 
 #### Apple Integration
+
+##### Apple Permissions
+- Apple can create custom permissions for some files, which can be shown with `ls -le`.
+  - [ ] Implement a way to show those extra permissions
+  - [ ] Or at least to show an extra bit at the end of the permission string to indicate whether they exist
 
 ##### Apple Aliases
 - [ ] Figure out how to find the target of an Apple alias file.
@@ -193,7 +200,6 @@
   - I don't know how I'm gonna get these, but if I had to guess, it would be some AppleScript program
 
 #### VSCode Integration
-
 - [ ] If there isn't a colour defined for a directory, then look into that dir's `.vscode` directory,
   into the `settings.json` file, and see if there's a field called `peacock.color`.
   - [ ] if so, then use that colour to highlight the directory
@@ -213,6 +219,8 @@
 - [ ] Implement a very similar feature to `eza`'s tree search,
   - in which you can see the recursive tree structure of a directory up to a certain depth
 
+#### [[END]]
+
 -----------------------------------------------------------------------------------------------------------------------
 
 ## Would be Nice
@@ -228,7 +236,7 @@
 #### Compression
 - [ ] See if there's a way where, if some fields have too much extra space to their sides,
   - they can be squished together to fit nicer, and take up less room.
-
+<!--—-->
 > For example:
 <!-- spell:disable -->
 ```sh
@@ -245,9 +253,9 @@ crw-r--r--  1    1,0 root staff -           Thu 11 Jun 26  01:34  _test_char_dev
 lrwxr-xr-x  1     19 jv   staff -               Yesterday  14:36  _test_link@ --> ~/.zprofile
 lrwxr-xr-x  1     28 jv   staff -               Yesterday  15:58  _test_link_3@ --> ~/.config/bash/bash_*
 ```
-
+<!--—-->
 > becomes something like:
-
+<!--—-->
 ```sh
 ...
 drwxr-xr-x  5   160 jv   staff -         2 Days Ago  14:52  archive/
@@ -263,6 +271,8 @@ lrwxr-xr-x  1    19 jv   staff -          Yesterday  14:36  _test_link@ --> ~/.z
 lrwxr-xr-x  1    28 jv   staff -          Yesterday  15:58  _test_link_3@ --> ~/.config/bash/bash_*
 ```
 <!-- spell:enable -->
+
+#### [[END]]
 
 -----------------------------------------------------------------------------------------------------------------------
 
