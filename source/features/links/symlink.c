@@ -8,7 +8,7 @@
 #include "../../model/stat-model.h"
 #include "../mode/mode.h"
 
-void getLink(char *link_str, path_t link_path) {
+void getLink(char *link_str, const path_t link_path) {
 	path_t link;
 
 	const ssize_t nbytes = readlink(link_path, link, sizeof(path_t));

@@ -10,8 +10,7 @@ DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
 	if (argc <= 1 || strlen(argv[1]) == 0) {
 		strcpy(target_dir, CURRENT_DIR);
 
-	// otherwise, copy the user's input verbatim into `target_dir`
-	} else {
+	} else { // otherwise, copy the user's input verbatim into `target_dir`
 		strncpy(target_dir, argv[1], MAX_NAME_LEN - 1);
 		target_dir[MAX_NAME_LEN - 1] = '\0';
 	}

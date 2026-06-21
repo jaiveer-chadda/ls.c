@@ -11,7 +11,7 @@
 
 static inline void toLower(char *str) {
 	for (int i = 0; str[i] != '\0'; i++) {
-		if IS_UPPER(str[i]) str[i] -= ('A' - 'a');
+		if IS_UPPER(str[i]) str[i] += ('a' - 'A');
 	}
 }
 
@@ -22,12 +22,10 @@ static inline int compareNames(const void *file_1, const void *file_2) {
 	name_t adj_name_1; strcpy(adj_name_1, name_1); toLower(adj_name_1);
 	name_t adj_name_2; strcpy(adj_name_2, name_2); toLower(adj_name_2);
 
-	int  i = 0, j = 0;
-	int  len_1, len_2;
-	long num_1, num_2;
+	int i = 0, j = 0;
 
 	while (adj_name_1[i] != '\0' && adj_name_2[j] != '\0') {
-		// make sure dotfiles always sort above other files
+		// make sure dotfiles always sort above non-dotfiles
 		if (adj_name_1[i] != adj_name_2[j]) {
 			if (adj_name_1[i] == '.') return -1;
 			if (adj_name_2[j] == '.') return  1;
@@ -35,25 +33,23 @@ static inline int compareNames(const void *file_1, const void *file_2) {
 
 		if (IS_DIGIT(adj_name_1[i]) && IS_DIGIT(adj_name_2[j])) {
 			char int_buf_1[32], int_buf_2[32];
-			len_1 = 0, len_2 = 0;
+			int len_1 = 0, len_2 = 0;
 
-			while IS_DIGIT(adj_name_1[i]) int_buf_1[len_1++] = adj_name_1[i++];
-			while IS_DIGIT(adj_name_2[j]) int_buf_2[len_2++] = adj_name_2[j++];
+			while (IS_DIGIT(adj_name_1[i])) { int_buf_1[len_1++] = adj_name_1[i++]; }
+			while (IS_DIGIT(adj_name_2[j])) { int_buf_2[len_2++] = adj_name_2[j++]; }
 
 			int_buf_1[len_1] = '\0';
 			int_buf_2[len_2] = '\0';
 
-			num_1 = strtol(int_buf_1, NULL, 10);
-			num_2 = strtol(int_buf_2, NULL, 10);
+			const int num_1 = atoi(int_buf_1);
+			const int num_2 = atoi(int_buf_2);
 
 			if (num_1 != num_2) return num_1 < num_2 ? -1 : 1;
 
-			continue;
+		} else { // if both characters aren't digits, just return their regular, alphabetical sorts
+			if (adj_name_1[i] != adj_name_2[j]) return adj_name_1[i] < adj_name_2[j] ? -1 : 1;
+			i++; j++;
 		}
-
-		// if neither characters are digits, just return their regular sorts
-		if (adj_name_1[i] != adj_name_2[j]) return adj_name_1[i] < adj_name_2[j] ? -1 : 1;
-		i++; j++;
 	}
 
 	if (adj_name_1[i] == '\0' && adj_name_2[j] == '\0') return 0;
