@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "../../model/stat-model.h"
-#include "../../options/options.h"
 
 #include "flags.h"
 

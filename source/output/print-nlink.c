@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../form/formatting.h"
 #include "../options/options.h"
 #include "../model/stat-model.h"
 #include "../graphics/graphics.h"

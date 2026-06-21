@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../form/formatting.h"
 #include "../options/options.h"
 
 #define IS_REG() (str[0] == REGULAR_CHAR)	/// Whether the file is a regular file or not.

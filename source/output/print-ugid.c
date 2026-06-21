@@ -7,6 +7,7 @@
 #include <grp.h>
 
 #include "../model/stat-model.h"
+#include "../form/formatting.h"
 #include "../options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

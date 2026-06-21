@@ -1,5 +1,10 @@
 /// @file features/flags/flags.h
 
+#ifndef FLAGS_INITIALIASED
+#define FLAGS_INITIALIASED
+
+#include "../../options/options.h"
+
 #define GET_FLAG_NAME(flag) \
 	DO_TINY_FLAGS ? flag.tiny_name : ( \
 		DO_SHORT_FLAGS ? flag.short_name : flag.name \
@@ -17,3 +22,5 @@ typedef struct {
 extern const flagset ALL_FLAGS[MAX_FLAG_NUM];
 
 void parseFlags(flagstr flag_string, const flag_t raw_flags);
+
+#endif /* !FLAGS_INITIALIASED */
