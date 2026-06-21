@@ -30,7 +30,8 @@ typedef struct {
 	FileColour file_col;
 	TimeColour time_col;
 
-	bool do_hardlink_hl;
+	bool	do_link_hl;
+	bool	is_valid;
 
 } FileInfo;
 

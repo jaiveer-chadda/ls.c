@@ -16,12 +16,18 @@
 		*file_uid == 0 ? USR_ROOT_COL : USR_OTH_COL \
 	)
 
-void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name) {
+void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name, const bool *is_valid) {
 	if (!do_usr_name) return;
+
+	const int len = (int)field_lengths.usr_name;
+
+	if (!*is_valid) {
+		printf("%s" "%-*s" "%s", USR_INV_COL, len, INV_FILE_USRNAME, RESET FIELD_PAD);
+		return;
+	}
 
 	/// The UID of the user running this process.
 	const uid_t usr_uid = getuid();
-	const int len = (int)field_lengths.usr_name;
 
 	char fmt_str[16] = "%s";
 	strcat(fmt_str, fmt_strs_long.usr_name);
@@ -38,10 +44,10 @@ void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name) {
 	)
 
 static inline bool is_user_in_group(
-	const ugidstr usr_name, const gid_t main_usr_gid,
+	const ugidstr usr_name, const gid_t usr_main_gid,
 	const ugidstr grp_name, const gid_t file_gid
 ) {
-	if (main_usr_gid == file_gid) return true;
+	if (usr_main_gid == file_gid) return true;
 
 	const struct group *grp = getgrnam(grp_name);
 	if (grp == NULL) return false;
@@ -52,10 +58,16 @@ static inline bool is_user_in_group(
 	return false;
 }
 
-void printGrpName(const gid_t *file_gid, const ugidstr file_grp_name) {
+void printGrpName(const gid_t *file_gid, const ugidstr file_grp_name, const bool *is_valid) {
 	if (!do_grp_name) return;
 
 	const int len = (int)field_lengths.grp_name;
+
+	if (!*is_valid) {
+		printf("%s" "%-*s" "%s", GRP_INV_COL, len, INV_FILE_GRPNAME, RESET FIELD_PAD);
+		return;
+	}
+
 	const struct passwd *pw = getpwuid(getuid());
 
 	/// The username of the user running this process.

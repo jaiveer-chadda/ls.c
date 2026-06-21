@@ -20,22 +20,25 @@
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 
-#define PRINT_TIME_STR()																				\
-	if (DO_COLOUR) {																					\
-		sprintf(fmt_str, "%%s%s" RESET FIELD_PAD, fmt_strs_long.time_str);								\
-		printf(fmt_str, time_colour_esc[file.time_col], (int)field_lengths.time_str, file.time_str);	\
+#define PRINT_TIME_STR()								\
+	if (DO_COLOUR) {									\
+		sprintf(fmt_str, "%%s%s%s",						\
+			fmt_strs_long.time_str, RESET FIELD_PAD		\
+		);												\
+		printf(fmt_str,									\
+			time_colour_esc[file.time_col],				\
+			(int)field_lengths.time_str, file.time_str	\
+		);												\
 	} else PRINT_FIELD(time_str)
 
-#define PRINT_MODE_STR() if (DO_COLOUR) printModeStr(file.mode_str)				; else PRINT_FIELD(mode_str)
-#define PRINT_FLAG_STR() if (DO_COLOUR) printFlagStr(&(file.flags))				; else PRINT_FIELD(flag_str)
-#define PRINT_USR_NAME() if (DO_COLOUR) printUsrName(&(file.uid), file.usr_name); else PRINT_FIELD(usr_name)
-#define PRINT_GRP_NAME() if (DO_COLOUR) printGrpName(&(file.gid), file.grp_name); else PRINT_FIELD(grp_name)
-#define PRINT_SIZE_STR()				printSizeStr(file.size_str, file.size_unit)
+#define IF_COLOUR(yes, no) if (DO_COLOUR) { yes; } else { no; }
 
-#define PRINT_NLINK()														\
-	if (DO_COLOUR) {														\
-		printNLink(&(file.nlink), &(file.mode), &(file.do_hardlink_hl));	\
-	} else PRINT_FIELD(nlink)
+#define PRINT_MODE_STR() IF_COLOUR(printModeStr(file.mode_str)								   , PRINT_FIELD(mode_str))
+#define PRINT_FLAG_STR() IF_COLOUR(printFlagStr(&(file.flags))								   , PRINT_FIELD(flag_str))
+#define PRINT_USR_NAME() IF_COLOUR(printUsrName(&(file.uid), file.usr_name, &(file.is_valid))  , PRINT_FIELD(usr_name))
+#define PRINT_GRP_NAME() IF_COLOUR(printGrpName(&(file.gid), file.grp_name, &(file.is_valid))  , PRINT_FIELD(grp_name))
+#define    PRINT_NLINK() IF_COLOUR(printNLink(&(file.nlink), &(file.mode) , &(file.do_link_hl)), PRINT_FIELD(nlink   ))
+#define PRINT_SIZE_STR()		   printSizeStr(file.size_str, file.size_unit)
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 
@@ -55,7 +58,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(flags);	PRINT_FLAG_STR();
 		PRINT_FIELD(time);	PRINT_TIME_STR();
 
-		printName(file.name, &(file.file_col), &(file.do_hardlink_hl), &(file.flags), &(file.suffix));
+		printName(file.name, &(file.file_col), &(file.do_link_hl), &(file.flags), &(file.suffix));
 
 		if (do_suffix && file.suffix != '\0') printf("%c", file.suffix);
 
@@ -63,5 +66,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		printf("\n");
 	}
 }
+
+#undef COLOUR
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

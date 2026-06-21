@@ -25,6 +25,11 @@
 #define NO_FLAG_STR		"-"
 #define FLAG_SEP_STR	","
 
+/* —— Invalid File UGIDs ——————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define INV_FILE_USRNAME	"-"
+#define INV_FILE_GRPNAME	"-"
+
 /* —— File Sizes ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define NO_SIZE_STR		"-"
@@ -108,6 +113,11 @@
 
 #define ESC_CHAR_COLOUR	"8;5;125m"
 
+#define HL_NONE		""		// \e[37m
+#define HL_PUNCT	"90"	// \e[90m
+
+#define PUNCT		CSI HL_PUNCT END
+
 /* —— ANSI Non-Colour HLs —————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define	UNDER		CSI	 "4" END	// \e[4m
@@ -137,6 +147,9 @@
 
 /* —— UID/GID Colours —————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define USR_INV_COL			CSI HL_PUNCT 		END	// \e[90m
+#define GRP_INV_COL			CSI HL_PUNCT 		END	// \e[90m
+
 #define USR_YOU_COL			CSI "1;38;5;105"	END	// #807DED
 #define USR_ROOT_COL		CSI "31" 			END	// \e[31m
 #define USR_OTH_COL			CSI "93" 			END	// \e[93m
@@ -147,8 +160,7 @@
 
 /* —— [Internal] Filename Colour Definitions ——————————————————————————————————————————————————————————————————————— */
 
-#define HL_REG			""			//  \e[37m
-#define HL_PUNCT		"90"		//  \e[90m
+#define HL_REG			HL_NONE		//  \e[37m
 
 #define HL_DIR			"1;36"		//  \e[36m
 #define HL_LINK			"35"		//  \e[35m
@@ -190,10 +202,6 @@
 #define FL_S_RESTRICTED		CSI "31"		END	// \e[31m
 #define FL_S_NOUNLINK		CSI "36"		END	// \e[36m
 #define FL_S_DATALESS		CSI HL_DATALESS	END	// \e[47m
-
-/* —— Punctuation Colour ——————————————————————————————————————————————————————————————————————————————————————————— */
-
-#define PUNCT	CSI HL_PUNCT END	// \e[90m
 
 /* —— Symlink Colours —————————————————————————————————————————————————————————————————————————————————————————————— */
 

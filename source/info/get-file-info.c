@@ -21,8 +21,8 @@
 #define DO_IGNORE_FILE(entry) strcmp(entry->d_name, ".." ) == 0
 #define  IS_VALID_LINK(path) (access(path, F_OK) == 0)
 
-#define   IS_SYMLINK(file_info) ((file_info.st_mode & TYPE_MASK) == S_IFLNK)
-#define IS_DIRECTORY(file_info) ((file_info.st_mode & TYPE_MASK) == S_IFDIR)
+#define   IS_SYMLINK() ((info.st_mode & TYPE_MASK) == S_IFLNK || entry->d_type == DT_LNK)
+#define IS_DIRECTORY() ((info.st_mode & TYPE_MASK) == S_IFDIR || entry->d_type == DT_DIR)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -49,7 +49,7 @@ inline void getAllFileInfo(
 		if (DO_IGNORE_FILE(entry)) continue;
 
 		// initialise the struct so we can assign to it later
-		FileInfo file = {0};
+		FileInfo file = { .is_valid = true };
 
 		// get the raw filename stored in `entry`
 		strcpy(file.name, entry->d_name);
@@ -77,7 +77,7 @@ inline void getAllFileInfo(
 			lstat_did_fail = lstat(path, &info) == -1;
 
 			// if the file isn't a symlink then remove the target's suffix
-			if (!IS_SYMLINK(info)) file.ln_suf = NOT_LINK;
+			if (!IS_SYMLINK()) file.ln_suf = NOT_LINK;
 		}
 
 		// if none of the stat calls that ran, worked, then we don't have any extra information
@@ -87,9 +87,10 @@ inline void getAllFileInfo(
 			file = (FileInfo){0};
 
 			strcpy(file.name, entry->d_name);
-			info.st_mode = DTTOIF(entry->d_type);
-			info.st_ino  = entry->d_ino;
-			file.ln_suf  = entry->d_type == DT_LNK ? INVALID_LINK : NOT_LINK;
+			info.st_mode	= DTTOIF(entry->d_type);
+			info.st_ino		= entry->d_ino;
+			file.ln_suf		= IS_SYMLINK() ? INVALID_LINK : NOT_LINK;
+			file.is_valid	= false;
 		}
 
 		/* ——————————————————————————————————————————————————————————————————— */
@@ -113,16 +114,16 @@ inline void getAllFileInfo(
 		if (do_usr_name	)	 getUser(file.usr_name, info.st_uid);
 		if (do_grp_name	)	getGroup(file.grp_name, info.st_gid);
 		if (do_time_str	)  parseTime(file.time_str, info.st_mtimespec.tv_sec, &(file.time_col));
-		if (do_link_to && IS_SYMLINK(info)) getLink(file.link_to, path);
+		if (do_link_to && IS_SYMLINK()) getLink(file.link_to, path);
 
 		if (DO_COLOUR) setFileColour(&(file.file_col), info.st_mode, info.st_flags);
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
 		// add the FileInfo object to the end of its respective array
-		if (IS_DIRECTORY(info)  // add to the dirs array if it's a directory,
+		if (IS_DIRECTORY()  // add to the dirs array if it's a directory,
 			// or if its a symlink, and the file it points to is a directory
-			|| (do_link_to && IS_SYMLINK(info) && file.ln_suf == DIR_SUFFIX)
+			|| (do_link_to && IS_SYMLINK() && file.ln_suf == DIR_SUFFIX)
 		) {
 			dirs[(*dir_count)++] = file;
 		} else {
