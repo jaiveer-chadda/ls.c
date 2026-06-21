@@ -73,12 +73,9 @@ void printModeStr(const modestr str, const bool *has_xattr) {
 		output[strlen(output)] = str[i];
 	}
 
-	// add a terminating null byte to make `output` compatible with `printf`
-	output[strlen(output) + 1] = '\0';
-
 	printf("%s", output);
 	if (*has_xattr) printf("%s%c", XATTR_COLOUR, XATTR_CHAR);
 
 	const int spaces = (int)(field_lengths.mode_str - strlen(str)) - (*has_xattr ? 1 : 0);
-	printf("%*s%s", spaces, "", RESET FIELD_PAD);
+	printf("%s%*s%s", RESET, spaces, "", FIELD_PAD);
 }
