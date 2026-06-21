@@ -123,9 +123,11 @@
 
 /* —— NLink Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define NLINK_COL_DIR		CSI	"1;96"			END	// \e[96m
-#define NLINK_COL_REG_1		CSI	"36"			END	// \e[36m
-#define NLINK_COL_REG_MORE	CSI	"1;30;105"		END	// \e[105m
+#define LN_COL_DIR			CSI	"1;96"			END	// \e[96m
+#define LN_COL_DIR_EMPTY	CSI	"36"			END	// \e[36m
+#define LN_COL_REG_1		CSI	"2;96"			END	// \e[96m \e[2m
+#define LN_COL_REG_MORE		CSI	"1;30;105"		END	// \e[105m
+#define LN_COL_OTHER		CSI	"1;30;41"		END	// \e[41m
 
 /* —— Hardlink Colours ————————————————————————————————————————————————————————————————————————————————————————————— */
 
