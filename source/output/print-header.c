@@ -10,19 +10,19 @@
 #include "output.h"
 
 #define SHOULD_ALIGN_RIGHT(field) \
-	(strcmp(field##_TITLE, size_TITLE) == 0 || strcmp(field##_TITLE, time_str_TITLE) == 0)
+	(  strcmp(field##_TITLE, size_TITLE		) == 0 \
+	|| strcmp(field##_TITLE, time_str_TITLE	) == 0 )
 
 #define PRINT_HEADER(field)														\
 	if (do_##field)	{															\
+		const int header_len = (int)strlen(HEADER_HL HEADER_HL_OFF FIELD_PAD);	\
 		printf(SHOULD_ALIGN_RIGHT(field) ? "%*s%s" : "%-*s%s",					\
-			(int)field_lengths.field + GRAPHICS_LEN - (int)strlen(FIELD_PAD),	\
+			(int)((field_lengths.field + header_len) - strlen(FIELD_PAD)),		\
 			HEADER_HL field##_TITLE HEADER_HL_OFF, FIELD_PAD					\
 		);																		\
 	}
 
 inline void printHeader(void) {
-	const int GRAPHICS_LEN = (int)strlen(HEADER_HL HEADER_HL_OFF FIELD_PAD);
-
 	PRINT_HEADER(inode)	;	PRINT_HEADER(dev_no)  ;
 	PRINT_HEADER(mode)	;	PRINT_HEADER(mode_str);
 	PRINT_HEADER(nlink)	;

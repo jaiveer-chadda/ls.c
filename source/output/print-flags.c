@@ -13,9 +13,10 @@ void printFlagStr(const flag_t *flags) {
 	if (!do_flag_str) return;
 
 	if (*flags == 0) {
-		printf("%s%*s",
+		const int spaces = (int)(field_lengths.flag_str - strlen(NO_FLAG_STR));
+		printf("%s" "%*s",
 			PUNCT NO_FLAG_STR RESET FIELD_PAD,
-			(int)(field_lengths.flag_str - strlen(NO_FLAG_STR)), ""
+			spaces, ""
 		);
 		return;
 	}
@@ -39,8 +40,6 @@ void printFlagStr(const flag_t *flags) {
 		}
 	}
 
-	const int max_len = (int)field_lengths.flag_str;
-	const int padding = max_len - chars_printed;
-
-	printf("%*s" FIELD_PAD, padding, "");
+	const int spaces = (int)field_lengths.flag_str - chars_printed;
+	printf("%*s" "%s", spaces, "", FIELD_PAD);
 }

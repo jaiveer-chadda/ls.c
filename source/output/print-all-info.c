@@ -12,17 +12,21 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define PRINT_FIELD(field)										\
-	if (do_##field) {											\
-		strcpy(fmt_str, fmt_strs_long.field);					\
-		strcat(fmt_str, FIELD_PAD);								\
-		printf(fmt_str, (int)field_lengths.field, file.field);	\
+#define PRINT_FIELD(field)								\
+	if (do_##field) {									\
+		sprintf(fmt_str, "%s%%s", fmt_strs_long.field);	\
+		printf(fmt_str,									\
+			(int)field_lengths.field, file.field,		\
+			FIELD_PAD									\
+		);												\
 	}
+
+#define COLOUR(field, colour_func) if (DO_COLOUR) { colour_func; } else { PRINT_FIELD(field); }
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 
 #define PRINT_TIME_STR()								\
-	if (DO_COLOUR) {									\
+	COLOUR(time_str,									\
 		sprintf(fmt_str, "%%s%s%s",						\
 			fmt_strs_long.time_str, RESET FIELD_PAD		\
 		);												\
@@ -30,16 +34,14 @@
 			time_colour_esc[file.time_col],				\
 			(int)field_lengths.time_str, file.time_str	\
 		);												\
-	} else PRINT_FIELD(time_str)
+	)
 
-#define IF_COLOUR(yes, no) if (DO_COLOUR) { yes; } else { no; }
-
-#define PRINT_FLAG_STR() IF_COLOUR(printFlagStr(&(file.flags))								   , PRINT_FIELD(flag_str))
-#define PRINT_MODE_STR() IF_COLOUR(printModeStr(file.mode_str, file.has_acl, file.has_xattr)   , PRINT_FIELD(mode_str))
-#define PRINT_USR_NAME() IF_COLOUR(printUsrName(&(file.uid), file.usr_name, &(file.is_valid))  , PRINT_FIELD(usr_name))
-#define PRINT_GRP_NAME() IF_COLOUR(printGrpName(&(file.gid), file.grp_name, &(file.is_valid))  , PRINT_FIELD(grp_name))
-#define    PRINT_NLINK() IF_COLOUR(printNLink(&(file.nlink), &(file.mode) , &(file.do_link_hl)), PRINT_FIELD(nlink   ))
-#define PRINT_SIZE_STR()		   printSizeStr(file.size_str, file.size_unit)
+#define PRINT_FLAG_STR() COLOUR(flag_str, printFlagStr( &(file.flags)											 ))
+#define PRINT_MODE_STR() COLOUR(mode_str, printModeStr(   file.mode_str	,	file.has_acl	,	file.has_xattr	 ))
+#define PRINT_USR_NAME() COLOUR(usr_name, printUsrName( &(file.uid)		,	file.usr_name	, &(file.is_valid)	 ))
+#define PRINT_GRP_NAME() COLOUR(grp_name, printGrpName( &(file.gid)		,	file.grp_name	, &(file.is_valid)	 ))
+#define    PRINT_NLINK() COLOUR(nlink	,	printNLink( &(file.nlink)	, &(file.mode)		, &(file.do_link_hl) ))
+#define PRINT_SIZE_STR()				  printSizeStr(   file.size_str	, &(file.size_unit)	, &(file.mode)		  )
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 
@@ -64,7 +66,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		if (do_suffix && file.suffix != '\0') printf("%c", file.suffix);
 
 		printSymlink(file.link_to, file.ln_suf);
-		printf("\n");
+		printf("%s", "\n");
 	}
 }
 

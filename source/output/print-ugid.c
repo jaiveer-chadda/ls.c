@@ -12,10 +12,12 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define GET_USR_NAME_COLOUR() \
-	usr_uid == *file_uid ? USR_YOU_COL : ( \
-		*file_uid == 0 ? USR_ROOT_COL : USR_OTH_COL \
+#define GET_USR_NAME_COLOUR()						\
+	usr_uid == *file_uid ? USR_YOU_COL : (			\
+		*file_uid == 0 ? USR_ROOT_COL : USR_OTH_COL	\
 	)
+
+/* —————————————————————————————————————————————————————————————— */
 
 void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name, const bool *is_valid) {
 	if (!do_usr_name) return;
@@ -39,10 +41,12 @@ void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name, const bool
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define GET_GRP_NAME_COLOUR() \
-	in_usr_grp ? GRP_YOU_COL : ( \
-		in_root_grp ? GRP_ROOT_COL : GRP_OTH_COL \
+#define GET_GRP_NAME_COLOUR()						\
+	in_usr_grp ? GRP_YOU_COL : (					\
+		in_root_grp ? GRP_ROOT_COL : GRP_OTH_COL	\
 	)
+
+/* —————————————————————————————————————————————————————————————— */
 
 static inline bool is_user_in_group(
 	const ugidstr usr_name, const gid_t usr_main_gid,
@@ -58,6 +62,8 @@ static inline bool is_user_in_group(
 	}
 	return false;
 }
+
+/* —————————————————————————————————————————————————————————————— */
 
 void printGrpName(const gid_t *file_gid, const ugidstr file_grp_name, const bool *is_valid) {
 	if (!do_grp_name) return;

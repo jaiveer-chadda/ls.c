@@ -11,10 +11,15 @@
 
 #include "output.h"
 
-#define STDOUT_FILENO 1
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_DIM(name, flags) \
-	(DO_DIM_HIDDEN && ((flags & UF_HIDDEN) || (name[0] == '.' && strcmp(name, CURRENT_DIR) != 0)))
+#ifndef STDOUT_FILENO
+#define STDOUT_FILENO 1
+#endif
+
+#define DO_DIM(name, flags)	\
+	(DO_DIM_HIDDEN &&		\
+		((flags & UF_HIDDEN) || (name[0] == '.' && strcmp(name, CURRENT_DIR) != 0)))
 
 #define GET_NAME(name)	(strcmp(name, CURRENT_DIR) == 0 ? adjusted_path : name)
 #define GET_DIM_HL()	((DO_DIM(name, *flags) || do_divider) ? DIM : "")
@@ -23,10 +28,19 @@
 #define DO_OCT_ESC(chr) (0 <= chr && chr <= 7)
 #define DO_HEX_ESC(chr) ((7 < chr && chr <= 31) || chr == 127)
 
-#define NO_SUFFIX() if (*colour == FC_DIRECT) *suffix = '\0'
+#define TRY_DIVIDER()					\
+	(DO_DIVIDERS						\
+		&& !does_have_escape			\
+		&& (strlen(file_colour) == 0	\
+			|| *colour == FC_REGULAR	\
+			|| *colour == FC_DIRECT		\
+		)								\
+	)
 
 typedef unsigned char u_char;
 typedef unsigned int  u_int;
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline bool getEscSequence(char *esc_seq, const char orig_char) {
 	u_char chr = (u_char)orig_char;
@@ -47,6 +61,8 @@ static inline bool getEscSequence(char *esc_seq, const char orig_char) {
 
 	return false;
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /**
  * @brief Checks whether an ANSI escape sequence will set the background colour.
@@ -74,6 +90,8 @@ static inline bool doesSetBackground(const char *colour) {
 	}
 	return false;
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printName(const name_t name, const FileColour *colour, const bool *is_hln, const flag_t *flags, type_t *suffix) {
 	const char *file_colour = file_colour_esc[*colour];
@@ -117,22 +135,31 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 	bool do_divider = false;
 	char div_char[4] = "";
 
-	if (DO_DIVIDERS
-		&& !does_have_escape
-		&& (strlen(file_colour) == 0
-			|| *colour == FC_REGULAR
-			|| *colour == FC_DIRECT
-		)
-	) {
-		if		(strstr(name, "─────") != NULL) { do_divider = true; strcpy(div_char, "─"); NO_SUFFIX(); }
-		else if	(strstr(name, "—————") != NULL) { do_divider = true; strcpy(div_char, "—"); NO_SUFFIX(); }
+	const char *DIVIDER_OPTIONS[] = { "─", "—", "–", "-", "_", "•" };
+	const int NUM_OPTIONS = (int)(sizeof(DIVIDER_OPTIONS) / sizeof(DIVIDER_OPTIONS[0]));
+
+	if (TRY_DIVIDER()) {
+		for (int i = 0; i < NUM_OPTIONS; i++) {
+			const char *test_char = DIVIDER_OPTIONS[i];
+			char test_divider[4 * 5];
+
+			sprintf(test_divider, "%s%s%s%s%s", test_char, test_char, test_char, test_char, test_char);
+
+			if (strstr(name, test_divider) != NULL) {
+				do_divider = true;
+				strcpy(div_char, test_char);
+
+				if (*colour == FC_DIRECT) *suffix = '\0';
+				break;
+			}
+		}
 	}
 
 	if (DO_COLOUR) {
 		printf(" %s%s" "%s%s" "%s",
 			GET_HARDLN_UL(), GET_DIM_HL(),
 			file_colour, escaped_name,
-			do_divider ? "" : RESET
+			(do_divider ? "" : RESET)
 		);
 
 	} else {
@@ -145,9 +172,9 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 		if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == 0) {
 			printf("%s", RMAM);
 			for (int i = 0; i < window.ws_col - 2; i++) printf("%s", div_char);
-			printf("%s%s", DO_COLOUR ? RESET : "", SMAM);
+			printf("%s" "%s", (DO_COLOUR ? RESET : ""), SMAM);
 		}
 	}
 }
 
-// spell:ignoreRegExp /-W\B/g
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

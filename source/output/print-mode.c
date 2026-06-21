@@ -18,8 +18,8 @@
 void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 	if (!do_mode_str) return;
 
-	// ( bit count `= 10` )  ×  ( max hl len `= 12` )
-	char output[10 * 12] = "";
+	// ( bit count `= 10` )  ×  ( max hl len `= 11` )
+	char output[10 * 11] = "";
 	FileColour type = FILE_COLOUR_COUNT;
 
 	// the first char will always be the filetype
@@ -42,7 +42,7 @@ void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 
 	PermColour esc = PERM_COLOUR_COUNT, last_esc;
 
-	for (int i = 1; i < MODE_STR_LEN - 1; i++) {
+	for (int i = 1; i < MODE_STR_LEN; i++) {
 		last_esc = esc;
 
 		switch (str[i]) {
@@ -80,5 +80,9 @@ void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 	if (has_xattr)	{ printf("%s%c", XATTR_COLOUR, XATTR_CHAR	); spaces-- ; }
 	if (has_acl)	{ printf("%s%c", ACL_COLOUR,   ACL_CHAR		); spaces-- ; }
 
-	printf("%s%*s%s", RESET, spaces, "", FIELD_PAD);
+	printf("%s" "%*s" "%s",
+		RESET,
+		spaces, "",
+		FIELD_PAD
+	);
 }
