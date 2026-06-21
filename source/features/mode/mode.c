@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../model/stat-model.h"
-#include "../../graphics/graphics.h"
-
 #include "mode.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

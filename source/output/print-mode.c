@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../model/stat-model.h"
 #include "../options/options.h"
 
 #define IS_REG() (str[0] == REGULAR_CHAR)	/// Whether the file is a regular file or not.
@@ -15,7 +14,7 @@
 		esc_1 != PERM_COLOUR_COUNT && esc_2 != PERM_COLOUR_COUNT	\
 		&& strcmp(perm_colour_esc[esc_1], perm_colour_esc[esc_2]) == 0)
 
-void printModeStr(const modestr str, const bool *has_xattr) {
+void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 	if (!do_mode_str) return;
 
 	// ( bit count `= 10` )  ×  ( max hl len `= 12` )
@@ -74,8 +73,11 @@ void printModeStr(const modestr str, const bool *has_xattr) {
 	}
 
 	printf("%s", output);
-	if (*has_xattr) printf("%s%c", XATTR_COLOUR, XATTR_CHAR);
 
-	const int spaces = (int)(field_lengths.mode_str - strlen(str)) - (*has_xattr ? 1 : 0);
+	int spaces = (int)(field_lengths.mode_str - strlen(str));
+
+	if (has_xattr)	{ printf("%s%c", XATTR_COLOUR, XATTR_CHAR	); spaces-- ; }
+	if (has_acl)	{ printf("%s%c", ACL_COLOUR,   ACL_CHAR		); spaces-- ; }
+
 	printf("%s%*s%s", RESET, spaces, "", FIELD_PAD);
 }

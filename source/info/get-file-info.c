@@ -114,6 +114,8 @@ inline void getAllFileInfo(
 		if (do_usr_name	)	 getUser(file.usr_name, info.st_uid);
 		if (do_grp_name	)	getGroup(file.grp_name, info.st_gid);
 		if (do_time_str	)  parseTime(file.time_str, info.st_mtimespec.tv_sec, &(file.time_col));
+
+		if (do_mode_str	)   checkACL(&(file.has_acl), path);
 		if (do_mode_str	) checkXattr(&(file.has_xattr), path);
 		if (do_link_to && IS_SYMLINK()) getLink(file.link_to, path);
 

@@ -19,7 +19,9 @@
 #define PARSE_MODESTR_LEN()												\
 	if (do_mode_str) {													\
 		sprintf(elem_as_str, fmt_strs_short.mode_str, file.mode_str);	\
-		len = strlen(elem_as_str) + (file.has_xattr ? 1 : 0);			\
+		len = strlen(elem_as_str)										\
+			+ (file.has_xattr	? 1 : 0)								\
+			+ (file.has_acl		? 1 : 0);								\
 		if (len > field_lengths.mode_str) field_lengths.mode_str = len;	\
 	}
 

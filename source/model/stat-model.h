@@ -32,6 +32,8 @@ typedef struct {
 
 	bool	do_link_hl;
 	bool	has_xattr;
+	bool	has_acl;
+
 	bool	is_valid;
 
 } FileInfo;
