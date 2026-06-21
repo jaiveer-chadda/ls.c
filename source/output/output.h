@@ -11,5 +11,5 @@ void printUsrName(const uid_t	 *uid		, const ugidstr	 usr_name, const bool *is_v
 void printGrpName(const gid_t	 *gid		, const ugidstr	 grp_name, const bool *is_valid);
 void printSymlink(const path_t	  target	, const type_t	 suffix);
 void printSizeStr(const sizestr	  size_str	, const char	 unit);
-void printModeStr(const modestr	  str);
+void printModeStr(const modestr	  str		, const bool *has_xattr);
 void printFlagStr(const flag_t	 *flags);

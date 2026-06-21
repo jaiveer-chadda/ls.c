@@ -15,7 +15,7 @@
 		esc_1 != PERM_COLOUR_COUNT && esc_2 != PERM_COLOUR_COUNT	\
 		&& strcmp(perm_colour_esc[esc_1], perm_colour_esc[esc_2]) == 0)
 
-void printModeStr(const modestr str) {
+void printModeStr(const modestr str, const bool *has_xattr) {
 	if (!do_mode_str) return;
 
 	// ( bit count `= 10` )  ×  ( max hl len `= 12` )
@@ -75,5 +75,10 @@ void printModeStr(const modestr str) {
 
 	// add a terminating null byte to make `output` compatible with `printf`
 	output[strlen(output) + 1] = '\0';
-	printf("%s" RESET FIELD_PAD, output);
+
+	printf("%s", output);
+	if (*has_xattr) printf("%s%c", XATTR_COLOUR, XATTR_CHAR);
+
+	const int spaces = (int)(field_lengths.mode_str - strlen(str)) - (*has_xattr ? 1 : 0);
+	printf("%*s%s", spaces, "", RESET FIELD_PAD);
 }

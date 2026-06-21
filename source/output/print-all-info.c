@@ -33,8 +33,8 @@
 
 #define IF_COLOUR(yes, no) if (DO_COLOUR) { yes; } else { no; }
 
-#define PRINT_MODE_STR() IF_COLOUR(printModeStr(file.mode_str)								   , PRINT_FIELD(mode_str))
 #define PRINT_FLAG_STR() IF_COLOUR(printFlagStr(&(file.flags))								   , PRINT_FIELD(flag_str))
+#define PRINT_MODE_STR() IF_COLOUR(printModeStr(file.mode_str, &(file.has_xattr))			   , PRINT_FIELD(mode_str))
 #define PRINT_USR_NAME() IF_COLOUR(printUsrName(&(file.uid), file.usr_name, &(file.is_valid))  , PRINT_FIELD(usr_name))
 #define PRINT_GRP_NAME() IF_COLOUR(printGrpName(&(file.gid), file.grp_name, &(file.is_valid))  , PRINT_FIELD(grp_name))
 #define    PRINT_NLINK() IF_COLOUR(printNLink(&(file.nlink), &(file.mode) , &(file.do_link_hl)), PRINT_FIELD(nlink   ))

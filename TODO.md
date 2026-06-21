@@ -122,8 +122,8 @@
 
 ### Fields
 
-#### Permissions
-- [ ] Add an ampersand `@` to see whether a file has extended permissions or not
+#### [√] Permissions
+- [x] Add an ampersand `@` to see whether a file has extended attributes or not
 
 #### [√] Symlinks
 - [x] Figure out whether a symlink is valid or not, and adjust the visualisation based on that

@@ -4,5 +4,6 @@
 #define EXEC_MASK 0000111	/// A mask to tell whether a file is an executable or not.
 
 void getMode(modestr mode_str, const mode_t oct_mode);
+void checkXattr(bool *has_xattr, const path_t path);
 
 char getTypeSuffix(const mode_t mode);

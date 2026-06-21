@@ -31,6 +31,7 @@ typedef struct {
 	TimeColour time_col;
 
 	bool	do_link_hl;
+	bool	has_xattr;
 	bool	is_valid;
 
 } FileInfo;

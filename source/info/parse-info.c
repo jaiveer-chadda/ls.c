@@ -16,12 +16,18 @@
 		if (len > field_lengths.field) field_lengths.field = len;	\
 	}
 
-#define PARSE_SIZESTR_LEN()												\
-	if (do_size_str) {													\
-		sprintf(elem_as_str, fmt_strs_short.size_str, file.size_str);	\
-		len = strlen(elem_as_str);										\
-		len += DO_IGNORE_UNIT(file.size_unit) ? 0 : 1;					\
-		if (len > field_lengths.size_str) field_lengths.size_str = len;	\
+#define PARSE_MODESTR_LEN()												\
+	if (do_mode_str) {													\
+		sprintf(elem_as_str, fmt_strs_short.mode_str, file.mode_str);	\
+		len = strlen(elem_as_str) + (file.has_xattr ? 1 : 0);			\
+		if (len > field_lengths.mode_str) field_lengths.mode_str = len;	\
+	}
+
+#define PARSE_SIZESTR_LEN()														\
+	if (do_size_str) {															\
+		sprintf(elem_as_str, fmt_strs_short.size_str, file.size_str);			\
+		len = strlen(elem_as_str) + (DO_IGNORE_UNIT(file.size_unit) ? 0 : 1);	\
+		if (len > field_lengths.size_str) field_lengths.size_str = len;			\
 	}
 
 inline void getFieldLengths(const FileInfo *all_files, const int *count) {
@@ -34,7 +40,7 @@ inline void getFieldLengths(const FileInfo *all_files, const int *count) {
 		PARSE_LEN(nlink);
 		PARSE_LEN(inode);	PARSE_LEN(dev_no);
 		PARSE_LEN(flags);	PARSE_LEN(flag_str);
-		PARSE_LEN(mode);	PARSE_LEN(mode_str);
+		PARSE_LEN(mode);	PARSE_MODESTR_LEN();
 		PARSE_LEN(size);	PARSE_SIZESTR_LEN();
 		PARSE_LEN(uid);		PARSE_LEN(usr_name);
 		PARSE_LEN(gid);		PARSE_LEN(grp_name);

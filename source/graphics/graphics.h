@@ -53,6 +53,7 @@
 /* —— Mode / Permissions ——————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define NO_PERM_CHAR		'-'
+#define XATTR_CHAR			'@'
 
 #define READ_BIT_CHAR		'r'
 #define WRITE_BIT_CHAR		'w'
@@ -235,6 +236,8 @@
 	X(FC_WHITEOUT	, CSI	HL_WHITEOUT	END	) /*\e[107m */
 
 /* —— Permission Colours ——————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define XATTR_COLOUR  CSI ";38;5;147"		END
 
 #define PERM_COLOUR_TABLE \
 	X(PC_NONE		, CSI ";" HL_PUNCT		END	) /* \e[90m */ \
