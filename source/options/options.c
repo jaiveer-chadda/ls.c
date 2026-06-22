@@ -1,7 +1,10 @@
 /// @file options/options.c
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
+
 #include "options.h"
 
 #ifndef t
@@ -36,7 +39,12 @@ static bool
 
 /* —— Set Colour ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline bool setColour(void) {
+static inline bool doColourAuto(void) {
+	if (!isatty(STDOUT_FILENO)) return false;
+
+	const char *NO_COLOUR = getenv("NO_COLOR");
+	if (NO_COLOUR != NULL && strlen(NO_COLOUR) != 0) return false;
+
 	return true;
 }
 
@@ -144,7 +152,7 @@ int setOptions(const int argc, const char *argv[]) {
 	/* ——————————————————————————————————————————————————————————————— */
 
 	// if `--colour auto` was given, or if `--colour` wasn't set, then determine whether colour should be used
-	if (colour_auto) U_DO_COLOUR = setColour();
+	if (colour_auto) U_DO_COLOUR = doColourAuto();
 
 	return i;
 }
