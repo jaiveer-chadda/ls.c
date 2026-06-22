@@ -7,7 +7,7 @@
 /* —— Declare Constants ———————————————————————————————————————————————————————————————————————————————————————————— */
 
 static bool
-	I_DO_COLOUR			= true	,
+	I_DO_COLOUR,
 	I_DO_HEADER			= false	,
 	I_DO_DIVIDERS		= true	,
 	I_DO_SHORT_FLAGS	= true	,
@@ -38,6 +38,9 @@ static inline bool setColour(void) {
 
 /* ——————————————————————————————————————————————————————————————————— */
 
+#define OPTION(str) (strcmp(argv[i	  ], str) == 0)
+#define OPTARG(str) (strcmp(argv[i + 1], str) == 0)
+
 #define ERROR_TAKES_ARG(option)	do { fprintf(stderr, "error: `%s` takes argument\n"	, option); usage(1); } while (0)
 #define ERROR_INVALID(option)	do { fprintf(stderr, "unknown option: `%s`\n"		, option); usage(1); } while (0)
 
@@ -46,13 +49,17 @@ int setOptions(const int argc, const char *argv[]) {
 	bool colour_auto = true;
 
 	for (int i = 1; i < argc; i++) {
+		if (argv[i][0] != '-') return i;
 		// puts(argv[i]);
-		if (strcmp(argv[i], "--colour") == 0) {
+
+		if (OPTION("--colour")) {
 			colour_auto = false;
-			if		(strcmp(argv[i + 1], "always") == 0) I_DO_COLOUR = true;
-			else if (strcmp(argv[i + 1], "never" ) == 0) I_DO_COLOUR = false;
-			else if (strcmp(argv[i + 1], "auto"  ) == 0) colour_auto = true;
+			if		(OPTARG("always")) { i++; I_DO_COLOUR = true ;}
+			else if (OPTARG("never" )) { i++; I_DO_COLOUR = false;}
+			else if (OPTARG("auto"  )) { i++; colour_auto = true ;}
 			else ERROR_TAKES_ARG("--colour");
+
+			continue;
 		}
 	}
 
