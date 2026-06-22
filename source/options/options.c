@@ -61,6 +61,13 @@ static inline bool setColour(void) {
 	if (HAS_ARG) ERROR_BAD_ARG(option, optarg, valid_args); \
 	else ERROR_TAKES_ARG(option)
 
+#define BINARY_OPT(flag, var) \
+	if (OPTION_IS("--"	  #flag)) { var = true ; continue; } \
+	if (OPTION_IS("--no-" #flag)) { var = false; continue; }
+
+#define FIELD_OPT(flag, var) \
+	if (OPTION_IS("--do-" #flag) || OPTION_IS("--" #flag))	{ var = true ; continue; } \
+	if (OPTION_IS("--no-" #flag))							{ var = false; continue; }
 
 /* ——————————————————————————————————————————————————————————————————— */
 
@@ -97,36 +104,29 @@ int setOptions(const int argc, const char *argv[]) {
 			ARG_ERROR("--flags", "full, short, tiny");
 		}
 
-		/* —— binary flags ——————————————————————————————————————————————— */
+		/* —— binary options ————————————————————————————————————————————— */
 
-		if (OPTION_IS("--headers"))			{ I_DO_HEADER		= true ; continue; }
-		if (OPTION_IS("--no-headers"))		{ I_DO_HEADER		= false; continue; }
+		BINARY_OPT(headers			, I_DO_HEADER		);
+		BINARY_OPT(dividers			, I_DO_DIVIDERS		);
+		BINARY_OPT(dim-hidden		, I_DO_DIM_HIDDEN	);
+		BINARY_OPT(sort-dirs-first	, I_SORT_DIRS_FIRST	);
 
-		if (OPTION_IS("--dividers"))		{ I_DO_DIVIDERS		= true ; continue; }
-		if (OPTION_IS("--no-dividers"))		{ I_DO_DIVIDERS		= false; continue; }
+		/* —— field setting/unsetting ——————————————————————————————————— */
 
-		if (OPTION_IS("--dim-hidden"))		{ I_DO_DIM_HIDDEN	= true ; continue; }
-		if (OPTION_IS("--no-dim-hidden"))	{ I_DO_DIM_HIDDEN	= false; continue; }
+		FIELD_OPT(suffix	, I_DO_SUFFIX	);
+		FIELD_OPT(link-to	, I_DO_LINK_TO	);
 
-		if (OPTION_IS("--sort-dirs-first"))	{ I_SORT_DIRS_FIRST	= true ; continue; }
-		if (OPTION_IS("--no-dirs-first"))	{ I_SORT_DIRS_FIRST	= false; continue; }
+		FIELD_OPT(nlink		, I_DO_NLINK	);
+		FIELD_OPT(dev-no	, I_DO_DEV_NO	);
+		FIELD_OPT(inode		, I_DO_INODE	);
+
+		FIELD_OPT(flags		, I_DO_FLAGS	);	FIELD_OPT(flag-str, I_DO_FLAG_STR);
+		FIELD_OPT(mode		, I_DO_MODE		);	FIELD_OPT(mode-str, I_DO_MODE_STR);
+		FIELD_OPT(size		, I_DO_SIZE		);	FIELD_OPT(size-str, I_DO_SIZE_STR);
+		FIELD_OPT(uid		, I_DO_UID		);	FIELD_OPT(usr-name, I_DO_USR_NAME);
+		FIELD_OPT(gid		, I_DO_GID		);	FIELD_OPT(grp-name, I_DO_GRP_NAME);
+		FIELD_OPT(time		, I_DO_TIME		);	FIELD_OPT(time-str, I_DO_TIME_STR);
 	}
-	
-	/* ——————————————————————————————————————————————————————————————— */
-
-	I_DO_SUFFIX		= true	;
-	I_DO_LINK_TO	= true	;
-
-	I_DO_NLINK		= true	;
-	I_DO_DEV_NO		= false	;
-	I_DO_INODE		= false	;
-
-	I_DO_FLAGS		= false	;	I_DO_FLAG_STR = true;
-	I_DO_MODE		= false	;	I_DO_MODE_STR = true;
-	I_DO_SIZE		= false	;	I_DO_SIZE_STR = true;
-	I_DO_UID		= false	;	I_DO_USR_NAME = true;
-	I_DO_GID		= false	;	I_DO_GRP_NAME = true;
-	I_DO_TIME		= false	;	I_DO_TIME_STR = true;
 
 	/* ——————————————————————————————————————————————————————————————— */
 
