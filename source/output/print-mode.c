@@ -16,7 +16,7 @@
 		&& strcmp(perm_colour_esc[esc_1], perm_colour_esc[esc_2]) == 0)
 
 void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
-	if (!do_mode_str) return;
+	if (!do_mode_str()) return;
 
 	// ( bit count `= 10` )  ×  ( max hl len `= 11` )
 	char output[10 * 11] = "";

@@ -13,7 +13,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define PRINT_FIELD(field)								\
-	if (do_##field) {									\
+	if (do_##field()) {									\
 		sprintf(fmt_str, "%s%%s", fmt_strs_long.field);	\
 		printf(fmt_str,									\
 			(int)field_lengths.field, file.field,		\
@@ -21,7 +21,7 @@
 		);												\
 	}
 
-#define COLOUR(field, colour_func) if (DO_COLOUR) { colour_func; } else { PRINT_FIELD(field); }
+#define COLOUR(field, colour_func) if (DO_COLOUR()) { colour_func; } else { PRINT_FIELD(field); }
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 
@@ -63,7 +63,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 
 		printName(file.name, &(file.file_col), &(file.do_link_hl), &(file.flags), &(file.suffix));
 
-		if (do_suffix && file.suffix != '\0') printf("%c", file.suffix);
+		if (do_suffix() && file.suffix != '\0') printf("%c", file.suffix);
 
 		printSymlink(file.link_to, file.ln_suf);
 		printf("%s", "\n");

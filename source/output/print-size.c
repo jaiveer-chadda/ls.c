@@ -9,7 +9,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define IF_COLOUR(print) (DO_COLOUR ? (print) : "")
+#define IF_COLOUR(print) (DO_COLOUR() ? (print) : "")
 
 #define DO_IGNORE_UNIT(unit) (unit == UNIT_BYTE || unit == UNIT_ZERO || unit == UNIT_MAJ_MIN)
 
@@ -61,7 +61,7 @@ static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printSizeStr(const sizestr size_str, const char *unit, const mode_t *mode) {
-	if (!do_size_str) return;
+	if (!do_size_str()) return;
 
 	const int field_len	= (int)field_lengths.size_str;
 	const int str_len	= (int)strlen(size_str);

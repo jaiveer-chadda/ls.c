@@ -9,7 +9,7 @@
 #include "../graphics/graphics.h"
 
 void printNLink(const nlink_t *nlink, const mode_t *mode, bool *is_hln) {
-	if (!do_nlink) return;
+	if (!do_nlink()) return;
 
 	// using "nlink_str" to calculate the strlen of nlink
 	char nlink_str[16], colour[16];

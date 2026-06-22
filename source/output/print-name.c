@@ -18,7 +18,7 @@
 #endif
 
 #define DO_DIM(name, flags)	\
-	(DO_DIM_HIDDEN &&		\
+	((DO_DIM_HIDDEN()) &&		\
 		((flags & UF_HIDDEN) || (name[0] == '.' && strcmp(name, CURRENT_DIR) != 0)))
 
 #define GET_NAME(name)	(strcmp(name, CURRENT_DIR) == 0 ? adjusted_path : name)
@@ -29,7 +29,7 @@
 #define DO_HEX_ESC(chr) ((7 < chr && chr <= 31) || chr == 127)
 
 #define TRY_DIVIDER()					\
-	(DO_DIVIDERS						\
+	(DO_DIVIDERS()						\
 		&& !does_have_escape			\
 		&& (strlen(file_colour) == 0	\
 			|| *colour == FC_REGULAR	\
@@ -112,7 +112,7 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 			continue;
 		}
 
-		if (DO_COLOUR) {
+		if (DO_COLOUR()) {
 			char temp[48];
 			// if the file colour sets the bg, then make the esc seq also uses a bg highlight, and vice versa
 			sprintf(temp, "%s%s%s" "%s%s" "%s",
@@ -155,7 +155,7 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 		}
 	}
 
-	if (DO_COLOUR) {
+	if (DO_COLOUR()) {
 		printf("%s" "%s%s" "%s%s" "%s" "%s",
 			PRE_NAME_PAD,
 			GET_HARDLN_UL(), GET_DIM_HL(),
@@ -174,7 +174,7 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 		if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == 0) {
 			printf("%s", RMAM);
 			for (int i = 0; i < window.ws_col - 2; i++) printf("%s", div_char);
-			printf("%s" "%s", (DO_COLOUR ? RESET : ""), SMAM);
+			printf("%s" "%s", (DO_COLOUR() ? RESET : ""), SMAM);
 		}
 	}
 }

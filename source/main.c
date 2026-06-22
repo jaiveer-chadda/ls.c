@@ -7,6 +7,7 @@
 
 #include "info/info.h"
 #include "output/output.h"
+#include "form/formatting.h"
 #include "options/options.h"
 #include "info/sorting/sort.h"
 
@@ -16,6 +17,8 @@
 path_t adjusted_path = CURRENT_DIR;
 
 int main(const int argc, const char *argv[]) {
+
+	set_options();
 
 	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
 
@@ -48,7 +51,7 @@ int main(const int argc, const char *argv[]) {
 
 	/* —— Sort Files if Dirs First ——————————————————————————————————————————————————————————————— */
 
-	if (SORT_DIRS_FIRST) {
+	if (SORT_DIRS_FIRST()) {
 		sortFiles( dirs,  &dir_count);
 		sortFiles(files, &file_count);
 	}
@@ -63,7 +66,7 @@ int main(const int argc, const char *argv[]) {
 
 	/* —— Sort Files if not Dirs First ——————————————————————————————————————————————————————————— */
 
-	if (!SORT_DIRS_FIRST) sortFiles(all_files, &count);
+	if (!SORT_DIRS_FIRST()) sortFiles(all_files, &count);
 
 	/* —— Find Widths of Fields —————————————————————————————————————————————————————————————————— */
 
@@ -76,7 +79,7 @@ int main(const int argc, const char *argv[]) {
 	/* —— Print Header ——————————————————————————————————————————————————————————————————————————— */
 
 	// Print the fields' headers
-	if (DO_HEADER) printHeader();
+	if (DO_HEADER()) printHeader();
 
 	/* —— Print File Info ———————————————————————————————————————————————————————————————————————— */
 

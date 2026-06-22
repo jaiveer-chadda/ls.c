@@ -9,7 +9,7 @@ Lengths field_lengths;
 FmtStrs fmt_strs_short, fmt_strs_long;
 
 inline void initFormatting(void) {
-	if (DO_HEADER) {
+	if (DO_HEADER()) {
 		// these will be precomputed when compiler optimisation is set to `-O2` or `-O3`
 		field_lengths = (Lengths){
 			.nlink	= strlen(nlink_TITLE),

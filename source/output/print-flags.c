@@ -10,7 +10,7 @@
 #include "../features/flags/flags.h"
 
 void printFlagStr(const flag_t *flags) {
-	if (!do_flag_str) return;
+	if (!do_flag_str()) return;
 
 	if (*flags == 0) {
 		const int spaces = (int)(field_lengths.flag_str - strlen(NO_FLAG_STR));

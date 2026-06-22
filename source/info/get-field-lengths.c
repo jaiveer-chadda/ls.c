@@ -10,7 +10,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define GET_LEN(field)												\
-	if (do_##field) {												\
+	if (do_##field()) {												\
 		sprintf(elem_as_str, fmt_strs_short.field, file.field);		\
 		len = strlen(elem_as_str);									\
 		if (len > field_lengths.field) field_lengths.field = len;	\
@@ -19,7 +19,7 @@
 /* ———————————————————————————————————————————————————————————————————————— */
 
 #define GET_MODESTR_LEN()												\
-	if (do_mode_str) {													\
+	if (do_mode_str()) {												\
 		sprintf(elem_as_str, fmt_strs_short.mode_str, file.mode_str);	\
 		len = strlen(elem_as_str)										\
 			+ (file.has_xattr	? 1 : 0)								\
@@ -30,7 +30,7 @@
 #define DO_IGNORE_UNIT(unit) (unit == UNIT_BYTE || unit == UNIT_ZERO || unit == UNIT_MAJ_MIN)
 
 #define GET_SIZESTR_LEN()														\
-	if (do_size_str) {															\
+	if (do_size_str()) {														\
 		sprintf(elem_as_str, fmt_strs_short.size_str, file.size_str);			\
 		len = strlen(elem_as_str) + (DO_IGNORE_UNIT(file.size_unit) ? 0 : 1);	\
 		if (len > field_lengths.size_str) field_lengths.size_str = len;			\

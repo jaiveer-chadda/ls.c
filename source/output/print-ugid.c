@@ -20,7 +20,7 @@
 /* —————————————————————————————————————————————————————————————— */
 
 void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name, const bool *is_valid) {
-	if (!do_usr_name) return;
+	if (!do_usr_name()) return;
 
 	const int len = (int)field_lengths.usr_name;
 
@@ -66,7 +66,7 @@ static inline bool is_user_in_group(
 /* —————————————————————————————————————————————————————————————— */
 
 void printGrpName(const gid_t *file_gid, const ugidstr file_grp_name, const bool *is_valid) {
-	if (!do_grp_name) return;
+	if (!do_grp_name()) return;
 
 	const int len = (int)field_lengths.grp_name;
 
