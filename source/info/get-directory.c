@@ -7,7 +7,7 @@
 
 DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
 	// if there's no input, or the input is empty, then the target directory is `.`
-	if (argc <= 1 || strlen(argv[1]) == 0) {
+	if (true || argc <= 1 || strlen(argv[1]) == 0) {
 		strcpy(target_dir, CURRENT_DIR);
 
 	} else { // otherwise, copy the user's input verbatim into `target_dir`

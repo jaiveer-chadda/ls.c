@@ -7,7 +7,8 @@
 
 #include "../model/stat-model.h"
 
-void set_options(void);
+void usage(const int exit_code);
+int setOptions(const int argc, const char *argv[]);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

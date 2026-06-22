@@ -18,7 +18,7 @@ path_t adjusted_path = CURRENT_DIR;
 
 int main(const int argc, const char *argv[]) {
 
-	set_options();
+	(void) setOptions(argc, argv);
 
 	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
 
