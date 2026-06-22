@@ -156,14 +156,16 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 	}
 
 	if (DO_COLOUR) {
-		printf(" %s%s" "%s%s" "%s",
+		printf("%s" "%s%s" "%s%s" "%s" "%s",
+			PRE_NAME_PAD,
 			GET_HARDLN_UL(), GET_DIM_HL(),
-			file_colour, escaped_name,
+			file_colour, strcmp(name, CURRENT_DIR) == 0 ? UNDER : "",
+			escaped_name,
 			(do_divider ? "" : RESET)
 		);
 
 	} else {
-		printf(" %s", escaped_name);
+		printf("%s" "%s", PRE_NAME_PAD, escaped_name);
 	}
 
 	if (do_divider) {
