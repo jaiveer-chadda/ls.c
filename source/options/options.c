@@ -81,15 +81,16 @@ static inline bool setColour(void) {
 
 int setOptions(const int argc, const char *argv[]) {
 	bool colour_auto = true;
+	int i;
 
-	for (int i = 1; i < argc; i++) {
+	for (i = 1; i < argc; i++) {
 
 		const char *opt		= argv[i];
 		const char *optarg	= ARG_EXISTS ? "" : argv[i + 1];
 
 		/* —— end option parsing ————————————————————————————————————————— */
 
-		if (OPTION_IS("--") || opt[0] != '-') return i;
+		if (OPTION_IS("--") || opt[0] != '-') break;
 
 		/* —— --colour ——————————————————————————————————————————————————— */
 
@@ -145,7 +146,7 @@ int setOptions(const int argc, const char *argv[]) {
 	// if `--colour auto` was given, or if `--colour` wasn't set, then determine whether colour should be used
 	if (colour_auto) U_DO_COLOUR = setColour();
 
-	return 0;
+	return i;
 }
 
 /* —— Define Getter Functions —————————————————————————————————————————————————————————————————————————————————————— */

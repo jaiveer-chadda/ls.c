@@ -140,7 +140,7 @@
     don't clash with any other colours being used
 
 #### Options
-- [ ] Implement an options/flags system to turn various features on/off
+- [x] Implement an options/flags system to turn various features on/off
 
 #### [[END]]
 

@@ -5,13 +5,13 @@
 
 #include "info.h"
 
-DIR* getDirectory(char *target_dir, const int argc, const char *argv[]) {
-	// if there's no input, or the input is empty, then the target directory is `.`
-	if (true || argc <= 1 || strlen(argv[1]) == 0) {
+DIR* getDirectory(char *target_dir, const int files_start, const int argc, const char *argv[]) {
+	// if there's no input or the input is empty, then the target directory is `.`
+	if (argc == files_start || strlen(argv[files_start]) == 0) {
 		strcpy(target_dir, CURRENT_DIR);
 
 	} else { // otherwise, copy the user's input verbatim into `target_dir`
-		strncpy(target_dir, argv[1], MAX_NAME_LEN - 1);
+		strncpy(target_dir, argv[files_start], MAX_NAME_LEN - 1);
 		target_dir[MAX_NAME_LEN - 1] = '\0';
 	}
 

@@ -18,14 +18,16 @@ path_t adjusted_path = CURRENT_DIR;
 
 int main(const int argc, const char *argv[]) {
 
-	(void) setOptions(argc, argv);
+	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
+
+	const int files_start = setOptions(argc, argv);
 
 	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
 
 	char target_dir[MAX_NAME_LEN];
 
 	// Get the target directory from the user's input
-	DIR *dir_obj = getDirectory(target_dir, argc, argv);
+	DIR *dir_obj = getDirectory(target_dir, files_start, argc, argv);
 	if (dir_obj == NULL) return 1;
 
 	// Get the path to the target directory, which'll be used to replace the `.` directory's name
