@@ -38,41 +38,81 @@ static inline bool setColour(void) {
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-#define OPTION(str) (strcmp(argv[i	  ], str) == 0)
-#define OPTARG(str) (strcmp(argv[i + 1], str) == 0)
+#define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] == '-'))
+#define HAS_ARG		(strcmp(optarg, "") != 0)
 
-#define ERROR_TAKES_ARG(option)	do { fprintf(stderr, "error: `%s` takes argument\n"	, option); usage(1); } while (0)
-#define ERROR_INVALID(option)	do { fprintf(stderr, "unknown option: `%s`\n"		, option); usage(1); } while (0)
+#define OPTION_IS(str) (strcmp(opt	 , str) == 0)
+#define OPTARG_IS(str) (strcmp(optarg, str) == 0)
+
+#define ERROR_TAKES_ARG(option)	   do { fprintf(stderr, "error: `%s` takes argument\n", option); usage(1); } while (0)
+#define ERROR_INVALID_OPT(option)  do { fprintf(stderr, "unknown option: `%s`\n"	  , option); usage(1); } while (0)
+
+#define ERROR_BAD_ARG(option, arg, args)		\
+	do {										\
+		fprintf(stderr,							\
+			"invlid argument `%s` for `%s`. "	\
+			"possible arguments are %s\n",		\
+			arg, option, args					\
+		);										\
+		usage(1);								\
+	} while (0)
+
+#define ARG_ERROR(option, valid_args) \
+	if (HAS_ARG) ERROR_BAD_ARG(option, optarg, valid_args); \
+	else ERROR_TAKES_ARG(option)
+
+
+/* ——————————————————————————————————————————————————————————————————— */
 
 int setOptions(const int argc, const char *argv[]) {
-	// if (argc < 2) return 0;
 	bool colour_auto = true;
 
 	for (int i = 1; i < argc; i++) {
-		if (argv[i][0] != '-') return i;
-		// puts(argv[i]);
 
-		if (OPTION("--colour")) {
+		const char *opt		= argv[i];
+		const char *optarg	= ARG_EXISTS ? "" : argv[i + 1];
+
+		/* —— end option parsing ————————————————————————————————————————— */
+
+		if (OPTION_IS("--") || opt[0] != '-') return i;
+
+		/* —— --colour ——————————————————————————————————————————————————— */
+
+		if (OPTION_IS("--colour")) {
 			colour_auto = false;
-			if		(OPTARG("always")) { i++; I_DO_COLOUR = true ;}
-			else if (OPTARG("never" )) { i++; I_DO_COLOUR = false;}
-			else if (OPTARG("auto"  )) { i++; colour_auto = true ;}
-			else ERROR_TAKES_ARG("--colour");
-
-			continue;
+			if (OPTARG_IS("always")) { i++; I_DO_COLOUR = true ; continue; }
+			if (OPTARG_IS("never" )) { i++; I_DO_COLOUR = false; continue; }
+			if (OPTARG_IS("auto"  )) { i++; colour_auto = true ; continue; }
+			ARG_ERROR("--colour", "always, never, auto");
 		}
+
+		if (OPTION_IS("--no-colour")) { I_DO_COLOUR = false; continue; }
+
+		/* —— --flags ———————————————————————————————————————————————————— */
+
+		if (OPTION_IS("--flags") || OPTION_IS("--flag-style")) {
+			if (OPTARG_IS("full" )) { i++; I_DO_SHORT_FLAGS = false; I_DO_TINY_FLAGS = false; continue; }
+			if (OPTARG_IS("short")) { i++; I_DO_SHORT_FLAGS = true ; I_DO_TINY_FLAGS = false; continue; }
+			if (OPTARG_IS("tiny" )) { i++; I_DO_SHORT_FLAGS = false; I_DO_TINY_FLAGS = true ; continue; }
+			ARG_ERROR("--flags", "full, short, tiny");
+		}
+
+		/* —— binary flags ——————————————————————————————————————————————— */
+
+		if (OPTION_IS("--headers"))			{ I_DO_HEADER		= true ; continue; }
+		if (OPTION_IS("--no-headers"))		{ I_DO_HEADER		= false; continue; }
+
+		if (OPTION_IS("--dividers"))		{ I_DO_DIVIDERS		= true ; continue; }
+		if (OPTION_IS("--no-dividers"))		{ I_DO_DIVIDERS		= false; continue; }
+
+		if (OPTION_IS("--dim-hidden"))		{ I_DO_DIM_HIDDEN	= true ; continue; }
+		if (OPTION_IS("--no-dim-hidden"))	{ I_DO_DIM_HIDDEN	= false; continue; }
+
+		if (OPTION_IS("--sort-dirs-first"))	{ I_SORT_DIRS_FIRST	= true ; continue; }
+		if (OPTION_IS("--no-dirs-first"))	{ I_SORT_DIRS_FIRST	= false; continue; }
 	}
-
-	if (colour_auto) I_DO_COLOUR = setColour();
-
-	I_DO_HEADER			= false	;
-	I_DO_DIVIDERS		= true	;
-	I_DO_SHORT_FLAGS	= true	;
-	I_DO_TINY_FLAGS		= false	;
-	I_DO_DIM_HIDDEN		= true	;
-	I_SORT_DIRS_FIRST	= true	;
-
-	/* ————————————————————————————————————————————————— */
+	
+	/* ——————————————————————————————————————————————————————————————— */
 
 	I_DO_SUFFIX		= true	;
 	I_DO_LINK_TO	= true	;
@@ -87,6 +127,10 @@ int setOptions(const int argc, const char *argv[]) {
 	I_DO_UID		= false	;	I_DO_USR_NAME = true;
 	I_DO_GID		= false	;	I_DO_GRP_NAME = true;
 	I_DO_TIME		= false	;	I_DO_TIME_STR = true;
+
+	/* ——————————————————————————————————————————————————————————————— */
+
+	if (colour_auto) I_DO_COLOUR = setColour();
 
 	return 0;
 }
