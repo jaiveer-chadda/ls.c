@@ -42,8 +42,14 @@ static bool
 static inline bool doColourAuto(void) {
 	if (!isatty(STDOUT_FILENO)) return false;
 
-	const char *NO_COLOUR = getenv("NO_COLOR");
-	if (NO_COLOUR != NULL && strlen(NO_COLOUR) != 0) return false;
+	const char *NO_COLOR = getenv("NO_COLOR");
+	if (!(NO_COLOR == NULL || strlen(NO_COLOR) == 0)) return false;
+
+	const char *COLORTERM = getenv("COLORTERM");
+	if (COLORTERM == NULL || !(
+		strcmp(COLORTERM, "truecolor") == 0 ||
+		strcmp(COLORTERM, "24bit"	 ) == 0
+	)) return false;
 
 	return true;
 }
