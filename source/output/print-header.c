@@ -14,7 +14,7 @@
 	|| strcmp(field##_TITLE, time_str_TITLE	) == 0 )
 
 #define PRINT_HEADER(field)														\
-	if (do_##field())	{															\
+	if (do_##field())	{														\
 		const int header_len = (int)strlen(HEADER_HL HEADER_HL_OFF FIELD_PAD);	\
 		printf(SHOULD_ALIGN_RIGHT(field) ? "%*s%s" : "%-*s%s",					\
 			(int)((field_lengths.field + header_len) - strlen(FIELD_PAD)),		\

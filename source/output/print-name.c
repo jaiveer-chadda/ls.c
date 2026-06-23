@@ -116,7 +116,7 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 			char temp[48];
 			// if the file colour sets the bg, then make the esc seq also uses a bg highlight, and vice versa
 			sprintf(temp, "%s%s%s" "%s%s" "%s",
-				CSI ";1;", colour_sets_bg ? "4" : "3", ESC_CHAR_COLOUR,
+				CSI ";1;", colour_sets_bg ? "4" : "3", ESC_CHAR_COLOUR END,
 				esc_seq, RESET,
 				file_colour
 			);
