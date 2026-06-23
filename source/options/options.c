@@ -15,6 +15,7 @@
 
 static bool
 	U_DO_COLOUR, // `U_DO_COLOUR` is the only one that doesn't need a default - it'll be set no matter what
+	U_DO_CLEAR			= false	,
 	U_DO_HEADER			= false	,
 	U_DO_DIVIDERS		= true	,
 	U_DO_SHORT_FLAGS	= true	,
@@ -129,6 +130,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— binary options ————————————————————————————————————————————— */
 
+		BINARY_OPT(clear			, U_DO_CLEAR		);
 		BINARY_OPT(headers			, U_DO_HEADER		);
 		BINARY_OPT(dividers			, U_DO_DIVIDERS		);
 		BINARY_OPT(dim-hidden		, U_DO_DIM_HIDDEN	);
@@ -165,6 +167,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 /* —— Define Getter Functions —————————————————————————————————————————————————————————————————————————————————————— */
 
+bool DO_CLEAR		(void) { return U_DO_CLEAR			; }
 bool DO_COLOUR		(void) { return U_DO_COLOUR			; }
 bool DO_HEADER		(void) { return U_DO_HEADER			; }
 bool DO_DIVIDERS	(void) { return U_DO_DIVIDERS		; }

@@ -14,9 +14,7 @@
 
 /* —— Base ANSI Definitions ————————————————————————————————————————————————— */
 
-#define ESC		"\033"
-
-#define CSI		ESC "["
+#define CSI		"\033["
 #define END		"m"
 
 #define RESET	CSI END
@@ -31,8 +29,15 @@
 #define	DIM			CSI	 "2" END	// \e[2m
 #define NOBOLD		CSI	"22" END	// \e[22m
 
-#define RMAM		ESC "[?7l"
-#define SMAM		ESC "[?7h"
+/* —— tput screen controls —————————————————————————————————————————————————— */
+
+#define RMAM		CSI "?7l"
+#define SMAM		CSI "?7h"
+
+#define REDRAW_SCRN	CSI "2J"
+#define CURSOR_HOME	CSI "H"
+
+#define CLR_SCREEN	CURSOR_HOME REDRAW_SCRN
 
 /* —— RGB Definitions ——————————————————————————————————————————————————————— */
 

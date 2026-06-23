@@ -12,6 +12,7 @@ int setOptions(const int argc, const char *argv[]);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+bool DO_CLEAR		(void);
 bool DO_COLOUR		(void);
 bool DO_HEADER		(void);
 bool DO_DIVIDERS	(void);

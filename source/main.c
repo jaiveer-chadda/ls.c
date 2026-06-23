@@ -3,6 +3,7 @@
  * @file main.c
  */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "info/info.h"
@@ -79,6 +80,8 @@ int main(const int argc, const char *argv[]) {
 	getFieldLengths(all_files, &count);
 
 	/* —— Print Header ——————————————————————————————————————————————————————————————————————————— */
+
+	if (DO_CLEAR()) printf("%s", CLR_SCREEN);
 
 	// Print the fields' headers
 	if (DO_HEADER()) printHeader();
