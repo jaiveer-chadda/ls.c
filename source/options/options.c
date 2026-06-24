@@ -105,7 +105,8 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— end option parsing ————————————————————————————————————————— */
 
-		if (OPTION_IS("--") || opt[0] != '-') break;
+		if (opt[0] != '-') break;
+		if (OPTION_IS("--")) { i++; break; }
 
 		/* —— --colour ——————————————————————————————————————————————————— */
 
