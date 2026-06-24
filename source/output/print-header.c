@@ -10,8 +10,10 @@
 #include "output.h"
 
 #define SHOULD_ALIGN_RIGHT(field) \
-	(  strcmp(field##_TITLE, size_TITLE		) == 0 \
-	|| strcmp(field##_TITLE, time_str_TITLE	) == 0 )
+	(  strcmp(#field, "flags"	) == 0 \
+	|| strcmp(#field, "size"	) == 0 \
+	|| strcmp(#field, "size_str") == 0 \
+	|| strcmp(#field, "time_str") == 0 )
 
 #define PRINT_HEADER(field)														\
 	if (do_##field())	{														\
