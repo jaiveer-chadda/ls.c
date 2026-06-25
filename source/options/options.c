@@ -55,9 +55,9 @@ static inline bool doColourAuto(void) {
 	return true;
 }
 
-/* —— Set Constants ———————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Set Options —————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] == '-'))
+#define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] != '-'))
 #define HAS_ARG		(strcmp(optarg, "") != 0)
 
 #define OPTION_IS(str) (strcmp(opt	 , str) == 0)
@@ -75,22 +75,18 @@ static inline bool doColourAuto(void) {
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-#define ERROR_TAKES_ARG(option)	   do { fprintf(stderr, "error: `%s` takes argument\n", option); usage(1); } while (0)
-#define ERROR_INVALID_OPT(option)  do { fprintf(stderr, "unknown option: `%s`\n"	  , option); usage(1); } while (0)
+//#define ERROR_TAKES_ARG(option) do { fprintf(stderr, "error: `%s` takes argument\n", option); usage(1); } while (0)
+#define ERROR_INVALID_OPT(option) do { fprintf(stderr, "unknown option: `%s`\n"		 , option); usage(1); } while (0)
 
-#define ERROR_BAD_ARG(option, arg, args)		\
+#define ERROR_BAD_ARG(args)						\
 	do {										\
 		fprintf(stderr,							\
 			"invalid argument `%s` for `%s`. "	\
 			"possible arguments are %s\n",		\
-			arg, option, args					\
+			optarg, opt, args					\
 		);										\
 		usage(1);								\
 	} while (0)
-
-#define ARG_ERROR(valid_args) \
-	if (HAS_ARG) ERROR_BAD_ARG(opt, optarg, valid_args); \
-	else ERROR_TAKES_ARG(opt)
 
 /* ——————————————————————————————————————————————————————————————————— */
 
@@ -101,7 +97,7 @@ int setOptions(const int argc, const char *argv[]) {
 	for (i = 1; i < argc; i++) {
 
 		const char *opt		= argv[i];
-		const char *optarg	= ARG_EXISTS ? "" : argv[i + 1];
+		const char *optarg	= ARG_EXISTS ? argv[i + 1] : "";
 
 		/* —— end option parsing ————————————————————————————————————————— */
 
@@ -112,21 +108,25 @@ int setOptions(const int argc, const char *argv[]) {
 
 		if (OPTION_IS("--colour") || OPTION_IS("--color")) {
 			colour_auto = false;
-			if (OPTARG_IS("always")) { i++; U_DO_COLOUR = true ; continue; }
-			if (OPTARG_IS("never" )) { i++; U_DO_COLOUR = false; continue; }
-			if (OPTARG_IS("auto"  )) { i++; colour_auto = true ; continue; }
-			ARG_ERROR("always, never, auto");
+			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; i++; continue; }
+			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; i++; continue; }
+			if (OPTARG_IS("auto"  )) { colour_auto = true ; i++; continue; }
+			if (HAS_ARG) ERROR_BAD_ARG("always, never, auto");
+			// if no argument is given, then, like `ls`, assume `--colour` means `--colour always`
+			U_DO_COLOUR = true; continue;
 		}
 
-		if (OPTION_IS("--no-colour")) { U_DO_COLOUR = false; continue; }
+		if (OPTION_IS("--no-colour") || OPTION_IS("--no-color")) { U_DO_COLOUR = false; continue; }
 
 		/* —— --flags ———————————————————————————————————————————————————— */
 
-		if (OPTION_IS("--flags") || OPTION_IS("--flag-style")) {
-			if (OPTARG_IS("full" )) { i++; U_DO_SHORT_FLAGS = false; U_DO_TINY_FLAGS = false; continue; }
-			if (OPTARG_IS("short")) { i++; U_DO_SHORT_FLAGS = true ; U_DO_TINY_FLAGS = false; continue; }
-			if (OPTARG_IS("tiny" )) { i++; U_DO_SHORT_FLAGS = false; U_DO_TINY_FLAGS = true ; continue; }
-			ARG_ERROR("full, short, tiny");
+		if (OPTION_IS("--flags")) {
+			if (OPTARG_IS("long" )) { U_DO_SHORT_FLAGS = false; U_DO_TINY_FLAGS = false; i++; continue; }
+			if (OPTARG_IS("short")) { U_DO_SHORT_FLAGS = true ; U_DO_TINY_FLAGS = false; i++; continue; }
+			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false; U_DO_TINY_FLAGS = true ; i++; continue; }
+			if (HAS_ARG) ERROR_BAD_ARG("long, short, tiny");
+			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
+			U_DO_FLAGS = true; continue;
 		}
 
 		/* —— binary options ————————————————————————————————————————————— */
