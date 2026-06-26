@@ -91,13 +91,12 @@ static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path
 
 	// extract the necessary info from the target file
 	if (pFile->ln_suf == '\0') pFile->ln_suf = getTypeSuffix(pLinkInfo->st_mode);
-	free(pLinkInfo);
+	setFileColour(&(pFile->link_col), pLinkInfo->st_mode, pLinkInfo->st_flags);
 
-	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pInfo->st_mode, pInfo->st_flags);
+	free(pLinkInfo);
 	getLink(pFile->link_to, path);
 
 	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
-
 	return stat_did_fail;
 }
 
