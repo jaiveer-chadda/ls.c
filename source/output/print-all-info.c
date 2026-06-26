@@ -36,12 +36,12 @@
 		);												\
 	)
 
-#define PRINT_FLAG_STR() COLOUR(flag_str, printFlagStr( &(file.flags)											 ))
-#define PRINT_USR_NAME() COLOUR(usr_name, printUsrName( &(file.uid)		,	file.usr_name	, &(file.is_valid)	 ))
-#define PRINT_GRP_NAME() COLOUR(grp_name, printGrpName( &(file.gid)		,	file.grp_name	, &(file.is_valid)	 ))
-#define    PRINT_NLINK() COLOUR(nlink	,	printNLink( &(file.nlink)	, &(file.mode)		, &(file.do_link_hl) ))
-#define PRINT_SIZE_STR()				  printSizeStr(   file.size_str	, &(file.size_unit)	, &(file.mode)		  )
-#define PRINT_MODE_STR() 				  printModeStr(   file.mode_str	,	file.has_acl	,	file.has_xattr	  )
+#define PRINT_FLAG_STR() COLOUR(flag_str, printFlagStr( &(file.flags)											))
+#define PRINT_USR_NAME() COLOUR(usr_name, printUsrName( &(file.uid)		,	file.usr_name	, &(file.is_valid)	))
+#define PRINT_GRP_NAME() COLOUR(grp_name, printGrpName( &(file.gid)		,	file.grp_name	, &(file.is_valid)	))
+#define    PRINT_NLINK() COLOUR(nlink	,	printNLink( &(file.nlink)	, &(file.mode)							))
+#define PRINT_SIZE_STR()				  printSizeStr(   file.size_str	, &(file.size_unit)	, &(file.mode)		 )
+#define PRINT_MODE_STR() 				  printModeStr(   file.mode_str	,	file.has_acl	,	file.has_xattr	 )
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 

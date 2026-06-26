@@ -5,7 +5,7 @@
 void printHeader(void);
 void printFields(const FileInfo *all_files, const int *count);
 
-void   printNLink(const nlink_t	 *nlink		, const mode_t	*mode	 ,		 bool *is_hln);
+void   printNLink(const nlink_t	 *nlink		, const mode_t	*mode);
 void printUsrName(const uid_t	 *uid		, const ugidstr	 usr_name, const bool *is_valid);
 void printGrpName(const gid_t	 *gid		, const ugidstr	 grp_name, const bool *is_valid);
 void printModeStr(const modestr	  str		, const bool	 has_acl , const bool  has_xattr);
