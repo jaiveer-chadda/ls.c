@@ -18,7 +18,7 @@
 #endif
 
 #define DO_DIM(name, flags)	\
-	((DO_DIM_HIDDEN()) &&		\
+	((DO_DIM_HIDDEN()) &&	\
 		((flags & UF_HIDDEN) || (name[0] == '.' && strcmp(name, CURRENT_DIR) != 0)))
 
 #define GET_NAME(name)	(strcmp(name, CURRENT_DIR) == 0 ? adjusted_path : name)

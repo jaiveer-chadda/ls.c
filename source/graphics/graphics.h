@@ -97,7 +97,7 @@
 
 #define SYMLINK_ARROW			" -> "
 
-#define   VALID_ARROW_COLOUR	PUNCT
+#define	  VALID_ARROW_COLOUR	PUNCT
 #define INVALID_ARROW_COLOUR	CSI "31"			END // \e[31m
 
 #define LINK_PATH_COLOUR		CSI "36"			END // \e[36m

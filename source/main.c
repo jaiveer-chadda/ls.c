@@ -64,8 +64,8 @@ int main(const int argc, const char *argv[]) {
 	const int count = dir_count + file_count;
 	FileInfo all_files[count];
 
-	memcpy(all_files,			   dirs,  dir_count * sizeof(FileInfo));
-	memcpy(all_files + dir_count, files, file_count * sizeof(FileInfo));
+	memcpy(all_files,				dirs,  dir_count * sizeof(FileInfo));
+	memcpy(all_files + dir_count,  files, file_count * sizeof(FileInfo));
 
 	/* —— Sort Files if not Dirs First ——————————————————————————————————————————————————————————— */
 

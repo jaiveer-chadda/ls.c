@@ -19,8 +19,8 @@ void printNLink(const nlink_t *nlink, const mode_t *mode) {
 
 	if		( S_ISDIR(*mode) && *nlink == 2) strcpy(colour, LN_COL_DIR_EMPTY);	// empty directory
 	else if	( S_ISDIR(*mode) && *nlink >= 3) strcpy(colour, LN_COL_DIR);		// non-empty dir
-	else if (!S_ISDIR(*mode) && *nlink == 1) strcpy(colour, LN_COL_REG_1);		// file w   1 link
-	else if (!S_ISDIR(*mode) && *nlink >= 2) strcpy(colour, LN_COL_REG_MORE);	// file w > 1 link
+	else if (!S_ISDIR(*mode) && *nlink == 1) strcpy(colour, LN_COL_REG_1);		// file w	1 link
+	else if (!S_ISDIR(*mode) && *nlink >= 2) strcpy(colour, LN_COL_REG_MORE);	// file w >	1 link
 	else									 strcpy(colour, LN_COL_OTHER);		// dir w 1 link or dir/file w 0 links
 
 	printf("%*s" "%s%s" "%s",

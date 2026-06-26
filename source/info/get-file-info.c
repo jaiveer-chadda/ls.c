@@ -27,7 +27,7 @@
 	((do_link_to() && lstat_did_fail && stat_did_fail) || \
 	(!do_link_to() && lstat_did_fail))
 
-#define IS_REALPATH_DIR() 													\
+#define IS_REALPATH_DIR()													\
 	(S_ISDIR(info.st_mode) /* add to the dirs array if it's a directory, */	\
 		/* or if its a symlink, and the file it points to is a directory */	\
 		|| (do_link_to() && S_ISLNK(info.st_mode) && file.ln_suf == DIR_SUFFIX))
@@ -47,15 +47,15 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	pFile->time		= pInfo->st_mtimespec.tv_sec;
 
 	// parse the raw stat information into more human-readable formats.
-	if (do_suffix()) pFile->suffix = getTypeSuffix(pInfo->st_mode);
+	if (do_suffix  ()) pFile->suffix = getTypeSuffix(pInfo->st_mode);
 	if (do_flag_str()) parseFlags(pFile->flag_str, pInfo->st_flags);
-	if (do_size_str())  parseSize(pFile->size_str, &(pFile->size_unit), pInfo->st_size, pInfo->st_rdev);
+	if (do_size_str())	parseSize(pFile->size_str, &(pFile->size_unit), pInfo->st_size, pInfo->st_rdev);
 	if (do_mode_str())	  getMode(pFile->mode_str, pInfo->st_mode);
 	if (do_usr_name())	  getUser(pFile->usr_name, pInfo->st_uid);
 	if (do_grp_name())	 getGroup(pFile->grp_name, pInfo->st_gid);
-	if (do_time_str())  parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &(pFile->time_col));
+	if (do_time_str())	parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &(pFile->time_col));
 
-	if (do_mode_str())   checkACL(&(pFile->has_acl	), path);
+	if (do_mode_str())	 checkACL(&(pFile->has_acl	), path);
 	if (do_mode_str()) checkXattr(&(pFile->has_xattr), path);
 
 	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pInfo->st_mode, pInfo->st_flags);

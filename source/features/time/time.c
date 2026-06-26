@@ -51,7 +51,7 @@ inline void parseTime(timestr time_str, const time_t file_time, TimeColour *time
 	else if	(t_diff < diff_midn + 2 * DAY)	{ SET_DATE_TEXT("2 Days Ago"); *time_col = TC_2DAYS	 ; }
 	else if	(t_diff < diff_month)			{ SET_DATE_TEXT(DATE_FMT	); *time_col = TC_THIS_MO; }
 	else if	(t_diff < diff_year	)			{ SET_DATE_TEXT(DATE_FMT	); *time_col = TC_THIS_YR; }
-	else								 	{ SET_DATE_TEXT(DATE_FMT	); *time_col = TC_OTHER	 ; }
+	else									{ SET_DATE_TEXT(DATE_FMT	); *time_col = TC_OTHER	 ; }
 
 	if (!b_writ || file_time == 0) strcpy(time_str, TIME_ERR_STR);
 }
