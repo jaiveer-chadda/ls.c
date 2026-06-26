@@ -100,7 +100,7 @@
 #define   VALID_ARROW_COLOUR	PUNCT
 #define INVALID_ARROW_COLOUR	CSI "31"			END // \e[31m
 
-#define   VALID_LINK_COLOUR		CSI "96"			END // \e[96m
+#define LINK_PATH_COLOUR		CSI "36"			END // \e[36m
 #define INVALID_LINK_COLOUR		CSI "2;97"			END // \e[90m [kinda]
 
 /* —— NLink ————————————————————————————————————————————————————————————————— */
