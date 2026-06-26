@@ -18,12 +18,15 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_IGNORE_FILE(entry) strcmp(entry->d_name, ".." ) == 0
-#define  IS_VALID_LINK(path) (access(path, F_OK) == 0)
+#define DO_IGNORE_FILE(entry) (strcmp(entry->d_name, ".." ) == 0)
+#define  IS_VALID_PATH(path)  (access(path, F_OK) == 0)
 
-#define ALL_STATS_FAILED() ((!do_link_to() && stat_did_fail) || (do_link_to() && stat_did_fail && lstat_did_fail))
+// i know this can be simplified, but it's easier for me to read it this way
+#define ALL_STATS_FAILED() \
+	((do_link_to() && stat_did_fail && lstat_did_fail) || \
+	(!do_link_to() && stat_did_fail))
 
-#define IS_FILE_DIR() 														\
+#define IS_REALPATH_DIR() 													\
 	(S_ISDIR(info.st_mode) /* add to the dirs array if it's a directory, */	\
 		/* or if its a symlink, and the file it points to is a directory */	\
 		|| (do_link_to() && S_ISLNK(info.st_mode) && file.ln_suf == DIR_SUFFIX))
@@ -31,13 +34,27 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline bool getLinkInfo(FileInfo *pFile, struct stat *pInfo, const path_t path) {
-	// find and assign the target's suffix to the struct
-	pFile->ln_suf = IS_VALID_LINK(path) ? getTypeSuffix(pInfo->st_mode) : INVALID_LINK;
+	// when this function starts, we don't know whether the file being listed is a link or not, cos `stat` has tried to
+	//  resolve all symlinks.
 
-	// and then run the `lstat` syscall to get the information of the link, and assign it to pInfo
+	// so first we have to figure out whether the path we were given is valid
+	//  note that the only case in which the path isn't valid is if the original file was a broken symlink
+	const bool path_is_valid = IS_VALID_PATH(path);
+
+	// find and assign the target's suffix to the struct
+	//  if the path is invalid, then we know we have an invalid link
+	if (!path_is_valid) pFile->ln_suf = INVALID_LINK;
+	// however, if the path _is_ valid, then we need to keep some of the info about the target file that we got from
+	//  `stat`, like the type, path, highlighting, etc., so that we can show it in the listing, after the arrow
+	else {
+		pFile->ln_suf = getTypeSuffix(pInfo->st_mode);
+	}
+
+	// whether the path was valid or not, or was even a link at all, we need to get the info of the origin file
+	// to do that, we run the `lstat` syscall to get the information of the link, and then assign it to pInfo
 	const bool lstat_did_fail = (lstat(path, pInfo) == -1);
 
-	// if the file isn't a symlink then remove the target's suffix
+	// if, once we get the original file, it wasn't a symlink, then remove the target's suffix
 	if (!S_ISLNK(pInfo->st_mode)) pFile->ln_suf = NOT_LINK;
 
 	return lstat_did_fail;
@@ -51,8 +68,8 @@ static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const 
 
 	strcpy(pFile->name, entry->d_name);
 	pInfo->st_mode	= DTTOIF(entry->d_type);
-	pInfo->st_ino		= entry->d_ino;
-	pFile->ln_suf		= entry->d_type == DT_LNK ? INVALID_LINK : NOT_LINK;
+	pInfo->st_ino	= entry->d_ino;
+	pFile->ln_suf	= entry->d_type == DT_LNK ? INVALID_LINK : NOT_LINK;
 	pFile->is_valid	= false;
 }
 
@@ -122,7 +139,8 @@ void getAllFileInfo(
 		const bool stat_did_fail = (stat(path, &info) == -1);
 		bool lstat_did_fail = false;
 
-		// then, if we need to get the link's info, do so
+		// `stat` will follow symlinks, and will only return info about the target file, rather than the link itself
+		//  if the `do_link_to` option is set, then we need to run `lstat` to get info about the link
 		if (do_link_to()) lstat_did_fail = getLinkInfo(&file, &info, path);
 
 		// if none of the stat calls that ran, worked, then we don't have any extra information
@@ -136,7 +154,7 @@ void getAllFileInfo(
 		/* ——————————————————————————————————————————————————————————————————— */
 
 		// add the FileInfo object to the end of its respective array
-		if (IS_FILE_DIR())	dirs [(*dir_count )++] = file;
+		if (IS_REALPATH_DIR())	dirs [(*dir_count )++] = file;
 		else				files[(*file_count)++] = file;
 	}
 
