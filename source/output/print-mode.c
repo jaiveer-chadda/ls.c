@@ -87,7 +87,7 @@ void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 	if (has_acl)	{ printf("%s%c", IF_COLOUR(ACL_COLOUR	), ACL_CHAR	 ); spaces-- ; }
 
 	printf("%s" "%*s" "%s",
-		RESET,
+		IF_COLOUR(RESET),
 		spaces, "",
 		FIELD_PAD
 	);
