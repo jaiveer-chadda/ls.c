@@ -34,45 +34,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path_t path) {
-	// file isn't a link - keep the `lstat` info
-	// we still have to try `stat` on it tho, cos if `lstat` failed, we need to know whether it failed
-	//  bc the file is a link to a non-existant file, or if we don't have permissions to `stat` the file
-	if (!S_ISLNK(pInfo->st_mode)) pFile->ln_suf = NOT_LINK;
-
-	// file is a link - run `stat`
-	struct stat *pLinkInfo = malloc(sizeof(struct stat));
-	// whether the path was valid or not, or was even a link at all, we need to get the info of the origin file.
-	//  we therefore run `lstat` to get the information of the link, assign it to pLinkInfo, then extract the info
-	const bool stat_did_fail = stat(path, pLinkInfo) == -1;
-
-	// extract the necessary info from the target file
-	if (pFile->ln_suf == '\0') pFile->ln_suf = getTypeSuffix(pLinkInfo->st_mode);
-	free(pLinkInfo);
-
-	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pInfo->st_mode, pInfo->st_flags);
-	getLink(pFile->link_to, path);
-
-	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
-
-	return stat_did_fail;
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const struct dirent *entry) {
-	*pInfo = (struct stat){0};
-	*pFile = (FileInfo){0};
-
-	strcpy(pFile->name, entry->d_name);
-	pInfo->st_mode	= DTTOIF(entry->d_type);
-	pInfo->st_ino	= entry->d_ino;
-	pFile->ln_suf	= entry->d_type == DT_LNK ? INVALID_LINK : NOT_LINK;
-	pFile->is_valid	= false;
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
 static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, const path_t path) {
 	// move all the raw stat info that we need over to `file`
 	pFile->nlink	= pInfo->st_nlink;
@@ -99,6 +60,45 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 
 	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pInfo->st_mode, pInfo->st_flags);
 	if (!S_ISDIR(pInfo->st_mode)  && pInfo->st_nlink > 1) pFile->do_link_hl = true;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const struct dirent *entry) {
+	*pInfo = (struct stat){0};
+	*pFile = (FileInfo){0};
+
+	strcpy(pFile->name, entry->d_name);
+	pInfo->st_mode	= DTTOIF(entry->d_type);
+	pInfo->st_ino	= entry->d_ino;
+	pFile->ln_suf	= entry->d_type == DT_LNK ? INVALID_LINK : NOT_LINK;
+	pFile->is_valid	= false;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path_t path) {
+	// file isn't a link - keep the `lstat` info
+	// we still have to try `stat` on it tho, cos if `lstat` failed, we need to know whether it failed
+	//  bc the file is a link to a non-existant file, or if we don't have permissions to `stat` the file
+	if (!S_ISLNK(pInfo->st_mode)) pFile->ln_suf = NOT_LINK;
+
+	// file is a link - run `stat`
+	struct stat *pLinkInfo = malloc(sizeof(struct stat));
+	// whether the path was valid or not, or was even a link at all, we need to get the info of the origin file.
+	//  we therefore run `lstat` to get the information of the link, assign it to pLinkInfo, then extract the info
+	const bool stat_did_fail = stat(path, pLinkInfo) == -1;
+
+	// extract the necessary info from the target file
+	if (pFile->ln_suf == '\0') pFile->ln_suf = getTypeSuffix(pLinkInfo->st_mode);
+	free(pLinkInfo);
+
+	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pInfo->st_mode, pInfo->st_flags);
+	getLink(pFile->link_to, path);
+
+	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
+
+	return stat_did_fail;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
