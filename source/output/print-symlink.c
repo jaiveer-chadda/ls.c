@@ -26,7 +26,7 @@ void printSymlink(const path_t target_path, const type_t suffix, const FileColou
 	/* ————————————————————————————————————————————————————— */
 
 	if (!DO_COLOUR()) {
-		printf("%s", target_path);
+		printf("%s%s", SYMLINK_ARROW, target_path);
 
 		PRINT_SUFFIX();
 		return;

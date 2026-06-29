@@ -63,6 +63,8 @@ static inline bool doColourAuto(void) {
 #define OPTION_IS(str) (strcmp(opt	 , str) == 0)
 #define OPTARG_IS(str) (strcmp(optarg, str) == 0)
 
+#define OPTION_IS_OF(str1, str2) (OPTION_IS(str1) || OPTION_IS(str2))
+
 /* ——————————————————————————————————————————————————————————————————— */
 
 #define BINARY_OPT(flag, var) \
@@ -70,8 +72,8 @@ static inline bool doColourAuto(void) {
 	if (OPTION_IS("--no-" #flag)) { var = false; continue; }
 
 #define FIELD_OPT(flag, var) \
-	if (OPTION_IS("--"	  #flag) || OPTION_IS("--do-" #flag))	{ var = true ; continue; } \
-	if (OPTION_IS("--no-" #flag))								{ var = false; continue; }
+	if (OPTION_IS_OF("--" #flag, "--do-" #flag)) { var = true ; continue; } \
+	if (OPTION_IS("--no-" #flag))				 { var = false; continue; }
 
 /* ——————————————————————————————————————————————————————————————————— */
 
@@ -116,14 +118,14 @@ int setOptions(const int argc, const char *argv[]) {
 			U_DO_COLOUR = true; continue;
 		}
 
-		if (OPTION_IS("--no-colour") || OPTION_IS("--no-color")) { U_DO_COLOUR = false; continue; }
+		if (OPTION_IS_OF("--no-colour", "--no-color")) { colour_auto = false, U_DO_COLOUR = false; continue; }
 
 		/* —— --flags ———————————————————————————————————————————————————— */
 
 		if (OPTION_IS("--flags")) {
-			if (OPTARG_IS("long" )) { U_DO_SHORT_FLAGS = false; U_DO_TINY_FLAGS = false; i++; continue; }
-			if (OPTARG_IS("short")) { U_DO_SHORT_FLAGS = true ; U_DO_TINY_FLAGS = false; i++; continue; }
-			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false; U_DO_TINY_FLAGS = true ; i++; continue; }
+			if (OPTARG_IS("long" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = false; i++; continue; }
+			if (OPTARG_IS("short")) { U_DO_SHORT_FLAGS = true , U_DO_TINY_FLAGS = false; i++; continue; }
+			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; i++; continue; }
 			if (HAS_ARG) ERROR_BAD_ARG("long, short, tiny");
 			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
 			U_DO_FLAGS = true; continue;
