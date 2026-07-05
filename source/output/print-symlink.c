@@ -9,12 +9,13 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define DO_PRINT_SYMLINK()	(do_link_to() && (suffix != NOT_LINK))
+#define DO_SUFFIX()			(do_suffix()  && (suffix != '\0' && is_valid_path))
+
+#define IS_ABSOLUTE_PATH()	(last_slash != NULL)
+
+#define PRINT_SUFFIX()		if (DO_SUFFIX()) { putchar(suffix); }
 #define GET_TARGET_COLOUR()	(link_col != FC_REGULAR ? file_colour_esc[link_col] : RESET)
-
-#define DO_PRINT_SYMLINK()	(do_link_to() && suffix != NOT_LINK)
-#define DO_SUFFIX()			(do_suffix () && suffix != '\0' && is_valid_path)
-
-#define PRINT_SUFFIX() if (DO_SUFFIX()) { putchar(suffix); }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -46,8 +47,8 @@ void printSymlink(const path_t target_path, const type_t suffix, const FileColou
 	/* ————————————————————————————————————————————————————— */
 
 	const char *last_slash	 = strrchr(target_path, '/');
-	const int	basename_idx = (last_slash - target_path) + 1;
-	const char *basename	 = target_path + basename_idx;
+	const int	basename_idx = IS_ABSOLUTE_PATH() ? (last_slash - target_path) + 1	: 0;
+	const char *basename	 = IS_ABSOLUTE_PATH() ? target_path + basename_idx		: target_path;
 
 	printf("%s%s" "%s%.*s" "%s%s" "%s",
 		VALID_ARROW_COLOUR	, SYMLINK_ARROW	,
