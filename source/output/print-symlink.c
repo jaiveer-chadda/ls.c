@@ -5,30 +5,28 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "output.h"
 #include "../options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_PRINT_SYMLINK()	(do_link_to() && (suffix != NOT_LINK))
-#define DO_SUFFIX()			(do_suffix()  && (suffix != '\0' && is_valid_path))
-
-#define IS_ABSOLUTE_PATH()	(last_slash != NULL)
+#define DO_SYMLINK() (do_link_to() && (suffix != NOT_LINK))
+#define DO_SUFFIX()	 (do_suffix()  && (suffix != '\0' && is_valid_path))
 
 #define PRINT_SUFFIX()		if (DO_SUFFIX()) { putchar(suffix); }
 #define GET_TARGET_COLOUR()	(link_col != FC_REGULAR ? file_colour_esc[link_col] : RESET)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void printSymlink(const path_t target_path, const type_t suffix, const FileColour link_col) {
-	if (!DO_PRINT_SYMLINK()) return;
+void printSymlink(const path_t p_target_path, const type_t suffix, const FileColour link_col) {
+	if (!DO_SYMLINK()) return;
 
 	const bool is_valid_path = (suffix != INVALID_LINK);
 
 	/* ————————————————————————————————————————————————————— */
 
 	if (!DO_COLOUR()) {
-		printf("%s%s", SYMLINK_ARROW, target_path);
-
+		printf("%s%s", SYMLINK_ARROW, p_target_path);
 		PRINT_SUFFIX();
 		return;
 	}
@@ -36,7 +34,7 @@ void printSymlink(const path_t target_path, const type_t suffix, const FileColou
 	if (!is_valid_path) {
 		printf("%s%s" "%s%s" "%s",
 			INVALID_ARROW_COLOUR, SYMLINK_ARROW	,
-			INVALID_LINK_COLOUR	, target_path	,
+			INVALID_LINK_COLOUR	, p_target_path	,
 			RESET
 		);
 
@@ -45,15 +43,35 @@ void printSymlink(const path_t target_path, const type_t suffix, const FileColou
 	}
 
 	/* ————————————————————————————————————————————————————— */
+	// name_t escaped_name
+	// escapeName(escaped_name, (name_t)p_target_path);
+	// p_target_path;
+	/* ————————————————————————————————————————————————————— */
 
-	const char *last_slash	 = strrchr(target_path, '/');
-	const int	basename_idx = IS_ABSOLUTE_PATH() ? (last_slash - target_path) + 1	: 0;
-	const char *basename	 = IS_ABSOLUTE_PATH() ? target_path + basename_idx		: target_path;
+	const char *p_last_slash  = strrchr(p_target_path, '/');
+	const bool contains_slash = (p_last_slash != NULL);
+	const char *p_filename	  = contains_slash ? p_last_slash + 1 : p_target_path;
 
-	printf("%s%s" "%s%.*s" "%s%s" "%s",
-		VALID_ARROW_COLOUR	, SYMLINK_ARROW	,
-		LINK_PATH_COLOUR	, basename_idx	, target_path,
-		GET_TARGET_COLOUR()	, basename		,
+	path_t escd_filename, escd_basename = "";
+
+	if (contains_slash) {
+		path_t orig_basename;
+		const int basename_len = p_filename - p_target_path;
+
+		sprintf(orig_basename, "%.*s", basename_len, p_target_path);
+		escapeName(escd_basename, orig_basename, LINK_PATH_COLOUR);
+	}
+
+	escapeName(escd_filename, p_filename, GET_TARGET_COLOUR());
+
+	printf("%s%s" "%s%s" "%s%s" "%s",
+		VALID_ARROW_COLOUR, SYMLINK_ARROW,
+
+		// print the basename (path to the file's parent dir)
+		strlen(escd_basename) > 0 ? LINK_PATH_COLOUR : "", escd_basename,
+		// print the actual filename
+		GET_TARGET_COLOUR(), escd_filename,
+
 		RESET
 	);
 
@@ -63,3 +81,5 @@ void printSymlink(const path_t target_path, const type_t suffix, const FileColou
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignore escd
