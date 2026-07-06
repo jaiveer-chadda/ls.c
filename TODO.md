@@ -139,7 +139,7 @@
   - [x] But that being said, I'll have to make sure that their escaped colours
     don't clash with any other colours being used
 
-#### Options
+#### [√] Options
 - [x] Implement an options/flags system to turn various features on/off
 
 #### [[END]]
@@ -150,7 +150,7 @@
 
 ### Visual
 
-#### Width
+#### [ ] Width
 - [ ] Find a way to adjust which fields show/dont show
   - [ ] Make it based on the terminal's `$COLUMNS`
 
@@ -159,9 +159,9 @@
 
 ### Fields
 
-#### Git Integration
+#### [ ] Git Integration
 
-##### File Statuses
+##### [ ] File Statuses
 - [ ] Figure out how to check a git repo to see which files have been:
   - [ ] Modified
   - [ ] Added
@@ -169,18 +169,18 @@
   - [ ] Renamed
   - [ ] Ignored
 
-##### Branch Information
+##### [ ] Branch Information
 - [ ] Which branch we're on
 - [ ] And whether the current branch is behind/ahead of the remote
 
-#### Apple Integration
+#### [ ] Apple Integration
 
-##### Apple Permissions
+##### [√] Apple Permissions
 - Apple can create custom permissions for some files, which can be shown with `ls -le`.
-  - [ ] Implement a way to show those extra permissions
-  - [ ] Or at least to show an extra bit at the end of the permission string to indicate whether they exist
+  - [x] Implement a way to show those extra permissions
+  - [x] Or at least to show an extra bit at the end of the permission string to indicate whether they exist
 
-##### Apple Aliases
+##### [ ] Apple Aliases
 - [ ] Figure out how to find the target of an Apple alias file.
   - [ ] It'll probably have to be done with some version of the stuff I'm using in the `alisma` program
     - luckily though, `.swift` files can be compiled into binaries, which should cut down on the time it takes to
@@ -188,23 +188,23 @@
     - the only issue I can see though, is the fact that I don't actually know whether a file is an Apple alias unless
       I use `/usr/bin/file`
 
-##### Apple Comments
+##### [ ] Apple Comments
 - [ ] Add some sort of lookup/integration with Apple's file comments system
   - [ ] Either do it with AppleScript,
     - once again, luckily, AppleScript has a compiled file format `.scpt`, but I honestly don't rly trust its effiency
   - [ ] or find a way to parse `.DS_Store`
 
-##### Apple Tags
+##### [ ] Apple Tags
 - [ ] Implement a way to visualise Apple's tags
   - i.e. the ones they use in Finder to colour/tag folders
   - I don't know how I'm gonna get these, but if I had to guess, it would be some AppleScript program
 
-#### VSCode Integration
+#### [ ] VSCode Integration
 - [ ] If there isn't a colour defined for a directory, then look into that dir's `.vscode` directory,
   into the `settings.json` file, and see if there's a field called `peacock.color`.
   - [ ] if so, then use that colour to highlight the directory
 
-#### Re-implement `/usr/bin/file`
+#### [ ] Re-implement `/usr/bin/file`
 - [ ] Find a way to use the same process as `/usr/bin/file` to find out what *specific* type of file smth is
   - i.e. running: `file ~zdd/.zshrc`
   - yields: `.../zsh/.zshrc: a /usr/bin/env zsh script text executable, Unicode text, UTF-8 text`
@@ -215,7 +215,7 @@
 
 ### Features
 
-#### Recursive Directory Searching
+#### [ ] Recursive Directory Searching
 - [ ] Implement a very similar feature to `eza`'s tree search,
   - in which you can see the recursive tree structure of a directory up to a certain depth
 
@@ -227,13 +227,13 @@
 
 ### Visual
 
-#### Icons
+#### [ ] Icons
 - [ ] Implement file/folder icons similar to `eza`'s implementation
   - Initially I might have to trawl through `eza`'s source code and steal their defaults before I write my own
 
 ### Features
 
-#### Compression
+#### [ ] Compression
 - [ ] See if there's a way where, if some fields have too much extra space to their sides,
   - they can be squished together to fit nicer, and take up less room.
 <!--—-->
