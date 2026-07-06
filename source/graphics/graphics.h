@@ -7,7 +7,9 @@
 
 /* —— —— Chars & Strings —— ————————————————————————————————————————————————— */
 
+/// The spacing between each of the fields/columns listed in long (`-l`) mode
 #define FIELD_PAD " "
+/// The extra spacing that should be printed before the filename column
 #define PRE_NAME_PAD " "
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
