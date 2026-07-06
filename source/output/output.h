@@ -12,4 +12,5 @@ void printSizeStr(const sizestr	  size_str	, const char	*unit	 , const mode_t		*
 void printModeStr(const modestr	  str		, const bool	 has_acl , const bool		 has_xattr	);
 void printSymlink(const path_t	  target	, const type_t	 suffix	 , const FileColour	 link_col	);
 
+bool escapeName(name_t escaped_name, const name_t orig_name, const char *colour_escape);
 void printName(const name_t name, const FileColour *colour, const bool *is_hln, const flag_t *flags, type_t *suffix);
