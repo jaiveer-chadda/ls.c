@@ -6,8 +6,8 @@
 #include "../../options/options.h"
 
 #define GET_FLAG_NAME(flag) \
-	DO_TINY_FLAGS ? flag.tiny_name : ( \
-		DO_SHORT_FLAGS ? flag.short_name : flag.name \
+	DO_TINY_FLAGS() ? flag.tiny_name : ( \
+		DO_SHORT_FLAGS() ? flag.short_name : flag.name \
 	)
 
 typedef struct {

@@ -4,7 +4,7 @@
 
 #define CURRENT_DIR "."
 
-DIR* getDirectory(char *target_dir, const int argc, const char *argv[]);
+DIR* getDirectory(char *target_dir, const int files_start, const int argc, const char *argv[]);
 
 void getAllFileInfo(
 	FileInfo dirs[], FileInfo files[],

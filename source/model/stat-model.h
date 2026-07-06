@@ -28,13 +28,14 @@ typedef struct {
 	time_t	time	;	timestr time_str;
 
 	FileColour file_col;
+	FileColour link_col;
 	TimeColour time_col;
 
 	bool	do_link_hl;
 	bool	has_xattr;
 	bool	has_acl;
 
-	bool	is_valid;
+	bool	is_valid; // were we able to `stat` the file?
 
 } FileInfo;
 

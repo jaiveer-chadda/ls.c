@@ -9,7 +9,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define IF_COLOUR(print) (DO_COLOUR ? (print) : "")
+#define IF_COLOUR(yes, no) (DO_COLOUR() ? (yes) : no)
 
 #define DO_IGNORE_UNIT(unit) (unit == UNIT_BYTE || unit == UNIT_ZERO || unit == UNIT_MAJ_MIN)
 
@@ -51,9 +51,9 @@ static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
 		"%s"	// comma (and min colour)
 		"%s",	// min size
 
-		IF_COLOUR(MAJ_COL),
+		IF_COLOUR(MAJ_COL, ""),
 		minor_size,
-		IF_COLOUR(PUNCT "," MIN_COL),
+		IF_COLOUR(PUNCT "," MIN_COL, ","),
 		size_str + i + 1
 	);
 }
@@ -61,7 +61,7 @@ static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printSizeStr(const sizestr size_str, const char *unit, const mode_t *mode) {
-	if (!do_size_str) return;
+	if (!do_size_str()) return;
 
 	const int field_len	= (int)field_lengths.size_str;
 	const int str_len	= (int)strlen(size_str);
@@ -83,14 +83,14 @@ void printSizeStr(const sizestr size_str, const char *unit, const mode_t *mode) 
 		"%s",	// unit colour
 
 		spaces, "",
-		IF_COLOUR(value_colour),
-		IF_COLOUR(S_ISDIR(*mode) ? DIM : ""),
+		IF_COLOUR(value_colour, ""),
+		IF_COLOUR(S_ISDIR(*mode) ? DIM : "", ""),
 		*unit == UNIT_MAJ_MIN ? majmin_str : size_str,
-		IF_COLOUR(unit_colour)
+		IF_COLOUR(unit_colour, "")
 	);
 
 	if (!DO_IGNORE_UNIT(*unit)) putchar(*unit);
-	printf("%s" FIELD_PAD, IF_COLOUR(RESET));
+	printf("%s" FIELD_PAD, IF_COLOUR(RESET, ""));
 
 }
 

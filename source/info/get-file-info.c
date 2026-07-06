@@ -1,6 +1,7 @@
 /// @file info/get-file-info.c
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -18,43 +19,18 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_IGNORE_FILE(entry) strcmp(entry->d_name, ".." ) == 0
-#define  IS_VALID_LINK(path) (access(path, F_OK) == 0)
+#define DO_IGNORE_FILE(entry) (strcmp(entry->d_name, ".." ) == 0)
+#define  IS_VALID_PATH(path)  (access(path, F_OK) == 0)
 
-#define ALL_STATS_FAILED() ((!do_link_to && stat_did_fail) || (do_link_to && stat_did_fail && lstat_did_fail))
+// i know this can be simplified, but it's easier for me to read it this way
+#define ALL_STATS_FAILED() \
+	((do_link_to() && lstat_did_fail && stat_did_fail) || \
+	(!do_link_to() && lstat_did_fail))
 
-#define IS_FILE_DIR() 														\
+#define IS_REALPATH_DIR()													\
 	(S_ISDIR(info.st_mode) /* add to the dirs array if it's a directory, */	\
 		/* or if its a symlink, and the file it points to is a directory */	\
-		|| (do_link_to && S_ISLNK(info.st_mode) && file.ln_suf == DIR_SUFFIX))
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-static inline bool getLinkInfo(FileInfo *pFile, struct stat *pInfo, const path_t path) {
-	// find and assign the target's suffix to the struct
-	pFile->ln_suf = IS_VALID_LINK(path) ? getTypeSuffix(pInfo->st_mode) : INVALID_LINK;
-
-	// and then run the `lstat` syscall to get the information of the link, and assign it to pInfo
-	const bool lstat_did_fail = (lstat(path, pInfo) == -1);
-
-	// if the file isn't a symlink then remove the target's suffix
-	if (!S_ISLNK(pInfo->st_mode)) pFile->ln_suf = NOT_LINK;
-
-	return lstat_did_fail;
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const struct dirent *entry) {
-	*pInfo = (struct stat){0};
-	*pFile = (FileInfo){0};
-
-	strcpy(pFile->name, entry->d_name);
-	pInfo->st_mode	= DTTOIF(entry->d_type);
-	pInfo->st_ino		= entry->d_ino;
-	pFile->ln_suf		= entry->d_type == DT_LNK ? INVALID_LINK : NOT_LINK;
-	pFile->is_valid	= false;
-}
+		|| (do_link_to() && S_ISLNK(info.st_mode) && file.ln_suf == DIR_SUFFIX))
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -71,19 +47,57 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	pFile->time		= pInfo->st_mtimespec.tv_sec;
 
 	// parse the raw stat information into more human-readable formats.
-	if (do_suffix	) pFile->suffix = getTypeSuffix(pInfo->st_mode);
-	if (do_flag_str	) parseFlags(pFile->flag_str, pInfo->st_flags);
-	if (do_size_str	)  parseSize(pFile->size_str, &(pFile->size_unit), pInfo->st_size, pInfo->st_rdev);
-	if (do_mode_str	)	 getMode(pFile->mode_str, pInfo->st_mode);
-	if (do_usr_name	)	 getUser(pFile->usr_name, pInfo->st_uid);
-	if (do_grp_name	)	getGroup(pFile->grp_name, pInfo->st_gid);
-	if (do_time_str	)  parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &(pFile->time_col));
+	if (do_suffix  ()) pFile->suffix = getTypeSuffix(pInfo->st_mode);
+	if (do_flag_str()) parseFlags(pFile->flag_str, pInfo->st_flags);
+	if (do_size_str())	parseSize(pFile->size_str, &(pFile->size_unit), pInfo->st_size, pInfo->st_rdev);
+	if (do_mode_str())	  getMode(pFile->mode_str, pInfo->st_mode);
+	if (do_usr_name())	  getUser(pFile->usr_name, pInfo->st_uid);
+	if (do_grp_name())	 getGroup(pFile->grp_name, pInfo->st_gid);
+	if (do_time_str())	parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &(pFile->time_col));
 
-	if (do_mode_str	)   checkACL(&(pFile->has_acl), path);
-	if (do_mode_str	) checkXattr(&(pFile->has_xattr), path);
-	if (do_link_to && S_ISLNK(pInfo->st_mode)) getLink(pFile->link_to, path);
+	if (do_mode_str())	 checkACL(&(pFile->has_acl	), path);
+	if (do_mode_str()) checkXattr(&(pFile->has_xattr), path);
 
-	if (DO_COLOUR) setFileColour(&(pFile->file_col), pInfo->st_mode, pInfo->st_flags);
+	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pInfo->st_mode, pInfo->st_flags);
+	if (!S_ISDIR(pInfo->st_mode)  && pInfo->st_nlink > 1) pFile->do_link_hl = true;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const struct dirent *entry) {
+	*pInfo = (struct stat){0};
+	*pFile = (FileInfo){0};
+
+	strcpy(pFile->name, entry->d_name);
+	pInfo->st_mode	= DTTOIF(entry->d_type);
+	pInfo->st_ino	= entry->d_ino;
+	pFile->ln_suf	= entry->d_type == DT_LNK ? INVALID_LINK : NOT_LINK;
+	pFile->is_valid	= false;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path_t path) {
+	// file isn't a link - keep the `lstat` info
+	// we still have to try `stat` on it tho, cos if `lstat` failed, we need to know whether it failed
+	//  bc the file is a link to a non-existant file, or if we don't have permissions to `stat` the file
+	if (!S_ISLNK(pInfo->st_mode)) pFile->ln_suf = NOT_LINK;
+
+	// file is a link - run `stat`
+	struct stat *pLinkInfo = malloc(sizeof(struct stat));
+	// whether the path was valid or not, or was even a link at all, we need to get the info of the origin file.
+	//  we therefore run `lstat` to get the information of the link, assign it to pLinkInfo, then extract the info
+	const bool stat_did_fail = stat(path, pLinkInfo) == -1;
+
+	// extract the necessary info from the target file
+	if (pFile->ln_suf == '\0') pFile->ln_suf = getTypeSuffix(pLinkInfo->st_mode);
+	setFileColour(&(pFile->link_col), pLinkInfo->st_mode, pLinkInfo->st_flags);
+
+	free(pLinkInfo);
+	getLink(pFile->link_to, path);
+
+	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
+	return stat_did_fail;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -115,15 +129,12 @@ void getAllFileInfo(
 
 		/* ——————————————————————————————————————————————————————————————————— */
 
-		// always run the `stat` syscall, because we need to know the type of the file being pointed to.
-		// if it fails, it means 1 of two things:
-		//	1. it's a symlink, and the target is broken/doesn't exist
-		//	2. there are some permission issues
-		const bool stat_did_fail = (stat(path, &info) == -1);
-		bool lstat_did_fail = false;
+		// always run the `lstat` syscall, because we need to know the type of the original file
+		const bool lstat_did_fail = lstat(path, &info) == -1;
 
-		// then, if we need to get the link's info, do so
-		if (do_link_to) lstat_did_fail = getLinkInfo(&file, &info, path);
+		// `stat` will follow symlinks, and will only return info about the target file, rather than the link itself
+		//  if the `do_link_to` option is set, then we need to run `lstat` to get info about the link
+		const bool stat_did_fail = getTargetInfo(&file, &info, path);
 
 		// if none of the stat calls that ran, worked, then we don't have any extra information
 		//  so extract just the info that we can get from `dirent`, and parse things from there
@@ -136,8 +147,8 @@ void getAllFileInfo(
 		/* ——————————————————————————————————————————————————————————————————— */
 
 		// add the FileInfo object to the end of its respective array
-		if (IS_FILE_DIR())	dirs [(*dir_count )++] = file;
-		else				files[(*file_count)++] = file;
+		if (IS_REALPATH_DIR())	dirs [(*dir_count )++] = file;
+		else					files[(*file_count)++] = file;
 	}
 
 	// the directory info isn't needed anymore, so it can be closed now

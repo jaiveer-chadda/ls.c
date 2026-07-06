@@ -9,7 +9,7 @@ Lengths field_lengths;
 FmtStrs fmt_strs_short, fmt_strs_long;
 
 inline void initFormatting(void) {
-	if (DO_HEADER) {
+	if (DO_HEADER()) {
 		// these will be precomputed when compiler optimisation is set to `-O2` or `-O3`
 		field_lengths = (Lengths){
 			.nlink	= strlen(nlink_TITLE),
@@ -29,7 +29,7 @@ inline void initFormatting(void) {
 		.nlink	= "%d"	,
 		.dev_no	= "%d"	, .inode	= "%llu",
 
-		.flags	= "%u"	, .flag_str	= "%s",
+		.flags	= "%x"	, .flag_str	= "%s",
 		.mode	= "%o"	, .mode_str	= "%s",
 		.size	= "%lld", .size_str	= "%s",
 		.uid	= "%d"	, .usr_name	= "%s",
@@ -38,10 +38,10 @@ inline void initFormatting(void) {
 	};
 
 	fmt_strs_long = (FmtStrs){
-		.nlink	= "%*d"	,
+		.nlink	= "%*d"		,
 		.dev_no	= "%*d"		, .inode	= "%*llu",
 
-		.flags	= "%-*u"	, .flag_str	= "%-*s",
+		.flags	= "%*x"		, .flag_str	= "%-*s",
 		.mode	= "%0*o"	, .mode_str	= "%-*s",
 		.size	= "%*lld"	, .size_str	= "%*s",
 		.uid	= "%-*d"	, .usr_name	= "%-*s",

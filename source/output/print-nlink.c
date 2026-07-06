@@ -8,8 +8,8 @@
 #include "../model/stat-model.h"
 #include "../graphics/graphics.h"
 
-void printNLink(const nlink_t *nlink, const mode_t *mode, bool *is_hln) {
-	if (!do_nlink) return;
+void printNLink(const nlink_t *nlink, const mode_t *mode) {
+	if (!do_nlink()) return;
 
 	// using "nlink_str" to calculate the strlen of nlink
 	char nlink_str[16], colour[16];
@@ -17,11 +17,11 @@ void printNLink(const nlink_t *nlink, const mode_t *mode, bool *is_hln) {
 	sprintf(nlink_str, "%d", *nlink);
 	const short int link_len = (short int)strlen(nlink_str);
 
-	if		( S_ISDIR(*mode) && *nlink == 2)	strcpy(colour, LN_COL_DIR_EMPTY);					// empty directory
-	else if	( S_ISDIR(*mode) && *nlink >= 3)	strcpy(colour, LN_COL_DIR);							// non-empty dir
-	else if (!S_ISDIR(*mode) && *nlink == 1)	strcpy(colour, LN_COL_REG_1);						// file w   1 link
-	else if (!S_ISDIR(*mode) && *nlink >= 2) {	strcpy(colour, LN_COL_REG_MORE); *is_hln = true; }	// file w > 1 link
-	else										strcpy(colour, LN_COL_OTHER); // dir w 1 link or a dir/file w < 1 link
+	if		( S_ISDIR(*mode) && *nlink == 2) strcpy(colour, LN_COL_DIR_EMPTY);	// empty directory
+	else if	( S_ISDIR(*mode) && *nlink >= 3) strcpy(colour, LN_COL_DIR);		// non-empty dir
+	else if (!S_ISDIR(*mode) && *nlink == 1) strcpy(colour, LN_COL_REG_1);		// file w	1 link
+	else if (!S_ISDIR(*mode) && *nlink >= 2) strcpy(colour, LN_COL_REG_MORE);	// file w >	1 link
+	else									 strcpy(colour, LN_COL_OTHER);		// dir w 1 link or dir/file w 0 links
 
 	printf("%*s" "%s%s" "%s",
 		(int)field_lengths.nlink - link_len, "",
