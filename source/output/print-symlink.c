@@ -1,9 +1,7 @@
 /// @file output/print-symlink.c
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "output.h"
 #include "../options/options.h"
@@ -26,15 +24,22 @@ void printSymlink(const path_t p_target_path, const type_t suffix, const FileCol
 	/* ————————————————————————————————————————————————————— */
 
 	if (!DO_COLOUR()) {
-		printf("%s%s", SYMLINK_ARROW, p_target_path);
+		path_t escd_path;
+		escapeName(escd_path, p_target_path, "");
+
+		printf("%s%s", SYMLINK_ARROW, escd_path);
+
 		PRINT_SUFFIX();
 		return;
 	}
 
 	if (!is_valid_path) {
+		path_t escd_path;
+		escapeName(escd_path, p_target_path, INVALID_LINK_COLOUR);
+
 		printf("%s%s" "%s%s" "%s",
-			INVALID_ARROW_COLOUR, SYMLINK_ARROW	,
-			INVALID_LINK_COLOUR	, p_target_path	,
+			INVALID_ARROW_COLOUR, SYMLINK_ARROW,
+			INVALID_LINK_COLOUR, escd_path,
 			RESET
 		);
 
@@ -42,10 +47,6 @@ void printSymlink(const path_t p_target_path, const type_t suffix, const FileCol
 		return;
 	}
 
-	/* ————————————————————————————————————————————————————— */
-	// name_t escaped_name
-	// escapeName(escaped_name, (name_t)p_target_path);
-	// p_target_path;
 	/* ————————————————————————————————————————————————————— */
 
 	const char *p_last_slash  = strrchr(p_target_path, '/');
@@ -56,9 +57,9 @@ void printSymlink(const path_t p_target_path, const type_t suffix, const FileCol
 
 	if (contains_slash) {
 		path_t orig_basename;
-		const int basename_len = p_filename - p_target_path;
+		const size_t basename_len = p_filename - p_target_path;
 
-		sprintf(orig_basename, "%.*s", basename_len, p_target_path);
+		strncpy(orig_basename, p_target_path, basename_len);
 		escapeName(escd_basename, orig_basename, LINK_PATH_COLOUR);
 	}
 
@@ -68,7 +69,7 @@ void printSymlink(const path_t p_target_path, const type_t suffix, const FileCol
 		VALID_ARROW_COLOUR, SYMLINK_ARROW,
 
 		// print the basename (path to the file's parent dir)
-		strlen(escd_basename) > 0 ? LINK_PATH_COLOUR : "", escd_basename,
+		contains_slash ? LINK_PATH_COLOUR : "", escd_basename,
 		// print the actual filename
 		GET_TARGET_COLOUR(), escd_filename,
 
