@@ -18,8 +18,7 @@ void abbrPath(path_t out_path, const path_t abs_path) {
 		const int home_len = strlen(HOME);
 		const int path_len = strlen(abs_path);
 
-		if (
-			home_len > 0								// if `$HOME` has some value,
+		if (home_len > 0								// if `$HOME` has some value,
 			&& home_len < path_len						// and the full path isn't `$HOME` itself
 			&& strncmp(HOME, abs_path, home_len) == 0	// and if it's a prefix of `abs_path`
 		) {

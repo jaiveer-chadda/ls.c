@@ -6,8 +6,8 @@
 
 #include "sort.h"
 
-#define IS_UPPER(chr) ('A' <= chr && chr <= 'Z')
-#define IS_DIGIT(chr) ('0' <= chr && chr <= '9')
+#define IS_UPPER(chr) ('A' <= (chr) && (chr) <= 'Z')
+#define IS_DIGIT(chr) ('0' <= (chr) && (chr) <= '9')
 
 static inline void toLower(char *str) {
 	for (int i = 0; str[i] != '\0'; i++) {

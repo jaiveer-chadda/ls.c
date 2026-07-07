@@ -9,9 +9,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define IF_COLOUR(yes, no) (DO_COLOUR() ? (yes) : no)
-
-#define DO_IGNORE_UNIT(unit) (unit == UNIT_BYTE || unit == UNIT_ZERO || unit == UNIT_MAJ_MIN)
+#define IF_COLOUR(yes, no) (DO_COLOUR() ? (yes) : (no))
+#define DO_IGNORE_UNIT(unit) ((unit) == UNIT_BYTE || (unit) == UNIT_ZERO || (unit) == UNIT_MAJ_MIN)
 
 static inline void getUnitColour(char *unit_colour, const char *unit) {
 	if (DO_IGNORE_UNIT(*unit)) return;

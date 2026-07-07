@@ -9,11 +9,11 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define GET_LEN(field)												\
-	if (do_##field()) {												\
-		sprintf(elem_as_str, fmt_strs_short.field, file.field);		\
-		len = strlen(elem_as_str);									\
-		if (len > field_lengths.field) field_lengths.field = len;	\
+#define GET_LEN(field)													\
+	if (do_##field()) {													\
+		sprintf(elem_as_str, (fmt_strs_short.field), (file.field));		\
+		len = strlen(elem_as_str);										\
+		if (len > (field_lengths.field)) (field_lengths.field) = len;	\
 	}
 
 /* ———————————————————————————————————————————————————————————————————————— */
@@ -27,7 +27,7 @@
 		if (len > field_lengths.mode_str) field_lengths.mode_str = len;	\
 	}
 
-#define DO_IGNORE_UNIT(unit) (unit == UNIT_BYTE || unit == UNIT_ZERO || unit == UNIT_MAJ_MIN)
+#define DO_IGNORE_UNIT(unit) ((unit) == UNIT_BYTE || (unit) == UNIT_ZERO || (unit) == UNIT_MAJ_MIN)
 
 #define GET_SIZESTR_LEN()														\
 	if (do_size_str()) {														\

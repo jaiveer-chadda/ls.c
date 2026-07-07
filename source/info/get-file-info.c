@@ -19,8 +19,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_IGNORE_FILE(entry) (strcmp(entry->d_name, ".." ) == 0)
-#define  IS_VALID_PATH(path)  (access(path, F_OK) == 0)
+#define DO_IGNORE_FILE(entry) (strcmp((entry)->d_name, ".." ) == 0)
+#define  IS_VALID_PATH(path)  (access((path), F_OK) == 0)
 
 // i know this can be simplified, but it's easier for me to read it this way
 #define ALL_STATS_FAILED() \

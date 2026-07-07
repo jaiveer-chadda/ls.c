@@ -12,13 +12,13 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define PRINT_FIELD(field)								\
-	if (do_##field()) {									\
-		sprintf(fmt_str, "%s%%s", fmt_strs_long.field);	\
-		printf(fmt_str,									\
-			(int)field_lengths.field, file.field,		\
-			FIELD_PAD									\
-		);												\
+#define PRINT_FIELD(field)									\
+	if ((do_##field())) {									\
+		sprintf(fmt_str, "%s%%s", (fmt_strs_long.field));	\
+		printf(fmt_str,										\
+			(int)(field_lengths.field), (file.field),		\
+			FIELD_PAD										\
+		);													\
 	}
 
 #define COLOUR(field, colour_func) if (DO_COLOUR()) { colour_func; } else { PRINT_FIELD(field); }

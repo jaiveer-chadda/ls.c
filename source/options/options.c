@@ -60,32 +60,32 @@ static inline bool doColourAuto(void) {
 #define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] != '-'))
 #define HAS_ARG		(strcmp(optarg, "") != 0)
 
-#define OPTION_IS(str) (strcmp(opt	 , str) == 0)
-#define OPTARG_IS(str) (strcmp(optarg, str) == 0)
+#define OPTION_IS(str) (strcmp(opt	 , (str)) == 0)
+#define OPTARG_IS(str) (strcmp(optarg, (str)) == 0)
 
-#define OPTION_IS_OF(str1, str2) (OPTION_IS(str1) || OPTION_IS(str2))
+#define OPTION_IS_OF(str1, str2) (OPTION_IS((str1)) || OPTION_IS((str2)))
 
 /* ——————————————————————————————————————————————————————————————————— */
 
 #define BINARY_OPT(flag, var) \
-	if (OPTION_IS("--"	  #flag)) { var = true ; continue; } \
-	if (OPTION_IS("--no-" #flag)) { var = false; continue; }
+	if (OPTION_IS("--"	  #flag)) { (var) = true ; continue; } \
+	if (OPTION_IS("--no-" #flag)) { (var) = false; continue; }
 
 #define FIELD_OPT(flag, var) \
-	if (OPTION_IS_OF("--" #flag, "--do-" #flag)) { var = true ; continue; } \
-	if (OPTION_IS("--no-" #flag))				 { var = false; continue; }
+	if (OPTION_IS_OF("--" #flag, "--do-" #flag)) { (var) = true ; continue; } \
+	if (OPTION_IS("--no-" #flag))				 { (var) = false; continue; }
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-//#define ERROR_TAKES_ARG(option) do { fprintf(stderr, "error: `%s` takes argument\n", option); usage(1); } while (0)
-#define ERROR_INVALID_OPT(option) do { fprintf(stderr, "unknown option: `%s`\n"		 , option); usage(1); } while (0)
+//#define ERROR_TAKES_ARG(option) do { fprintf(stderr, "error: `%s` takes argument\n", (option)); usage(1); } while (0)
+#define ERROR_INVALID_OPT(option) do { fprintf(stderr, "unknown option: `%s`\n"		 , (option)); usage(1); } while (0)
 
 #define ERROR_BAD_ARG(args)						\
 	do {										\
 		fprintf(stderr,							\
 			"invalid argument `%s` for `%s`. "	\
 			"possible arguments are %s\n",		\
-			optarg, opt, args					\
+			optarg, opt, (args)					\
 		);										\
 		usage(1);								\
 	} while (0)

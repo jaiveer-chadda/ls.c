@@ -6,7 +6,7 @@
 #include "../form/formatting.h"
 #include "../options/options.h"
 
-#define IF_COLOUR(print) (DO_COLOUR() ? print : "")
+#define IF_COLOUR(print) (DO_COLOUR() ? (print) : "")
 
 #define IS_REG() (str[0] == REGULAR_CHAR)	/// Whether the file is a regular file or not.
 #define IS_UID() (i == 3) /// `3` is the index of the SUID bit in the mode string.
