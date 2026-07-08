@@ -92,6 +92,33 @@ static inline bool doColourAuto(void) {
 
 /* ——————————————————————————————————————————————————————————————————— */
 
+static inline void allOptsOn(void) {
+	U_DO_HEADER			= true	,
+	U_DO_DIVIDERS		= true	,
+	U_DO_SHORT_FLAGS	= false	,
+	U_DO_TINY_FLAGS		= false	,
+	U_DO_DIM_HIDDEN		= true	,
+	U_SORT_DIRS_FIRST	= true	;
+}
+
+static inline void allFieldsOn(void) {
+	U_DO_SUFFIX		= true,
+	U_DO_LINK_TO	= true,
+
+	U_DO_NLINK		= true,
+	U_DO_DEV_NO		= true,
+	U_DO_INODE		= true,
+
+	U_DO_FLAGS		= true, U_DO_FLAG_STR = true,
+	U_DO_MODE		= true, U_DO_MODE_STR = true,
+	U_DO_SIZE		= true, U_DO_SIZE_STR = true,
+	U_DO_UID		= true, U_DO_USR_NAME = true,
+	U_DO_GID		= true, U_DO_GRP_NAME = true,
+	U_DO_TIME		= true, U_DO_TIME_STR = true;
+}
+
+/* ——————————————————————————————————————————————————————————————————— */
+
 int setOptions(const int argc, const char *argv[]) {
 	bool colour_auto = true;
 	int i;
@@ -154,6 +181,11 @@ int setOptions(const int argc, const char *argv[]) {
 		FIELD_OPT(uid	, U_DO_UID		);	FIELD_OPT(usr-name, U_DO_USR_NAME);
 		FIELD_OPT(gid	, U_DO_GID		);	FIELD_OPT(grp-name, U_DO_GRP_NAME);
 		FIELD_OPT(time	, U_DO_TIME		);	FIELD_OPT(time-str, U_DO_TIME_STR);
+
+		/* ——————————————————————————————————————————————————————————————— */
+
+		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  continue; }
+		if (OPTION_IS("--all"))			{ allFieldsOn(); allOptsOn(); continue; }
 
 		/* ——————————————————————————————————————————————————————————————— */
 
