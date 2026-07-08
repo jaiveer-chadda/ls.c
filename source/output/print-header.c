@@ -15,13 +15,13 @@
 	|| strcmp((#field), "size_str") == 0 \
 	|| strcmp((#field), "time_str") == 0 )
 
-#define PRINT_HEADER(field)														\
-	if ((do_##field()))	{														\
-		const int header_len = (int)strlen(HEADER_HL HEADER_HL_OFF FIELD_PAD);	\
-		printf(SHOULD_ALIGN_RIGHT((field)) ? "%*s%s" : "%-*s%s",				\
-			(int)(((field_lengths.field) + header_len) - strlen(FIELD_PAD)),	\
-			(HEADER_HL field##_TITLE HEADER_HL_OFF), FIELD_PAD					\
-		);																		\
+#define PRINT_HEADER(field)													\
+	if ((do_##field()))	{													\
+		const size_t header_len = strlen(HEADER_HL HEADER_HL_OFF FIELD_PAD);\
+		printf(SHOULD_ALIGN_RIGHT(field) ? "%*s%s" : "%-*s%s",				\
+			(int)(((field_lengths.field) + header_len) - strlen(FIELD_PAD)),\
+			(HEADER_HL field##_TITLE HEADER_HL_OFF), FIELD_PAD				\
+		);																	\
 	}
 
 inline void printHeader(void) {
