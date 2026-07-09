@@ -44,6 +44,30 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline void findDivider(bool *do_divider, char *div_char, const char *name) {
+	/// Which characters to check for, to see if a file is a divider file, listed in order of priority.
+	const char *DIVIDER_OPTIONS[] = { "─", "—", "–", "-", "_", "•" };
+	const int NUM_OPTIONS = (int)(sizeof(DIVIDER_OPTIONS) / sizeof(DIVIDER_OPTIONS[0]));
+
+	for (int i = 0; i < NUM_OPTIONS; i++) {
+		const char *test_char = DIVIDER_OPTIONS[i];
+		// `4` being the maximum length of a single multibyte character like `─` or `•`
+		char test_divider[4 * MIN_DIVIDER_LEN];
+
+		// create a dummy string containing 5 of the divider characters
+		sprintf(test_divider, "%s%s%s%s%s", test_char, test_char, test_char, test_char, test_char);
+
+		// then check whether that dummy string is in the filename
+		if (strstr(name, test_divider) != NULL) {
+			*do_divider = true;
+			strcpy(div_char, test_char);
+			break;
+		}
+	}
+}
+
+/* —————————————————————————————————————————————————————————————————————————————————————————— */
+
 static inline void printDivider(const char *div_char) {
 	struct winsize window;
 
@@ -77,30 +101,10 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 	bool do_divider = false;
 	char div_char[4] = "";
 
-	/// Which characters to check for, to see if a file is a divider file, listed in order of priority.
-	const char *DIVIDER_OPTIONS[] = { "─", "—", "–", "-", "_", "•" };
-	const int NUM_OPTIONS = (int)(sizeof(DIVIDER_OPTIONS) / sizeof(DIVIDER_OPTIONS[0]));
+	if (CHECK_FOR_DIVIDER()) findDivider(&do_divider, div_char, name);
 
-	if (CHECK_FOR_DIVIDER()) {
-		for (int i = 0; i < NUM_OPTIONS; i++) {
-			const char *test_char = DIVIDER_OPTIONS[i];
-			// `4` being the maximum length of a single multibyte character like `─` or `•`
-			char test_divider[4 * MIN_DIVIDER_LEN];
-
-			// create a dummy string containing 5 of the divider characters
-			sprintf(test_divider, "%s%s%s%s%s", test_char, test_char, test_char, test_char, test_char);
-
-			// then check whether that dummy string is in the filename
-			if (strstr(name, test_divider) != NULL) {
-				do_divider = true;
-				strcpy(div_char, test_char);
-
-				// make sure that directories which have been turned into dividers don't show their suffixes
-				if (*colour == FC_DIRECT) *suffix = '\0';
-				break;
-			}
-		}
-	}
+	// make sure that directories which have been turned into dividers don't show their suffixes
+	if (do_divider && *colour == FC_DIRECT) *suffix = '\0';
 
 	/* ————————————————————————————————————————————————————————————————— */
 
