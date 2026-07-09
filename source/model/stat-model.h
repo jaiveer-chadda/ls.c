@@ -7,7 +7,7 @@
 #include "../graphics/graphics.h"
 
 extern path_t parent_dir_path;
-extern dev_t root_dev_no;
+extern dev_t parent_dev_no;
 
 typedef struct {
 	name_t	name	;

@@ -17,7 +17,7 @@
 #include "features/mount/mount-point.h"
 
 path_t parent_dir_path = CURRENT_DIR;
-dev_t root_dev_no;
+dev_t parent_dev_no;
 
 int main(const int argc, const char *argv[]) {
 
@@ -41,7 +41,7 @@ int main(const int argc, const char *argv[]) {
 
 	// Find the current time and make it available globally
 	initTime();
-	root_dev_no = getRootDevNo();
+	parent_dev_no = getParentDevNo();
 
 	/* —— Get File Info from `stat` —————————————————————————————————————————————————————————————— */
 

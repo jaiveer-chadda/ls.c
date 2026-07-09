@@ -1,5 +1,5 @@
 /// @file features/mount/mount-point.h
 
-#include <sys/stat.h>
+#include "../../model/stat-model.h"
 
-dev_t getRootDevNo(void);
+dev_t getParentDevNo(void);

@@ -14,7 +14,7 @@ inline void setFileColour(FileColour *colour, const mode_t mode, const flag_t fl
 	if (flags & SF_DATALESS) { *colour = FC_DATALESS; return; }
 	
 	// `mount point` has the 2ⁿᵈ highest priority
-	if (dev_no != root_dev_no && root_dev_no != -1) { *colour = FC_MOUNT; return; }
+	if (dev_no != parent_dev_no && parent_dev_no != -1) { *colour = FC_MOUNT; return; }
 
 	// `exec` has the lowest priority, so set the colour to exec, but it can be overwritten by anything else below
 	if (mode & EXEC_MASK) *colour = FC_EXEC;

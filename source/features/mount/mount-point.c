@@ -2,9 +2,9 @@
 
 #include "mount-point.h"
 
-dev_t getRootDevNo(void) {
-	struct stat root_info;
-	if (stat("/", &root_info) == -1) return -1;
+dev_t getParentDevNo(void) {
+	struct stat parent_info;
+	if (stat(parent_dir_path, &parent_info) == -1) return -1;
 
-	return root_info.st_dev;
+	return parent_info.st_dev;
 }
