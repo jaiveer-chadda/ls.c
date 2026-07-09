@@ -58,7 +58,7 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	if (do_mode_str())	 checkACL(&(pFile->has_acl	), path);
 	if (do_mode_str()) checkXattr(&(pFile->has_xattr), path);
 
-	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pInfo->st_mode, pInfo->st_flags);
+	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pInfo->st_mode, pInfo->st_flags, pInfo->st_dev);
 	if (!S_ISDIR(pInfo->st_mode)  && pInfo->st_nlink > 1) pFile->do_link_hl = true;
 }
 
@@ -91,7 +91,7 @@ static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path
 
 	// extract the necessary info from the target file
 	if (pFile->ln_suf == '\0') pFile->ln_suf = getTypeSuffix(pLinkInfo->st_mode);
-	setFileColour(&(pFile->link_col), pLinkInfo->st_mode, pLinkInfo->st_flags);
+	setFileColour(&(pFile->link_col), pLinkInfo->st_mode, pLinkInfo->st_flags, /* -1 */ pLinkInfo->st_dev);
 
 	free(pLinkInfo);
 	getLink(pFile->link_to, path);

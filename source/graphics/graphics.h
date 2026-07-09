@@ -53,14 +53,14 @@
 /* —— [Internal] Filename Colour Definitions ——————————————————————————————————————————————————————————————————————— */
 
 #define HL_NONE			""			// \e[37m
-#define HL_REG			HL_NONE		// \e[37m
 
+#define HL_REG			HL_NONE		// \e[37m
 #define HL_DIR			"1;36"		// \e[36m
 #define HL_LINK			"35"		// \e[35m
 #define HL_EXEC			"31"		// \e[31m
 #define HL_PIPE			"33"		// \e[33m
-#define HL_MOUNT		"34"		// \e[34m
 #define HL_SOCKET		"32"		// \e[32m
+#define HL_MOUNT		";1;4;34"	// \e[34m \e[4m
 #define HL_CHRDEV		";1;30;43"	// \e[43m
 #define HL_BLKDEV		";1;30;46"	// \e[46m
 #define HL_OW_DIR		";1;30;42"	// \e[42m
@@ -101,7 +101,7 @@
 #define	  VALID_ARROW_COLOUR	PUNCT
 #define INVALID_ARROW_COLOUR	CSI "31"			END // \e[31m
 
-#define LINK_PATH_COLOUR		CSI "36"			END // \e[36m
+#define LINK_PATH_COLOUR		CSI "96"			END // \e[96m
 #define INVALID_LINK_COLOUR		CSI "2;97"			END // \e[90m [kinda]
 
 /* —— NLink ————————————————————————————————————————————————————————————————— */
@@ -309,7 +309,7 @@ extern const char *const size_colour_esc[SIZE_COLOUR_COUNT];
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 
 #include "../model/types.h"
-void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags);
+void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags, const dev_t dev_no);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

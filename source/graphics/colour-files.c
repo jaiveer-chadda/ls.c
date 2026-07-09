@@ -5,13 +5,16 @@
 
 #include "graphics.h"
 
-#define	  GET_STICKY_COLOUR(mode) (((mode) & S_IXOTH) ? FC_STICKY_X	: FC_STICKY_N)
-#define		GET_SUID_COLOUR(mode) (((mode) & S_IXUSR) ? FC_SUID_X	: FC_SUID_N	 )
-#define		GET_SGID_COLOUR(mode) (((mode) & S_IXGRP) ? FC_SGID_X	: FC_SGID_N	 )
+#define	GET_STICKY_COLOUR(mode) (((mode) & S_IXOTH) ? FC_STICKY_X : FC_STICKY_N)
+#define	  GET_SUID_COLOUR(mode) (((mode) & S_IXUSR) ? FC_SUID_X	  : FC_SUID_N  )
+#define	  GET_SGID_COLOUR(mode) (((mode) & S_IXGRP) ? FC_SGID_X	  : FC_SGID_N  )
 
-inline void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags) {
+inline void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags, const dev_t dev_no) {
 	// `dataless` has the highest priority, so if the file is dataless, colour it and return immediately
 	if (flags & SF_DATALESS) { *colour = FC_DATALESS; return; }
+	
+	// `mount point` has the 2ⁿᵈ highest priority
+	if (dev_no != root_dev_no && root_dev_no != -1) { *colour = FC_MOUNT; return; }
 
 	// `exec` has the lowest priority, so set the colour to exec, but it can be overwritten by anything else below
 	if (mode & EXEC_MASK) *colour = FC_EXEC;
