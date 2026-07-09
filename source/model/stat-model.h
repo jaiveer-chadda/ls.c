@@ -6,7 +6,7 @@
 #include "types.h"
 #include "../graphics/graphics.h"
 
-extern path_t adjusted_path;
+extern path_t parent_dir_path;
 extern dev_t root_dev_no;
 
 typedef struct {

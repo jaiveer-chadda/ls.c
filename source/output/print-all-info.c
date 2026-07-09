@@ -23,6 +23,8 @@
 
 #define COLOUR(field, colour_func) if (DO_COLOUR()) { colour_func; } else { PRINT_FIELD(field); }
 
+#define DO_SYMLINK() (do_link_to() && (file.ln_suf != NOT_LINK))
+
 /* ——————————————————————————————————————————————————————————————————————————— */
 
 #define PRINT_TIME_STR()								\
@@ -65,7 +67,8 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 
 		if (do_suffix() && file.suffix != '\0') printf("%c", file.suffix);
 
-		printSymlink(file.link_to, file.ln_suf, file.link_col);
+		if (DO_SYMLINK()) printSymlink(file.link_to, file.ln_suf, file.link_col);
+
 		printf("%s", "\n");
 	}
 }

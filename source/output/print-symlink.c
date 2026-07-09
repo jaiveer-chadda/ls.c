@@ -8,7 +8,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_SYMLINK() (do_link_to() && (suffix != NOT_LINK))
 #define DO_SUFFIX()	 (do_suffix()  && (suffix != '\0' && is_valid_path))
 
 #define PRINT_SUFFIX()		if (DO_SUFFIX()) { putchar(suffix); }
@@ -17,8 +16,6 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printSymlink(const path_t p_target_path, const type_t suffix, const FileColour link_col) {
-	if (!DO_SYMLINK()) return;
-
 	const bool is_valid_path = (suffix != INVALID_LINK);
 
 	/* ————————————————————————————————————————————————————— */

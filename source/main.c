@@ -16,7 +16,7 @@
 #include "features/time/time.h"
 #include "features/mount/mount-point.h"
 
-path_t adjusted_path = CURRENT_DIR;
+path_t parent_dir_path = CURRENT_DIR;
 dev_t root_dev_no;
 
 int main(const int argc, const char *argv[]) {
@@ -35,7 +35,7 @@ int main(const int argc, const char *argv[]) {
 
 	// Get the path to the target directory, which'll be used to replace the `.` directory's name
 	//  (casting to void, since there's nth we can rly do if we dont manage to get it)
-	(void) getDirPath(adjusted_path, target_dir);
+	(void) getDirPath(parent_dir_path, target_dir);
 
 	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
 
