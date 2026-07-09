@@ -60,6 +60,8 @@ void printSymlink(const path_t p_target_path, const type_t suffix, const FileCol
 		const size_t basename_len = p_filename - p_target_path;
 
 		strncpy(orig_basename, p_target_path, basename_len);
+		orig_basename[basename_len] = '\0';
+
 		escapeName(escd_basename, orig_basename, LINK_PATH_COLOUR);
 	}
 
