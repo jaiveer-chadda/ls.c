@@ -44,6 +44,26 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline void printDivider(const char *div_char) {
+	struct winsize window;
+
+	// instead of having to figure out how many chars have already been written on this line:
+	//  - turn off word wrapping (`tput rmam`)
+	//    - (so that any characters printed beyond the end of the screen aren't shown)
+	//  - then print as many divider characters are there are columns (screen width)
+	//  - finally, turn word wrapping back on (`tput smam`)
+	if (GET_WINDOW_SIZE(window)) {
+		printf("%s", RMAM);
+
+		const int COLUMNS = window.ws_col;
+		for (int i = 0; i < COLUMNS; i++) printf("%s", div_char);
+
+		printf("%s%s", (DO_COLOUR() ? RESET : ""), SMAM);
+	}
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 void printName(const name_t name, const FileColour *colour, const bool *is_hln, const flag_t *flags, type_t *suffix) {
 	const char *file_colour = file_colour_esc[*colour];
 
@@ -100,23 +120,7 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 
 	/* ————————————————————————————————————————————————————————————————— */
 
-	if (do_divider) {
-		struct winsize window;
-
-		// instead of having to figure out how many chars have already been written on this line:
-		//  - turn off word wrapping (`tput rmam`)
-		//    - (so that any characters printed beyond the end of the screen aren't shown)
-		//  - then print as many divider characters are there are columns (screen width)
-		//  - finally, turn word wrapping back on (`tput smam`)
-		if (GET_WINDOW_SIZE(window)) {
-			printf("%s", RMAM);
-
-			const int COLUMNS = window.ws_col;
-			for (int i = 0; i < COLUMNS; i++) printf("%s", div_char);
-
-			printf("%s" "%s", (DO_COLOUR() ? RESET : ""), SMAM);
-		}
-	}
+	if (do_divider) printDivider(div_char);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
