@@ -7,6 +7,7 @@
 #include "../options/options.h"
 #include "../graphics/graphics.h"
 #include "../features/mode/mode.h"
+#include "../features/mount/mount-point.h"
 
 #include "output.h"
 
@@ -68,6 +69,8 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		if (do_suffix() && file.suffix != '\0') printf("%c", file.suffix);
 
 		if (DO_SYMLINK()) printSymlink(file.link_to, file.ln_suf, file.link_col);
+
+		if (file.is_mount) printMountDevice(file.name);
 
 		printf("%s", "\n");
 	}

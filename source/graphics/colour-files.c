@@ -9,14 +9,11 @@
 #define	  GET_SUID_COLOUR(mode) (((mode) & S_IXUSR) ? FC_SUID_X	  : FC_SUID_N  )
 #define	  GET_SGID_COLOUR(mode) (((mode) & S_IXGRP) ? FC_SGID_X	  : FC_SGID_N  )
 
-inline void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags, const dev_t dev_no) {
-	// `dataless` has the highest priority, so if the file is dataless, colour it and return immediately
+inline void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags, const bool is_mount) {
+	// dataless files have the highest priority, so if the file is dataless, colour it and return immediately
 	if (flags & SF_DATALESS) { *colour = FC_DATALESS; return; }
-	
-	// `mount point` has the 2ⁿᵈ highest priority
-	if (dev_no != parent_dev_no && parent_dev_no != -1) { *colour = FC_MOUNT; return; }
 
-	// `exec` has the lowest priority, so set the colour to exec, but it can be overwritten by anything else below
+	// executables have the lowest priority, so set the colour to exec, but it can be overwritten by anything below
 	if (mode & EXEC_MASK) *colour = FC_EXEC;
 
 	// colour the file based on its type - filetype has the next highest priority after dataless
@@ -30,6 +27,7 @@ inline void setFileColour(FileColour *colour, const mode_t mode, const flag_t fl
 		case S_IFDIR:									  // directories
 			if		(mode & S_ISVTX) *colour = GET_STICKY_COLOUR(mode);	// directory w/ sticky bit set
 			else if (mode & S_IWOTH) *colour = FC_OW_DIR;				// other-writeable directory
+			else if (is_mount)		 *colour = FC_MOUNT;				// mount point
 			else					 *colour = FC_DIRECT;				// regular directory
 			return;
 	}

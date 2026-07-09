@@ -2,4 +2,5 @@
 
 #include "../../model/stat-model.h"
 
-dev_t getParentDevNo(void);
+bool isMountPoint(const dev_t dev_no, const path_t path);
+void printMountDevice(const name_t filename);

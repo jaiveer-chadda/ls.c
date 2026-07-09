@@ -9,6 +9,7 @@
 
 #ifndef t
 #define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug that my error checker has */
+#define f 0
 #endif
 
 /* —— Declare Constants & Set Defaults ————————————————————————————————————————————————————————————————————————————— */
@@ -18,9 +19,10 @@ static bool
 	U_DO_CLEAR			= false	,
 	U_DO_HEADER			= false	,
 	U_DO_DIVIDERS		= true	,
-	U_DO_SHORT_FLAGS	= true	,
-	U_DO_TINY_FLAGS		= false	,
+	U_DO_MOUNT_DEV		= true	,
 	U_DO_DIM_HIDDEN		= true	,
+	U_DO_TINY_FLAGS		= false	,
+	U_DO_SHORT_FLAGS	= true	,
 	U_SORT_DIRS_FIRST	= true	;
 
 static bool
@@ -95,9 +97,10 @@ static inline bool doColourAuto(void) {
 static inline void allOptsOn(void) {
 	U_DO_HEADER			= true	,
 	U_DO_DIVIDERS		= true	,
-	U_DO_SHORT_FLAGS	= false	,
-	U_DO_TINY_FLAGS		= false	,
+	U_DO_MOUNT_DEV		= true	,
 	U_DO_DIM_HIDDEN		= true	,
+	U_DO_TINY_FLAGS		= false	,
+	U_DO_SHORT_FLAGS	= false	,
 	U_SORT_DIRS_FIRST	= true	;
 }
 
@@ -163,6 +166,7 @@ int setOptions(const int argc, const char *argv[]) {
 		BINARY_OPT(clear			, U_DO_CLEAR		);
 		BINARY_OPT(headers			, U_DO_HEADER		);
 		BINARY_OPT(dividers			, U_DO_DIVIDERS		);
+		BINARY_OPT(mount-dev		, U_DO_MOUNT_DEV	);
 		BINARY_OPT(dim-hidden		, U_DO_DIM_HIDDEN	);
 		BINARY_OPT(sort-dirs-first	, U_SORT_DIRS_FIRST	);
 
@@ -206,9 +210,10 @@ bool DO_CLEAR		(void) { return U_DO_CLEAR			; }
 bool DO_COLOUR		(void) { return U_DO_COLOUR			; }
 bool DO_HEADER		(void) { return U_DO_HEADER			; }
 bool DO_DIVIDERS	(void) { return U_DO_DIVIDERS		; }
-bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS	; }
-bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS		; }
+bool DO_MOUNT_DEV	(void) { return U_DO_MOUNT_DEV		; }
 bool DO_DIM_HIDDEN	(void) { return U_DO_DIM_HIDDEN		; }
+bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS		; }
+bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS	; }
 bool SORT_DIRS_FIRST(void) { return U_SORT_DIRS_FIRST	; }
 
 /* ————————————————————————————————————————————————————————— */

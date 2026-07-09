@@ -19,14 +19,18 @@ void getLink(char *link_str, const path_t link_path) {
 	const int home_len = strlen(HOME);
 	const int path_len = strlen(link);
 
+	int bytes_written;
+
 	if (
 		HOME != NULL
 		&& home_len > 0
 		&& home_len < path_len
 		&& strncmp(HOME, link, home_len) == 0
 	) {
-		sprintf(link_str, "~%s", link + home_len);
+		bytes_written = sprintf(link_str, "~%s", link + home_len);
 	} else {
-		sprintf(link_str, "%s", link);
+		bytes_written = sprintf(link_str, "%s", link);
 	}
+
+	link_str[bytes_written] = '\0';
 }

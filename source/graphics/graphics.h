@@ -309,7 +309,7 @@ extern const char *const size_colour_esc[SIZE_COLOUR_COUNT];
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 
 #include "../model/types.h"
-void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags, const dev_t dev_no);
+void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags, const bool is_mount);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

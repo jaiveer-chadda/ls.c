@@ -7,7 +7,6 @@
 #include "../graphics/graphics.h"
 
 extern path_t parent_dir_path;
-extern dev_t parent_dev_no;
 
 typedef struct {
 	name_t	name	;
@@ -34,6 +33,7 @@ typedef struct {
 
 	bool	do_link_hl;
 	bool	has_xattr;
+	bool	is_mount;
 	bool	has_acl;
 
 	bool	is_valid; // were we able to `stat` the file?
