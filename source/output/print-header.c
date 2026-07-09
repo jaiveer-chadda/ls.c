@@ -11,20 +11,23 @@
 
 #define SHOULD_ALIGN_RIGHT(field)		 \
 	(  strcmp((#field), "flags"	  ) == 0 \
+	|| strcmp((#field), "inode"	  ) == 0 \
+	|| strcmp((#field), "dev_no"  ) == 0 \
 	|| strcmp((#field), "size"	  ) == 0 \
 	|| strcmp((#field), "size_str") == 0 \
 	|| strcmp((#field), "time_str") == 0 )
 
-#define PRINT_HEADER(field)													\
-	if ((do_##field()))	{													\
-		const size_t header_len = strlen(HEADER_HL HEADER_HL_OFF FIELD_PAD);\
-		printf(SHOULD_ALIGN_RIGHT(field) ? "%*s%s" : "%-*s%s",				\
-			(int)(((field_lengths.field) + header_len) - strlen(FIELD_PAD)),\
-			(HEADER_HL field##_TITLE HEADER_HL_OFF), FIELD_PAD				\
-		);																	\
+#define PRINT_HEADER(field)										\
+	if ((do_##field()))	{										\
+		printf(SHOULD_ALIGN_RIGHT(field) ? "%*s%s" : "%-*s%s",	\
+			(int)((field_lengths.field) + hl_len),				\
+			(HEADER_HL field##_TITLE RESET), FIELD_PAD			\
+		);														\
 	}
 
 inline void printHeader(void) {
+	const size_t hl_len = strlen(HEADER_HL RESET);
+
 	PRINT_HEADER(inode)	;	PRINT_HEADER(dev_no)  ;
 	PRINT_HEADER(mode)	;	PRINT_HEADER(mode_str);
 	PRINT_HEADER(nlink)	;
@@ -34,5 +37,5 @@ inline void printHeader(void) {
 	PRINT_HEADER(flags)	;	PRINT_HEADER(flag_str);
 	PRINT_HEADER(time)	;	PRINT_HEADER(time_str);
 
-	puts(" " HEADER_HL name_TITLE HEADER_HL_OFF);
+	printf("%s%s%s%s\n", PRE_NAME_PAD, HEADER_HL, name_TITLE, RESET);
 }

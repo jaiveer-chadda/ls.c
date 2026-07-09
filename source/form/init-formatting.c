@@ -43,9 +43,9 @@ inline void initFormatting(void) {
 
 		.flags	= "%*x"		, .flag_str	= "%-*s",
 		.mode	= "%0*o"	, .mode_str	= "%-*s",
-		.size	= "%*lld"	, .size_str	= "%*s",
-		.uid	= "%-*d"	, .usr_name	= "%-*s",
-		.gid	= "%-*d"	, .grp_name	= "%-*s",
+		.size	= "%*zd"	, .size_str	= "%*s",
+		.uid	= "%*d"		, .usr_name	= "%-*s",
+		.gid	= "%*d"		, .grp_name	= "%-*s",
 		.time	= "%*ld"	, .time_str	= "%*s",
 	};
 }

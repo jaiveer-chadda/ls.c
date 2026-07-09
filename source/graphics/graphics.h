@@ -83,8 +83,7 @@
 
 /* —— Header ———————————————————————————————————————————————————————————————— */
 
-#define HEADER_HL				UNDER	BOLD
-#define HEADER_HL_OFF			NOUNDER	NOBOLD
+#define HEADER_HL				CSI "1;4;94" END // \e[94m
 
 /* —— Punctuation ——————————————————————————————————————————————————————————— */
 
