@@ -28,10 +28,21 @@
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 
+#define PRINT_TIME()									\
+	if (do_time()) { COLOUR(time,						\
+		sprintf(fmt_str, "%%s%%s%%s" "%s%s%s",			\
+			fmt_strs_long.time, RESET, FIELD_PAD		\
+		);												\
+		printf(fmt_str,									\
+			CSI_FG, time_colour_esc[file.time_col], END,\
+			(int)field_lengths.time, file.time			\
+		);												\
+	) }
+
 #define PRINT_TIME_STR()								\
 	if (do_time_str()) { COLOUR(time_str,				\
-		sprintf(fmt_str, "%%s%%s%%s" "%s%s",			\
-			fmt_strs_long.time_str, RESET FIELD_PAD		\
+		sprintf(fmt_str, "%%s%%s%%s" "%s%s%s",			\
+			fmt_strs_long.time_str, RESET, FIELD_PAD	\
 		);												\
 		printf(fmt_str,									\
 			CSI_FG, time_colour_esc[file.time_col], END,\
@@ -57,12 +68,12 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(inode);	PRINT_FIELD(dev_no);
 		PRINT_FIELD(mode);	PRINT_MODE_STR();
 
-		PRINT_NLINK();
-		PRINT_FIELD(size);	PRINT_SIZE_STR();
-		PRINT_FIELD(uid);	PRINT_USR_NAME();
-		PRINT_FIELD(gid);	PRINT_GRP_NAME();
-		PRINT_FIELD(flags);	PRINT_FLAG_STR();
-		PRINT_FIELD(time);	PRINT_TIME_STR();
+		PRINT_NLINK()		;
+		PRINT_FIELD(size)	; PRINT_SIZE_STR();
+		PRINT_FIELD(uid)	; PRINT_USR_NAME();
+		PRINT_FIELD(gid)	; PRINT_GRP_NAME();
+		PRINT_FIELD(flags)	; PRINT_FLAG_STR();
+		PRINT_TIME()		; PRINT_TIME_STR();
 
 		printName(file.name, &(file.file_col), &(file.do_link_hl), &(file.flags), &(file.suffix));
 
