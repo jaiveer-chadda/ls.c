@@ -19,12 +19,10 @@
 
 #define MIN_DIVIDER_LEN 5
 
-#define DO_DIM(name, flags)	\
-	((DO_DIM_HIDDEN()) &&	\
-		(((flags) & UF_HIDDEN) || ((name)[0] == '.' && strcmp((name), CURRENT_DIR) != 0)))
-
-#define GET_DIM_HL()	((DO_DIM(name, *flags) || do_divider) ? DIM : "")
-#define GET_HARDLN_UL()	(*is_hln ? HARDLN_UNDERLINE : "")
+#define DO_DIM(name, flags) \
+		(DO_DIM_HIDDEN() &&	\
+		(((flags) & UF_HIDDEN) || ((name)[0] == '.' && strcmp((name), CURRENT_DIR) != 0))	\
+	)
 
 /// Only turn a filename into a divider if:
 ///  - the DO_DIVIDERS setting is on, and 
@@ -89,7 +87,15 @@ static inline void printDivider(const char *div_char) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printName(const name_t name, const FileColour *colour, const bool *is_hln, const flag_t *flags, type_t *suffix) {
-	const char *file_colour = file_colour_esc[*colour];
+	char *file_colour = malloc(32);
+
+	sprintf(file_colour, "%s%s%s" "%s",
+		DO_DIM(name, *flags) ? DIM ";" : "",
+		strcmp(name, CURRENT_DIR) == 0 ? UNDER ";" : "",
+		(*is_hln ? HARDLN_UNDERLINE ";" : ""),
+
+		(char*)(file_colour_esc[*colour])
+	);
 
 	/* ————————————————————————————————————————————————————————————————— */
 
@@ -110,12 +116,9 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 
 	// FIXME: the hardlink underline is removed if/when there's an escape in the hardlink's name
 	if (DO_COLOUR()) {
-		printf("%s" "%s%s" "%s%s%s" "%s" "%s" "%s",
+		printf("%s" "%s%s%s" "%s" "%s",
 			PRE_NAME_PAD,
-			GET_HARDLN_UL(), GET_DIM_HL(),
-			// if the file is `.`, then underline it (the name'll have been resolved to the file's absolute path)
 			CSI, file_colour, END,
-			strcmp(name, CURRENT_DIR) == 0 ? UNDER : "",
 			escaped_name,
 			(do_divider ? "" : RESET) // if the file's a divider, then there's no need to reset the colour
 		);
@@ -123,6 +126,8 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 	} else {
 		printf("%s" "%s", PRE_NAME_PAD, escaped_name);
 	}
+
+	free(file_colour);
 
 	/* ————————————————————————————————————————————————————————————————— */
 

@@ -15,21 +15,21 @@
 static inline void getUnitColour(char *unit_colour, const char *unit) {
 	if (DO_IGNORE_UNIT(*unit)) return;
 	switch (*unit) {
-		case UNIT_KILO: strcpy(unit_colour, size_colour_esc[SC_UK]); return;
-		case UNIT_MEGA: strcpy(unit_colour, size_colour_esc[SC_UM]); return;
-		case UNIT_GIGA: strcpy(unit_colour, size_colour_esc[SC_UG]); return;
-		default		  : strcpy(unit_colour, size_colour_esc[SC_UT]); return;
+		case UNIT_KILO: sprintf(unit_colour, "%s%s%s", CSI, size_colour_esc[SC_UK], END); return;
+		case UNIT_MEGA: sprintf(unit_colour, "%s%s%s", CSI, size_colour_esc[SC_UM], END); return;
+		case UNIT_GIGA: sprintf(unit_colour, "%s%s%s", CSI, size_colour_esc[SC_UG], END); return;
+		default		  : sprintf(unit_colour, "%s%s%s", CSI, size_colour_esc[SC_UT], END); return;
 	}
 }
 
 static inline void getValueColour(char *value_colour, const char *unit) {
 	switch (*unit) {
-		case UNIT_ZERO: strcpy(value_colour, PUNCT)					; return;
-		case UNIT_BYTE: strcpy(value_colour, size_colour_esc[SC_BB]); return;
-		case UNIT_KILO: strcpy(value_colour, size_colour_esc[SC_BK]); return;
-		case UNIT_MEGA: strcpy(value_colour, size_colour_esc[SC_BM]); return;
-		case UNIT_GIGA: strcpy(value_colour, size_colour_esc[SC_BG]); return;
-		default		  : strcpy(value_colour, size_colour_esc[SC_BT]); return;
+		case UNIT_ZERO: sprintf(value_colour, "%s%s%s", CSI, PUNCT				, END); return;
+		case UNIT_BYTE: sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BB]	, END); return;
+		case UNIT_KILO: sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BK]	, END); return;
+		case UNIT_MEGA: sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BM]	, END); return;
+		case UNIT_GIGA: sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BG]	, END); return;
+		default		  : sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BT]	, END); return;
 	}
 }
 
@@ -50,9 +50,9 @@ static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
 		"%s"	// comma (and min colour)
 		"%s",	// min size
 
-		IF_COLOUR(MAJ_COL, ""),
+		IF_COLOUR(ANSI(MAJ_COL), ""),
 		minor_size,
-		IF_COLOUR(PUNCT "," MIN_COL, ","),
+		IF_COLOUR(ANSI(PUNCT) "," ANSI(MIN_COL), ","),
 		size_str + i + 1
 	);
 }
@@ -83,9 +83,9 @@ void printSizeStr(const sizestr size_str, const char *unit, const mode_t *mode) 
 
 		spaces, "",
 		IF_COLOUR(value_colour, ""),
-		IF_COLOUR(S_ISDIR(*mode) ? DIM : "", ""),
+		IF_COLOUR(S_ISDIR(*mode) ? ANSI(DIM) : "", ""),
 		*unit == UNIT_MAJ_MIN ? majmin_str : size_str,
-		IF_COLOUR(unit_colour, "")
+		DO_COLOUR() ? unit_colour : ""
 	);
 
 	if (!DO_IGNORE_UNIT(*unit)) putchar(*unit);

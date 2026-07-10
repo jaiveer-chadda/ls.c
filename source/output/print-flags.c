@@ -14,8 +14,8 @@ void printFlagStr(const flag_t *flags) {
 
 	if (*flags == 0) {
 		const int spaces = (int)(field_lengths.flag_str - strlen(NO_FLAG_STR));
-		printf("%s" "%*s",
-			PUNCT NO_FLAG_STR RESET FIELD_PAD,
+		printf("%s%s%s%s" "%*s",
+			ANSI(PUNCT), NO_FLAG_STR, RESET, FIELD_PAD,
 			spaces, ""
 		);
 		return;
@@ -30,12 +30,15 @@ void printFlagStr(const flag_t *flags) {
 			strcpy(flag_name, GET_FLAG_NAME(ALL_FLAGS[i]));
 
 			if (!is_first_flag) {
-				printf("%s", PUNCT FLAG_SEP_STR RESET);
+				printf("%s%s%s", ANSI(PUNCT), FLAG_SEP_STR, RESET);
 				chars_printed++;
 			}
 			is_first_flag = false;
 
-			printf("%s%s" RESET, ALL_FLAGS[i].colour, flag_name);
+			printf("%s%s%s" "%s%s",
+				CSI, ALL_FLAGS[i].colour, END,
+				flag_name, RESET
+			);
 			chars_printed += (int)strlen(flag_name);
 		}
 	}

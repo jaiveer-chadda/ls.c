@@ -25,18 +25,17 @@ void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name, const bool
 	const int len = (int)field_lengths.usr_name;
 
 	if (!*is_valid) {
-		printf("%s" "%-*s" "%s", USR_INV_COL, len, INV_FILE_USRNAME, RESET FIELD_PAD);
+		printf("%s" "%-*s" "%s%s", ANSI(USR_INV_COL), len, INV_FILE_USRNAME, RESET, FIELD_PAD);
 		return;
 	}
 
 	/// The UID of the user running this process.
 	const uid_t usr_uid = getuid();
 
-	char fmt_str[16] = "%s";
-	strcat(fmt_str, fmt_strs_long.usr_name);
-	strcat(fmt_str, RESET FIELD_PAD);
+	char fmt_str[16];
 
-	printf(fmt_str, GET_USR_NAME_COLOUR(), len, file_usr_name);
+	sprintf(fmt_str, "%%s%%s%%s" "%s" "%s%s", fmt_strs_long.usr_name, RESET, FIELD_PAD);
+	printf(fmt_str, CSI, GET_USR_NAME_COLOUR(), END, len, file_usr_name);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -71,7 +70,7 @@ void printGrpName(const gid_t *file_gid, const ugidstr file_grp_name, const bool
 	const int len = (int)field_lengths.grp_name;
 
 	if (!*is_valid) {
-		printf("%s" "%-*s" "%s", GRP_INV_COL, len, INV_FILE_GRPNAME, RESET FIELD_PAD);
+		printf("%s" "%-*s" "%s%s", ANSI(GRP_INV_COL), len, INV_FILE_GRPNAME, RESET, FIELD_PAD);
 		return;
 	}
 
@@ -84,10 +83,10 @@ void printGrpName(const gid_t *file_gid, const ugidstr file_grp_name, const bool
 		in_usr_grp  = is_user_in_group(usr_name, pw->pw_gid, file_grp_name, *file_gid),
 		in_root_grp = *file_gid == 0;
 
-	printf("%s" "%-*s" "%s",
-		GET_GRP_NAME_COLOUR(),
+	printf("%s%s%s" "%-*s" "%s%s",
+		CSI, GET_GRP_NAME_COLOUR(), END,
 		len, file_grp_name,
-		RESET FIELD_PAD
+		RESET, FIELD_PAD
 	);
 }
 

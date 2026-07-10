@@ -30,11 +30,11 @@
 
 #define PRINT_TIME_STR()								\
 	COLOUR(time_str,									\
-		sprintf(fmt_str, "%%s%s%s",						\
+		sprintf(fmt_str, "%%s%%s%%s" "%s%s",			\
 			fmt_strs_long.time_str, RESET FIELD_PAD		\
 		);												\
 		printf(fmt_str,									\
-			time_colour_esc[file.time_col],				\
+			CSI_FG, time_colour_esc[file.time_col], END,\
 			(int)field_lengths.time_str, file.time_str	\
 		);												\
 	)
