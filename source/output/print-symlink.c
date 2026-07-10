@@ -8,10 +8,10 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_SUFFIX()	 (do_suffix()  && (suffix != '\0' && is_valid_path))
+#define DO_SUFFIX()	(do_suffix() && (suffix != '\0' && is_valid_path))
 
-#define PRINT_SUFFIX()		if (DO_SUFFIX()) { putchar(suffix); }
-#define GET_TARGET_COLOUR()	(link_col != FC_REGULAR ? file_colour_esc[link_col] : RESET)
+#define PRINT_SUFFIX() if (DO_SUFFIX()) { putchar(suffix); }
+#define GET_TARGET_COLOUR()	(link_col != FC_REGULAR ? file_colour_esc[link_col] : "")
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -35,8 +35,8 @@ void printSymlink(const path_t p_target_path, const type_t suffix, const FileCol
 		escapeName(escd_path, p_target_path, INVALID_LINK_COLOUR);
 
 		printf("%s%s" "%s%s" "%s",
-			INVALID_ARROW_COLOUR, SYMLINK_ARROW,
-			INVALID_LINK_COLOUR, escd_path,
+			ANSI(INVALID_ARROW_COLOUR), SYMLINK_ARROW,
+			ANSI(INVALID_LINK_COLOUR ), escd_path,
 			RESET
 		);
 
@@ -50,27 +50,27 @@ void printSymlink(const path_t p_target_path, const type_t suffix, const FileCol
 	const bool contains_slash = (p_last_slash != NULL);
 	const char *p_filename	  = contains_slash ? p_last_slash + 1 : p_target_path;
 
-	path_t escd_filename, escd_basename = "";
+	path_t escd_filename, escd_dirname = "";
 
 	if (contains_slash) {
-		path_t orig_basename;
-		const size_t basename_len = p_filename - p_target_path;
+		path_t orig_dirname;
+		const size_t dirname_len = p_filename - p_target_path;
 
-		strncpy(orig_basename, p_target_path, basename_len);
-		orig_basename[basename_len] = '\0';
+		strncpy(orig_dirname, p_target_path, dirname_len);
+		orig_dirname[dirname_len] = '\0';
 
-		escapeName(escd_basename, orig_basename, LINK_PATH_COLOUR);
+		escapeName(escd_dirname, orig_dirname, LINK_PATH_COLOUR);
 	}
 
 	escapeName(escd_filename, p_filename, GET_TARGET_COLOUR());
 
-	printf("%s%s" "%s%s" "%s%s" "%s",
-		VALID_ARROW_COLOUR, SYMLINK_ARROW,
+	printf("%s%s%s" "%s%s" "%s%s%s%s" "%s",
+		ANSI(VALID_ARROW_COLOUR), SYMLINK_ARROW, RESET,
 
-		// print the basename (path to the file's parent dir)
-		contains_slash ? LINK_PATH_COLOUR : "", escd_basename,
-		// print the actual filename
-		GET_TARGET_COLOUR(), escd_filename,
+		// print the dirname (path to the file's parent dir)
+		contains_slash ? ANSI(LINK_PATH_COLOUR) : "", escd_dirname,
+		// print the actual filename (basename)
+		CSI, GET_TARGET_COLOUR(), END, escd_filename,
 
 		RESET
 	);

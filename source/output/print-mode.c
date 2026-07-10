@@ -1,6 +1,7 @@
 /// @file output/print-mode.c
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "../form/formatting.h"
@@ -12,9 +13,9 @@
 #define IS_UID() (i == 3) /// `3` is the index of the SUID bit in the mode string.
 #define IS_OTH() (i == 8) /// `8` is the index of the `other-writable` bit in the mode string.
 
-#define ESCS_ARE_EQUAL(esc_1, esc_2)								\
-	((esc_1 == esc_2) ||											\
-		esc_1 != PERM_COLOUR_COUNT && esc_2 != PERM_COLOUR_COUNT	\
+#define ESCS_ARE_EQUAL(esc_1, esc_2)			\
+	((esc_1 == esc_2) ||						\
+		esc_1 != PC_COUNT && esc_2 != PC_COUNT	\
 		&& strcmp(perm_colour_esc[esc_1], perm_colour_esc[esc_2]) == 0)
 
 void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
@@ -22,7 +23,7 @@ void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 
 	// ( bit count `= 10` )  ×  ( max hl len `= 11` )
 	char output[10 * 11] = "";
-	FileColour type = FILE_COLOUR_COUNT;
+	FileColour type = FC_COUNT;
 
 	if (DO_COLOUR()) {
 		// the first char will always be the filetype
@@ -38,13 +39,18 @@ void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 			case WHITEOUT_CHAR	: type = FC_WHITEOUT; break;
 		}
 
-		strcat(output, file_colour_esc[type]);
+		char *tmp_output = malloc(sizeof(output));
+
+		sprintf(tmp_output, "%s%s%s%s", output, CSI, file_colour_esc[type], END);
+		strcpy(output, tmp_output);
+
+		free(tmp_output);
 	}
 
 	output[strlen(output)	 ] = str[0];
 	output[strlen(output) + 1] = '\0';
 
-	PermColour last_esc, esc = PERM_COLOUR_COUNT;
+	PermColour last_esc, esc = PC_COUNT;
 
 	for (int i = 1; i < MODE_STR_LEN; i++) {
 		if (DO_COLOUR()) {

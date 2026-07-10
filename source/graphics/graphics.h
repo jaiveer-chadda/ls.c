@@ -21,6 +21,8 @@
 
 #define RESET	CSI END
 
+#define ANSI(esc) CSI esc END
+
 /* —— ANSI Non-Colour ——————————————————————————————————————————————————————— */
 
 #define	UNDER		CSI	 "4" END	// \e[4m
@@ -98,11 +100,11 @@
 
 #define SYMLINK_ARROW			" -> "
 
-#define	  VALID_ARROW_COLOUR	PUNCT
-#define INVALID_ARROW_COLOUR	CSI "31"			END // \e[31m
+#define	  VALID_ARROW_COLOUR	HL_PUNCT	// \e[90m
+#define INVALID_ARROW_COLOUR	"31"		// \e[31m
 
-#define LINK_PATH_COLOUR		CSI "96"			END // \e[96m
-#define INVALID_LINK_COLOUR		CSI "2;97"			END // \e[90m [kinda]
+#define LINK_PATH_COLOUR		"96"		// \e[96m
+#define INVALID_LINK_COLOUR		"2;97"		// \e[90m [kinda]
 
 /* —— NLink ————————————————————————————————————————————————————————————————— */
 
@@ -195,24 +197,24 @@
 
 // use the macro `X`, on the expectation that it'll be defined later
 #define FILE_COLOUR_TABLE \
-	X(FC_REGULAR	,		HL_REG				) /* \e[37m  */ \
-	X(FC_DIRECT		, CSI	HL_DIR			END	) /* \e[36m  */ \
-	X(FC_SYMLINK	, CSI	HL_LINK			END	) /* \e[35m  */ \
-	X(FC_EXEC		, CSI	HL_EXEC			END	) /* \e[31m  */ \
-	X(FC_PIPE		, CSI	HL_PIPE			END	) /* \e[33m  */ \
-	X(FC_SOCKET		, CSI	HL_SOCKET		END	) /* \e[32m  */ \
-	X(FC_MOUNT		, CSI	HL_MOUNT		END	) /* \e[34m  */ \
-	X(FC_CHR_DEV	, CSI	HL_CHRDEV		END	) /* \e[43m  */ \
-	X(FC_BLK_DEV	, CSI	HL_BLKDEV		END	) /* \e[46m  */ \
-	X(FC_OW_DIR		, CSI	HL_OW_DIR		END	) /* \e[42m  */ \
-	X(FC_SUID_X		, CSI	HL_SUID_X		END	) /* \e[41m  */ \
-	X(FC_SUID_N		, CSI	HL_SUID_N		END	) /* \e[101m */ \
-	X(FC_SGID_X		, CSI	HL_SGID_X		END	) /* \e[45m  */ \
-	X(FC_SGID_N		, CSI	HL_SGID_N		END	) /* \e[105m */ \
-	X(FC_STICKY_X	, CSI	HL_STICKY_X		END	) /* \e[44m  */ \
-	X(FC_STICKY_N	, CSI	HL_STICKY_N		END	) /* \e[104m */ \
-	X(FC_DATALESS	, CSI	HL_DATALESS		END	) /* \e[47m  */ \
-	X(FC_WHITEOUT	, CSI	HL_WHITEOUT		END	) /* \e[107m */
+	X(FC_REGULAR	, HL_REG		) /* \e[37m  */ \
+	X(FC_DIRECT		, HL_DIR		) /* \e[36m  */ \
+	X(FC_SYMLINK	, HL_LINK		) /* \e[35m  */ \
+	X(FC_EXEC		, HL_EXEC		) /* \e[31m  */ \
+	X(FC_PIPE		, HL_PIPE		) /* \e[33m  */ \
+	X(FC_SOCKET		, HL_SOCKET		) /* \e[32m  */ \
+	X(FC_MOUNT		, HL_MOUNT		) /* \e[34m  */ \
+	X(FC_CHR_DEV	, HL_CHRDEV		) /* \e[43m  */ \
+	X(FC_BLK_DEV	, HL_BLKDEV		) /* \e[46m  */ \
+	X(FC_OW_DIR		, HL_OW_DIR		) /* \e[42m  */ \
+	X(FC_SUID_X		, HL_SUID_X		) /* \e[41m  */ \
+	X(FC_SUID_N		, HL_SUID_N		) /* \e[101m */ \
+	X(FC_SGID_X		, HL_SGID_X		) /* \e[45m  */ \
+	X(FC_SGID_N		, HL_SGID_N		) /* \e[105m */ \
+	X(FC_STICKY_X	, HL_STICKY_X	) /* \e[44m  */ \
+	X(FC_STICKY_N	, HL_STICKY_N	) /* \e[104m */ \
+	X(FC_DATALESS	, HL_DATALESS	) /* \e[47m  */ \
+	X(FC_WHITEOUT	, HL_WHITEOUT	) /* \e[107m */
 
 /* —— Permission Colours ———————————————————————————————————————————————————— */
 
@@ -293,18 +295,18 @@
 /* —— —— Type Definitions —— ——————————————————————————————————————————————————————————————————————————————————————— */
 
 #define X(name, esc) name,	// only unpack the names
-typedef enum { FILE_COLOUR_TABLE FILE_COLOUR_COUNT } FileColour;
-typedef enum { PERM_COLOUR_TABLE PERM_COLOUR_COUNT } PermColour;
-typedef enum { TIME_COLOUR_TABLE TIME_COLOUR_COUNT } TimeColour;
-typedef enum { SIZE_COLOUR_TABLE SIZE_COLOUR_COUNT } SizeColour;
+typedef enum { FILE_COLOUR_TABLE FC_COUNT } FileColour;
+typedef enum { PERM_COLOUR_TABLE PC_COUNT } PermColour;
+typedef enum { TIME_COLOUR_TABLE TC_COUNT } TimeColour;
+typedef enum { SIZE_COLOUR_TABLE SC_COUNT } SizeColour;
 #undef X
 
 /* —— —— Colour Enum Declarations —— ——————————————————————————————————————————————————————————————————————————————— */
 
-extern const char *const file_colour_esc[FILE_COLOUR_COUNT];
-extern const char *const perm_colour_esc[PERM_COLOUR_COUNT];
-extern const char *const time_colour_esc[TIME_COLOUR_COUNT];
-extern const char *const size_colour_esc[SIZE_COLOUR_COUNT];
+extern const char *const file_colour_esc[FC_COUNT];
+extern const char *const perm_colour_esc[PC_COUNT];
+extern const char *const time_colour_esc[TC_COUNT];
+extern const char *const size_colour_esc[SC_COUNT];
 
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 

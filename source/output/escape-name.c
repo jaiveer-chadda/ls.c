@@ -93,10 +93,10 @@ bool escapeName(name_t escaped_name, const name_t orig_name, const char *colour_
 		if (DO_COLOUR()) {
 			char temp[48];
 			// if the file colour sets the bg, then make the esc seq also uses a bg highlight, and vice versa
-			sprintf(temp, "%s%s%s" "%s%s" "%s",
+			sprintf(temp, "%s%s%s" "%s%s" "%s%s%s",
 				CSI ";1;", colour_sets_bg ? "4" : "3", ESC_CHAR_COLOUR END,
 				esc_seq, RESET,
-				colour_escape
+				CSI, colour_escape, END
 			);
 			strcpy(esc_seq, temp);
 		}

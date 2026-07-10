@@ -108,12 +108,14 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 
 	/* ————————————————————————————————————————————————————————————————— */
 
+	// FIXME: the hardlink underline is removed if/when there's an escape in the hardlink's name
 	if (DO_COLOUR()) {
-		printf("%s" "%s%s" "%s%s" "%s" "%s",
+		printf("%s" "%s%s" "%s%s%s" "%s" "%s" "%s",
 			PRE_NAME_PAD,
 			GET_HARDLN_UL(), GET_DIM_HL(),
 			// if the file is `.`, then underline it (the name'll have been resolved to the file's absolute path)
-			file_colour, strcmp(name, CURRENT_DIR) == 0 ? UNDER : "",
+			CSI, file_colour, END,
+			strcmp(name, CURRENT_DIR) == 0 ? UNDER : "",
 			escaped_name,
 			(do_divider ? "" : RESET) // if the file's a divider, then there's no need to reset the colour
 		);
