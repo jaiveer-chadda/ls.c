@@ -54,8 +54,8 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 	for (int i = 0; i < *count; i++) {
 		FileInfo file = all_files[i];
 
-		PRINT_FIELD(inode);	PRINT_FIELD(dev_no);
-		PRINT_FIELD(mode);	PRINT_MODE_STR();
+		PRINT_FIELD(inode)	; PRINT_FIELD(dev_no);
+		PRINT_FIELD(mode)	; PRINT_MODE_STR();
 
 		PRINT_NLINK()		;
 		PRINT_FIELD(size)	; PRINT_SIZE_STR();
@@ -66,10 +66,8 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 
 		printName(file.name, &(file.file_col), &(file.do_link_hl), &(file.flags), &(file.suffix));
 
-		if (do_suffix() && file.suffix != '\0') printf("%c", file.suffix);
-
+		if (do_suffix() && file.suffix != '\0') putchar(file.suffix);
 		if (DO_SYMLINK()) printSymlink(file.link_to, file.ln_suf, file.link_col);
-
 		if (file.is_mount) printMountDevice(file.name);
 
 		printf("%s", "\n");
