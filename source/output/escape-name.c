@@ -45,6 +45,10 @@ static inline bool escapeCharacter(char *esc_seq, const char orig_char) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define   CHAR(n) (colour[i + (n)])
+#define IS_DIG(n) (CHAR(n) >= '0' && CHAR(n) <= '9')
+#define IS_END(n) (CHAR(n) == ';' || i + (n) == len)
+
 /**
  * @brief Checks whether an ANSI escape sequence, when used, sets the background colour.
  *
@@ -53,21 +57,18 @@ static inline bool escapeCharacter(char *esc_seq, const char orig_char) {
  * It shouldn't have any false negatives, but it will have false positives on inputs like:
  *  `\\e[38;5;105m` or `\\e[38;2;250;40;125m`
  *
- * @param colour[in] The ANSI escape sequence to check.
+ * @param colour[in] The ANSI escape sequence to check, without the leading `\\e` or trailing `m`.
  * @return true if `colour` will set the background colour, false otherwise.
  */
 static inline bool doesSetBackground(const char *colour) {
-	for (int i = 0; i < (int) strlen(colour); i++) {
-		if ((colour[i	 ] == ';' || colour[i	 ] == '[' ) && (// only look at substrings starting with `;` or '['
-			(colour[i + 1] == '4' &&							// look for a `4`
-			(colour[i + 2] >= '0' && colour[i + 2] <= '9' ) &&	// with another digit after it
-			(colour[i + 3] == ';' || colour[i + 3] == 'm')) ||	// and then end the substring
-			// OR
-			(colour[i + 1] == '1' &&							// look for		`1`
-			(colour[i + 2] == '0' &&							// followed by	`0` (i.e. a `10`)
-			(colour[i + 3] >= '0' && colour[i + 3] <= '9')) &&	// followed by a digit
-			(colour[i + 4] == ';' || colour[i + 4] == 'm'))		// then and the substring
-		)) return true;
+	const int start_at = colour[0] == ';' ? 1 : 0;
+	const int len = (int)strlen(colour);
+
+	for (int i = start_at; i < len; i++) {
+		if (i == start_at || CHAR(0) == ';') {
+			if (CHAR(1) == '4'					 && IS_DIG(2) && IS_END(3)) return true;
+			if (CHAR(1) == '1' && CHAR(2) == '0' && IS_DIG(3) && IS_END(4)) return true;
+		}
 	}
 	return false;
 }
