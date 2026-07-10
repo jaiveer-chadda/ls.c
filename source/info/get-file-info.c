@@ -39,6 +39,7 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	// move all the raw stat info that we need over to `file`
 	pFile->nlink	= pInfo->st_nlink;
 	pFile->dev_no	= pInfo->st_dev;
+	pFile->rdev		= pInfo->st_rdev;
 	pFile->inode	= pInfo->st_ino;
 	pFile->flags	= pInfo->st_flags;
 	pFile->mode		= pInfo->st_mode;
@@ -53,7 +54,7 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	// parse the raw stat information into more human-readable formats.
 	if (do_suffix  ()) pFile->suffix = getTypeSuffix(pInfo->st_mode);
 	if (do_flag_str()) parseFlags(pFile->flag_str, pInfo->st_flags);
-	if (do_size_str())	parseSize(pFile->size_str, &(pFile->size_unit), pInfo->st_size, pInfo->st_rdev);
+	if (do_size_str())	parseSize(pFile->size_str, &(pFile->size_unit), &(pFile->size), pInfo->st_rdev);
 	if (do_mode_str())	  getMode(pFile->mode_str, pInfo->st_mode);
 	if (do_usr_name())	  getUser(pFile->usr_name, pInfo->st_uid);
 	if (do_grp_name())	 getGroup(pFile->grp_name, pInfo->st_gid);

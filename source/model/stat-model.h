@@ -17,6 +17,7 @@ typedef struct {
 
 	nlink_t	nlink	;
 	dev_t	dev_no	;	ino_t	inode	;
+	dev_t	rdev	;
 
 	flag_t	flags	;	flagstr flag_str;
 	mode_t	mode	;	modestr mode_str;

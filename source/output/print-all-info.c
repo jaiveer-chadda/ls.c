@@ -11,6 +11,8 @@
 
 #include "output.h"
 
+typedef unsigned int u_int;
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define PRINT_FIELD(field)									\
@@ -25,6 +27,17 @@
 #define COLOUR(field, colour_func) if (DO_COLOUR()) { colour_func; } else { PRINT_FIELD(field); }
 
 #define DO_SYMLINK() (do_link_to() && (file.ln_suf != NOT_LINK))
+
+/* ——————————————————————————————————————————————————————————————————————————— */
+
+#define PRINT_SIZE()									\
+	if (do_size()) {									\
+		sprintf(fmt_str, "%s%%s", file.rdev == 0 ? fmt_strs_long.size : fmt_strs_long.majmin);\
+		printf(fmt_str,									\
+			(int)field_lengths.size, (u_int)file.size,	\
+			FIELD_PAD									\
+		);												\
+	}
 
 /* ——————————————————————————————————————————————————————————————————————————— */
 
@@ -58,7 +71,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(mode)	; PRINT_MODE_STR();
 
 		PRINT_NLINK()		;
-		PRINT_FIELD(size)	; PRINT_SIZE_STR();
+		PRINT_SIZE()		; PRINT_SIZE_STR();
 		PRINT_FIELD(uid)	; PRINT_USR_NAME();
 		PRINT_FIELD(gid)	; PRINT_GRP_NAME();
 		PRINT_FIELD(flags)	; PRINT_FLAG_STR();

@@ -31,21 +31,23 @@ inline void initFormatting(void) {
 
 		.flags	= "%x"	, .flag_str	= "%s",
 		.mode	= "%o"	, .mode_str	= "%s",
-		.size	= "%lld", .size_str	= "%s",
+		.size	= "%zd"	, .size_str	= "%s",
+		.majmin	= "%#x"	,
 		.uid	= "%d"	, .usr_name	= "%s",
 		.gid	= "%d"	, .grp_name	= "%s",
 		.time	= "%ld"	, .time_str	= "%s",
 	};
 
 	fmt_strs_long = (FmtStrs){
-		.nlink	= "%*d"		,
-		.dev_no	= "%*d"		, .inode	= "%*llu",
+		.nlink	= "%*d"	,
+		.dev_no	= "%*d"	, .inode	= "%*llu",
 
-		.flags	= "%*x"		, .flag_str	= "%-*s",
-		.mode	= "%0*o"	, .mode_str	= "%-*s",
-		.size	= "%*zd"	, .size_str	= "%*s",
-		.uid	= "%*d"		, .usr_name	= "%-*s",
-		.gid	= "%*d"		, .grp_name	= "%-*s",
-		.time	= "%*ld"	, .time_str	= "%*s",
+		.flags	= "%*x"	, .flag_str	= "%-*s",
+		.mode	= "%0*o", .mode_str	= "%-*s",
+		.size	= "%*zd", .size_str	= "%*s",
+		.majmin	= "%#*x",
+		.uid	= "%*d"	, .usr_name	= "%-*s",
+		.gid	= "%*d"	, .grp_name	= "%-*s",
+		.time	= "%*ld", .time_str	= "%*s",
 	};
 }

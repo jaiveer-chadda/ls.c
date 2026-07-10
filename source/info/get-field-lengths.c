@@ -29,6 +29,13 @@
 
 #define DO_IGNORE_UNIT(unit) ((unit) == UNIT_BYTE || (unit) == UNIT_ZERO || (unit) == UNIT_MAJ_MIN)
 
+#define GET_SIZE_LEN()											\
+	if (do_size()) {											\
+		sprintf(elem_as_str, file.rdev == 0 ? fmt_strs_short.size : fmt_strs_short.majmin, file.size);	\
+		len = strlen(elem_as_str);								\
+		if (len > field_lengths.size) field_lengths.size = len;	\
+	}
+
 #define GET_SIZESTR_LEN()														\
 	if (do_size_str()) {														\
 		sprintf(elem_as_str, fmt_strs_short.size_str, file.size_str);			\
@@ -50,7 +57,7 @@ inline void getFieldLengths(const FileInfo *all_files, const int *count) {
 		GET_LEN(inode);	GET_LEN(dev_no);
 		GET_LEN(flags);	GET_LEN(flag_str);
 		GET_LEN(mode);	GET_MODESTR_LEN();
-		GET_LEN(size);	GET_SIZESTR_LEN();
+		GET_SIZE_LEN();	GET_SIZESTR_LEN();
 		GET_LEN(uid);	GET_LEN(usr_name);
 		GET_LEN(gid);	GET_LEN(grp_name);
 		GET_LEN(time);	GET_LEN(time_str);

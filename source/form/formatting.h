@@ -34,6 +34,7 @@ typedef struct {
 	fmt_spec flags	;	fmt_spec flag_str;
 	fmt_spec mode	;	fmt_spec mode_str;
 	fmt_spec size	;	fmt_spec size_str;
+	fmt_spec majmin	;
 	fmt_spec uid	;	fmt_spec usr_name;
 	fmt_spec gid	;	fmt_spec grp_name;
 	fmt_spec time	;	fmt_spec time_str;
