@@ -15,6 +15,14 @@ typedef unsigned int u_int;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define COLOUR(field, colour_func) if (DO_COLOUR()) { colour_func; } else { PRINT_FIELD(field); }
+
+#define DO_SYMLINK() (do_link_to() && (file.ln_suf != NOT_LINK))
+
+#define GET_SIZE_FMT() (file.rdev == 0 ? fmt_strs_long.size : fmt_strs_long.majmin)
+
+/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #define PRINT_FIELD(field)									\
 	if ((do_##field())) {									\
 		sprintf(fmt_str, "%s%%s", (fmt_strs_long.field));	\
@@ -24,22 +32,18 @@ typedef unsigned int u_int;
 		);													\
 	}
 
-#define COLOUR(field, colour_func) if (DO_COLOUR()) { colour_func; } else { PRINT_FIELD(field); }
-
-#define DO_SYMLINK() (do_link_to() && (file.ln_suf != NOT_LINK))
-
-/* ——————————————————————————————————————————————————————————————————————————— */
+/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define PRINT_SIZE()									\
 	if (do_size()) {									\
-		sprintf(fmt_str, "%s%%s", file.rdev == 0 ? fmt_strs_long.size : fmt_strs_long.majmin);\
+		sprintf(fmt_str, "%s%%s", GET_SIZE_FMT());		\
 		printf(fmt_str,									\
 			(int)field_lengths.size, (u_int)file.size,	\
 			FIELD_PAD									\
 		);												\
 	}
 
-/* ——————————————————————————————————————————————————————————————————————————— */
+/* —————————————————————————————————————————————————————————————————— */
 
 #define PRINT_TIME(field)								\
 	if (do_##field()) { COLOUR(field,					\
@@ -52,6 +56,8 @@ typedef unsigned int u_int;
 		);												\
 	) }
 
+/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #define PRINT_FLAG_STR() COLOUR(flag_str, printFlagStr(	&(file.flags)											))
 #define PRINT_USR_NAME() COLOUR(usr_name, printUsrName(	&(file.uid)		,	file.usr_name	, &(file.is_valid)	))
 #define PRINT_GRP_NAME() COLOUR(grp_name, printGrpName(	&(file.gid)		,	file.grp_name	, &(file.is_valid)	))
@@ -59,7 +65,7 @@ typedef unsigned int u_int;
 #define PRINT_SIZE_STR()				  printSizeStr(	  file.size_str	, &(file.size_unit)	, &(file.mode)		 )
 #define PRINT_MODE_STR()				  printModeStr(	  file.mode_str	,	file.has_acl	,	file.has_xattr	 )
 
-/* ——————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 inline void printFields(const FileInfo *all_files, const int *count) {
 	char fmt_str[16];

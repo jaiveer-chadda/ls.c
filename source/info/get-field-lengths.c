@@ -9,6 +9,12 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define DO_IGNORE_UNIT(unit) ((unit) == UNIT_BYTE || (unit) == UNIT_ZERO || (unit) == UNIT_MAJ_MIN)
+
+#define GET_SIZE_FMT() (file.rdev == 0 ? fmt_strs_short.size : fmt_strs_short.majmin)
+
+/* ———————————————————————————————————————————————————————————————————————— */
+
 #define GET_LEN(field)													\
 	if (do_##field()) {													\
 		sprintf(elem_as_str, (fmt_strs_short.field), (file.field));		\
@@ -27,11 +33,9 @@
 		if (len > field_lengths.mode_str) field_lengths.mode_str = len;	\
 	}
 
-#define DO_IGNORE_UNIT(unit) ((unit) == UNIT_BYTE || (unit) == UNIT_ZERO || (unit) == UNIT_MAJ_MIN)
-
 #define GET_SIZE_LEN()											\
 	if (do_size()) {											\
-		sprintf(elem_as_str, file.rdev == 0 ? fmt_strs_short.size : fmt_strs_short.majmin, file.size);	\
+		sprintf(elem_as_str, GET_SIZE_FMT(), file.size);		\
 		len = strlen(elem_as_str);								\
 		if (len > field_lengths.size) field_lengths.size = len;	\
 	}
