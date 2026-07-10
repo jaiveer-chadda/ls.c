@@ -111,7 +111,7 @@
 #define LN_COL_REG_MORE			"1;30;105"	// \e[105m
 #define LN_COL_OTHER			"1;30;41"	// \e[41m
 
-#define HARDLN_UNDERLINE		"1;21;58;5;13"	// \e[21m \e[95m
+#define HARDLN_UNDERLINE		";21;58;5;13"	// \e[21m \e[95m
 
 /* —— Mode / Permissions ———————————————————————————————————————————————————— */
 
