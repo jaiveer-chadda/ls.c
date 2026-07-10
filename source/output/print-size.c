@@ -12,26 +12,33 @@
 #define IF_COLOUR(yes, no) (DO_COLOUR() ? (yes) : (no))
 #define DO_IGNORE_UNIT(unit) ((unit) == UNIT_BYTE || (unit) == UNIT_ZERO || (unit) == UNIT_MAJ_MIN)
 
+#define SET_COLOUR(type, code) sprintf(type##_colour, "%s%s%s", CSI, size_colour_esc[SC_##code], END)
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 static inline void getUnitColour(char *unit_colour, const char *unit) {
 	if (DO_IGNORE_UNIT(*unit)) return;
+
 	switch (*unit) {
-		case UNIT_KILO: sprintf(unit_colour, "%s%s%s", CSI, size_colour_esc[SC_UK], END); return;
-		case UNIT_MEGA: sprintf(unit_colour, "%s%s%s", CSI, size_colour_esc[SC_UM], END); return;
-		case UNIT_GIGA: sprintf(unit_colour, "%s%s%s", CSI, size_colour_esc[SC_UG], END); return;
-		default		  : sprintf(unit_colour, "%s%s%s", CSI, size_colour_esc[SC_UT], END); return;
+		case UNIT_KILO: SET_COLOUR(unit, UK); return;
+		case UNIT_MEGA: SET_COLOUR(unit, UM); return;
+		case UNIT_GIGA: SET_COLOUR(unit, UG); return;
+		default		  : SET_COLOUR(unit, UT); return;
 	}
 }
 
 static inline void getValueColour(char *value_colour, const char *unit) {
 	switch (*unit) {
-		case UNIT_ZERO: sprintf(value_colour, "%s%s%s", CSI, PUNCT				, END); return;
-		case UNIT_BYTE: sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BB]	, END); return;
-		case UNIT_KILO: sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BK]	, END); return;
-		case UNIT_MEGA: sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BM]	, END); return;
-		case UNIT_GIGA: sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BG]	, END); return;
-		default		  : sprintf(value_colour, "%s%s%s", CSI, size_colour_esc[SC_BT]	, END); return;
+		case UNIT_ZERO: sprintf(value_colour, "%s%s%s", CSI, PUNCT, END); return;
+		case UNIT_BYTE: SET_COLOUR(value, BB); return;
+		case UNIT_KILO: SET_COLOUR(value, BK); return;
+		case UNIT_MEGA: SET_COLOUR(value, BM); return;
+		case UNIT_GIGA: SET_COLOUR(value, BG); return;
+		default		  : SET_COLOUR(value, BT); return;
 	}
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
 	char minor_size[strlen(size_str) - 2];

@@ -16,7 +16,7 @@
 #define MAX_FLAG_LEN 11
 
 /// An arbitrary upper bound on how many files we're going to accept.
-#define MAX_FILES_IN_DIR 1 << 12
+#define MAX_FILES_IN_DIR (1 << 12)
 
 /// The length of the mode when written in octal.
 #define OCT_MODE_LEN 6
@@ -35,7 +35,7 @@
  * This also doesn't hit the theoretical max (2^8), but nothing's ever gonna be that long,
  *  and MacOS' GUI only allows you to create usernames of length 2^5 anyways.
  */
-#define MAX_UGID_LEN 1 << 5
+#define MAX_UGID_LEN (1 << 5)
 
 /// The maximum size an evaluated time format string is allowed to be.
-#define MAX_TIME_LEN 1 << 5
+#define MAX_TIME_LEN (1 << 5)

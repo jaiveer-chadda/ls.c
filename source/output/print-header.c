@@ -21,12 +21,12 @@
 	if ((do_##field()))	{										\
 		printf(SHOULD_ALIGN_RIGHT(field) ? "%*s%s" : "%-*s%s",	\
 			(int)((field_lengths.field) + hl_len),				\
-			(HEADER_HL field##_TITLE RESET), FIELD_PAD			\
+			(ANSI(HEADER_HL) field##_TITLE RESET), FIELD_PAD	\
 		);														\
 	}
 
 inline void printHeader(void) {
-	const size_t hl_len = strlen(HEADER_HL RESET);
+	const size_t hl_len = strlen(ANSI(HEADER_HL) RESET);
 
 	PRINT_HEADER(inode)	;	PRINT_HEADER(dev_no)  ;
 	PRINT_HEADER(mode)	;	PRINT_HEADER(mode_str);
@@ -37,5 +37,5 @@ inline void printHeader(void) {
 	PRINT_HEADER(flags)	;	PRINT_HEADER(flag_str);
 	PRINT_HEADER(time)	;	PRINT_HEADER(time_str);
 
-	printf("%s%s%s%s\n", PRE_NAME_PAD, HEADER_HL, name_TITLE, RESET);
+	printf("%s%s%s%s\n", PRE_NAME_PAD, ANSI(HEADER_HL), name_TITLE, RESET);
 }
