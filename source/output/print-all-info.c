@@ -29,7 +29,7 @@
 /* ——————————————————————————————————————————————————————————————————————————— */
 
 #define PRINT_TIME_STR()								\
-	COLOUR(time_str,									\
+	if (do_time_str()) { COLOUR(time_str,				\
 		sprintf(fmt_str, "%%s%%s%%s" "%s%s",			\
 			fmt_strs_long.time_str, RESET FIELD_PAD		\
 		);												\
@@ -37,7 +37,7 @@
 			CSI_FG, time_colour_esc[file.time_col], END,\
 			(int)field_lengths.time_str, file.time_str	\
 		);												\
-	)
+	) }
 
 #define PRINT_FLAG_STR() COLOUR(flag_str, printFlagStr(	&(file.flags)											))
 #define PRINT_USR_NAME() COLOUR(usr_name, printUsrName(	&(file.uid)		,	file.usr_name	, &(file.is_valid)	))
