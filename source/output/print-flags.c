@@ -14,9 +14,10 @@ void printFlagStr(const flag_t *flags) {
 
 	if (*flags == 0) {
 		const int spaces = (int)(field_lengths.flag_str - strlen(NO_FLAG_STR));
-		printf("%s%s%s%s" "%*s",
-			ANSI(PUNCT), NO_FLAG_STR, RESET, FIELD_PAD,
-			spaces, ""
+		printf("%s%s%s" "%*s" "%s",
+			ANSI(PUNCT), NO_FLAG_STR, RESET,
+			spaces, "",
+			FIELD_PAD
 		);
 		return;
 	}
