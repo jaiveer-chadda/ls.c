@@ -20,7 +20,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_IGNORE_FILE(entry) (strcmp((entry)->d_name, ".." ) == 0)
+#define DO_IGNORE_FILE(entry) (strcmp((entry)->d_name, ".") == 0 || strcmp((entry)->d_name, "..") == 0)
 #define  IS_VALID_PATH(path)  (access((path), F_OK) == 0)
 
 // i know this can be simplified, but it's easier for me to read it this way
@@ -156,6 +156,14 @@ void getAllFileInfo(
 	*dir_count = 0, *file_count = 0;
 	struct dirent *entry;
 
+	struct dirent dot_dir = {0};	// create a synthetic dirent for `.`
+	strcpy(dot_dir.d_name, ".");	// set the filename
+	dot_dir.d_type = DT_DIR;		// hardcode type to directory (for the `ALL_STATS_FAILED` fallback)
+
+	// run `getFileInfo` explicitly for `.`
+	getFileInfo(&dot_dir, dirs, files, dir_count, file_count, target_dir);
+
+	// process the rest of the directory
 	// while there are still files to read, and while we haven't reached the maximum file limit
 	while ((entry = readdir(dir_obj)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
 		if (DO_IGNORE_FILE(entry)) continue;
