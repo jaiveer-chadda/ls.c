@@ -108,11 +108,51 @@ static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void getAllFileInfo(
+static inline void getFileInfo(
+	struct dirent *entry,
 	FileInfo dirs[], FileInfo files[],
-	int *dir_count, int *file_count,
-	DIR *dir_obj, const char *target_dir
+	int *dir_count, int *file_count, const char *target_dir
 ) {
+	// initialise the struct so we can assign to it later
+	FileInfo file = { .is_valid = true };
+	struct stat info;
+	path_t path;
+
+	// get the raw filename stored in `entry`
+	strcpy(file.name, entry->d_name);
+
+	// concatenate the target dir together with the filename to get the absolute path to the file
+	sprintf(path, "%s/%s", target_dir, file.name);
+
+	/* ——————————————————————————————————————————————————————————————————— */
+
+	// always run the `lstat` syscall, because we need to know the type of the original file
+	const bool lstat_did_fail = lstat(path, &info) == -1;
+
+	// `stat` will follow symlinks, and will only return info about the target file, rather than the link itself
+	//  if the `do_link_to` option is set, then we need to run `lstat` to get info about the link
+	const bool stat_did_fail = getTargetInfo(&file, &info, path);
+
+	// if none of the stat calls that ran, worked, then we don't have any extra information
+	//  so extract just the info that we can get from `dirent`, and parse things from there
+	if (ALL_STATS_FAILED()) getInfoFromDirent(&file, &info, entry);
+
+	/* ——————————————————————————————————————————————————————————————————— */
+
+	parseStatObject(&file, &info, path);
+
+	/* ——————————————————————————————————————————————————————————————————— */
+
+	// add the FileInfo object to the end of its respective array
+	if (IS_REALPATH_DIR())	dirs [(*dir_count )++] = file;
+	else					files[(*file_count)++] = file;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void getAllFileInfo(
+	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *target_dir)
+{
 	*dir_count = 0, *file_count = 0;
 	struct dirent *entry;
 
@@ -120,41 +160,7 @@ void getAllFileInfo(
 	while ((entry = readdir(dir_obj)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
 		if (DO_IGNORE_FILE(entry)) continue;
 
-		/* ——————————————————————————————————————————————————————————————————— */
-
-		// initialise the struct so we can assign to it later
-		FileInfo file = { .is_valid = true };
-		struct stat info;
-		path_t path;
-
-		// get the raw filename stored in `entry`
-		strcpy(file.name, entry->d_name);
-
-		// concatenate the target dir together with the filename to get the absolute path to the file
-		sprintf(path, "%s/%s", target_dir, file.name);
-
-		/* ——————————————————————————————————————————————————————————————————— */
-
-		// always run the `lstat` syscall, because we need to know the type of the original file
-		const bool lstat_did_fail = lstat(path, &info) == -1;
-
-		// `stat` will follow symlinks, and will only return info about the target file, rather than the link itself
-		//  if the `do_link_to` option is set, then we need to run `lstat` to get info about the link
-		const bool stat_did_fail = getTargetInfo(&file, &info, path);
-
-		// if none of the stat calls that ran, worked, then we don't have any extra information
-		//  so extract just the info that we can get from `dirent`, and parse things from there
-		if (ALL_STATS_FAILED()) getInfoFromDirent(&file, &info, entry);
-
-		/* ——————————————————————————————————————————————————————————————————— */
-
-		parseStatObject(&file, &info, path);
-
-		/* ——————————————————————————————————————————————————————————————————— */
-
-		// add the FileInfo object to the end of its respective array
-		if (IS_REALPATH_DIR())	dirs [(*dir_count )++] = file;
-		else					files[(*file_count)++] = file;
+		getFileInfo(entry, dirs, files, dir_count, file_count, target_dir);
 	}
 
 	// the directory info isn't needed anymore, so it can be closed now
