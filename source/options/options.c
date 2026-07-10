@@ -79,12 +79,12 @@ static inline bool doColourAuto(void) {
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-//#define ERROR_TAKES_ARG(option) do { fprintf(stderr, "error: `%s` takes argument\n", (option)); usage(1); } while (0)
-#define ERROR_INVALID_OPT(option) do { fprintf(stderr, "unknown option: `%s`\n"		 , (option)); usage(1); } while (0)
+//#define ERROR_TAKES_ARG(option) do { fprintf(stderr, ERROR "`%s` takes argument\n" , (option)); usage(1); } while (0)
+#define ERROR_INVALID_OPT(option) do { fprintf(stderr, ERROR "unknown option: `%s`\n", (option)); usage(1); } while (0)
 
 #define ERROR_BAD_ARG(args)						\
 	do {										\
-		fprintf(stderr,							\
+		fprintf(stderr, ERROR					\
 			"invalid argument `%s` for `%s`. "	\
 			"possible arguments are %s\n",		\
 			optarg, opt, (args)					\
@@ -120,25 +120,31 @@ static inline void allFieldsOn(void) {
 	U_DO_TIME		= true, U_DO_TIME_STR = true;
 }
 
-/* ——————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 int setOptions(const int argc, const char *argv[]) {
-	bool colour_auto = true;
-	int i;
+	if (strcmp(argv[0], "c" PROGRAM_NAME) == 0) U_DO_CLEAR = true;
 
+	bool colour_auto = true;
+
+	int i;
 	for (i = 1; i < argc; i++) {
 
 		const char *opt		= argv[i];
 		const char *optarg	= ARG_EXISTS ? argv[i + 1] : "";
 
-		/* —— end option parsing ————————————————————————————————————————— */
+		/* —— End Option Parsing ————————————————————————————————————————— */
 
 		if (opt[0] != '-') break;
 		if (OPTION_IS("--")) { i++; break; }
 
+		/* —— --help ————————————————————————————————————————————————————— */
+
+		if (OPTION_IS_OF("--help", "-h")) usage(0);
+
 		/* —— --colour ——————————————————————————————————————————————————— */
 
-		if (OPTION_IS("--colour") || OPTION_IS("--color")) {
+		if (OPTION_IS_OF("--colour", "--color")) {
 			colour_auto = false;
 			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; i++; continue; }
 			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; i++; continue; }
@@ -161,7 +167,7 @@ int setOptions(const int argc, const char *argv[]) {
 			U_DO_FLAGS = true; continue;
 		}
 
-		/* —— binary options ————————————————————————————————————————————— */
+		/* —— Binary Options ————————————————————————————————————————————— */
 
 		BINARY_OPT(clear			, U_DO_CLEAR		);
 		BINARY_OPT(headers			, U_DO_HEADER		);
@@ -170,7 +176,7 @@ int setOptions(const int argc, const char *argv[]) {
 		BINARY_OPT(dim-hidden		, U_DO_DIM_HIDDEN	);
 		BINARY_OPT(sort-dirs-first	, U_SORT_DIRS_FIRST	);
 
-		/* —— field setting/unsetting ——————————————————————————————————— */
+		/* —— Field Setting/Unsetting ——————————————————————————————————— */
 
 		FIELD_OPT(suffix, U_DO_SUFFIX	);
 		FIELD_OPT(link	, U_DO_LINK_TO	);
@@ -186,7 +192,7 @@ int setOptions(const int argc, const char *argv[]) {
 		FIELD_OPT(gid	, U_DO_GID		);	FIELD_OPT(grp-name, U_DO_GRP_NAME);
 		FIELD_OPT(time	, U_DO_TIME		);	FIELD_OPT(time-str, U_DO_TIME_STR);
 
-		/* ——————————————————————————————————————————————————————————————— */
+		/* —— All Fields ————————————————————————————————————————————————— */
 
 		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  continue; }
 		if (OPTION_IS("--all"))			{ allFieldsOn(); allOptsOn(); continue; }

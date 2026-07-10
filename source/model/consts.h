@@ -4,6 +4,11 @@
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
+#define PROGRAM_NAME "lk"
+#define ERROR		 PROGRAM_NAME ": "
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
+
 /// The maximum length a filename can be on Darwin (MacOS/some BSD) machines.
 #define MAX_NAME_LEN MAXNAMLEN
 
@@ -39,3 +44,5 @@
 
 /// The maximum size an evaluated time format string is allowed to be.
 #define MAX_TIME_LEN (1 << 5)
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
