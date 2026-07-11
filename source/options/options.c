@@ -14,7 +14,7 @@
 
 /* —— Declare Constants & Set Defaults ————————————————————————————————————————————————————————————————————————————— */
 
-SortByField U_SORT_BY = SB_DEFAULT;
+static SortByField U_SORT_BY = SB_DEFAULT;
 
 static bool
 	U_DO_COLOUR, // `U_DO_COLOUR` is the only one that doesn't need a default - it'll be set no matter what
@@ -151,11 +151,11 @@ int setOptions(const int argc, const char *argv[]) {
 			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME ;
 			else if	(OPTARG_IS("size" )) U_SORT_BY = SB_SIZE ;
 			else if	(OPTARG_IS("time" )) U_SORT_BY = SB_TIME ;
-			else if	(OPTARG_IS("inode")) U_SORT_BY = SB_INUM ;
 			else if	(OPTARG_IS("user" )) U_SORT_BY = SB_USER ;
 			else if	(OPTARG_IS("group")) U_SORT_BY = SB_GROUP;
+			else if	(OPTARG_IS("inode")) U_SORT_BY = SB_INODE;
 
-			else if	(HAS_ARG) ERROR_BAD_ARG("name, size, time, inode, user, group, none");
+			else if	(HAS_ARG) ERROR_BAD_ARG("name, size, time, user, group, inode, none");
 			else ERROR_TAKES_ARG();
 
 			i++;
