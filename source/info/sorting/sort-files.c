@@ -18,7 +18,7 @@
 
 #define DEFINE_COMPARE_FUNCTION(field) \
 	static inline int compare_##field##s (const void *file_1, const void *file_2) { \
-		return GET_ORDERING(field); \
+		return GET_ORDERING(field) * (DO_REVERSE_SORT() ? -1 : 1); \
 	}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

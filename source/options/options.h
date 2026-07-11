@@ -13,6 +13,7 @@ int setOptions(const int argc, const char *argv[]);
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 SortByField SORT_BY (void);
+bool DO_REVERSE_SORT(void);
 
 bool DO_CLEAR		(void);
 bool DO_COLOUR		(void);

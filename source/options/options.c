@@ -14,7 +14,9 @@
 
 /* —— Declare Constants & Set Defaults ————————————————————————————————————————————————————————————————————————————— */
 
-static SortByField U_SORT_BY = SB_DEFAULT;
+static SortByField U_SORT_BY  = SB_DEFAULT;
+static bool U_DO_REVERSE_SORT = false;
+
 
 static bool
 	U_DO_COLOUR, // `U_DO_COLOUR` is the only one that doesn't need a default - it'll be set no matter what
@@ -146,7 +148,11 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --sort-by —————————————————————————————————————————————————— */
 
-		if (OPTION_IS_OF("--sort", "--sort-by")) {
+		if (OPTION_IS("--reverse")) { U_DO_REVERSE_SORT = true; continue; }
+
+		if (OPTION_IS_OF("--sort", "--sort-by") || OPTION_IS("--rsort")) {
+			if (OPTION_IS("--rsort")) U_DO_REVERSE_SORT = true;
+
 			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE  ;
 			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME  ;
 			else if	(OPTARG_IS("size" )) U_SORT_BY = SB_SIZE  ;
@@ -160,7 +166,7 @@ int setOptions(const int argc, const char *argv[]) {
 			else if	(OPTARG_IS("mode" )) U_SORT_BY = SB_MODE  ;
 
 			else if	(HAS_ARG) {
-				ERROR_BAD_ARG("name (default), size, time, user, group, inode, devno, links, flags, mode, none");
+				ERROR_BAD_ARG("\nname (default),\nsize, time, uid, gid,\ninode, devno, links,\nflags, mode,\nnone");
 			}
 			else ERROR_TAKES_ARG();
 
@@ -240,6 +246,7 @@ int setOptions(const int argc, const char *argv[]) {
 /* —— Define Getter Functions —————————————————————————————————————————————————————————————————————————————————————— */
 
 SortByField SORT_BY (void) { return U_SORT_BY			; }
+bool DO_REVERSE_SORT(void) { return U_DO_REVERSE_SORT	; }
 
 bool DO_CLEAR		(void) { return U_DO_CLEAR			; }
 bool DO_COLOUR		(void) { return U_DO_COLOUR			; }
