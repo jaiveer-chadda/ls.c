@@ -32,8 +32,8 @@ typedef enum {
 	SB_NAME,
 	SB_SIZE,
 	SB_TIME,
-	SB_USER,
-	SB_GROUP,
+	SB_UID,
+	SB_GID,
 	SB_INODE,
 } SortByField;
 

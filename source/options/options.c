@@ -151,8 +151,8 @@ int setOptions(const int argc, const char *argv[]) {
 			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME ;
 			else if	(OPTARG_IS("size" )) U_SORT_BY = SB_SIZE ;
 			else if	(OPTARG_IS("time" )) U_SORT_BY = SB_TIME ;
-			else if	(OPTARG_IS("user" )) U_SORT_BY = SB_USER ;
-			else if	(OPTARG_IS("group")) U_SORT_BY = SB_GROUP;
+			else if	(OPTARG_IS("uid"  )) U_SORT_BY = SB_UID ;
+			else if	(OPTARG_IS("gid"  )) U_SORT_BY = SB_GID;
 			else if	(OPTARG_IS("inode")) U_SORT_BY = SB_INODE;
 
 			else if	(HAS_ARG) ERROR_BAD_ARG("name, size, time, user, group, inode, none");
