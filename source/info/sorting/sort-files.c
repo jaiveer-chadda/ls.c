@@ -5,9 +5,14 @@
 #include <string.h>
 
 #include "sort.h"
+#include "../../options/options.h"
+
+#define SORT_FILES_BY(field) qsort(arr, *arr_count, sizeof(FileInfo), (compare_##field##s))
 
 #define IS_UPPER(chr) ('A' <= (chr) && (chr) <= 'Z')
 #define IS_DIGIT(chr) ('0' <= (chr) && (chr) <= '9')
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void toLower(char *str) {
 	for (int i = 0; str[i] != '\0'; i++) {
@@ -15,7 +20,7 @@ static inline void toLower(char *str) {
 	}
 }
 
-static inline int compareNames(const void *file_1, const void *file_2) {
+static inline int compare_names(const void *file_1, const void *file_2) {
 	const char* name_1 = ((FileInfo *)file_1)->name;
 	const char* name_2 = ((FileInfo *)file_2)->name;
 
@@ -56,6 +61,32 @@ static inline int compareNames(const void *file_1, const void *file_2) {
 	return adj_name_1[i] == '\0' ? -1 : 1;
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline int compare_sizes (const void *file_1, const void *file_2) { return 1; }
+static inline int compare_times (const void *file_1, const void *file_2) { return 1; }
+static inline int compare_inums (const void *file_1, const void *file_2) { return 1; }
+static inline int compare_users (const void *file_1, const void *file_2) { return 1; }
+static inline int compare_groups(const void *file_1, const void *file_2) { return 1; }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 void sortFiles(FileInfo arr[], const int *arr_count) {
-	qsort(arr, *arr_count, sizeof(FileInfo), compareNames);
+	SORT_FILES_BY(name);
+
+	switch (SORT_BY()) {
+		#pragma clang diagnostic push
+		#pragma clang diagnostic ignored "-Wimplicit-fallthrough"
+		case SB_DEFAULT:
+		#pragma clang diagnostic pop
+		case SB_NAME : SORT_FILES_BY(name); return;
+
+		case SB_SIZE : SORT_FILES_BY(size) ; return;
+		case SB_TIME : SORT_FILES_BY(time) ; return;
+		case SB_INUM : SORT_FILES_BY(inum) ; return;
+		case SB_USER : SORT_FILES_BY(user) ; return;
+		case SB_GROUP: SORT_FILES_BY(group); return;
+
+		case SB_NONE : return;
+	}
 }

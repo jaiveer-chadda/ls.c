@@ -14,6 +14,8 @@
 
 /* —— Declare Constants & Set Defaults ————————————————————————————————————————————————————————————————————————————— */
 
+SortByField U_SORT_BY = SB_DEFAULT;
+
 static bool
 	U_DO_COLOUR, // `U_DO_COLOUR` is the only one that doesn't need a default - it'll be set no matter what
 	U_DO_CLEAR			= false	,
@@ -28,11 +30,11 @@ static bool
 static bool
 	U_DO_SUFFIX		= true	,
 	U_DO_LINK_TO	= true	,
-	//
+
 	U_DO_NLINK		= true	,
 	U_DO_DEV_NO		= false	,
 	U_DO_INODE		= false	,
-	//
+
 	U_DO_FLAGS		= false	,	U_DO_FLAG_STR = true,
 	U_DO_MODE		= false	,	U_DO_MODE_STR = true,
 	U_DO_SIZE		= false	,	U_DO_SIZE_STR = true,
@@ -79,14 +81,14 @@ static inline bool doColourAuto(void) {
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-//#define ERROR_TAKES_ARG(option) do { fprintf(stderr, ERROR "`%s` takes argument\n" , (option)); usage(1); } while (0)
-#define ERROR_INVALID_OPT(option) do { fprintf(stderr, ERROR "unknown option: `%s`\n", (option)); usage(1); } while (0)
+#define   ERROR_TAKES_ARG() do { fprintf(stderr, ERROR "`%s` takes argument\n" , opt); usage(1); } while (0)
+#define ERROR_INVALID_OPT() do { fprintf(stderr, ERROR "unknown option: `%s`\n", opt); usage(1); } while (0)
 
 #define ERROR_BAD_ARG(args)						\
 	do {										\
 		fprintf(stderr, ERROR					\
 			"invalid argument `%s` for `%s`. "	\
-			"possible arguments are %s\n",		\
+			"possible arguments are: %s\n",		\
 			optarg, opt, (args)					\
 		);										\
 		usage(1);								\
@@ -141,6 +143,24 @@ int setOptions(const int argc, const char *argv[]) {
 		/* —— --help ————————————————————————————————————————————————————— */
 
 		if (OPTION_IS_OF("--help", "-h")) usage(0);
+
+		/* —— --sort-by —————————————————————————————————————————————————— */
+
+		if (OPTION_IS_OF("--sort", "--sort-by")) {
+			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE ;
+			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME ;
+			else if	(OPTARG_IS("size" )) U_SORT_BY = SB_SIZE ;
+			else if	(OPTARG_IS("time" )) U_SORT_BY = SB_TIME ;
+			else if	(OPTARG_IS("inode")) U_SORT_BY = SB_INUM ;
+			else if	(OPTARG_IS("user" )) U_SORT_BY = SB_USER ;
+			else if	(OPTARG_IS("group")) U_SORT_BY = SB_GROUP;
+
+			else if	(HAS_ARG) ERROR_BAD_ARG("name, size, time, inode, user, group, none");
+			else ERROR_TAKES_ARG();
+
+			i++;
+			continue;
+		}
 
 		/* —— --colour ——————————————————————————————————————————————————— */
 
@@ -199,7 +219,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* ——————————————————————————————————————————————————————————————— */
 
-		ERROR_INVALID_OPT(opt);
+		ERROR_INVALID_OPT();
 	}
 
 	/* ——————————————————————————————————————————————————————————————— */
@@ -207,10 +227,13 @@ int setOptions(const int argc, const char *argv[]) {
 	// if `--colour auto` was given, or if `--colour` wasn't set, then determine whether colour should be used
 	if (colour_auto) U_DO_COLOUR = doColourAuto();
 
+	// returns how many options were parsed, and therefore where the names of the files/directories start
 	return i;
 }
 
 /* —— Define Getter Functions —————————————————————————————————————————————————————————————————————————————————————— */
+
+SortByField SORT_BY (void) { return U_SORT_BY			; }
 
 bool DO_CLEAR		(void) { return U_DO_CLEAR			; }
 bool DO_COLOUR		(void) { return U_DO_COLOUR			; }
@@ -226,11 +249,11 @@ bool SORT_DIRS_FIRST(void) { return U_SORT_DIRS_FIRST	; }
 
 bool do_suffix	(void) { return U_DO_SUFFIX	; }
 bool do_link_to	(void) { return U_DO_LINK_TO; }
-//
+
 bool do_nlink	(void) { return U_DO_NLINK	; }
 bool do_dev_no	(void) { return U_DO_DEV_NO	; }
 bool do_inode	(void) { return U_DO_INODE	; }
-//
+
 bool do_flags	(void) { return U_DO_FLAGS	; }		bool do_flag_str(void) { return U_DO_FLAG_STR; }
 bool do_mode	(void) { return U_DO_MODE	; }		bool do_mode_str(void) { return U_DO_MODE_STR; }
 bool do_size	(void) { return U_DO_SIZE	; }		bool do_size_str(void) { return U_DO_SIZE_STR; }
