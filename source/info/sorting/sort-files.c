@@ -35,44 +35,45 @@ static inline void toLower(char *str) {
 }
 
 static inline int compare_names(const void *file_1, const void *file_2) {
-	const char* name_1 = ((const FileInfo *)file_1)->name;
-	const char* name_2 = ((const FileInfo *)file_2)->name;
-	//
+	const char* name_1 = GET_ATTR(1, name);
+	const char* name_2 = GET_ATTR(2, name);
+	const int  reverse = DO_REVERSE_SORT() ? -1 : 1;
+
 	name_t adj_name_1; strcpy(adj_name_1, name_1); toLower(adj_name_1);
 	name_t adj_name_2; strcpy(adj_name_2, name_2); toLower(adj_name_2);
-	//
+
 	int i = 0, j = 0;
-	//
+
 	while (adj_name_1[i] != '\0' && adj_name_2[j] != '\0') {
 		// make sure dotfiles always sort above non-dotfiles
 		if (adj_name_1[i] != adj_name_2[j]) {
-			if (adj_name_1[i] == '.') return -1;
-			if (adj_name_2[j] == '.') return  1;
+			if (adj_name_1[i] == '.') return -1 * reverse;
+			if (adj_name_2[j] == '.') return  1 * reverse;
 		}
-		//
+
 		if (IS_DIGIT(adj_name_1[i]) && IS_DIGIT(adj_name_2[j])) {
 			char int_buf_1[32], int_buf_2[32];
 			int len_1 = 0, len_2 = 0;
-			//
+
 			while (IS_DIGIT(adj_name_1[i])) { int_buf_1[len_1++] = adj_name_1[i++]; }
 			while (IS_DIGIT(adj_name_2[j])) { int_buf_2[len_2++] = adj_name_2[j++]; }
-			//
+
 			int_buf_1[len_1] = '\0';
 			int_buf_2[len_2] = '\0';
-			//
+
 			const int num_1 = atoi(int_buf_1);
 			const int num_2 = atoi(int_buf_2);
-			//
-			if (num_1 != num_2) return num_1 < num_2 ? -1 : 1;
-			//
+
+			if (num_1 != num_2) return (num_1 < num_2 ? -1 : 1) * reverse;
+
 		} else { // if both characters aren't digits, just return their regular, alphabetical sorts
-			if (adj_name_1[i] != adj_name_2[j]) return adj_name_1[i] < adj_name_2[j] ? -1 : 1;
+			if (adj_name_1[i] != adj_name_2[j]) return (adj_name_1[i] < adj_name_2[j] ? -1 : 1) * reverse;
 			i++; j++;
 		}
 	}
-	//
+
 	if (adj_name_1[i] == '\0' && adj_name_2[j] == '\0') return 0;
-	return adj_name_1[i] == '\0' ? -1 : 1;
+	return (adj_name_1[i] == '\0' ? -1 : 1) * reverse;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
