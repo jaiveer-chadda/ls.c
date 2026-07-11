@@ -77,11 +77,15 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-DEFINE_COMPARE_FUNCTION(inode)
-DEFINE_COMPARE_FUNCTION(size )
-DEFINE_COMPARE_FUNCTION(time )
-DEFINE_COMPARE_FUNCTION(uid  )
-DEFINE_COMPARE_FUNCTION(gid  )
+DEFINE_COMPARE_FUNCTION(size  )
+DEFINE_COMPARE_FUNCTION(time  )
+DEFINE_COMPARE_FUNCTION(inode )
+DEFINE_COMPARE_FUNCTION(dev_no)
+DEFINE_COMPARE_FUNCTION(uid	  )
+DEFINE_COMPARE_FUNCTION(gid	  )
+DEFINE_COMPARE_FUNCTION(nlink )
+DEFINE_COMPARE_FUNCTION(flags )
+DEFINE_COMPARE_FUNCTION(mode  )
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -92,11 +96,15 @@ void sortFiles(FileInfo arr[], const int *arr_count) {
 		case SB_DEFAULT:
 		case SB_NAME : SORT_FILES_BY(name); return;
 
-		case SB_SIZE : SORT_FILES_BY(size) ; return;
-		case SB_TIME : SORT_FILES_BY(time) ; return;
-		case SB_INODE: SORT_FILES_BY(inode); return;
-		case SB_UID  : SORT_FILES_BY(uid)  ; return;
-		case SB_GID  : SORT_FILES_BY(gid)  ; return;
+		case SB_SIZE : SORT_FILES_BY(size)	; return;
+		case SB_TIME : SORT_FILES_BY(time)	; return;
+		case SB_INODE: SORT_FILES_BY(inode)	; return;
+		case SB_DEVNO: SORT_FILES_BY(dev_no); return;
+		case SB_UID  : SORT_FILES_BY(uid)	; return;
+		case SB_GID  : SORT_FILES_BY(gid)	; return;
+		case SB_NLINK: SORT_FILES_BY(nlink)	; return;
+		case SB_FLAGS: SORT_FILES_BY(flags)	; return;
+		case SB_MODE : SORT_FILES_BY(mode)	; return;
 
 		case SB_NONE : return;
 	}

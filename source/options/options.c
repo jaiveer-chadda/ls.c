@@ -147,15 +147,21 @@ int setOptions(const int argc, const char *argv[]) {
 		/* —— --sort-by —————————————————————————————————————————————————— */
 
 		if (OPTION_IS_OF("--sort", "--sort-by")) {
-			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE ;
-			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME ;
-			else if	(OPTARG_IS("size" )) U_SORT_BY = SB_SIZE ;
-			else if	(OPTARG_IS("time" )) U_SORT_BY = SB_TIME ;
-			else if	(OPTARG_IS("uid"  )) U_SORT_BY = SB_UID ;
-			else if	(OPTARG_IS("gid"  )) U_SORT_BY = SB_GID;
-			else if	(OPTARG_IS("inode")) U_SORT_BY = SB_INODE;
+			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE  ;
+			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME  ;
+			else if	(OPTARG_IS("size" )) U_SORT_BY = SB_SIZE  ;
+			else if	(OPTARG_IS("time" )) U_SORT_BY = SB_TIME  ;
+			else if	(OPTARG_IS("inode")) U_SORT_BY = SB_INODE ;
+			else if	(OPTARG_IS("devno")) U_SORT_BY = SB_DEVNO ;
+			else if	(OPTARG_IS("uid"  )) U_SORT_BY = SB_UID	  ;
+			else if	(OPTARG_IS("gid"  )) U_SORT_BY = SB_GID	  ;
+			else if	(OPTARG_IS("links")) U_SORT_BY = SB_NLINK ;
+			else if	(OPTARG_IS("flags")) U_SORT_BY = SB_FLAGS ;
+			else if	(OPTARG_IS("mode" )) U_SORT_BY = SB_MODE  ;
 
-			else if	(HAS_ARG) ERROR_BAD_ARG("name, size, time, user, group, inode, none");
+			else if	(HAS_ARG) {
+				ERROR_BAD_ARG("name (default), size, time, user, group, inode, devno, links, flags, mode, none");
+			}
 			else ERROR_TAKES_ARG();
 
 			i++;

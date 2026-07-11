@@ -32,9 +32,13 @@ typedef enum {
 	SB_NAME,
 	SB_SIZE,
 	SB_TIME,
+	SB_INODE,
+	SB_DEVNO,
 	SB_UID,
 	SB_GID,
-	SB_INODE,
+	SB_NLINK,
+	SB_FLAGS,
+	SB_MODE,
 } SortByField;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
