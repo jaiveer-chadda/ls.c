@@ -16,9 +16,10 @@ bool DO_CLEAR		(void);
 bool DO_COLOUR		(void);
 bool DO_HEADER		(void);
 bool DO_DIVIDERS	(void);
-bool DO_SHORT_FLAGS	(void);
-bool DO_TINY_FLAGS	(void);
 bool DO_DIM_HIDDEN	(void);
+bool DO_MOUNT_DEV	(void);
+bool DO_TINY_FLAGS	(void);
+bool DO_SHORT_FLAGS	(void);
 bool SORT_DIRS_FIRST(void);
 
 /* —————————————————————————————————————————————————————————————— */
