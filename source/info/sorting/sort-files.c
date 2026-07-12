@@ -14,10 +14,10 @@
 /* ——————————————————————————————————————————————— */
 
 #define GET_ATTR(num, field) (((const FileInfo *)file_##num)->field)
-#define GET_ORDERING(field) (GET_ATTR(1, field) > GET_ATTR(2, field)) - (GET_ATTR(1, field) < GET_ATTR(2, field))
+#define GET_ORDERING(field) ((GET_ATTR(1, field) > GET_ATTR(2, field)) - (GET_ATTR(1, field) < GET_ATTR(2, field)))
 
 #define DEFINE_COMPARE_FUNCTION(field) \
-	static inline int compare_##field##s (const void *file_1, const void *file_2) {	\
+	static inline int compare_##field##s(const void *file_1, const void *file_2) {	\
 		/* make sure `.` is always the first file sorted - no matter what */		\
 		if (strcmp(GET_ATTR(1, name), ".") == 0) return -1;							\
 		if (strcmp(GET_ATTR(2, name), ".") == 0) return  1;							\
