@@ -10,10 +10,10 @@
 
 ### Visual
 
-#### [~¿] Sorting
+#### [√] Sorting
 - [x] Sort files by name
 - [x] Sort entires with directories first
-- [ ] Implement a way to sort them by any category
+- [x] Implement a way to sort them by any category
   - Probably with the `-s | --sort-by <field>` flag
 
 #### [~¿] Colour Filenames

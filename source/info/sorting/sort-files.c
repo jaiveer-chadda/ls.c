@@ -21,7 +21,10 @@
 		/* make sure `.` is always the first file sorted - no matter what */		\
 		if (strcmp(GET_ATTR(1, name), ".") == 0) return -1;							\
 		if (strcmp(GET_ATTR(2, name), ".") == 0) return  1;							\
-		return GET_ORDERING(field) * (DO_REVERSE_SORT() ? -1 : 1);					\
+		\
+		const int result = GET_ORDERING(field) * (DO_REVERSE_SORT() ? -1 : 1);		\
+		if (result != 0) return result;												\
+		return compare_names(file_1, file_2); /* names act as the tiebreaker */		\
 	}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
