@@ -83,8 +83,8 @@ static inline bool doColourAuto(void) {
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-#define   ERROR_TAKES_ARG() do { fprintf(stderr, ERROR "`%s` takes argument\n" , opt); usage(1); } while (0)
-#define ERROR_INVALID_OPT() do { fprintf(stderr, ERROR "unknown option: `%s`\n", opt); usage(1); } while (0)
+#define   ERROR_TAKES_ARG() do { fprintf(stderr, ERROR "`%s` takes argument\n" , opt); usage(EXIT_FAILURE); } while (0)
+#define ERROR_INVALID_OPT() do { fprintf(stderr, ERROR "unknown option: `%s`\n", opt); usage(EXIT_FAILURE); } while (0)
 
 #define ERROR_BAD_ARG(args)						\
 	do {										\
@@ -144,7 +144,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --help ————————————————————————————————————————————————————— */
 
-		if (OPTION_IS_OF("--help", "-h")) usage(0);
+		if (OPTION_IS_OF("--help", "-h")) usage(EXIT_SUCCESS);
 
 		/* —— --sort-by —————————————————————————————————————————————————— */
 
@@ -165,9 +165,11 @@ int setOptions(const int argc, const char *argv[]) {
 			else if	(OPTARG_IS("flags")) U_SORT_BY = SB_FLAGS ;
 			else if	(OPTARG_IS("mode" )) U_SORT_BY = SB_MODE  ;
 
-			else if	(HAS_ARG) {
-				ERROR_BAD_ARG("\nname (default),\nsize, time, uid, gid,\ninode, devno, links,\nflags, mode,\nnone");
-			}
+			else if	(HAS_ARG) ERROR_BAD_ARG(
+				"\n - name (default)"     "\n - size"  "\n - time"
+				"\n - uid"   "\n - gid"   "\n - inode" "\n - devno"
+				"\n - links" "\n - flags" "\n - mode"  "\n - none"
+			);
 			else ERROR_TAKES_ARG();
 
 			i++;
@@ -236,7 +238,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 	/* ——————————————————————————————————————————————————————————————— */
 
-	// if `--colour auto` was given, or if `--colour` wasn't set, then determine whether colour should be used
+	// if `--colour` wasn't set, or if `--colour auto` was given, then determine whether colour should be used
 	if (colour_auto) U_DO_COLOUR = doColourAuto();
 
 	// returns how many options were parsed, and therefore where the names of the files/directories start

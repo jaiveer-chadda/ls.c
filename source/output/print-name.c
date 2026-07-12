@@ -21,7 +21,7 @@
 
 #define DO_DIM(name, flags) \
 		(DO_DIM_HIDDEN() &&	\
-		(((flags) & UF_HIDDEN) || ((name)[0] == '.' && strcmp((name), CURRENT_DIR) != 0))	\
+		(((flags) & UF_HIDDEN) || ((name)[0] == '.' && strcmp((name), DOTDIR) != 0))	\
 	)
 
 /// Only turn a filename into a divider if:
@@ -91,7 +91,7 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 
 	sprintf(file_colour, "%s%s%s" "%s",
 		DO_DIM(name, *flags) ? DIM ";" : "",
-		strcmp(name, CURRENT_DIR) == 0 ? UNDER ";" : "",
+		strcmp(name, DOTDIR) == 0 ? UNDER ";" : "",
 		(*is_hln ? HARDLN_UNDERLINE ";" : ""),
 
 		(char*)(file_colour_esc[*colour])

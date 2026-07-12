@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "info/info.h"
@@ -16,7 +17,7 @@
 #include "features/time/time.h"
 #include "features/mount/mount-point.h"
 
-path_t parent_dir_path = CURRENT_DIR;
+path_t G_DOTDIR_PATH = DOTDIR;
 
 int main(const int argc, const char *argv[]) {
 
@@ -26,15 +27,15 @@ int main(const int argc, const char *argv[]) {
 
 	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
 
-	char target_dir[MAX_NAME_LEN];
+	path_t input_dir_path;
 
 	// Get the target directory from the user's input
-	DIR *dir_obj = getDirectory(target_dir, files_start, argc, argv);
-	if (dir_obj == NULL) return 1;
+	DIR *input_dir = getDirectory(input_dir_path, files_start, argc, argv);
+	if (input_dir == NULL) return EXIT_FAILURE;
 
-	// Get the path to the target directory, which'll be used to replace the `.` directory's name
+	// Resolve the path to the target directory, which'll be used to replace the `.` directory's name
 	//  (casting to void, since there's nth we can rly do if we dont manage to get it)
-	(void) getDirPath(parent_dir_path, target_dir);
+	(void)getDirPath(G_DOTDIR_PATH, input_dir_path);
 
 	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
 
@@ -50,7 +51,7 @@ int main(const int argc, const char *argv[]) {
 	getAllFileInfo(
 		dirs, files,
 		&dir_count, &file_count,
-		dir_obj, target_dir
+		input_dir, input_dir_path
 	);
 
 	/* —— Sort Files if Dirs First ——————————————————————————————————————————————————————————————— */
@@ -94,5 +95,5 @@ int main(const int argc, const char *argv[]) {
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————— */
 
-	return 0;
+	return EXIT_SUCCESS;
 }

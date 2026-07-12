@@ -112,7 +112,7 @@ static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path
 static inline void getFileInfo(
 	struct dirent *entry,
 	FileInfo dirs[], FileInfo files[],
-	int *dir_count, int *file_count, const char *target_dir
+	int *dir_count, int *file_count, const char *dotdir_path
 ) {
 	// initialise the struct so we can assign to it later
 	FileInfo file = { .is_valid = true };
@@ -123,7 +123,7 @@ static inline void getFileInfo(
 	strcpy(file.name, entry->d_name);
 
 	// concatenate the target dir together with the filename to get the absolute path to the file
-	sprintf(path, "%s/%s", target_dir, file.name);
+	sprintf(path, "%s/%s", dotdir_path, file.name);
 
 	/* ——————————————————————————————————————————————————————————————————— */
 
@@ -152,24 +152,24 @@ static inline void getFileInfo(
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void getAllFileInfo(
-	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *target_dir)
+	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *dotdir_path)
 {
 	*dir_count = 0, *file_count = 0;
 	struct dirent *entry;
 
-	struct dirent dot_dir = {0};	// create a synthetic dirent for `.`
-	strcpy(dot_dir.d_name, ".");	// set the filename
-	dot_dir.d_type = DT_DIR;		// hardcode type to directory (for the `ALL_STATS_FAILED` fallback)
+	struct dirent dotdir_obj = {0};		// create a synthetic dirent for `.`
+	strcpy(dotdir_obj.d_name, DOTDIR);	// set the filename
+	dotdir_obj.d_type = DT_DIR;			// hardcode type to directory (for the `ALL_STATS_FAILED` fallback)
 
 	// run `getFileInfo` explicitly for `.`
-	getFileInfo(&dot_dir, dirs, files, dir_count, file_count, target_dir);
+	getFileInfo(&dotdir_obj, dirs, files, dir_count, file_count, dotdir_path);
 
 	// process the rest of the directory
 	// while there are still files to read, and while we haven't reached the maximum file limit
 	while ((entry = readdir(dir_obj)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
 		if (DO_IGNORE_FILE(entry)) continue;
 
-		getFileInfo(entry, dirs, files, dir_count, file_count, target_dir);
+		getFileInfo(entry, dirs, files, dir_count, file_count, dotdir_path);
 	}
 
 	// the directory info isn't needed anymore, so it can be closed now

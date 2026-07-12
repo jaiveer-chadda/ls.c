@@ -6,7 +6,7 @@
 #include "types.h"
 #include "../graphics/graphics.h"
 
-extern path_t parent_dir_path;
+extern path_t G_DOTDIR_PATH;
 
 typedef struct {
 	name_t	name	;

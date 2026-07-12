@@ -32,12 +32,10 @@ void abbrPath(path_t out_path, const path_t abs_path) {
 int getDirPath(path_t out_path, const path_t path) {
 	path_t abs_path;
 
-	// if path is already an absolute path
-	if (path[0] == '/') {
-		// then just copy it over
-		strcpy(abs_path, path);
+	// if path is already an absolute path, then just copy it over
+	if (path[0] == '/') strcpy(abs_path, path);
 
-	} else { // if it's not an absolute path:
+	else { // if it's not an absolute path:
 
 		// we're getting the env var instead of running `getcwd`,
 		//  since `getcwd` will chase links when finding the absolute path of `path`
@@ -57,7 +55,7 @@ int getDirPath(path_t out_path, const path_t path) {
 		}
 
 		// if path == `.`, copy the path we just calculated over to `abs_path`
-		if (strcmp(path, CURRENT_DIR) == 0) {
+		if (strcmp(path, DOTDIR) == 0) {
 			strncpy(abs_path, base_path, MAX_PATH_LEN);
 
 		} else {

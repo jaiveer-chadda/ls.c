@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "sort.h"
+#include "../info.h"
 #include "../../options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -19,8 +20,8 @@
 #define DEFINE_COMPARE_FUNCTION(field) \
 	static inline int compare_##field##s(const void *file_1, const void *file_2) {	\
 		/* make sure `.` is always the first file sorted - no matter what */		\
-		if (strcmp(GET_ATTR(1, name), ".") == 0) return -1;							\
-		if (strcmp(GET_ATTR(2, name), ".") == 0) return  1;							\
+		if (strcmp(GET_ATTR(1, name), DOTDIR) == 0) return -1;						\
+		if (strcmp(GET_ATTR(2, name), DOTDIR) == 0) return  1;						\
 		\
 		const int result = GET_ORDERING(field) * (DO_REVERSE_SORT() ? -1 : 1);		\
 		if (result != 0) return result;												\
@@ -49,8 +50,8 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 	name_t adj_name_2; strcpy(adj_name_2, name_2); toLower(adj_name_2);
 
 	// make sure `.` is always the first file sorted - no matter what
-	if (strcmp(adj_name_1, ".") == 0) return -1;
-	if (strcmp(adj_name_2, ".") == 0) return  1;
+	if (strcmp(adj_name_1, DOTDIR) == 0) return -1;
+	if (strcmp(adj_name_2, DOTDIR) == 0) return  1;
 
 	int i = 0, j = 0;
 
