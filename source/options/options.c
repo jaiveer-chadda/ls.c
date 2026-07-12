@@ -148,10 +148,10 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --sort-by —————————————————————————————————————————————————— */
 
-		if (OPTION_IS("--reverse")) { U_DO_REVERSE_SORT = true; continue; }
+		if (OPTION_IS("--reverse")) { U_DO_REVERSE_SORT = !U_DO_REVERSE_SORT; continue; }
 
 		if (OPTION_IS_OF("--sort", "--sort-by") || OPTION_IS("--rsort")) {
-			if (OPTION_IS("--rsort")) U_DO_REVERSE_SORT = true;
+			if (OPTION_IS("--rsort")) U_DO_REVERSE_SORT = !U_DO_REVERSE_SORT;
 
 			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE  ;
 			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME  ;
