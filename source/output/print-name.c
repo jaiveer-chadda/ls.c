@@ -86,7 +86,7 @@ static inline void printDivider(const char *div_char) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void printName(const name_t name, const FileColour *colour, const bool *is_hln, const flag_t *flags, type_t *suffix) {
+void printName(const name_t name, const FileColour *colour, const bool *is_hln, const flag_t *flags, suff_t *suffix) {
 	char *file_colour = malloc(32);
 
 	sprintf(file_colour, "%s%s%s" "%s",
@@ -99,7 +99,7 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 
 	/* ————————————————————————————————————————————————————————————————— */
 
-	name_t escaped_name;
+	path_t escaped_name;
 	bool does_have_escape = escapeName(escaped_name, name, file_colour);
 
 	/* ————————————————————————————————————————————————————————————————— */

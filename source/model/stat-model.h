@@ -9,36 +9,46 @@
 extern path_t G_DOTDIR_PATH;
 
 typedef struct {
-	name_t	name	;
-	type_t	suffix	;
+	/// Whether we were able to `stat` the file or not.
+	bool		is_valid	; // bool				-    1
 
-	path_t	link_to ;
-	type_t	ln_suf	;
+	bool		do_link_hl	; // bool				-    1
+	bool		has_xattr	; // bool				-    1
+	bool		is_mount	; // bool				-    1
+	bool		has_acl		; // bool				-    1
 
-	nlink_t	nlink	;
-	dev_t	dev_no	;	ino_t	inode	;
-	dev_t	rdev	;
+	suff_t		suffix		; // char				-    1
+	suff_t		ln_suf		; // char				-    1
+	unit_t		size_unit	; // char				-    1
 
-	flag_t	flags	;	flagstr flag_str;
-	mode_t	mode	;	modestr mode_str;
-	off_t	size	;	sizestr size_str;	char size_unit;
+	nlink_t		nlink		; // unsigned short		-    2
+	mode_t		mode		; // unsigned short		-    2
 
-	uid_t	uid		;	ugidstr usr_name;
-	gid_t	gid		;	ugidstr grp_name;
+	flag_t		flags		; // unsigned int		-    4
 
-	time_t	time	;	timestr time_str;
+	dev_t		dev_no		; // int				-    4
+	dev_t		rdev		; // int				-    4
 
-	FileColour file_col;
-	FileColour link_col;
-	TimeColour time_col;
+	uid_t		uid			; // unsigned int		-    4
+	gid_t		gid			; // unsigned int		-    4
 
-	bool	do_link_hl;
-	bool	has_xattr;
-	bool	is_mount;
-	bool	has_acl;
+	FileColour	file_col	; // int				-    4
+	FileColour	link_col	; // int				-    4
+	TimeColour	time_col	; // int				-    4
 
-	bool	is_valid; // were we able to `stat` the file?
+	ino_t		inode		; // unsigned long long	-    8
+	off_t		size		; // long long			-    8
+	time_t		time		; // long				-    8
 
+	sizestr		size_str	; // char[10]			-   10
+	modestr		mode_str	; // char[11]			-   11
+	ugidstr		usr_name	; // char[32]			-   32
+	ugidstr		grp_name	; // char[32]			-   32
+	timestr		time_str	; // char[32]			-   32
+
+	flagstr		flag_str	; // char[168]			-  168
+	name_t		name		; // char[255]			-  255
+	path_t		link_to		; // char[1024]			- 1024
 } FileInfo;
 
 #endif /* !STAT_MODEL_INITIALISED */

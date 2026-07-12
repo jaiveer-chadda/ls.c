@@ -15,7 +15,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void printSymlink(const path_t p_target_path, const type_t suffix, const FileColour link_col) {
+void printSymlink(const path_t p_target_path, const suff_t suffix, const FileColour link_col) {
 	const bool is_valid_path = (suffix != INVALID_LINK);
 
 	/* ————————————————————————————————————————————————————— */

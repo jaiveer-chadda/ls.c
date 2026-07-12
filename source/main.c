@@ -44,7 +44,15 @@ int main(const int argc, const char *argv[]) {
 
 	/* —— Get File Info from `stat` —————————————————————————————————————————————————————————————— */
 
-	FileInfo dirs[MAX_FILES_IN_DIR], files[MAX_FILES_IN_DIR];
+	FileInfo
+		*dirs  = malloc(MAX_FILES_IN_DIR * sizeof(FileInfo)),
+		*files = malloc(MAX_FILES_IN_DIR * sizeof(FileInfo));
+
+	if (dirs == NULL || files == NULL) {
+		perror(ERROR "malloc");
+		return EXIT_FAILURE;
+	}
+
 	int dir_count, file_count;
 
 	// Run the `stat` and `lstat` syscalls, and start parsing the files' information
@@ -64,10 +72,12 @@ int main(const int argc, const char *argv[]) {
 	/* —— Combine Dirs & Files ——————————————————————————————————————————————————————————————————— */
 
 	const int count = dir_count + file_count;
-	FileInfo all_files[count];
+	FileInfo *all_files = malloc(count * sizeof(FileInfo));
 
 	memcpy(all_files,				dirs,  dir_count * sizeof(FileInfo));
 	memcpy(all_files + dir_count,  files, file_count * sizeof(FileInfo));
+
+	free(dirs); free(files);
 
 	/* —— Sort Files if not Dirs First ——————————————————————————————————————————————————————————— */
 
@@ -94,6 +104,8 @@ int main(const int argc, const char *argv[]) {
 	printFields(all_files, &count);
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————— */
+
+	free(all_files);
 
 	return EXIT_SUCCESS;
 }

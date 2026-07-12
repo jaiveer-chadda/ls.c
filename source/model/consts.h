@@ -13,14 +13,17 @@
 #define MAX_NAME_LEN MAXNAMLEN
 
 /// The maximum length a path can be on Darwin (MacOS/some BSD) machines.
-#define MAX_PATH_LEN 255 // __DARWIN_MAXPATHLEN
+#define MAX_PATH_LEN __DARWIN_MAXPATHLEN
 
 /// The maximum number of possible user and super user flags on MacOS.
 #define MAX_FLAG_NUM 14
 /// The longest flag name on MacOS ("uimmutable") + 1.
 #define MAX_FLAG_LEN 11
 
-/// An arbitrary upper bound on how many files we're going to accept.
+/**
+ * An arbitrary upper bound on how many files we're going to accept.
+ * The actual maximum number of files is `1 << 31`, which is ~ 2.1 billion.
+ */
 #define MAX_FILES_IN_DIR (1 << 12)
 
 /// The length of the mode when written in octal.
