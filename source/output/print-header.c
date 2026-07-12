@@ -20,7 +20,7 @@
 	|| strcmp((#field), "time_str") == 0 )
 
 #define PRINT_HEADER(field)													\
-	if ((do_##field()))	{													\
+	if ((do_ ## field()))	{												\
 		printf(SHOULD_ALIGN_RIGHT(field) ? "%*s%s" : "%-*s%s",				\
 			(int)((field_lengths.field) + hl_len),							\
 			IF_COLOUR(ANSI(HEADER_HL) field##_TITLE RESET, field##_TITLE),	\

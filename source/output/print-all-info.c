@@ -24,7 +24,7 @@ typedef unsigned int u_int;
 /* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define PRINT_FIELD(field)									\
-	if ((do_##field())) {									\
+	if ((do_ ## field())) {									\
 		sprintf(fmt_str, "%s%%s", (fmt_strs_long.field));	\
 		printf(fmt_str,										\
 			(int)(field_lengths.field), (file.field),		\
@@ -46,7 +46,7 @@ typedef unsigned int u_int;
 /* —————————————————————————————————————————————————————————————————— */
 
 #define PRINT_TIME(field)								\
-	if (do_##field()) { COLOUR(field,					\
+	if (do_ ## field()) { COLOUR(field,					\
 		sprintf(fmt_str, "%%s%%s%%s" "%s%s%s",			\
 			fmt_strs_long.field, RESET, FIELD_PAD		\
 		);												\

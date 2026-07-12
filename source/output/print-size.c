@@ -12,7 +12,7 @@
 #define IF_COLOUR(yes, no) (DO_COLOUR() ? (yes) : (no))
 #define DO_IGNORE_UNIT(unit) ((unit) == UNIT_BYTE || (unit) == UNIT_ZERO || (unit) == UNIT_MAJ_MIN)
 
-#define SET_COLOUR(type, code) sprintf(type##_colour, "%s%s%s", CSI, size_colour_esc[SC_##code], END)
+#define SET_COLOUR(type, code) sprintf(type ## _colour, "%s%s%s", CSI, size_colour_esc[SC_ ## code], END)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

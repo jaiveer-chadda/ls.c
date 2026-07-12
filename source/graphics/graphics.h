@@ -39,7 +39,7 @@
 #define REDRAW_SCRN	CSI "2J"
 #define CURSOR_HOME	CSI "H"
 
-#define CLR_SCREEN	CURSOR_HOME REDRAW_SCRN
+#define CLEAR_SCREEN	CURSOR_HOME REDRAW_SCRN
 
 /* —— RGB Definitions ——————————————————————————————————————————————————————— */
 

@@ -83,7 +83,7 @@ int main(const int argc, const char *argv[]) {
 
 	/* —— Print Header ——————————————————————————————————————————————————————————————————————————— */
 
-	if (DO_CLEAR()) printf("%s", CLR_SCREEN);
+	if (DO_CLEAR()) printf("%s", CLEAR_SCREEN);
 
 	// Print the fields' headers
 	if (DO_HEADER()) printHeader();

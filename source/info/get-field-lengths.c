@@ -16,7 +16,7 @@
 /* ———————————————————————————————————————————————————————————————————————— */
 
 #define GET_LEN(field)													\
-	if (do_##field()) {													\
+	if (do_ ## field()) {												\
 		sprintf(elem_as_str, (fmt_strs_short.field), (file.field));		\
 		len = strlen(elem_as_str);										\
 		if (len > (field_lengths.field)) (field_lengths.field) = len;	\

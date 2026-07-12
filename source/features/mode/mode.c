@@ -18,9 +18,9 @@
 #define SET_EXT_BIT(str, chr) /* exec == lowercase, non-exec == uppercase */ \
 	(str)[2] = ((str)[2] == EXEC_BIT_CHAR) ? (chr) : (chr) - ('a' - 'A')
 
-#define PARSE_PERM(location, ext_char, type) do { \
-		getPermStr((type##_oct), (type##_str)); \
-		if (ext_oct & (location)) SET_EXT_BIT((type##_str), (ext_char)); \
+#define PARSE_PERM(location, ext_char, type) do {							\
+		getPermStr((type ## _oct), (type ## _str));							\
+		if (ext_oct & (location)) SET_EXT_BIT((type ## _str), (ext_char));	\
 	} while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
