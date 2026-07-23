@@ -23,8 +23,10 @@ void printNLink(const nlink_t *nlink, const mode_t *mode) {
 	else if (!S_ISDIR(*mode) && *nlink >= 2) strcpy(colour, LN_COL_REG_MORE);	// file w >	1 link
 	else									 strcpy(colour, LN_COL_OTHER);		// dir w 1 link or dir/file w 0 links
 
+	const int spaces = (int)field_lengths.nlink - link_len;
+
 	printf("%*s" "%s%s%s" "%s" "%s%s",
-		(int)field_lengths.nlink - link_len, "",
+		spaces, "",
 		CSI, colour, END,
 		nlink_str,
 		RESET, FIELD_PAD

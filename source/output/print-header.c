@@ -41,8 +41,8 @@ inline void printHeader(void) {
 	PRINT_HEADER(time)	;	PRINT_HEADER(time_str);
 
 	printf("%s%s" "%s" "%s\n",
-		PRE_NAME_PAD, IF_COLOUR(ANSI(HEADER_HL), ""),
+		PRE_NAME_PAD, IF_COLOUR(ANSI(HEADER_HL), NO_COLOUR),
 		name_TITLE,
-		IF_COLOUR(RESET, "")
+		IF_COLOUR(RESET, NO_COLOUR)
 	);
 }

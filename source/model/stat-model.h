@@ -43,9 +43,9 @@ typedef struct {
 
 	sizestr		size_str	; // char[10]			-	10
 	modestr		mode_str	; // char[11]			-	11
+	timestr		time_str	; // char[32]			-	32
 	ugidstr		usr_name	; // char[32]			-	32
 	ugidstr		grp_name	; // char[32]			-	32
-	timestr		time_str	; // char[32]			-	32
 
 	flagstr		flag_str	; // char[168]			-  168
 	name_t		name		; // char[255]			-  255

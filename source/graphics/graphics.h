@@ -53,9 +53,7 @@
 
 /* —— [Internal] Filename Colour Definitions ——————————————————————————————————————————————————————————————————————— */
 
-#define HL_NONE			""			// \e[37m
-
-#define HL_REG			HL_NONE		// \e[37m
+#define HL_REG			NO_COLOUR	// \e[37m
 #define HL_DIR			"1;36"		// \e[36m
 #define HL_LINK			"35"		// \e[35m
 #define HL_EXEC			"31"		// \e[31m

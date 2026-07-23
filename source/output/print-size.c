@@ -57,7 +57,7 @@ static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
 		"%s"	// comma (and min colour)
 		"%s",	// min size
 
-		IF_COLOUR(ANSI(MAJ_COL), ""),
+		IF_COLOUR(ANSI(MAJ_COL), NO_COLOUR),
 		minor_size,
 		IF_COLOUR(ANSI(PUNCT) "," ANSI(MIN_COL), ","),
 		size_str + i + 1
@@ -89,14 +89,15 @@ void printSizeStr(const sizestr size_str, const char *unit, const mode_t *mode) 
 		"%s",	// unit colour
 
 		spaces, "",
-		IF_COLOUR(value_colour, ""),
-		IF_COLOUR(S_ISDIR(*mode) ? ANSI(DIM) : "", ""),
+		IF_COLOUR(value_colour, NO_COLOUR),
+
+		IF_COLOUR(S_ISDIR(*mode) ? ANSI(DIM) : NO_COLOUR, NO_COLOUR),
 		*unit == UNIT_MAJ_MIN ? majmin_str : size_str,
-		DO_COLOUR() ? unit_colour : ""
+		IF_COLOUR(unit_colour, NO_COLOUR)
 	);
 
 	if (!DO_IGNORE_UNIT(*unit)) putchar(*unit);
-	printf("%s" FIELD_PAD, IF_COLOUR(RESET, ""));
+	printf("%s" FIELD_PAD, IF_COLOUR(RESET, NO_COLOUR));
 
 }
 

@@ -78,9 +78,9 @@ static inline void printDivider(const char *div_char) {
 		printf("%s", RMAM);
 
 		const int COLUMNS = window.ws_col;
-		for (int i = 0; i < COLUMNS; i++) printf("%s", div_char);
+		for (int _ = 0; _ < COLUMNS; _++) printf("%s", div_char);
 
-		printf("%s%s", (DO_COLOUR() ? RESET : ""), SMAM);
+		printf("%s%s", (DO_COLOUR() ? RESET : NO_COLOUR), SMAM);
 	}
 }
 
@@ -90,9 +90,9 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 	char *file_colour = malloc(32);
 
 	sprintf(file_colour, "%s%s%s" "%s",
-		DO_DIM(name, *flags) ? DIM ";" : "",
-		strcmp(name, DOTDIR) == 0 ? UNDER ";" : "",
-		(*is_hln ? HARDLN_UNDERLINE ";" : ""),
+		DO_DIM(name, *flags)	  ? DIM				 ";" : NO_COLOUR,
+		strcmp(name, DOTDIR) == 0 ? UNDER			 ";" : NO_COLOUR,
+		*is_hln					  ? HARDLN_UNDERLINE ";" : NO_COLOUR,
 
 		(char*)(file_colour_esc[*colour])
 	);
@@ -114,13 +114,13 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 
 	/* ————————————————————————————————————————————————————————————————— */
 
-	// FIXME: the hardlink underline is removed if/when there's an escape in the hardlink's name
 	if (DO_COLOUR()) {
 		printf("%s" "%s%s%s" "%s" "%s",
 			PRE_NAME_PAD,
 			CSI, file_colour, END,
 			escaped_name,
-			(do_divider ? "" : RESET) // if the file's a divider, then there's no need to reset the colour
+			// if the file's a divider, then there's no need to reset the colour
+			(do_divider ? NO_COLOUR : RESET)
 		);
 
 	} else {

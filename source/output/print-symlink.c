@@ -74,7 +74,7 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 		ANSI(VALID_ARROW_COLOUR), SYMLINK_ARROW, RESET,
 
 		// print the dirname (path to the file's parent dir)
-		contains_slash ? ANSI(LINK_PATH_COLOUR) : "", escd_dirname,
+		contains_slash ? ANSI(LINK_PATH_COLOUR) : NO_COLOUR, escd_dirname,
 		// print the name of the file (the basename)
 		CSI, GET_TARGET_COLOUR(), END, escd_basename,
 
