@@ -75,7 +75,7 @@ static inline bool doesSetBackground(const char *colour) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-bool escapeName(name_t escaped_name, const name_t orig_name, const char *colour_escape) {
+bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_escape) {
 	const char *raw_name = GET_NAME(orig_name);
 	const bool colour_sets_bg = doesSetBackground(colour_escape);
 	bool did_do_escape = false;

@@ -101,7 +101,7 @@ static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path
 	setFileColour(&(pFile->link_col), pLinkInfo->st_mode, pLinkInfo->st_flags, pFile->is_mount);
 
 	free(pLinkInfo);
-	getLink(pFile->link_to, path);
+	pFile->link_to = getLink(path);
 
 	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
 	return stat_did_fail;

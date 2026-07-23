@@ -1,6 +1,7 @@
 /// @file output/print-symlink.c
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "output.h"
@@ -15,14 +16,17 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void printSymlink(const path_t p_target_path, const suff_t suffix, const FileColour link_col) {
+void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour link_col) {
 	const bool is_valid_path = (suffix != INVALID_LINK);
 
 	/* ————————————————————————————————————————————————————— */
 
+	// /*DEBUG*/ printf("<0>"); fflush(stdout);
+
 	if (!DO_COLOUR()) {
 		path_t escd_path;
 		escapeName(escd_path, p_target_path, "");
+		free(p_target_path);
 
 		printf("%s%s", SYMLINK_ARROW, escd_path);
 
@@ -30,9 +34,12 @@ void printSymlink(const path_t p_target_path, const suff_t suffix, const FileCol
 		return;
 	}
 
+	// /*DEBUG*/ printf("<1>"); fflush(stdout);
+
 	if (!is_valid_path) {
 		path_t escd_path;
 		escapeName(escd_path, p_target_path, INVALID_LINK_COLOUR);
+		free(p_target_path);
 
 		printf("%s%s" "%s%s" "%s",
 			ANSI(INVALID_ARROW_COLOUR), SYMLINK_ARROW,
@@ -44,13 +51,21 @@ void printSymlink(const path_t p_target_path, const suff_t suffix, const FileCol
 		return;
 	}
 
+	// /*DEBUG*/ printf("<2>"); fflush(stdout);
+
 	/* ————————————————————————————————————————————————————— */
 
-	const char *p_last_slash  = strrchr(p_target_path, '/');
+	// printf("%p", p_target_path);
+	// return;
+
+	const char *p_last_slash  = strrchr(p_target_path, '/'); // `strchr()` is the function that causes the segfault
 	const bool contains_slash = (p_last_slash != NULL);
 	const char *p_filename	  = contains_slash ? p_last_slash + 1 : p_target_path;
 
 	path_t escd_filename, escd_dirname = "";
+
+
+	// /*DEBUG*/ printf("<3>"); fflush(stdout);
 
 	if (contains_slash) {
 		path_t orig_dirname;
@@ -61,6 +76,8 @@ void printSymlink(const path_t p_target_path, const suff_t suffix, const FileCol
 
 		escapeName(escd_dirname, orig_dirname, LINK_PATH_COLOUR);
 	}
+
+	// /*DEBUG*/ printf("<4>"); fflush(stdout);
 
 	escapeName(escd_filename, p_filename, GET_TARGET_COLOUR());
 
@@ -74,6 +91,8 @@ void printSymlink(const path_t p_target_path, const suff_t suffix, const FileCol
 
 		RESET
 	);
+
+	free(p_target_path); // this memory is allocated in `getLink()` (symlink.c)
 
 	/* ————————————————————————————————————————————————————— */
 

@@ -49,8 +49,8 @@ int main(const int argc, const char *argv[]) {
 		*files = malloc(MAX_FILES_IN_DIR * sizeof(FileInfo));
 
 	if (dirs == NULL || files == NULL) {
-		perror(ERROR "malloc");
-		return EXIT_FAILURE;
+		perror(ERROR "malloc:dirs|files");
+		exit(EXIT_FAILURE);
 	}
 
 	int dir_count, file_count;
@@ -72,10 +72,15 @@ int main(const int argc, const char *argv[]) {
 	/* —— Combine Dirs & Files ——————————————————————————————————————————————————————————————————— */
 
 	const int count = dir_count + file_count;
-	FileInfo *all_files = malloc(count * sizeof(FileInfo));
 
-	memcpy(all_files,				dirs,  dir_count * sizeof(FileInfo));
-	memcpy(all_files + dir_count,  files, file_count * sizeof(FileInfo));
+	FileInfo *all_files = malloc(count * sizeof(FileInfo));
+	if (all_files == NULL) {
+		perror(ERROR "malloc:all_files");
+		exit(EXIT_FAILURE);
+	}
+
+	memcpy(all_files,			  dirs,  dir_count  * sizeof(FileInfo));
+	memcpy(all_files + dir_count, files, file_count * sizeof(FileInfo));
 
 	free(dirs); free(files);
 

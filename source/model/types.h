@@ -12,6 +12,7 @@
 
 /* ——————————————————————————————————————————————————— */
 
+typedef char*link_t;
 typedef char suff_t;
 typedef char unit_t;
 typedef char name_t[MAX_NAME_LEN];

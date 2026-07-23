@@ -86,7 +86,11 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		printName(file.name, &(file.file_col), &(file.do_link_hl), &(file.flags), &(file.suffix));
 
 		if (do_suffix() && file.suffix != '\0') putchar(file.suffix);
+		/*DEBUG*/ fflush(stdout);
+
 		if (DO_SYMLINK()) printSymlink(file.link_to, file.ln_suf, file.link_col);
+		/*DEBUG*/ fflush(stdout);
+
 		if (DO_MOUNT_DEV() && file.is_mount) printMountDevice(file.name);
 
 		printf("%s", "\n");
