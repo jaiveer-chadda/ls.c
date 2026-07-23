@@ -10,9 +10,9 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define DO_SUFFIX()	(do_suffix() && (suffix != '\0' && is_valid_path))
+#define GET_TARGET_COLOUR()	(link_col != FC_REGULAR ? file_colour_esc[link_col] : NO_COLOUR)
 
 #define PRINT_SUFFIX() if (DO_SUFFIX()) { putchar(suffix); }
-#define GET_TARGET_COLOUR()	(link_col != FC_REGULAR ? file_colour_esc[link_col] : "")
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -21,11 +21,10 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 
 	/* ————————————————————————————————————————————————————— */
 
-	// /*DEBUG*/ printf("<0>"); fflush(stdout);
-
 	if (!DO_COLOUR()) {
 		path_t escd_path;
-		escapeName(escd_path, p_target_path, "");
+
+		escapeName(escd_path, p_target_path, NO_COLOUR);
 		free(p_target_path);
 
 		printf("%s%s", SYMLINK_ARROW, escd_path);
@@ -34,10 +33,9 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 		return;
 	}
 
-	// /*DEBUG*/ printf("<1>"); fflush(stdout);
-
 	if (!is_valid_path) {
 		path_t escd_path;
+
 		escapeName(escd_path, p_target_path, INVALID_LINK_COLOUR);
 		free(p_target_path);
 
@@ -51,25 +49,18 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 		return;
 	}
 
-	// /*DEBUG*/ printf("<2>"); fflush(stdout);
-
 	/* ————————————————————————————————————————————————————— */
 
-	// printf("%p", p_target_path);
-	// return;
-
-	const char *p_last_slash  = strrchr(p_target_path, '/'); // `strchr()` is the function that causes the segfault
+	// FIXME: this won't work if the path ends with extra slashes
+	const char *p_last_slash  = strrchr(p_target_path, '/');
 	const bool contains_slash = (p_last_slash != NULL);
-	const char *p_filename	  = contains_slash ? p_last_slash + 1 : p_target_path;
+	const char *p_basename	  = contains_slash ? p_last_slash + 1 : p_target_path;
 
-	path_t escd_filename, escd_dirname = "";
-
-
-	// /*DEBUG*/ printf("<3>"); fflush(stdout);
+	path_t escd_basename, escd_dirname = "";
 
 	if (contains_slash) {
 		path_t orig_dirname;
-		const size_t dirname_len = p_filename - p_target_path;
+		const size_t dirname_len = p_basename - p_target_path;
 
 		strncpy(orig_dirname, p_target_path, dirname_len);
 		orig_dirname[dirname_len] = '\0';
@@ -77,22 +68,22 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 		escapeName(escd_dirname, orig_dirname, LINK_PATH_COLOUR);
 	}
 
-	// /*DEBUG*/ printf("<4>"); fflush(stdout);
-
-	escapeName(escd_filename, p_filename, GET_TARGET_COLOUR());
+	escapeName(escd_basename, p_basename, GET_TARGET_COLOUR());
 
 	printf("%s%s%s" "%s%s" "%s%s%s%s" "%s",
 		ANSI(VALID_ARROW_COLOUR), SYMLINK_ARROW, RESET,
 
 		// print the dirname (path to the file's parent dir)
 		contains_slash ? ANSI(LINK_PATH_COLOUR) : "", escd_dirname,
-		// print the actual filename (basename)
-		CSI, GET_TARGET_COLOUR(), END, escd_filename,
+		// print the name of the file (the basename)
+		CSI, GET_TARGET_COLOUR(), END, escd_basename,
 
 		RESET
 	);
 
-	free(p_target_path); // this memory is allocated in `getLink()` (symlink.c)
+	// freeing the memory is allocated in `getLink()` (symlink.c)
+	// note: needs to be freed after everything's printed, cos `escd_(file|dir)name` will still point to this memory
+	free(p_target_path);
 
 	/* ————————————————————————————————————————————————————— */
 

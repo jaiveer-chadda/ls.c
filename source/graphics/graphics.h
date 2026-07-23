@@ -7,9 +7,9 @@
 
 /* —— —— Chars & Strings —— ————————————————————————————————————————————————— */
 
-/// The spacing between each of the fields/columns listed in long (`-l`) mode
+/// The spacing between each of the fields/columns listed in long (`-l`) mode.
 #define FIELD_PAD " "
-/// The extra spacing that should be printed before the filename column
+/// The extra spacing that should be printed before the filename column.
 #define PRE_NAME_PAD " "
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -19,9 +19,10 @@
 #define CSI		"\033["	// \e[
 #define END		"m"		// m
 
-/// Reset all ANSI highlighting before printing the subsequent escape sequence.
-#define CSIR	CSI ";"	// \e[;
-#define RESET	CSI END	// \e[m
+#define CSIR	CSI ";"	// \e[;	/// Reset all ANSI highlighting before printing the subsequent escape sequence.
+#define RESET	CSI END	// \e[m	/// Reset all ANSI highlighting.
+
+#define NO_COLOUR ""
 
 #define ANSI(esc)  CSI	esc END
 #define ANSIR(esc) CSIR	esc END
@@ -83,33 +84,33 @@
 
 /* —— Header ———————————————————————————————————————————————————————————————— */
 
-#define HEADER_HL				"1;4;94"	// \e[94m
+#define HEADER_HL				"1;4;94"		// \e[94m
 
 /* —— Punctuation ——————————————————————————————————————————————————————————— */
 
-#define PUNCT					"90"		// \e[90m
+#define PUNCT					"90"			// \e[90m
 
 /* —— Escape Characters ————————————————————————————————————————————————————— */
 
-#define ESC_CHAR_COLOUR			"8;5;125"	// #BD0060
+#define ESC_CHAR_COLOUR			"8;5;125"		// #BD0060
 
 /* —— Links ————————————————————————————————————————————————————————————————— */
 
 #define SYMLINK_ARROW			" -> "
 
-#define	  VALID_ARROW_COLOUR	PUNCT		// \e[90m
-#define INVALID_ARROW_COLOUR	"31"		// \e[31m
+#define	  VALID_ARROW_COLOUR	PUNCT			// \e[90m
+#define INVALID_ARROW_COLOUR	"31"			// \e[31m
 
-#define LINK_PATH_COLOUR		"96"		// \e[96m
-#define INVALID_LINK_COLOUR		"2;97"		// \e[90m [kinda]
+#define LINK_PATH_COLOUR		"96"			// \e[96m
+#define INVALID_LINK_COLOUR		"2;97"			// \e[90m [kinda]
 
 /* —— NLink ————————————————————————————————————————————————————————————————— */
 
-#define LN_COL_DIR				"1;96"		// \e[96m
-#define LN_COL_DIR_EMPTY		"36"		// \e[36m
-#define LN_COL_REG_1			"2;96"		// \e[96m \e[2m
-#define LN_COL_REG_MORE			"1;30;105"	// \e[105m
-#define LN_COL_OTHER			"1;30;41"	// \e[41m
+#define LN_COL_DIR				"1;96"			// \e[96m
+#define LN_COL_DIR_EMPTY		"36"			// \e[36m
+#define LN_COL_REG_1			"2;96"			// \e[96m \e[2m
+#define LN_COL_REG_MORE			"1;30;105"		// \e[105m
+#define LN_COL_OTHER			"1;30;41"		// \e[41m
 
 #define HARDLN_UNDERLINE		";21;58;5;13"	// \e[21m \e[95m
 
@@ -138,8 +139,8 @@
 
 /* —— UID/GID ——————————————————————————————————————————————————————————————— */
 
-#define INV_FILE_USRNAME		"-"
-#define INV_FILE_GRPNAME		"-"
+#define INV_FILE_USRNAME		"-"				/// The string to display if a file's username couldn't be found.
+#define INV_FILE_GRPNAME		"-"				/// The string to display if a file's groupname couldn't be found.
 
 #define USR_INV_COL				PUNCT			// \e[90m
 #define GRP_INV_COL				PUNCT			// \e[90m
@@ -154,8 +155,8 @@
 
 /* —— Flags ————————————————————————————————————————————————————————————————— */
 
-#define NO_FLAG_STR				"-"
-#define FLAG_SEP_STR			","
+#define NO_FLAG_STR				"-"			/// The string to display if the file doesn't have any flags.
+#define FLAG_SEP_STR			","			/// The string to display between a file's flags.
 
 #define FL_U_NODUMP				"92"		// \e[92m
 #define FL_U_IMMUTABLE			"94"		// \e[94m
@@ -219,7 +220,7 @@
 #define ACL_COLOUR	  ";38;5;39"
 
 #define PERM_COLOUR_TABLE \
-	X(PC_NONE		, PUNCT		) /* \e[90m  */ \
+	X(PC_NONE		, PUNCT			) /* \e[90m  */ \
 	X(PC_READ		, HL_READ		) /* \e[92m  */ \
 	X(PC_W_USRGRP	, HL_W_USRGRP	) /* \e[93m  */ \
 	X(PC_W_OTHER	, HL_W_OTHER	) /* \e[42m  */ \
@@ -274,13 +275,13 @@
 #define MIN_COL	"36"	// \e[36m
 
 #define SIZE_COLOUR_TABLE \
-	/* value */ \
+	/* value */	\
 	X(SC_BB, "92"		) /* \e[102m */ \
 	X(SC_BK, "93"		) /* \e[103m */ \
 	X(SC_BM, "38;5;216"	) /* #FFAB81 */ \
 	X(SC_BG, "91"		) /* \e[101m */ \
 	X(SC_BT, "38;5;168"	) /* #E85587 */ \
-	/* units */ \
+	/* units */	\
 	X(SC_UB, "32"		) /* \e[42m  */ \
 	X(SC_UK, "33"		) /* \e[43m  */ \
 	X(SC_UM, "38;5;208"	) /* #FF8400 */ \
