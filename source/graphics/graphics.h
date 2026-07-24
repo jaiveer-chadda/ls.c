@@ -7,10 +7,8 @@
 
 /* —— —— Chars & Strings —— ————————————————————————————————————————————————— */
 
-/// The spacing between each of the fields/columns listed in long (`-l`) mode.
-#define FIELD_PAD " "
-/// The extra spacing that should be printed before the filename column.
-#define PRE_NAME_PAD " "
+#define FIELD_PAD	 " " /// The spacing between each of the fields/columns listed in long (`-l`) mode.
+#define PRE_NAME_PAD " " /// The extra spacing that should be printed before the filename column.
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -19,8 +17,8 @@
 #define CSI		"\033["	// \e[
 #define END		"m"		// m
 
-#define CSIR	CSI ";"	// \e[;	/// Reset all ANSI highlighting before printing the subsequent escape sequence.
-#define RESET	CSI END	// \e[m	/// Reset all ANSI highlighting.
+#define CSIR	CSI ";"	// \e[;	— Reset all ANSI highlighting before printing the subsequent escape sequence.
+#define RESET	CSI END	// \e[m	— Reset all ANSI highlighting.
 
 #define NO_COLOUR ""
 
@@ -71,6 +69,13 @@
 #define HL_STICKY_N		";1;30;104"	// \e[104m
 #define HL_DATALESS		";1;30;47"	// \e[47m
 #define HL_WHITEOUT		";1;30;107"	// \e[107m
+
+#define HL_COMPRESSED	"38;5;137"	// #B68558
+#define HL_IMAGE		"95"		// \e[95m
+#define HL_VIDEO		"91"		// \e[91m
+#define HL_AUDIO_UNCM	"38;5;116"	// #6ADAD8
+#define HL_AUDIO_COMP	"92"		// \e[92m
+#define HL_TEMP_BACK	"90"		// \e[90m
 
 #define HL_READ			"92"		// \e[92m
 #define HL_W_USRGRP		"93"		// \e[93m
@@ -193,6 +198,7 @@
 
 // use the macro `X`, on the expectation that it'll be defined later
 #define FILE_COLOUR_TABLE \
+	/* File Type   */ \
 	X(FC_REGULAR	, HL_REG		) /* \e[37m  */ \
 	X(FC_DIRECT		, HL_DIR		) /* \e[36m  */ \
 	X(FC_SYMLINK	, HL_LINK		) /* \e[35m  */ \
@@ -202,6 +208,8 @@
 	X(FC_MOUNT		, HL_MOUNT		) /* \e[34m  */ \
 	X(FC_CHR_DEV	, HL_CHRDEV		) /* \e[43m  */ \
 	X(FC_BLK_DEV	, HL_BLKDEV		) /* \e[46m  */ \
+	X(FC_WHITEOUT	, HL_WHITEOUT	) /* \e[107m */ \
+	/* Permissions */ \
 	X(FC_OW_DIR		, HL_OW_DIR		) /* \e[42m  */ \
 	X(FC_SUID_X		, HL_SUID_X		) /* \e[41m  */ \
 	X(FC_SUID_N		, HL_SUID_N		) /* \e[101m */ \
@@ -209,8 +217,15 @@
 	X(FC_SGID_N		, HL_SGID_N		) /* \e[105m */ \
 	X(FC_STICKY_X	, HL_STICKY_X	) /* \e[44m  */ \
 	X(FC_STICKY_N	, HL_STICKY_N	) /* \e[104m */ \
+	/* Flags	   */ \
 	X(FC_DATALESS	, HL_DATALESS	) /* \e[47m  */ \
-	X(FC_WHITEOUT	, HL_WHITEOUT	) /* \e[107m */
+	/* Extension   */ \
+	X(FC_COMPRESSED	, HL_COMPRESSED	) /* #B68558 */ \
+	X(FC_IMAGE		, HL_IMAGE		) /* \e[95m  */ \
+	X(FC_VIDEO		, HL_VIDEO		) /* \e[91m  */ \
+	X(FC_AUDIO_UNCM	, HL_AUDIO_UNCM	) /* #6ADAD8 */ \
+	X(FC_AUDIO_COMP	, HL_AUDIO_COMP	) /* \e[92m  */ \
+	X(FC_TEMP_BACK	, HL_TEMP_BACK	) /* \e[90m  */
 
 /* —— Permission Colours ———————————————————————————————————————————————————— */
 
@@ -307,7 +322,7 @@ extern const char *const size_colour_esc[SC_COUNT];
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 
 #include "../model/types.h"
-void setFileColour(FileColour *colour, const mode_t mode, const flag_t flags, const bool is_mount);
+void setFileColour(FileColour *colour, const name_t name, const mode_t mode, const flag_t flags, const bool is_mount);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
