@@ -34,7 +34,7 @@
     - [x] sticky bit set      ` .--------t ` `\e[44m`
     - [x] dataless file/dir                  `\e[47m`
     - [x] whiteout            ` w--------- ` `\e[07m`
-- [ ] Colour filenames based on their extensions
+- [x] Colour filenames based on their extensions
   - [ ] either use the info from `$EZA_COLORS`,
   - [ ] or make my own variable to store colours in
 
