@@ -14,7 +14,7 @@ static const char *ALL_COMPRESSED_EXTS[] = {
 	"7z" , "ace", "alz", "apk", "arc", "arj", "bz" , "bz2" , "cab", "cpio", "crate", "deb", "drpm", "dwm" , "dz"  ,
 	"ear", "egg", "esd", "gz" , "jar", "lha", "lrz", "lz"  , "lz4", "lzh" , "lzma" , "lzo", "pyz" , "rar" , "rpm" ,
 	"rz" , "sar", "swm", "t7z", "tar", "taz", "tbz", "tbz2", "tgz", "tlz" , "txz"  , "tz" , "tzo" , "tzst", "udeb",
-	"war", "whl", "wim", "xz" , "z"  , "zip", "zoo", "zst"
+	"war", "whl", "wim", "xz" , "z"  , "zip", "zoo", "zst" , "dmg"
 };
 static const char *ALL_IMAGE_EXTS[] = {
 	"avif", "bmp", "gif", "jpeg", "jpg", "mjpeg", "mjpg", "png", "svg", "svgz", "tif", "tiff", "webm", "webp", "jxl",
@@ -39,10 +39,13 @@ static const char *ALL_TEMP_BACK_EXTS[] = {
 
 #define GET_ARR_LEN(array) (int)(sizeof(array) / sizeof(array[0]))
 
-#define CHECK_EXTENSION_TYPE(type) \
-	if (strInArr(extension + 1, ALL_ ## type ## _EXTS, GET_ARR_LEN(ALL_ ## type ## _EXTS))) { \
-		*colour = FC_ ## type; \
-		return; \
+#define CHECK_EXTENSION_TYPE(type)			\
+	if (strInArr(extension + 1,				\
+		ALL_ ## type ## _EXTS,				\
+		GET_ARR_LEN(ALL_ ## type ## _EXTS))	\
+	) {										\
+		*colour = FC_ ## type;				\
+		return;								\
 	}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

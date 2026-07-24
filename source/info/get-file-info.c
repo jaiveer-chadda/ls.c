@@ -88,7 +88,7 @@ static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path
 	//  bc the file is a link to a non-existant file, or if we don't have permissions to `stat` the file
 	if (!S_ISLNK(pInfo->st_mode)) pFile->ln_suf = NOT_LINK;
 
-	// file is a link - run `stat`
+	// file is a link - run `stat()`
 	struct stat *pLinkInfo = malloc(sizeof(struct stat));
 	// whether the path was valid or not, or was even a link at all, we need to get the info of the origin file.
 	//  we therefore run `lstat` to get the information of the link, assign it to pLinkInfo, then extract the info
@@ -98,10 +98,10 @@ static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path
 	if (pFile->ln_suf == '\0') pFile->ln_suf = getTypeSuffix(pLinkInfo->st_mode);
 
 	pFile->is_mount = isMountPoint(pInfo->st_dev, path);
-	setFileColour(&(pFile->link_col), pFile->name, pLinkInfo->st_mode, pLinkInfo->st_flags, pFile->is_mount);
-
-	free(pLinkInfo);
 	pFile->link_to = getLink(path);
+
+	setFileColour(&(pFile->link_col), pFile->link_to, pLinkInfo->st_mode, pLinkInfo->st_flags, pFile->is_mount);
+	free(pLinkInfo);
 
 	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
 	return stat_did_fail;
