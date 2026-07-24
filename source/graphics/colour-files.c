@@ -10,26 +10,28 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static const char *ALL_COMPRESSED_EXTS[] = {
+// spell:disable
+static const char  *ALL_COMPRESSED_EXTS[] = {
 	"7z" , "ace", "alz", "apk", "arc", "arj", "bz" , "bz2" , "cab", "cpio", "crate", "deb", "drpm", "dwm" , "dz"  ,
 	"ear", "egg", "esd", "gz" , "jar", "lha", "lrz", "lz"  , "lz4", "lzh" , "lzma" , "lzo", "pyz" , "rar" , "rpm" ,
 	"rz" , "sar", "swm", "t7z", "tar", "taz", "tbz", "tbz2", "tgz", "tlz" , "txz"  , "tz" , "tzo" , "tzst", "udeb",
 	"war", "whl", "wim", "xz" , "z"  , "zip", "zoo", "zst" , "dmg"
 };
-static const char *ALL_IMAGE_EXTS[] = {
+static const char 		*ALL_IMAGE_EXTS[] = {
 	"avif", "bmp", "gif", "jpeg", "jpg", "mjpeg", "mjpg", "png", "svg", "svgz", "tif", "tiff", "webm", "webp", "jxl",
 	"pbm" , "pgm", "ppm", "tga" , "xbm", "xpm"  , "mng" , "pcx", "xcf", "xwd" , "cgm", "emf"
 };
-static const char *ALL_VIDEO_EXTS[] = {
+static const char 		*ALL_VIDEO_EXTS[] = {
 	"m2v", "m4v", "mov", "mp4", "mp4v", "mpg", "mpeg", "ogm", "qt", "mkv", "vob", "nuv", "wmv", "asf", "rm", "rmvb",
 	"flc", "fli", "avi", "flv", "gl"  , "dl" , "yuv" , "ogv"
 };
-static const char *ALL_AUDIO_UNCM_EXTS[] = { "au" , "flac", "m4a", "mid", "midi", "mka", "wav" , "xspf"		 };
-static const char *ALL_AUDIO_COMP_EXTS[] = { "aac", "mp3" , "mpc", "oga", "ogg" , "ogx", "opus", "ra", "spx" };
-static const char *ALL_TEMP_BACK_EXTS[] = {
+static const char  *ALL_AUDIO_UNCM_EXTS[] = { "au" , "flac", "m4a", "mid", "midi", "mka", "wav" , "xspf"	  };
+static const char  *ALL_AUDIO_COMP_EXTS[] = { "aac", "mp3" , "mpc", "oga", "ogg" , "ogx", "opus", "ra", "spx" };
+static const char 	*ALL_TEMP_BACK_EXTS[] = {
 	"tmp", "swp", "old" , "part"  , "rpmsave", "rpmorig", "dpkg-tmp", "ucf-dist", "dpkg-dist" ,
 	"rej", "bak", "orig", "rpmnew", "ucf-old", "ucf-new", "dpkg-old", "dpkg-new", "crdownload",
 };
+// spell:enable
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -60,8 +62,13 @@ static inline bool strInArr(const char *string, const char *array[], const int a
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void setFileColour(FileColour *colour, const name_t name, const mode_t mode, const flag_t flags, const bool is_mount) {
+
+	/* —— Flags ————————————————————————————————————————————————— */
+
 	// dataless files have the highest priority, so if the file is dataless, colour it and return immediately
 	if (flags & SF_DATALESS) { *colour = FC_DATALESS; return; }
+
+	/* —— Type —————————————————————————————————————————————————— */
 
 	// colour the file based on its type - filetype has the next highest priority after dataless
 	switch (mode & TYPE_MASK) {
@@ -71,6 +78,9 @@ void setFileColour(FileColour *colour, const name_t name, const mode_t mode, con
 		case S_IFLNK:	*colour = FC_SYMLINK	; return; // symbolic link
 		case S_IFSOCK:	*colour = FC_SOCKET		; return; // socket
 		case S_IFWHT:	*colour = FC_WHITEOUT	; return; // whiteout
+
+		/* —— Permissions ——————————————————————————————————————— */
+
 		case S_IFDIR:									  // directories
 			if		(mode & S_ISVTX) *colour = GET_STICKY_COLOUR(mode);	// directory w/ sticky bit set
 			else if (mode & S_IWOTH) *colour = FC_OW_DIR;				// other-writeable directory
@@ -86,8 +96,22 @@ void setFileColour(FileColour *colour, const name_t name, const mode_t mode, con
 
 	if (mode & EXEC_MASK) { *colour = FC_EXEC; return; } // executable file
 
+	/* —— Regular File —————————————————————————————————————————— */
+
 	// file is a regular file
 	*colour = FC_REGULAR;
+
+	/* —— Specific Filenames ———————————————————————————————————— */
+
+	const size_t name_len = strlen(name);
+
+	// if a file ends with a `~` or `#`, then its a temporary file
+	if (name[name_len] == '~' || name[name_len] == '#') {
+		*colour = FC_TEMP_BACK;
+		return;
+	}
+
+	/* —— Extensions ———————————————————————————————————————————— */
 
 	const char* extension = strrchr(name, '.');
 	if (extension == name || extension == NULL) return;
