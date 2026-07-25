@@ -7,6 +7,9 @@
 
 #include "info.h"
 
+#include "../options/options.h"
+#include "../graphics/graphics.h"
+
 #include "../features/ugid/ugid.h"
 #include "../features/size/size.h"
 #include "../features/time/time.h"
@@ -16,18 +19,10 @@
 #include "../features/mount/mount-point.h"
 #include "../features/links/apple-alias.h"
 
-#include "../options/options.h"
-#include "../graphics/graphics.h"
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define DO_IGNORE_FILE(entry) (strcmp((entry)->d_name, ".") == 0 || strcmp((entry)->d_name, "..") == 0)
 #define  IS_VALID_PATH(path)  (access((path), F_OK) == 0)
-
-// i know this can be simplified, but it's easier for me to read it this way
-#define ALL_STATS_FAILED() \
-	((do_link_to() && lstat_did_fail && stat_did_fail) || \
-	(!do_link_to() && lstat_did_fail))
 
 #define IS_REALPATH_DIR()													\
 	(S_ISDIR(info.st_mode) /* add to the dirs array if it's a directory, */	\
@@ -36,6 +31,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// called by `getFileInfo()`
 static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, const path_t path) {
 	// move all the raw stat info that we need over to `file`
 	pFile->nlink	= pInfo->st_nlink;
@@ -49,7 +45,7 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	pFile->gid		= pInfo->st_gid;
 	pFile->time		= pInfo->st_mtimespec.tv_sec;
 
-	// work out whether ths file's a mount point or not
+	// work out whether ths file is a mount point or not
 	pFile->is_mount = isMountPoint(pInfo->st_dev, path);
 
 	// parse the raw stat information into more human-readable formats.
@@ -72,11 +68,22 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/**
+ * @brief Extract a file's information from a `dirent` object.
+ *
+ * This function will only be called if both `stat` and `lstat` fail.
+ * It gives the barebones amount of information that can be taken from what `dirent` gives us.
+ *
+ * Called by `getFileInfo()`.
+ *
+ * @param pFile[out] @param pInfo[out] @param entry[in]
+ */
 static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const struct dirent *entry) {
 	*pInfo = (struct stat){0};
 	*pFile = (FileInfo){0};
 
 	strcpy(pFile->name, entry->d_name);
+
 	pInfo->st_mode	= DTTOIF(entry->d_type);
 	pInfo->st_ino	= entry->d_ino;
 	pFile->ln_suf	= entry->d_type == DT_LNK ? INVALID_LINK : NOT_LINK;
@@ -85,26 +92,20 @@ static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const 
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// called by `getFileInfo()`
 static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path_t path) {
-	// file isn't a link - keep the `lstat` info
-	// we still have to try `stat` on it tho, cos if `lstat` failed, we need to know whether it failed
-	//  bc the file is a link to a non-existant file, or if we don't have permissions to `stat` the file
-	if (!S_ISLNK(pInfo->st_mode)) pFile->ln_suf = NOT_LINK;
+	bool stat_did_fail = false;
 
-	// file is a link - run `stat()`
-	struct stat *pLinkInfo = malloc(sizeof(struct stat));
-	// whether the path was valid or not, or was even a link at all, we need to get the info of the origin file.
-	//  we therefore run `lstat` to get the information of the link, assign it to pLinkInfo, then extract the info
-	const bool stat_did_fail = stat(path, pLinkInfo) == -1;
+	// file is a link - run `stat()` to get some of the info from the target file
+	struct stat targetInfo = {0};
+	stat_did_fail = stat(path, &targetInfo) == -1;
 
 	// extract the necessary info from the target file
-	if (pFile->ln_suf == '\0') pFile->ln_suf = getTypeSuffix(pLinkInfo->st_mode);
-
+	// i.e. only the info that is relevant to when its printed after the --> arrow
+	if (pFile->ln_suf == '\0') pFile->ln_suf = getTypeSuffix(targetInfo.st_mode);
 	pFile->is_mount = isMountPoint(pInfo->st_dev, path);
 	pFile->link_to = getLink(path);
-
-	setFileColour(&(pFile->link_col), pFile->link_to, pLinkInfo->st_mode, pLinkInfo->st_flags, pFile->is_mount);
-	free(pLinkInfo);
+	setFileColour(&(pFile->link_col), pFile->link_to, targetInfo.st_mode, targetInfo.st_flags, pFile->is_mount);
 
 	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
 	return stat_did_fail;
@@ -112,6 +113,7 @@ static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// called by `getAllFileInfo()`
 static inline void getFileInfo(
 	struct dirent *entry,
 	FileInfo dirs[], FileInfo files[],
@@ -119,62 +121,70 @@ static inline void getFileInfo(
 ) {
 	// initialise the struct so we can assign to it later
 	FileInfo file = { .is_valid = true };
-	struct stat info;
-	path_t path;
 
 	// get the raw filename stored in `entry`
 	strcpy(file.name, entry->d_name);
 
 	// concatenate the target dir together with the filename to get the absolute path to the file
+	path_t path;
 	sprintf(path, "%s/%s", dotdir_path, file.name);
 
 	/* ——————————————————————————————————————————————————————————————————— */
 
-	// always run the `lstat` syscall, because we need to know the type of the original file
+	// always run the `lstat()` syscall, because we need to know the type of the original file
+	struct stat info;
+
 	const bool lstat_did_fail = lstat(path, &info) == -1;
+	bool stat_did_fail = true;
 
-	// `stat` will follow symlinks, and will only return info about the target file, rather than the link itself
-	//  if the `do_link_to` option is set, then we need to run `lstat` to get info about the link
-	const bool stat_did_fail = getTargetInfo(&file, &info, path);
+	// if the file is a link, get the information of its target
+	if (S_ISLNK(info.st_mode)) {
+		stat_did_fail = getTargetInfo(&file, &info, path);
+	} else { // if it isn't a link, then keep the `lstat` info, and mark the file as such
+		file.ln_suf = NOT_LINK;
+	}
 
-	// if none of the stat calls that ran, worked, then we don't have any extra information
+	// if none of the stat calls worked, then we don't have any extra information
 	//  so extract just the info that we can get from `dirent`, and parse things from there
-	if (ALL_STATS_FAILED()) getInfoFromDirent(&file, &info, entry);
+	if (stat_did_fail && lstat_did_fail) getInfoFromDirent(&file, &info, entry);
 
 	/* ——————————————————————————————————————————————————————————————————— */
 
 	parseStatObject(&file, &info, path);
 
-	/* ——————————————————————————————————————————————————————————————————— */
-
-	// add the FileInfo object to the end of its respective array
+	// add the `FileInfo` object to the end of its respective array
 	if (IS_REALPATH_DIR())	dirs [(*dir_count )++] = file;
 	else					files[(*file_count)++] = file;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void getAllFileInfo(
 	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *dotdir_path)
 {
-	*dir_count = 0, *file_count = 0;
-	struct dirent *entry;
+	*dir_count	= 0, /// How many directories have been read & processed.
+	*file_count	= 0; /// How many non-directory files have been read & processed.
 
-	struct dirent dotdir_obj = {0};		// create a synthetic dirent for `.`
-	strcpy(dotdir_obj.d_name, DOTDIR);	// set the filename
-	dotdir_obj.d_type = DT_DIR;			// hardcode type to directory (for the `ALL_STATS_FAILED` fallback)
+	struct dirent dotdir_obj = {0};		// create a synthetic dirent for the `.` directory
+	strcpy(dotdir_obj.d_name, DOTDIR);	// explicitly set the dotdir's filename
+	dotdir_obj.d_type = DT_DIR;			// hardcode the filetype to directory (for the `ALL_STATS_FAILED` fallback)
 
 	// run `getFileInfo` explicitly for `.`
 	getFileInfo(&dotdir_obj, dirs, files, dir_count, file_count, dotdir_path);
 
-	// process the rest of the directory
-	// while there are still files to read, and while we haven't reached the maximum file limit
+	struct dirent *entry;
+	// now process the rest of the directory
 	while ((entry = readdir(dir_obj)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
+		// don't process the `..` directory.
 		if (DO_IGNORE_FILE(entry)) continue;
-
+		// from the file entry, get the required information, and store it in the `dirs` or `files` arrays
 		getFileInfo(entry, dirs, files, dir_count, file_count, dotdir_path);
 	}
 
-	// the directory info isn't needed anymore, so it can be closed now
+	// the directory info isn't needed anymore, so it can be closed
 	closedir(dir_obj);
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
