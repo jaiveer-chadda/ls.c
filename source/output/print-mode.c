@@ -19,10 +19,9 @@
 		&& strcmp(perm_colour_esc[esc_1], perm_colour_esc[esc_2]) == 0)
 
 #define STRCAT_COLOUR(str, colour, csi) do {				\
-		char *tmp_str = malloc(sizeof(str));				\
+		OutputStr tmp_str = "";								\
 		sprintf(tmp_str, "%s%s%s%s", str, csi, colour, END);\
 		strcpy(str, tmp_str);								\
-		free(tmp_str);										\
 	} while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -33,7 +32,9 @@ void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 	/* ——————————————————————————————————————————————————————————————————————— */
 
 	// ( bit count `= 10` )  ×  ( max hl len `= 11` )
-	char output[10 * 11] = "";
+	typedef char OutputStr[10 * 11];
+
+	OutputStr output = "";
 	FileColour type = FC_COUNT;
 
 	if (DO_COLOUR()) {
