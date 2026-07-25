@@ -166,7 +166,7 @@ int setOptions(const int argc, const char *argv[]) {
 			else if	(OPTARG_IS("mode" )) U_SORT_BY = SB_MODE  ;
 
 			else if	(HAS_ARG) ERROR_BAD_ARG(
-				"\n - name (default)"     "\n - size"  "\n - time"
+				"\n - name (default)"	  "\n - size"  "\n - time"
 				"\n - uid"   "\n - gid"   "\n - inode" "\n - devno"
 				"\n - links" "\n - flags" "\n - mode"  "\n - none"
 			);

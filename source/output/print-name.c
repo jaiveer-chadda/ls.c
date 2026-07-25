@@ -71,7 +71,7 @@ static inline void printDivider(const char *div_char) {
 
 	// instead of having to figure out how many chars have already been written on this line:
 	//  - turn off word wrapping (`tput rmam`)
-	//    - (so that any characters printed beyond the end of the screen aren't shown)
+	//	  - (so that any characters printed beyond the end of the screen aren't shown)
 	//  - then print as many divider characters are there are columns (screen width)
 	//  - finally, turn word wrapping back on (`tput smam`)
 	if (GET_WINDOW_SIZE(window)) {

@@ -53,9 +53,9 @@ static const char 	*ALL_TEMP_BACK_EXTS[] = {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline bool strInArr(const char *string, const char *array[], const int arr_len) {
-    for (int i = 0; i < arr_len; i++) {
-        if (strcmp(array[i], string) == 0) return true;
-    }
+	for (int i = 0; i < arr_len; i++) {
+		if (strcmp(array[i], string) == 0) return true;
+	}
 	return false;
 }
 
