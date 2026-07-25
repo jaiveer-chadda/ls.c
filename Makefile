@@ -29,6 +29,8 @@ OBJECTS = $(patsubst source/%.c, out/%.o, $(SOURCES))
 
 # ———————————————————————————————————————————————————————— #
 
+FRAMEWORKS	= -framework CoreFoundation
+
 # find where the `libmagic` library is stored, and pass it to the linker
 BREW_PREFIX	:= $(shell brew --prefix libmagic)
 INCLUDES	= -I$(BREW_PREFIX)/include
@@ -45,7 +47,7 @@ all: $(TARGET)
 
 # link all object files into the final executable
 $(TARGET): $(OBJECTS)
-	@$(CC) $(LDFLAGS) $(LDLIBS) --output $@ $^
+	@$(CC) $(LDFLAGS) $(LDLIBS) $(FRAMEWORKS) --output $@ $^
 
 # compile all .c files into .o files
 out/%.o: source/%.c
@@ -58,4 +60,4 @@ run: $(TARGET)
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
-# spell:ignoreRegExp /(?<!-)-\w/g
+# spell:ignoreRegExp /(?<!-)-(?!framework)\w/g

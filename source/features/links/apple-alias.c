@@ -1,38 +1,70 @@
 /// @file features/links/apple-alias.c
 
 #include <stdio.h>
-#include <magic.h>
 #include <unistd.h>
+#include <CoreFoundation/CoreFoundation.h>
 
 #include "apple-alias.h"
 
+#define FILE_EXISTS(path) (access((path), F_OK) == 0)
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void getType(const path_t file_path) {
-	// init the magic cookie - `MAGIC_NONE` means we want standard text descriptions (like `/usr/bin/file`).
-	magic_t magic_cookie = magic_open(
-		MAGIC_NONE					// No special handling.
-		| MAGIC_PRESERVE_ATIME		// Attempt to preserve the access time of files analysed.
-		| MAGIC_COMPRESS_TRANSP		// Don't report on compression, only report about the uncompressed data.
-		| MAGIC_NO_CHECK_COMPRESS	// Don't look inside compressed files.
-		| MAGIC_NO_CHECK_ENCODING	// Don't check text encodings.
-		| MAGIC_NO_CHECK_TEXT		// Don't check for various types of text files.
+void resolveAppleAlias(const path_t file_path) {
+	// convert `file_path` to a CFURL object
+	CFURLRef alias_url = CFURLCreateFromFileSystemRepresentation(
+		/* allocator	*/ kCFAllocatorDefault,
+		/* buffer		*/ (const UInt8 *)file_path,
+		/* bufLen		*/ strlen(file_path),
+		/* isDirectory	*/ false
 	);
 
-	if (magic_cookie == NULL) return;
+	if (!alias_url) return;
 
-	// load the magic database (passing NULL tells it to load the default system database)
-	if (magic_load(magic_cookie, NULL) != 0) {
-		magic_close(magic_cookie);
+	// read the alias file into a bookmark `CFData` object
+	CFErrorRef error_;
+	CFDataRef bookmark_data = CFURLCreateBookmarkDataFromFile(
+		/* allocator */ kCFAllocatorDefault,
+		/* fileURL	 */ alias_url,
+		/* errorRef	 */ &error_
+	);
+
+	// we don't care about the error, but I also don't want to cause memory leaks
+	if (error_) CFRelease(error_);
+
+	if (!bookmark_data) {
+		CFRelease(alias_url);
 		return;
 	}
 
-	const char *file_description = magic_file(magic_cookie, file_path);
-	if (file_description == NULL) return;
+	// extract the stored metadata
+	CFStringRef orig_path_ref = (CFStringRef)CFURLCreateResourcePropertyForKeyFromBookmarkData(
+		/* allocator */ kCFAllocatorDefault,
+		/* key		 */ kCFURLPathKey,
+		/* bookmark	 */ bookmark_data
+	);
 
-	printf("%-42s\t\t%s\n", file_path, file_description);
+	if (orig_path_ref) {
+		path_t target_path;
 
-	magic_close(magic_cookie);
+		// using `FileSystemRepresentation` here to ensure that APFS unicode normalisation is handled safely
+		if (CFStringGetFileSystemRepresentation(
+			/* string	*/ orig_path_ref,
+			/* buffer	*/ target_path,
+			/* maxBufLen*/ sizeof(target_path)
+		)) {
+			printf("target: %s", target_path);
+			if (!FILE_EXISTS(target_path)) printf(" (broken)"); // verify if the file is still actually there
+
+			printf("\n");
+		}
+
+		CFRelease(orig_path_ref);
+	}
+
+	// clean up the rest of the allocated CoreFoundation memory
+	CFRelease(bookmark_data);
+	CFRelease(alias_url);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

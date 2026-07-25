@@ -65,11 +65,9 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	if (do_mode_str()) checkXattr(&(pFile->has_xattr), path);
 
 	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pFile->name, pInfo->st_mode, pInfo->st_flags, pFile->is_mount);
-	if (!S_ISDIR(pInfo->st_mode)  && pInfo->st_nlink > 1) pFile->do_link_hl = true;
+	if (!S_ISDIR(pInfo->st_mode) && pInfo->st_nlink > 1) pFile->do_link_hl = true;
 
-	if (S_ISREG(pInfo->st_mode) && pFile->size > 0) {
-		getType(path);
-	}
+	if (S_ISREG(pInfo->st_mode) && pFile->size > 0) resolveAppleAlias(path);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
