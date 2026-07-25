@@ -87,7 +87,7 @@ static inline void printDivider(const char *div_char) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printName(const name_t name, const FileColour *colour, const bool *is_hln, const flag_t *flags, suff_t *suffix) {
-	char *file_colour = malloc(32);
+	char file_colour[32] = "";
 
 	sprintf(file_colour, "%s%s%s" "%s",
 		DO_DIM(name, *flags)	  ? DIM				 ";" : NO_COLOUR,
@@ -126,8 +126,6 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 	} else {
 		printf("%s" "%s", PRE_NAME_PAD, escaped_name);
 	}
-
-	free(file_colour);
 
 	/* ————————————————————————————————————————————————————————————————— */
 
