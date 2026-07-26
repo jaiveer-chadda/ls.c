@@ -150,6 +150,28 @@ static inline void getFileInfo(
 
 			file.link_to = target_path;
 
+			const char *HOME = getenv("HOME");
+			const int home_len = strlen(HOME);
+			const int path_len = strlen(target_path);
+
+			int bytes_written;
+
+			path_t temp;
+
+			if (HOME != NULL
+				&& home_len > 0
+				&& home_len < path_len
+				&& strncmp(HOME, target_path, home_len) == 0
+			) {
+				bytes_written = sprintf(temp, "~%s", target_path + home_len);
+			} else {
+				bytes_written = sprintf(temp, "%s", target_path);
+			}
+
+			temp[bytes_written] = '\0';
+
+			strcpy(target_path, temp);
+
 		} else {
 			file.ln_suf = NOT_LINK;
 		}
