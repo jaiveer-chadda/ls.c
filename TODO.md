@@ -180,9 +180,9 @@
   - [x] Implement a way to show those extra permissions
   - [x] Or at least to show an extra bit at the end of the permission string to indicate whether they exist
 
-##### [ ] Apple Aliases
-- [ ] Figure out how to find the target of an Apple alias file.
-  - [ ] It'll probably have to be done with some version of the stuff I'm using in the `alisma` program
+##### [√] Apple Aliases
+- [√] Figure out how to find the target of an Apple alias file.
+  - [√] It'll probably have to be done with some version of the stuff I'm using in the `alisma` program
     - luckily though, `.swift` files can be compiled into binaries, which should cut down on the time it takes to
       fork out to them
     - the only issue I can see though, is the fact that I don't actually know whether a file is an Apple alias unless
