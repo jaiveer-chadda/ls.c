@@ -10,7 +10,10 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void resolveAppleAlias(const path_t file_path) {
+bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t file_path) {
+	bool is_apple_alias = false;
+	*is_valid_alias = false;
+
 	// convert `file_path` to a CFURL object
 	CFURLRef alias_url = CFURLCreateFromFileSystemRepresentation(
 		/* allocator	*/ kCFAllocatorDefault,
@@ -19,7 +22,7 @@ void resolveAppleAlias(const path_t file_path) {
 		/* isDirectory	*/ false
 	);
 
-	if (!alias_url) return;
+	if (!alias_url) return is_apple_alias;
 
 	// read the alias file into a bookmark `CFData` object
 	CFErrorRef error_;
@@ -34,7 +37,7 @@ void resolveAppleAlias(const path_t file_path) {
 
 	if (!bookmark_data) {
 		CFRelease(alias_url);
-		return;
+		return is_apple_alias;
 	}
 
 	// extract the stored metadata
@@ -45,6 +48,8 @@ void resolveAppleAlias(const path_t file_path) {
 	);
 
 	if (orig_path_ref) {
+		is_apple_alias = true;
+
 		path_t target_path;
 
 		// using `FileSystemRepresentation` here to ensure that APFS unicode normalisation is handled safely
@@ -53,10 +58,10 @@ void resolveAppleAlias(const path_t file_path) {
 			/* buffer	*/ target_path,
 			/* maxBufLen*/ sizeof(target_path)
 		)) {
-			printf("target: %s", target_path);
-			if (!FILE_EXISTS(target_path)) printf(" (broken)"); // verify if the file is still actually there
+			// printf("target: %s\n", target_path);
+			strcpy(target_buffer, target_path);
 
-			printf("\n");
+			*is_valid_alias = FILE_EXISTS(target_path);
 		}
 
 		CFRelease(orig_path_ref);
@@ -65,6 +70,8 @@ void resolveAppleAlias(const path_t file_path) {
 	// clean up the rest of the allocated CoreFoundation memory
 	CFRelease(bookmark_data);
 	CFRelease(alias_url);
+
+	return is_apple_alias;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

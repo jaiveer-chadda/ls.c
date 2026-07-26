@@ -196,6 +196,9 @@
 #define NOT_LINK				'{' /// An arbitrary value to indicate that this file isn't a symlink.
 #define INVALID_LINK			'}' /// An arbitrary value to indicate that this file is an invalid symlink.
 
+#define APPLE_LINK				'1' /// An arbitrary value to indicate that this file is an Apple alias file.
+#define INV_APPLE_LINK			'2' /// An arbitrary value to indicate that this file is an invalid Apple alias file.
+
 // use the macro `X`, on the expectation that it'll be defined later
 #define FILE_COLOUR_TABLE \
 	/* File Type   */ \

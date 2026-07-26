@@ -62,8 +62,6 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 
 	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pFile->name, pInfo->st_mode, pInfo->st_flags, pFile->is_mount);
 	if (!S_ISDIR(pInfo->st_mode) && pInfo->st_nlink > 1) pFile->do_link_hl = true;
-
-	if (S_ISREG(pInfo->st_mode) && pFile->size > 0) resolveAppleAlias(path);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -93,7 +91,7 @@ static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // called by `getFileInfo()`
-static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path_t path) {
+static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
 	bool stat_did_fail = false;
 
 	// file is a link - run `stat()` to get some of the info from the target file
@@ -102,9 +100,9 @@ static inline bool getTargetInfo(FileInfo *pFile, struct stat *pInfo, const path
 
 	// extract the necessary info from the target file
 	// i.e. only the info that is relevant to when its printed after the --> arrow
-	if (pFile->ln_suf == '\0') pFile->ln_suf = getTypeSuffix(targetInfo.st_mode);
-	pFile->is_mount = isMountPoint(pInfo->st_dev, path);
-	pFile->link_to = getLink(path);
+	pFile->link_to	= getLink(path);
+	pFile->ln_suf	= getTypeSuffix(targetInfo.st_mode);
+	pFile->is_mount	= isMountPoint(pFile->dev_no, pFile->link_to);
 	setFileColour(&(pFile->link_col), pFile->link_to, targetInfo.st_mode, targetInfo.st_flags, pFile->is_mount);
 
 	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
@@ -139,7 +137,23 @@ static inline void getFileInfo(
 
 	// if the file is a link, get the information of its target
 	if (S_ISLNK(info.st_mode)) {
-		stat_did_fail = getTargetInfo(&file, &info, path);
+		stat_did_fail = getTargetInfo(&file, path);
+
+	} else if (S_ISREG(info.st_mode) && info.st_size > 0) {
+		char *target_path = malloc(sizeof(path_t));
+
+		bool is_valid_alias = false;
+		bool is_apple_alias = resolveAppleAlias(target_path, &is_valid_alias, path);
+
+		if (is_apple_alias) {
+			stat_did_fail = getTargetInfo(&file, target_path);
+
+			file.link_to = target_path;
+
+		} else {
+			file.ln_suf = NOT_LINK;
+		}
+
 	} else { // if it isn't a link, then keep the `lstat` info, and mark the file as such
 		file.ln_suf = NOT_LINK;
 	}

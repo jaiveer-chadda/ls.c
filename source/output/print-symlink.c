@@ -17,7 +17,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour link_col) {
-	const bool is_valid_path = (suffix != INVALID_LINK);
+	const bool is_valid_path = (suffix != INVALID_LINK && suffix != INV_APPLE_LINK);
 
 	/* ————————————————————————————————————————————————————— */
 
@@ -81,7 +81,7 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 		RESET
 	);
 
-	// freeing the memory is allocated in `getLink()` (symlink.c)
+	// freeing the memory that's allocated in `getLink()` (symlink.c)
 	// note: needs to be freed after everything's printed, cos `escd_(file|dir)name` will still point to this memory
 	free(p_target_path);
 
