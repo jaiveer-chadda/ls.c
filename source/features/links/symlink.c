@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "../mode/mode.h"
+#include "../path/path.h"
 #include "../../model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -26,26 +27,7 @@ link_t getLink(const path_t link_path) {
 		exit(EXIT_FAILURE);
 	}
 
-	/* ————————————————————————————————————————————————————— */
-
-	const char *HOME = getenv("HOME");
-	const int home_len = strlen(HOME);
-
-	int bytes_written;
-
-	if (HOME != NULL
-		&& home_len > 0
-		&& home_len < path_len
-		&& strncmp(HOME, link, home_len) == 0
-	) {
-		bytes_written = sprintf(link_str, "~%s", link + home_len);
-	} else {
-		bytes_written = sprintf(link_str, "%s", link);
-	}
-
-	link_str[bytes_written] = '\0';
-
-	/* ————————————————————————————————————————————————————— */
+	abbrPath(link_str, link);
 
 	return link_str;
 }

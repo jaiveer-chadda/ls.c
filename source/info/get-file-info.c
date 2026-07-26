@@ -14,6 +14,7 @@
 #include "../features/size/size.h"
 #include "../features/time/time.h"
 #include "../features/mode/mode.h"
+#include "../features/path/path.h"
 #include "../features/flags/flags.h"
 #include "../features/links/symlink.h"
 #include "../features/mount/mount-point.h"
@@ -24,10 +25,8 @@
 #define DO_IGNORE_FILE(entry) (strcmp((entry)->d_name, ".") == 0 || strcmp((entry)->d_name, "..") == 0)
 #define  IS_VALID_PATH(path)  (access((path), F_OK) == 0)
 
-#define IS_REALPATH_DIR()													\
-	(S_ISDIR(info.st_mode) /* add to the dirs array if it's a directory, */	\
-		/* or if its a symlink, and the file it points to is a directory */	\
-		|| (do_link_to() && S_ISLNK(info.st_mode) && file.ln_suf == DIR_SUFFIX))
+/// Add to the dirs array if it's a directory, or if its a link, and the file it points to is a directory.
+#define IS_REALPATH_DIR() (S_ISDIR(info.st_mode) || file.ln_suf == DIR_SUFFIX)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -95,15 +94,15 @@ static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
 	bool stat_did_fail = false;
 
 	// file is a link - run `stat()` to get some of the info from the target file
-	struct stat targetInfo = {0};
-	stat_did_fail = stat(path, &targetInfo) == -1;
+	struct stat target_info = {0};
+	stat_did_fail = stat(path, &target_info) == -1;
 
 	// extract the necessary info from the target file
-	// i.e. only the info that is relevant to when its printed after the --> arrow
+	// i.e. only the info that is relevant to when its printed after the -> arrow
 	pFile->link_to	= getLink(path);
-	pFile->ln_suf	= getTypeSuffix(targetInfo.st_mode);
-	pFile->is_mount	= isMountPoint(pFile->dev_no, pFile->link_to);
-	setFileColour(&(pFile->link_col), pFile->link_to, targetInfo.st_mode, targetInfo.st_flags, pFile->is_mount);
+	pFile->ln_suf	= getTypeSuffix(target_info.st_mode);
+	pFile->is_mount	= isMountPoint(target_info.st_dev, path);
+	setFileColour(&(pFile->link_col), pFile->link_to, target_info.st_mode, target_info.st_flags, pFile->is_mount);
 
 	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
 	return stat_did_fail;
@@ -140,38 +139,14 @@ static inline void getFileInfo(
 		stat_did_fail = getTargetInfo(&file, path);
 
 	} else if (S_ISREG(info.st_mode) && info.st_size > 0) {
-		char *target_path = malloc(sizeof(path_t));
+		char *orig_target_path = malloc(sizeof(path_t));
 
 		bool is_valid_alias = false;
-		bool is_apple_alias = resolveAppleAlias(target_path, &is_valid_alias, path);
+		bool is_apple_alias = resolveAppleAlias(orig_target_path, &is_valid_alias, path);
 
 		if (is_apple_alias) {
-			stat_did_fail = getTargetInfo(&file, target_path);
-
-			file.link_to = target_path;
-
-			const char *HOME = getenv("HOME");
-			const int home_len = strlen(HOME);
-			const int path_len = strlen(target_path);
-
-			int bytes_written;
-
-			path_t temp;
-
-			if (HOME != NULL
-				&& home_len > 0
-				&& home_len < path_len
-				&& strncmp(HOME, target_path, home_len) == 0
-			) {
-				bytes_written = sprintf(temp, "~%s", target_path + home_len);
-			} else {
-				bytes_written = sprintf(temp, "%s", target_path);
-			}
-
-			temp[bytes_written] = '\0';
-
-			strcpy(target_path, temp);
-
+			stat_did_fail = getTargetInfo(&file, orig_target_path);
+			abbrPath(file.link_to, orig_target_path);
 		} else {
 			file.ln_suf = NOT_LINK;
 		}
