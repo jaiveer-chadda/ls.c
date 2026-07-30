@@ -25,7 +25,7 @@
 #define DO_IGNORE_FILE(entry) (strcmp((entry)->d_name, ".") == 0 || strcmp((entry)->d_name, "..") == 0)
 #define  IS_VALID_PATH(path)  (access((path), F_OK) == 0)
 
-/// Add to the dirs array if it's a directory, or if its a link, and the file it points to is a directory.
+/// Add to the dirs array if it's a directory, or if it's a link, and the file it points to is a directory.
 #define IS_REALPATH_DIR() (S_ISDIR(info.st_mode) || file.ln_suf == DIR_SUFFIX)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -50,16 +50,16 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	// parse the raw stat information into more human-readable formats.
 	if (do_suffix  ()) pFile->suffix = getTypeSuffix(pInfo->st_mode);
 	if (do_flag_str()) parseFlags(pFile->flag_str, pInfo->st_flags);
-	if (do_size_str())	parseSize(pFile->size_str, &(pFile->size_unit), &(pFile->size), pInfo->st_rdev);
+	if (do_size_str())	parseSize(pFile->size_str, &pFile->size_unit, &pFile->size, pInfo->st_rdev);
 	if (do_mode_str())	  getMode(pFile->mode_str, pInfo->st_mode);
 	if (do_usr_name())	  getUser(pFile->usr_name, pInfo->st_uid);
 	if (do_grp_name())	 getGroup(pFile->grp_name, pInfo->st_gid);
-	if (do_time_str())	parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &(pFile->time_col));
+	if (do_time_str())	parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &pFile->time_col);
 
-	if (do_mode_str())	 checkACL(&(pFile->has_acl	), path);
-	if (do_mode_str()) checkXattr(&(pFile->has_xattr), path);
+	if (do_mode_str())	 checkACL(&pFile->has_acl, path);
+	if (do_mode_str()) checkXattr(&pFile->has_xattr, path);
 
-	if (DO_COLOUR()) setFileColour(&(pFile->file_col), pFile->name, pInfo->st_mode, pInfo->st_flags, pFile->is_mount);
+	if (DO_COLOUR()) setFileColour(&pFile->file_col, pFile->name, pInfo->st_mode, pInfo->st_flags, pFile->is_mount);
 	if (!S_ISDIR(pInfo->st_mode) && pInfo->st_nlink > 1) pFile->do_link_hl = true;
 }
 
@@ -98,11 +98,11 @@ static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
 	stat_did_fail = stat(path, &target_info) == -1;
 
 	// extract the necessary info from the target file
-	// i.e. only the info that is relevant to when its printed after the -> arrow
+	// i.e. only the info that is relevant to when it's printed after the -> arrow
 	pFile->link_to	= getLink(path);
 	pFile->ln_suf	= getTypeSuffix(target_info.st_mode);
 	pFile->is_mount	= isMountPoint(target_info.st_dev, path);
-	setFileColour(&(pFile->link_col), pFile->link_to, target_info.st_mode, target_info.st_flags, pFile->is_mount);
+	setFileColour(&pFile->link_col, pFile->link_to, target_info.st_mode, target_info.st_flags, pFile->is_mount);
 
 	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
 	return stat_did_fail;
@@ -112,7 +112,7 @@ static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
 
 // called by `getAllFileInfo()`
 static inline void getFileInfo(
-	struct dirent *entry,
+	const struct dirent *entry,
 	FileInfo dirs[], FileInfo files[],
 	int *dir_count, int *file_count, const char *dotdir_path
 ) {
@@ -142,7 +142,7 @@ static inline void getFileInfo(
 		char *orig_target_path = malloc(sizeof(path_t));
 
 		bool is_valid_alias = false;
-		bool is_apple_alias = resolveAppleAlias(orig_target_path, &is_valid_alias, path);
+		const bool is_apple_alias = resolveAppleAlias(orig_target_path, &is_valid_alias, path);
 
 		if (is_apple_alias) {
 			stat_did_fail = getTargetInfo(&file, orig_target_path);
@@ -171,6 +171,7 @@ static inline void getFileInfo(
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// ReSharper disable once CppParameterNamesMismatch
 void getAllFileInfo(
 	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *dotdir_path)
 {
@@ -186,7 +187,7 @@ void getAllFileInfo(
 
 	struct dirent *entry;
 	// now process the rest of the directory
-	while ((entry = readdir(dir_obj)) != NULL && (*dir_count + *file_count) <= MAX_FILES_IN_DIR) {
+	while ((entry = readdir(dir_obj)) != NULL && *dir_count + *file_count <= MAX_FILES_IN_DIR) {
 		// don't process the `..` directory.
 		if (DO_IGNORE_FILE(entry)) continue;
 		// from the file entry, get the required information, and store it in the `dirs` or `files` arrays

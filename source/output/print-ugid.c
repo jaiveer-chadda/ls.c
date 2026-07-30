@@ -13,7 +13,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define GET_USR_NAME_COLOUR()						\
-	usr_uid == *file_uid ? USR_YOU_COL : (			\
+	usr_uid == (*file_uid) ? USR_YOU_COL : (		\
 		*file_uid == 0 ? USR_ROOT_COL : USR_OTH_COL	\
 	)
 
@@ -79,7 +79,7 @@ void printGrpName(const gid_t *file_gid, const ugidstr file_grp_name, const bool
 	/// The username of the user running this process.
 	const char *usr_name = pw->pw_name;
 
-	const bool 
+	const bool
 		in_usr_grp  = is_user_in_group(usr_name, pw->pw_gid, file_grp_name, *file_gid),
 		in_root_grp = *file_gid == 0;
 

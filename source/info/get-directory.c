@@ -5,6 +5,7 @@
 
 #include "info.h"
 
+// ReSharper disable CppParameterNamesMismatch
 DIR* getDirectory(path_t dotdir_path, const int files_start, const int argc, const char *argv[]) {
 	// if there's no input or the input is empty, then the target directory is `.`
 	if (argc == files_start || strlen(argv[files_start]) == 0) {

@@ -15,10 +15,10 @@ bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t 
 	*is_valid_alias = false;
 
 	// convert `file_path` to a CFURL object
-	CFURLRef alias_url = CFURLCreateFromFileSystemRepresentation(
+	const CFURLRef alias_url = CFURLCreateFromFileSystemRepresentation(
 		/* allocator	*/ kCFAllocatorDefault,
 		/* buffer		*/ (const UInt8 *)file_path,
-		/* bufLen		*/ strlen(file_path),
+		/* bufLen		*/ (CFIndex)strlen(file_path),
 		/* isDirectory	*/ false
 	);
 
@@ -26,7 +26,7 @@ bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t 
 
 	// read the alias file into a bookmark `CFData` object
 	CFErrorRef error_;
-	CFDataRef bookmark_data = CFURLCreateBookmarkDataFromFile(
+	const CFDataRef bookmark_data = CFURLCreateBookmarkDataFromFile(
 		/* allocator */ kCFAllocatorDefault,
 		/* fileURL	 */ alias_url,
 		/* errorRef	 */ &error_
@@ -41,7 +41,7 @@ bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t 
 	}
 
 	// extract the stored metadata
-	CFStringRef orig_path_ref = (CFStringRef)CFURLCreateResourcePropertyForKeyFromBookmarkData(
+	const CFStringRef orig_path_ref = CFURLCreateResourcePropertyForKeyFromBookmarkData(
 		/* allocator */ kCFAllocatorDefault,
 		/* key		 */ kCFURLPathKey,
 		/* bookmark	 */ bookmark_data
@@ -52,7 +52,7 @@ bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t 
 
 		path_t target_path;
 
-		// using `FileSystemRepresentation` here to ensure that APFS unicode normalisation is handled safely
+		// using `FileSystemRepresentation` here to ensure that APFS Unicode normalisation is handled safely
 		if (CFStringGetFileSystemRepresentation(
 			/* string	*/ orig_path_ref,
 			/* buffer	*/ target_path,

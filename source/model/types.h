@@ -5,6 +5,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include <stdbool.h>
 #include <sys/stat.h>
 

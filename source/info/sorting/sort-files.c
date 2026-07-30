@@ -37,7 +37,7 @@
 
 static inline void toLower(char *str) {
 	for (int i = 0; str[i] != '\0'; i++) {
-		if IS_UPPER(str[i]) str[i] += ('a' - 'A');
+		if IS_UPPER(str[i]) str[i] += 'a' - 'A';
 	}
 }
 
@@ -72,8 +72,8 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 			int_buf_1[len_1] = '\0';
 			int_buf_2[len_2] = '\0';
 
-			const int num_1 = atoi(int_buf_1);
-			const int num_2 = atoi(int_buf_2);
+			const int num_1 = atoi(int_buf_1); // NOLINT(*-err34-c)
+			const int num_2 = atoi(int_buf_2); // NOLINT(*-err34-c)
 
 			if (num_1 != num_2) return (num_1 < num_2 ? -1 : 1) * reverse;
 
@@ -116,9 +116,8 @@ void sortFiles(FileInfo arr[], const int *arr_count) {
 		case SB_GID  : SORT_FILES_BY(gid)	; return;
 		case SB_NLINK: SORT_FILES_BY(nlink)	; return;
 		case SB_FLAGS: SORT_FILES_BY(flags)	; return;
-		case SB_MODE : SORT_FILES_BY(mode)	; return;
-
-		case SB_NONE : return;
+		case SB_MODE : SORT_FILES_BY(mode)	;
+		case SB_NONE :;
 	}
 	#pragma clang diagnostic pop
 }

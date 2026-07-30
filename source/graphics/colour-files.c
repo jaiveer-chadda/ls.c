@@ -39,7 +39,7 @@ static const char 	*ALL_TEMP_BACK_EXTS[] = {
 #define	  GET_SUID_COLOUR(mode) (((mode) & S_IXUSR) ? FC_SUID_X	  : FC_SUID_N	)
 #define	  GET_SGID_COLOUR(mode) (((mode) & S_IXGRP) ? FC_SGID_X	  : FC_SGID_N	)
 
-#define GET_ARR_LEN(array) (int)(sizeof(array) / sizeof(array[0]))
+#define GET_ARR_LEN(array) (int)(sizeof(array) / sizeof((array)[0]))
 
 #define CHECK_EXTENSION_TYPE(type)			\
 	if (strInArr(extension + 1,				\
@@ -87,6 +87,8 @@ void setFileColour(FileColour *colour, const name_t name, const mode_t mode, con
 			else if (is_mount)		 *colour = FC_MOUNT;				// mount point
 			else					 *colour = FC_DIRECT;				// regular directory
 			return;
+
+		default: break;
 	}
 
 	// colour the file based on the suid/sgid bits
@@ -105,7 +107,7 @@ void setFileColour(FileColour *colour, const name_t name, const mode_t mode, con
 
 	const size_t name_len = strlen(name);
 
-	// if a file ends with a `~` or `#`, then its a temporary file
+	// if a file ends with a `~` or `#`, then it's a temporary file
 	if (name[name_len] == '~' || name[name_len] == '#') {
 		*colour = FC_TEMP_BACK;
 		return;

@@ -15,8 +15,8 @@ void abbrPath(path_t out_path, const path_t abs_path) {
 	const char *HOME = getenv("HOME");
 
 	if (HOME != NULL) {
-		const int home_len = strlen(HOME);
-		const int path_len = strlen(abs_path);
+		const size_t home_len = strlen(HOME);
+		const size_t path_len = strlen(abs_path);
 
 		if (home_len > 0								// if `$HOME` has some value,
 			&& home_len < path_len						// and the full path isn't `$HOME` itself
@@ -68,7 +68,7 @@ int getDirPath(path_t out_path, const path_t path) {
 		}
 	}
 
-	// once we've gotten the absolute path, try and abbreviate it by replacing $HOME with `~`.
+	// once we've got the absolute path, try and abbreviate it by replacing $HOME with `~`.
 	abbrPath(out_path, abs_path);
 
 	// abbrPath will always succeed, so return with success

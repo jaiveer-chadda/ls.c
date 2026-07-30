@@ -17,8 +17,9 @@ static inline dev_t getDevNo(const path_t path) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// ReSharper disable once CppParameterNamesMismatch
 bool isMountPoint(const dev_t file_dev_no, const path_t path) {
-	// resolve the target path to an clean absolute path 
+	// resolve the target path to a clean absolute path
 	path_t abs_path;
 	if (realpath(path, abs_path) == NULL) return false;
 
@@ -36,7 +37,7 @@ bool isMountPoint(const dev_t file_dev_no, const path_t path) {
 	char *path_copy = strdup(abs_path);
 	if (path_copy == NULL) return false;
 
-	char *parent_name = dirname(path_copy);
+	const char *parent_name = dirname(path_copy);
 	free(path_copy);
 
 	return getDevNo(parent_name) != file_dev_no;

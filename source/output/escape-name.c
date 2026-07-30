@@ -23,8 +23,8 @@ typedef unsigned int  u_int;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline bool escapeCharacter(char *esc_seq, const char orig_char) {
-	u_char chr = (u_char)orig_char;
+static bool escapeCharacter(char *esc_seq, const char orig_char) {
+	const u_char chr = (u_char)orig_char;
 	switch (chr) {
 		case '\\'	: strcpy(esc_seq, "\\\\");	return true;
 		case '\a'	: strcpy(esc_seq, "\\a");	return true;
@@ -35,6 +35,7 @@ static inline bool escapeCharacter(char *esc_seq, const char orig_char) {
 		case '\f'	: strcpy(esc_seq, "\\f");	return true;
 		case '\r'	: strcpy(esc_seq, "\\r");	return true;
 		case '\x1b'	: strcpy(esc_seq, "\\e");	return true;
+		default		: break;
 	}
 
 	if DO_OCT_ESC(chr) { sprintf(esc_seq, "\\%u", (u_int)chr); return true; }
@@ -60,7 +61,7 @@ static inline bool escapeCharacter(char *esc_seq, const char orig_char) {
  * @param colour[in] The ANSI escape sequence to check, without the leading `\\e` or trailing `m`.
  * @return true if `colour` will set the background colour, false otherwise.
  */
-static inline bool doesSetBackground(const char *colour) {
+static bool doesSetBackground(const char *colour) {
 	const int start_at = colour[0] == ';' ? 1 : 0;
 	const int len = (int)strlen(colour);
 
@@ -103,7 +104,7 @@ bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_e
 		}
 
 		did_do_escape = true;
-		const int esc_len = strlen(esc_seq);
+		const int esc_len = (int)strlen(esc_seq);
 
 		strcpy(escaped_name + write_idx, esc_seq);
 		write_idx += esc_len;

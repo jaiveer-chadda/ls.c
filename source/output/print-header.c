@@ -9,7 +9,7 @@
 
 #include "output.h"
 
-#define IF_COLOUR(yes, no) DO_COLOUR() ? yes : no
+#define IF_COLOUR(yes, no) DO_COLOUR() ? (yes) : (no)
 
 #define SHOULD_ALIGN_RIGHT(field)		 \
 	(  strcmp((#field), "flags"	  ) == 0 \

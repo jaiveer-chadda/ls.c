@@ -6,7 +6,6 @@
 #include "../form/formatting.h"
 #include "../options/options.h"
 #include "../graphics/graphics.h"
-#include "../features/mode/mode.h"
 #include "../features/mount/mount-point.h"
 
 #include "output.h"
@@ -83,7 +82,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(flags)	; PRINT_FLAG_STR();
 		PRINT_TIME (time)	; PRINT_TIME(time_str);
 
-		printName(file.name, &(file.file_col), &(file.do_link_hl), &(file.flags), &(file.suffix));
+		printName(file.name, &file.file_col, &file.do_link_hl, &file.flags, &file.suffix);
 
 		if (do_suffix() && file.suffix != '\0') putchar(file.suffix);
 		if (DO_SYMLINK()) printSymlink(file.link_to, file.ln_suf, file.link_col);

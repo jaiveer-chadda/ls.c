@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include "../mode/mode.h"
 #include "../path/path.h"
@@ -20,6 +19,7 @@ link_t getLink(const path_t link_path) {
 	/* ————————————————————————————————————————————————————— */
 
 	// this memory is freed once the link is printed (in `printSymlink()`)
+	// ReSharper disable once CppLocalVariableMayBeConst
 	link_t link_str = malloc(sizeof(char) * MAX_PATH_LEN);
 
 	if (link_str == NULL) {

@@ -16,7 +16,7 @@
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
 #define SET_EXT_BIT(str, chr) /* exec == lowercase, non-exec == uppercase */ \
-	(str)[2] = ((str)[2] == EXEC_BIT_CHAR) ? (chr) : (chr) - ('a' - 'A')
+	((str)[2] = ((str)[2] == EXEC_BIT_CHAR) ? (chr) : (chr) - ('a' - 'A'))
 
 #define PARSE_PERM(location, ext_char, type) do {							\
 		getPermStr((type ## _oct), (type ## _str));							\
@@ -57,6 +57,7 @@ inline char getTypeSuffix(const mode_t mode) {
 		case S_IFIFO:	return PIPE_CHAR;		// named pipe
 		case S_IFSOCK:	return SOCKET_CHAR;		// socket
 		case S_IFWHT:	return WHITEOUT_CHAR;	// whiteout
+		default		: break;
 	}
 	if (mode & EXEC_MASK) return EXEC_SUFFIX;	// executable
 	return '\0';								// other/unknown
@@ -65,7 +66,7 @@ inline char getTypeSuffix(const mode_t mode) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void getMode(modestr mode_str, const mode_t oct_mode) {
-	// separate oct_mode by bitshifting it, leaving just one digit from 0-7 in each var
+	// separate oct_mode by bit shifting it, leaving just one digit from 0-7 in each var
 	const mode_t // Note: 3 = log2(8)
 		ext_oct = (oct_mode & EXT_MASK) >> (3 * 3), // `d--s--s--t` == `7000`
 		usr_oct = (oct_mode & USR_MASK) >> (3 * 2), // `drwx------` == `0700`

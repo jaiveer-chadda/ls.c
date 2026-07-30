@@ -8,10 +8,10 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define SEC   1
-#define MIN  60
-#define HOUR 60 * MIN
-#define DAY  24 * HOUR
+#define SEC    1
+#define MIN   60
+#define HOUR (60 * MIN)
+#define DAY  (24 * HOUR)
 
 #define SET_DATE_TEXT(text) b_writ = strftime(time_str, MAX_TIME_LEN, (text TIME_FMT), pTime)
 
@@ -30,12 +30,12 @@ inline void initTime(void) {
 	const struct tm *cur_time_tm = localtime(&current_time);
 
 	diff_midn =
-		(cur_time_tm->tm_hour * HOUR) +
-		(cur_time_tm->tm_min  * MIN	) +
-		(cur_time_tm->tm_sec		);
+		cur_time_tm->tm_hour * HOUR +
+		cur_time_tm->tm_min  * MIN +
+		cur_time_tm->tm_sec;
 
-	diff_month	= diff_midn + ((cur_time_tm->tm_mday - 1) * DAY);
-	diff_year	= diff_midn + ((cur_time_tm->tm_yday - 1) * DAY);
+	diff_month	= diff_midn + (cur_time_tm->tm_mday - 1) * DAY;
+	diff_year	= diff_midn + (cur_time_tm->tm_yday - 1) * DAY;
 }
 
 inline void parseTime(timestr time_str, const time_t file_time, TimeColour *time_col) {

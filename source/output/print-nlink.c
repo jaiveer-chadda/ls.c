@@ -5,7 +5,6 @@
 
 #include "../form/formatting.h"
 #include "../options/options.h"
-#include "../model/stat-model.h"
 #include "../graphics/graphics.h"
 
 void printNLink(const nlink_t *nlink, const mode_t *mode) {

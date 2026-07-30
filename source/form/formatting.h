@@ -1,11 +1,11 @@
 /// @file form/formatting.h
 
-void initFormatting(void);
-
 #ifndef FORMATTING_INITIALIASED
 #define FORMATTING_INITIALIASED
 
 #include "../model/stat-model.h"
+
+void initFormatting(void);
 
 /* ——————————————————————————————————————————————————————— */
 

@@ -52,5 +52,5 @@ inline void parseSize(sizestr size_str, char *size_unit, off_t *size, const dev_
 	}
 
 	*size_unit = SUFFIXES[unit_idx];
-	sprintf(size_str, (unit_idx == 0 ? "%.0Lf" : "%.1Lf"), abbr_size);
+	sprintf(size_str, unit_idx == 0 ? "%.0Lf" : "%.1Lf", abbr_size);
 }

@@ -15,7 +15,6 @@
 
 #include "features/path/path.h"
 #include "features/time/time.h"
-#include "features/mount/mount-point.h"
 
 path_t G_DOTDIR_PATH = DOTDIR;
 
@@ -34,7 +33,7 @@ int main(const int argc, const char *argv[]) {
 	if (input_dir == NULL) return EXIT_FAILURE;
 
 	// Resolve the path to the target directory, which'll be used to replace the `.` directory's name
-	//  (casting to void, since there's nth we can rly do if we dont manage to get it)
+	//  (casting to void, since there's nth we can rly do if we don't manage to get it)
 	(void)getDirPath(G_DOTDIR_PATH, input_dir_path);
 
 	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */

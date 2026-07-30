@@ -16,8 +16,9 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// ReSharper disable once CppParameterMayBeConst
 void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour link_col) {
-	const bool is_valid_path = (suffix != INVALID_LINK && suffix != INV_APPLE_LINK);
+	const bool is_valid_path = suffix != INVALID_LINK && suffix != INV_APPLE_LINK;
 
 	/* ————————————————————————————————————————————————————— */
 
@@ -53,7 +54,7 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 
 	// FIXME: this won't work if the path ends with extra slashes
 	const char *p_last_slash  = strrchr(p_target_path, '/');
-	const bool contains_slash = (p_last_slash != NULL);
+	const bool contains_slash = p_last_slash != NULL;
 	const char *p_basename	  = contains_slash ? p_last_slash + 1 : p_target_path;
 
 	path_t escd_basename, escd_dirname = "";

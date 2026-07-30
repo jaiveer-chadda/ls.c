@@ -13,10 +13,10 @@
 #define IS_UID() (i == 3) /// `3` is the index of the SUID bit in the mode string.
 #define IS_OTH() (i == 8) /// `8` is the index of the `other-writable` bit in the mode string.
 
-#define ESCS_ARE_EQUAL(esc_1, esc_2)			\
-	((esc_1 == esc_2) ||						\
-		esc_1 != PC_COUNT && esc_2 != PC_COUNT	\
-		&& strcmp(perm_colour_esc[esc_1], perm_colour_esc[esc_2]) == 0)
+#define ESCS_ARE_EQUAL(esc_1, esc_2)				\
+	(((esc_1) == (esc_2)) ||						\
+		(esc_1) != PC_COUNT && (esc_2) != PC_COUNT	\
+		&& strcmp(perm_colour_esc[(esc_1)], perm_colour_esc[(esc_2)]) == 0)
 
 #define STRCAT_COLOUR(str, colour, csi) do {				\
 		OutputStr tmp_str = "";								\
@@ -49,6 +49,7 @@ void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 			case CHRDEV_CHAR	: type = FC_CHR_DEV	; break;
 			case BLKDEV_CHAR	: type = FC_BLK_DEV	; break;
 			case WHITEOUT_CHAR	: type = FC_WHITEOUT; break;
+			default: break;
 		}
 
 		STRCAT_COLOUR(output, file_colour_esc[type], CSI);
@@ -59,6 +60,7 @@ void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 
 	/* ——————————————————————————————————————————————————————————————————————— */
 
+	// ReSharper disable once CppJoinDeclarationAndAssignment
 	PermColour last_esc, esc = PC_COUNT;
 
 	for (int i = 1; i < MODE_STR_LEN; i++) {
@@ -81,9 +83,10 @@ void printModeStr(const modestr str, const bool has_acl, const bool has_xattr) {
 				case SUGID_X_BIT_CHAR	: esc = IS_UID() ? PC_SUID_X : PC_SGID_X; break;
 				case SUGID_N_BIT_CHAR	: esc = IS_UID() ? PC_SUID_N : PC_SGID_N; break;
 
-				// colour the sticky bit based on whether the files is executable or not
+				// colour the sticky bit based on whether the files are executables or not
 				case STICKY_X_BIT_CHAR	: esc = PC_STICKY_X	; break;
 				case STICKY_N_BIT_CHAR	: esc = PC_STICKY_N	; break;
+				default: break;
 			}
 
 			// only print an escape if the previous one wasn't the exact same

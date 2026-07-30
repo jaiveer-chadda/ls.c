@@ -4,14 +4,14 @@
 #include <pwd.h>
 #include <grp.h>
 
-void getUser(char *usr_str, uid_t uid) {
+void getUser(char *usr_str, const uid_t uid) {
 	const struct passwd *pw = getpwuid(uid);
 	if (pw == NULL) { strcpy(usr_str, "-"); return; }
 
 	strcpy(usr_str, pw->pw_name);
 }
 
-void getGroup(char *grp_str, gid_t gid) {
+void getGroup(char *grp_str, const gid_t gid) {
 	const struct group *grp = getgrgid(gid);
 	if (grp == NULL) { strcpy(grp_str, "-"); return; }
 

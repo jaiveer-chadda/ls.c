@@ -45,7 +45,7 @@
 static inline void findDivider(bool *do_divider, char *div_char, const char *name) {
 	/// Which characters to check for, to see if a file is a divider file, listed in order of priority.
 	const char *DIVIDER_OPTIONS[] = { "─", "—", "–", "-", "_", "•" };
-	const int NUM_OPTIONS = (int)(sizeof(DIVIDER_OPTIONS) / sizeof(DIVIDER_OPTIONS[0]));
+	const int NUM_OPTIONS = sizeof(DIVIDER_OPTIONS) / sizeof(DIVIDER_OPTIONS[0]);
 
 	for (int i = 0; i < NUM_OPTIONS; i++) {
 		const char *test_char = DIVIDER_OPTIONS[i];
@@ -80,7 +80,7 @@ static inline void printDivider(const char *div_char) {
 		const int COLUMNS = window.ws_col;
 		for (int _ = 0; _ < COLUMNS; _++) printf("%s", div_char);
 
-		printf("%s%s", (DO_COLOUR() ? RESET : NO_COLOUR), SMAM);
+		printf("%s%s", DO_COLOUR() ? RESET : NO_COLOUR, SMAM);
 	}
 }
 
@@ -94,13 +94,13 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 		strcmp(name, DOTDIR) == 0 ? UNDER			 ";" : NO_COLOUR,
 		*is_hln					  ? HARDLN_UNDERLINE ";" : NO_COLOUR,
 
-		(char*)(file_colour_esc[*colour])
+		(char*)file_colour_esc[*colour]
 	);
 
 	/* ————————————————————————————————————————————————————————————————— */
 
 	path_t escaped_name;
-	bool does_have_escape = escapeName(escaped_name, name, file_colour);
+	const bool does_have_escape = escapeName(escaped_name, name, file_colour);
 
 	/* ————————————————————————————————————————————————————————————————— */
 
@@ -120,7 +120,7 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 			CSI, file_colour, END,
 			escaped_name,
 			// if the file's a divider, then there's no need to reset the colour
-			(do_divider ? NO_COLOUR : RESET)
+			do_divider ? NO_COLOUR : RESET
 		);
 
 	} else {

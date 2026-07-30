@@ -12,7 +12,7 @@
 
 #### [√] Sorting
 - [x] Sort files by name
-- [x] Sort entires with directories first
+- [x] Sort entries with directories first
 - [x] Implement a way to sort them by any category
   - Probably with the `-s | --sort-by <field>` flag
 
@@ -191,7 +191,7 @@
 ##### [ ] Apple Comments
 - [ ] Add some sort of lookup/integration with Apple's file comments system
   - [ ] Either do it with AppleScript,
-    - once again, luckily, AppleScript has a compiled file format `.scpt`, but I honestly don't rly trust its effiency
+    - once again, luckily, AppleScript has a compiled file format `.scpt`, but I honestly don't rly trust its efficiency
   - [ ] or find a way to parse `.DS_Store`
 
 ##### [ ] Apple Tags
@@ -208,7 +208,7 @@
 - [ ] Find a way to use the same process as `/usr/bin/file` to find out what *specific* type of file smth is
   - i.e. running: `file ~zdd/.zshrc`
   - yields: `.../zsh/.zshrc: a /usr/bin/env zsh script text executable, Unicode text, UTF-8 text`
-    - which tells you more info about the file that you would have gotten on your own
+    - which tells you more info about the file that you would have got on your own
   - If I had to guess how it worked
     - it probably checks the file's binary header, to see if it has any special info
     - and if that fails, it'll check the first line of the file to see if it has a shebang
