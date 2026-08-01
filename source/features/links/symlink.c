@@ -6,6 +6,7 @@
 
 #include "../mode/mode.h"
 #include "../path/path.h"
+#include "../../utils/malloc.h"
 #include "../../model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -20,12 +21,7 @@ link_t getLink(const path_t link_path) {
 
 	// this memory is freed once the link is printed (in `printSymlink()`)
 	// ReSharper disable once CppLocalVariableMayBeConst
-	link_t link_str = malloc(sizeof(char) * MAX_PATH_LEN);
-
-	if (link_str == NULL) {
-		perror(ERROR "malloc:link_str");
-		exit(EXIT_FAILURE);
-	}
+	link_t link_str = emalloc(sizeof(char) * MAX_PATH_LEN);
 
 	abbrPath(link_str, link);
 

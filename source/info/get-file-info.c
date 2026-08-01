@@ -7,6 +7,7 @@
 
 #include "info.h"
 
+#include "../utils/malloc.h"
 #include "../options/options.h"
 #include "../graphics/graphics.h"
 
@@ -139,7 +140,7 @@ static inline void getFileInfo(
 		stat_did_fail = getTargetInfo(&file, path);
 
 	} else if (S_ISREG(info.st_mode) && info.st_size > 0) {
-		char *orig_target_path = malloc(sizeof(path_t));
+		char *orig_target_path = emalloc(sizeof(path_t));
 
 		bool is_valid_alias = false;
 		const bool is_apple_alias = resolveAppleAlias(orig_target_path, &is_valid_alias, path);

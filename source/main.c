@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "info/info.h"
+#include "utils/malloc.h"
 #include "output/output.h"
 #include "form/formatting.h"
 #include "options/options.h"
@@ -44,13 +45,8 @@ int main(const int argc, const char *argv[]) {
 	/* —— Get File Info from `stat` —————————————————————————————————————————————————————————————— */
 
 	FileInfo
-		*dirs  = malloc(MAX_FILES_IN_DIR * sizeof(FileInfo)),
-		*files = malloc(MAX_FILES_IN_DIR * sizeof(FileInfo));
-
-	if (dirs == NULL || files == NULL) {
-		perror(ERROR "malloc:dirs|files");
-		exit(EXIT_FAILURE);
-	}
+		*dirs  = emalloc(MAX_FILES_IN_DIR * sizeof(FileInfo)),
+		*files = emalloc(MAX_FILES_IN_DIR * sizeof(FileInfo));
 
 	int dir_count, file_count;
 
@@ -72,11 +68,7 @@ int main(const int argc, const char *argv[]) {
 
 	const int count = dir_count + file_count;
 
-	FileInfo *all_files = malloc(count * sizeof(FileInfo));
-	if (all_files == NULL) {
-		perror(ERROR "malloc:all_files");
-		exit(EXIT_FAILURE);
-	}
+	FileInfo *all_files = emalloc(count * sizeof(FileInfo));
 
 	memcpy(all_files,			  dirs,  dir_count  * sizeof(FileInfo));
 	memcpy(all_files + dir_count, files, file_count * sizeof(FileInfo));
