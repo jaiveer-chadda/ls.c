@@ -15,19 +15,23 @@
 /* —— Declare Constants & Set Defaults ————————————————————————————————————————————————————————————————————————————— */
 
 static SortByField U_SORT_BY  = SB_DEFAULT;
-static bool U_DO_REVERSE_SORT = false;
 
+#define X(name, ...) [name] = { __VA_ARGS__ },
+static BinaryOption binary_opts[] = { BINARY_OPTIONS_TABLE };
+#undef X
 
 static bool
-	U_DO_COLOUR, // `U_DO_COLOUR` is the only one that doesn't need a default - it'll be set no matter what
+	U_DO_COLOUR, 		// `U_DO_COLOUR` is the only one that doesn't need a default - it'll be set no matter what
+	U_DO_TINY_FLAGS		= false	,
+	U_DO_SHORT_FLAGS	= true	,
+
 	U_DO_CLEAR			= false	,
 	U_DO_HEADER			= false	,
 	U_DO_DIVIDERS		= true	,
 	U_DO_MOUNT_DEV		= true	,
 	U_DO_DIM_HIDDEN		= true	,
-	U_DO_TINY_FLAGS		= false	,
-	U_DO_SHORT_FLAGS	= true	,
-	U_SORT_DIRS_FIRST	= true	;
+	U_SORT_DIRS_FIRST	= true	,
+	U_DO_REVERSE_SORT	= false	;
 
 static bool
 	U_DO_SUFFIX		= true	,
@@ -150,6 +154,11 @@ int setOptions(const int argc, const char *argv[]) {
 			continue;
 		}
 
+		if (OPTION_IS("--no-sort")) {
+			U_SORT_BY = SB_NONE;
+			continue;
+		}
+
 		if (OPTION_IS_OF("--sort", "--sort-by") || OPTION_IS("--rsort")) {
 			if (OPTION_IS("--rsort")) U_DO_REVERSE_SORT = !U_DO_REVERSE_SORT;
 
@@ -178,6 +187,8 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --colour ——————————————————————————————————————————————————— */
 
+		if (OPTION_IS_OF("--no-colour", "--no-color")) { colour_auto = false, U_DO_COLOUR = false; continue; }
+
 		if (OPTION_IS_OF("--colour", "--color")) {
 			colour_auto = false;
 			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; i++; continue; }
@@ -187,8 +198,6 @@ int setOptions(const int argc, const char *argv[]) {
 			// if no argument is given, then, like `ls`, assume `--colour` means `--colour always`
 			U_DO_COLOUR = true; continue;
 		}
-
-		if (OPTION_IS_OF("--no-colour", "--no-color")) { colour_auto = false, U_DO_COLOUR = false; continue; }
 
 		/* —— --flags ———————————————————————————————————————————————————— */
 
