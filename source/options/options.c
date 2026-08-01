@@ -74,27 +74,24 @@ static inline bool doColourAuto(void) {
 /* ——————————————————————————————————————————————————————————————————— */
 
 #define BINARY_OPT(flag, var) \
-	if (OPTION_IS("--"	  #flag)) { (var) = true ; continue; } \
-	if (OPTION_IS("--no-" #flag)) { (var) = false; continue; }
+	if (OPTION_IS("--"	  # flag)) { (var) = true ; continue; } \
+	if (OPTION_IS("--no-" # flag)) { (var) = false; continue; }
 
 #define FIELD_OPT(flag, var) \
-	if (OPTION_IS_OF("--" #flag, "--do-" #flag)) { (var) = true ; continue; } \
-	if (OPTION_IS("--no-" #flag))				 { (var) = false; continue; }
+	if (OPTION_IS_OF("--" # flag, "--do-" # flag))	{ (var) = true ; continue; } \
+	if (OPTION_IS("--no-" # flag))					{ (var) = false; continue; }
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-#define   ERROR_TAKES_ARG() do { fprintf(stderr, ERROR "`%s` takes argument\n" , opt); usage(EXIT_FAILURE); } while (0)
-#define ERROR_INVALID_OPT() do { fprintf(stderr, ERROR "unknown option: `%s`\n", opt); usage(EXIT_FAILURE); } while (0)
-
-#define ERROR_BAD_ARG(args)						\
-	do {										\
-		fprintf(stderr, ERROR					\
-			"invalid argument `%s` for `%s`. "	\
-			"possible arguments are: %s\n",		\
-			optarg, opt, (args)					\
-		);										\
-		usage(1);								\
+#define THROW_ERR(message, ...)								\
+	do {													\
+		fprintf(stderr, (ERROR message "\n"), __VA_ARGS__);	\
+		usage(EXIT_FAILURE);								\
 	} while (0)
+
+#define ERR_INVALID_OPT() THROW_ERR("unknown option: `%s`", opt)
+#define ERR_TAKES_ARG()	  THROW_ERR("`%s` takes an argument", opt)
+#define ERR_BAD_ARG(args) THROW_ERR("invalid argument `%s` for `%s`. possible arguments are: %s", optarg, opt, (args))
 
 /* ——————————————————————————————————————————————————————————————————— */
 
@@ -148,7 +145,10 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --sort-by —————————————————————————————————————————————————— */
 
-		if (OPTION_IS("--reverse")) { U_DO_REVERSE_SORT = !U_DO_REVERSE_SORT; continue; }
+		if (OPTION_IS("--reverse")) {
+			U_DO_REVERSE_SORT = !U_DO_REVERSE_SORT;
+			continue;
+		}
 
 		if (OPTION_IS_OF("--sort", "--sort-by") || OPTION_IS("--rsort")) {
 			if (OPTION_IS("--rsort")) U_DO_REVERSE_SORT = !U_DO_REVERSE_SORT;
@@ -165,12 +165,12 @@ int setOptions(const int argc, const char *argv[]) {
 			else if	(OPTARG_IS("flags")) U_SORT_BY = SB_FLAGS ;
 			else if	(OPTARG_IS("mode" )) U_SORT_BY = SB_MODE  ;
 
-			else if	(HAS_ARG) ERROR_BAD_ARG(
+			else if	(HAS_ARG) ERR_BAD_ARG(
 				"\n - name (default)"	  "\n - size"  "\n - time"
 				"\n - uid"   "\n - gid"   "\n - inode" "\n - devno"
 				"\n - links" "\n - flags" "\n - mode"  "\n - none"
 			);
-			else ERROR_TAKES_ARG();
+			else ERR_TAKES_ARG();
 
 			i++;
 			continue;
@@ -183,7 +183,7 @@ int setOptions(const int argc, const char *argv[]) {
 			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; i++; continue; }
 			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; i++; continue; }
 			if (OPTARG_IS("auto"  )) { colour_auto = true ; i++; continue; }
-			if (HAS_ARG) ERROR_BAD_ARG("always, never, auto");
+			if (HAS_ARG) ERR_BAD_ARG("always, never, auto");
 			// if no argument is given, then, like `ls`, assume `--colour` means `--colour always`
 			U_DO_COLOUR = true; continue;
 		}
@@ -196,7 +196,7 @@ int setOptions(const int argc, const char *argv[]) {
 			if (OPTARG_IS("long" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = false; i++; continue; }
 			if (OPTARG_IS("short")) { U_DO_SHORT_FLAGS = true , U_DO_TINY_FLAGS = false; i++; continue; }
 			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; i++; continue; }
-			if (HAS_ARG) ERROR_BAD_ARG("long, short, tiny");
+			if (HAS_ARG) ERR_BAD_ARG("long, short, tiny");
 			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
 			U_DO_FLAGS = true; continue;
 		}
@@ -233,7 +233,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* ——————————————————————————————————————————————————————————————— */
 
-		ERROR_INVALID_OPT();
+		ERR_INVALID_OPT();
 	}
 
 	/* ——————————————————————————————————————————————————————————————— */
