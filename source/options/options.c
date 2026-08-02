@@ -6,13 +6,14 @@
 #include <string.h>
 
 #include "options.h"
+#include "../utils/malloc.h"
 
 #ifndef t
 #define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug that my error checker has */
 #define f 0
 #endif
 
-/* —— Declare Constants & Set Defaults ————————————————————————————————————————————————————————————————————————————— */
+/* —— Initialise Options ——————————————————————————————————————————————————————————————————————————————————————————— */
 
 // `U_DO_COLOUR` doesn't need a default - it's the only option that'll be set no matter what
 static bool U_DO_COLOUR, U_DO_TINY_FLAGS = false, U_DO_SHORT_FLAGS = true;
@@ -22,7 +23,7 @@ static SortByField U_SORT_BY = SB_DEFAULT;
 static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #undef X
 
-/* —— Set Colour ——————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— doColourAuto() ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline bool doColourAuto(void) {
 	if (!isatty(STDOUT_FILENO)) return false;
@@ -39,12 +40,17 @@ static inline bool doColourAuto(void) {
 	return true;
 }
 
-/* —— Set Options —————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Generic Macros ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] != '-'))
 #define HAS_ARG		(strcmp(optarg, "") != 0)
 
-/* ——————————————————————————————————————————————————————————————————— */
+#define CONTINUE goto label_continue
+
+#define CONSUME_ARG i++
+#define UN_CONSUME_ARG i--
+
+/* —— Option/Optarg Macros ——————————————————————————————————————————— */
 
 #define OPTARG_IS(str) (strcmp(optarg, (str)) == 0)
 #define IS_OPTION(str) (strcmp(opt, (str)) == 0)
@@ -58,7 +64,7 @@ static inline bool doColourAuto(void) {
 
 #define OPTION_IS(...) GET_MACRO(__VA_ARGS__, OPT_3, OPT_2, OPT_1)(__VA_ARGS__)
 
-/* ——————————————————————————————————————————————————————————————————— */
+/* —— Binary Option Macros ——————————————————————————————————————————— */
 
 #define ARR_LEN(array) (int)(sizeof(array) / sizeof(array[0]))
 #define NOT_REACHED_END_OF_ARR(idx, array) idx < ARR_LEN(array) && array[idx] != NULL
@@ -70,12 +76,13 @@ static inline bool doColourAuto(void) {
 	do {											\
 		sprintf(flag_buf, prefix "%s", base_flag);	\
 		if (OPTION_IS(flag_buf)) {					\
+			if (HAS_ARG) ERR_NO_ARGS();				\
 			bin_opt->value = bool_val;				\
-			goto end_of_loop;						\
+			CONTINUE;								\
 		}											\
 	} while (0)
 
-/* ——————————————————————————————————————————————————————————————————— */
+/* —— Error Macros ——————————————————————————————————————————————————— */
 
 #define THROW_ERR(message, ...)								\
 	do {													\
@@ -85,9 +92,11 @@ static inline bool doColourAuto(void) {
 
 #define ERR_INVALID_OPT() THROW_ERR("unknown option: `%s`", opt)
 #define ERR_TAKES_ARG()	  THROW_ERR("`%s` takes an argument", opt)
+#define ERR_EMPTY_ARG()	  THROW_ERR("argument for `%s` is empty", opt)
+#define ERR_NO_ARGS()	  THROW_ERR("`%s` doesn't take an argument", opt)
 #define ERR_BAD_ARG(args) THROW_ERR("invalid argument `%s` for `%s`. possible arguments are: %s", optarg, opt, (args))
 
-/* ——————————————————————————————————————————————————————————————————— */
+/* —— all...On() ————————————————————————————————————————————————————— */
 
 static inline void allOptsOn(void) {
 	U_DO_TINY_FLAGS	 = false,
@@ -106,7 +115,7 @@ static inline void allFieldsOn(void) {
 	}
 }
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── setOptions() ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 int setOptions(const int argc, const char *argv[]) {
 	if (strcmp(argv[0], "c" PROGRAM_NAME) == 0) VALUE_OF(DO_CLEAR) = true;
@@ -115,13 +124,33 @@ int setOptions(const int argc, const char *argv[]) {
 
 	int i;
 	for (i = 1; i < argc; i++) {
-		const char *opt		= argv[i];
-		const char *optarg	= ARG_EXISTS ? argv[i + 1] : "";
+		char *opt	 = (char *)argv[i];
+		char *optarg = ARG_EXISTS ? (char *)argv[i + 1] : "";
 
 		/* —— End Option Parsing ————————————————————————————————————————— */
 
 		if (opt[0] != '-' && opt[0] != '+') break;
-		if (OPTION_IS("--")) { i++; break; }
+		if (OPTION_IS("--")) { CONSUME_ARG; break; }
+
+		/* —— Check for `--option=value` ————————————————————————————————— */
+
+		const char *equal_arg = strchr(opt, '=');
+		bool did_malloc = false;
+
+		if (equal_arg != NULL) {
+			optarg = (char *)(equal_arg + 1);
+			UN_CONSUME_ARG;
+			if (strlen(optarg) == 0) ERR_EMPTY_ARG();
+
+			const int option_len = equal_arg - opt;
+			char *adj_opt = emalloc(option_len + 1);
+			did_malloc = true;
+
+			strncpy(adj_opt, opt, option_len);
+			adj_opt[option_len] = '\0';
+
+			opt = adj_opt;
+		}
 
 		/* —— --help ————————————————————————————————————————————————————— */
 
@@ -131,7 +160,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 		if (OPTION_IS("--no-sort")) {
 			U_SORT_BY = SB_NONE;
-			continue;
+			CONTINUE;
 		}
 
 		if (OPTION_IS("--sort", "--sort-by", "--rsort")) {
@@ -156,42 +185,44 @@ int setOptions(const int argc, const char *argv[]) {
 			);
 			else ERR_TAKES_ARG();
 
-			i++;
-			continue;
+			CONSUME_ARG;
+			CONTINUE;
 		}
 
 		/* —— --colour ——————————————————————————————————————————————————— */
 
 		if (OPTION_IS("--no-colour", "--no-color")) {
 			colour_auto = false, U_DO_COLOUR = false;
-			continue;
+			CONTINUE;
 		}
 
 		if (OPTION_IS("--colour", "--color")) {
 			colour_auto = false;
-			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; i++; continue; }
-			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; i++; continue; }
-			if (OPTARG_IS("auto"  )) { colour_auto = true ; i++; continue; }
+			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; CONSUME_ARG; CONTINUE; }
+			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; CONSUME_ARG; CONTINUE; }
+			if (OPTARG_IS("auto"  )) { colour_auto = true ; CONSUME_ARG; CONTINUE; }
 			if (HAS_ARG) ERR_BAD_ARG("always, never, auto");
+
 			// if no argument is given, then, like `ls`, assume `--colour` means `--colour always`
-			U_DO_COLOUR = true; continue;
+			U_DO_COLOUR = true;
+			CONTINUE;
 		}
 
 		/* —— --flags ———————————————————————————————————————————————————— */
 
 		if (OPTION_IS("--flags")) {
-			if (OPTARG_IS("long" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = false; i++; continue; }
-			if (OPTARG_IS("short")) { U_DO_SHORT_FLAGS = true , U_DO_TINY_FLAGS = false; i++; continue; }
-			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; i++; continue; }
+			if (OPTARG_IS("long" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = false; CONSUME_ARG; CONTINUE; }
+			if (OPTARG_IS("short")) { U_DO_SHORT_FLAGS = true , U_DO_TINY_FLAGS = false; CONSUME_ARG; CONTINUE; }
+			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; CONSUME_ARG; CONTINUE; }
 			if (HAS_ARG) ERR_BAD_ARG("long, short, tiny");
 			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
-			VALUE_OF(do_flags) = true; continue;
+			VALUE_OF(do_flags) = true; CONTINUE;
 		}
 
 		/* —— All Fields ————————————————————————————————————————————————— */
 
-		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  continue; }
-		if (OPTION_IS("--all"))			{ allFieldsOn(); allOptsOn(); continue; }
+		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  CONTINUE; }
+		if (OPTION_IS("--all"))			{ allFieldsOn(); allOptsOn(); CONTINUE; }
 
 		/* —— Binary Options ————————————————————————————————————————————— */
 
@@ -213,10 +244,10 @@ int setOptions(const int argc, const char *argv[]) {
 		// any input that hasn't been matched above should be treated as an invalid option
 		ERR_INVALID_OPT();
 
-		/* —— `goto` Target —————————————————————————————————————————————— */
+		/* —— `goto label_continue` Target ——————————————————————————————— */
 
-		end_of_loop:
-			continue;
+		label_continue:
+			if (did_malloc) free(opt);
 	}
 
 	/* —— Handle Colour & Return ————————————————————————————————————— */

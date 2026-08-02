@@ -5,6 +5,6 @@
 #include "options.h"
 
 void usage(const int exit_code) {
-	fputs("\33[31musage\33[m\n", stderr);
+	// fputs("\33[31musage\33[m\n", stderr);
 	exit(exit_code);
 }
