@@ -14,14 +14,9 @@
 
 /* —— Declare Constants & Set Defaults ————————————————————————————————————————————————————————————————————————————— */
 
-static SortByField U_SORT_BY  = SB_DEFAULT;
-
-static bool
-	U_DO_COLOUR, 		// `U_DO_COLOUR` is the only one that doesn't need a default - it'll be set no matter what
-	U_DO_TINY_FLAGS		= false	,
-	U_DO_SHORT_FLAGS	= true	;
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+// `U_DO_COLOUR` doesn't need a default - it's the only option that'll be set no matter what
+static bool U_DO_COLOUR, U_DO_TINY_FLAGS = false, U_DO_SHORT_FLAGS = true;
+static SortByField U_SORT_BY = SB_DEFAULT;
 
 #define X(name, ...) [name] = { __VA_ARGS__ },
 static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
@@ -52,17 +47,21 @@ static inline bool doColourAuto(void) {
 #define OPTION_IS(str) (strcmp(opt	 , (str)) == 0)
 #define OPTARG_IS(str) (strcmp(optarg, (str)) == 0)
 
-#define OPTION_IS_OF(str1, str2) (OPTION_IS((str1)) || OPTION_IS((str2)))
-
 /* ——————————————————————————————————————————————————————————————————— */
 
-#define BINARY_OPT(flag, var) \
-	if (OPTION_IS("--"	  # flag)) { (var) = true ; continue; } \
-	if (OPTION_IS("--no-" # flag)) { (var) = false; continue; }
+// #define BINARY_OPT(flag, var) \
+// 	if (OPTION_IS("--"	  # flag)) { (var) = true ; continue; } \
+// 	if (OPTION_IS("--no-" # flag)) { (var) = false; continue; }
 
-#define FIELD_OPT(flag, var) \
-	if (OPTION_IS_OF("--" # flag, "--do-" # flag))	{ (var) = true ; continue; } \
-	if (OPTION_IS("--no-" # flag))					{ (var) = false; continue; }
+// #define FIELD_OPT(flag, var) \
+// 	if (OPTION_IS_OF("--" # flag, "--do-" # flag))	{ (var) = true ; continue; } \
+// 	if (OPTION_IS("--no-" # flag))					{ (var) = false; continue; }
+
+#define ARR_LEN(array) (int)(sizeof(array) / sizeof(array[0]))
+#define NOT_REACHED_END_OF_ARR(idx, array) idx < ARR_LEN(array) && array[idx] != NULL
+
+#define BIN_OPT_VAL(option) BINARY_OPTS[BO_ ## option].value
+#define MAKE_BIN_OPT_FUNC(option) bool option(void) { return BIN_OPT_VAL(option); }
 
 /* ——————————————————————————————————————————————————————————————————— */
 
@@ -75,11 +74,6 @@ static inline bool doColourAuto(void) {
 #define ERR_INVALID_OPT() THROW_ERR("unknown option: `%s`", opt)
 #define ERR_TAKES_ARG()	  THROW_ERR("`%s` takes an argument", opt)
 #define ERR_BAD_ARG(args) THROW_ERR("invalid argument `%s` for `%s`. possible arguments are: %s", optarg, opt, (args))
-
-/* ——————————————————————————————————————————————————————————————————— */
-
-#define ARR_LEN(array) (int)(sizeof(array) / sizeof(array[0]))
-#define NOT_REACHED_END_OF_ARR(idx, array) idx < ARR_LEN(array) && array[idx] != NULL
 
 /* ——————————————————————————————————————————————————————————————————— */
 
@@ -103,13 +97,12 @@ static inline void allFieldsOn(void) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 int setOptions(const int argc, const char *argv[]) {
-	if (strcmp(argv[0], "c" PROGRAM_NAME) == 0) BINARY_OPTS[BO_DO_CLEAR].value = true;
+	if (strcmp(argv[0], "c" PROGRAM_NAME) == 0) BIN_OPT_VAL(DO_CLEAR) = true;
 
 	bool colour_auto = true;
 
 	int i;
 	for (i = 1; i < argc; i++) {
-
 		const char *opt		= argv[i];
 		const char *optarg	= ARG_EXISTS ? argv[i + 1] : "";
 
@@ -120,24 +113,17 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --help ————————————————————————————————————————————————————— */
 
-		if (OPTION_IS_OF("--help", "-h")) usage(EXIT_SUCCESS);
+		if (OPTION_IS("--help") || OPTION_IS("-h")) usage(EXIT_SUCCESS);
 
 		/* —— --sort-by —————————————————————————————————————————————————— */
-
-		// if (OPTION_IS("--reverse")) {
-		// 	U_DO_REVERSE_SORT = !U_DO_REVERSE_SORT;
-		// 	continue;
-		// }
 
 		if (OPTION_IS("--no-sort")) {
 			U_SORT_BY = SB_NONE;
 			continue;
 		}
 
-		if (OPTION_IS_OF("--sort", "--sort-by") || OPTION_IS("--rsort")) {
-			if (OPTION_IS("--rsort")) {
-				BINARY_OPTS[BO_DO_REVERSE_SORT].value = !BINARY_OPTS[BO_DO_REVERSE_SORT].value;
-			}
+		if (OPTION_IS("--sort") || OPTION_IS("--sort-by") || OPTION_IS("--rsort")) {
+			if (OPTION_IS("--rsort")) BIN_OPT_VAL(DO_REVERSE_SORT) = !BIN_OPT_VAL(DO_REVERSE_SORT);
 
 			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE  ;
 			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME  ;
@@ -164,12 +150,12 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --colour ——————————————————————————————————————————————————— */
 
-		if (OPTION_IS_OF("--no-colour", "--no-color")) {
+		if (OPTION_IS("--no-colour") || OPTION_IS("--no-color")) {
 			colour_auto = false, U_DO_COLOUR = false;
 			continue;
 		}
 
-		if (OPTION_IS_OF("--colour", "--color")) {
+		if (OPTION_IS("--colour") || OPTION_IS("--color")) {
 			colour_auto = false;
 			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; i++; continue; }
 			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; i++; continue; }
@@ -187,7 +173,7 @@ int setOptions(const int argc, const char *argv[]) {
 			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; i++; continue; }
 			if (HAS_ARG) ERR_BAD_ARG("long, short, tiny");
 			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
-			BINARY_OPTS[BO_do_flags].value = true; continue;
+			BIN_OPT_VAL(do_flags) = true; continue;
 		}
 
 		/* —— Binary Options ————————————————————————————————————————————— */
@@ -213,17 +199,18 @@ int setOptions(const int argc, const char *argv[]) {
 		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  continue; }
 		if (OPTION_IS("--all"))			{ allFieldsOn(); allOptsOn(); continue; }
 
-		/* ——————————————————————————————————————————————————————————————— */
+		/* —— Invalid Options ———————————————————————————————————————————— */
 
+		// any input that hasn't been matched above should be treated as an invalid option
 		ERR_INVALID_OPT();
 
-		/* ——————————————————————————————————————————————————————————————— */
+		/* —— `goto` Target —————————————————————————————————————————————— */
 
 		end_of_loop:
 			continue;
 	}
 
-	/* ——————————————————————————————————————————————————————————————— */
+	/* —— Handle Colour & Return ————————————————————————————————————— */
 
 	// if `--colour` wasn't set, or if `--colour auto` was given, then determine whether colour should be used
 	if (colour_auto) U_DO_COLOUR = doColourAuto();
@@ -234,40 +221,35 @@ int setOptions(const int argc, const char *argv[]) {
 
 /* —— Define Getter Functions —————————————————————————————————————————————————————————————————————————————————————— */
 
-SortByField SORT_BY (void) { return U_SORT_BY			; }
-
-bool DO_COLOUR		(void) { return U_DO_COLOUR			; }
-bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS		; }
-bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS	; }
-
-bool DO_CLEAR		(void) { return BINARY_OPTS[BO_DO_CLEAR			].value; }
-bool DO_HEADER		(void) { return BINARY_OPTS[BO_DO_HEADER		].value; }
-bool DO_DIVIDERS	(void) { return BINARY_OPTS[BO_DO_DIVIDERS		].value; }
-bool DO_MOUNT_DEV	(void) { return BINARY_OPTS[BO_DO_MOUNT_DEV		].value; }
-bool DO_DIM_HIDDEN	(void) { return BINARY_OPTS[BO_DO_DIM_HIDDEN	].value; }
-bool SORT_DIRS_FIRST(void) { return BINARY_OPTS[BO_SORT_DIRS_FIRST	].value; }
-bool DO_REVERSE_SORT(void) { return BINARY_OPTS[BO_DO_REVERSE_SORT	].value; }
+SortByField SORT_BY	(void) { return U_SORT_BY		; }
+bool DO_COLOUR		(void) { return U_DO_COLOUR		; }
+bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS	; }
+bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS; }
 
 /* ————————————————————————————————————————————————————————— */
 
-bool do_suffix	 (void) { return BINARY_OPTS[BO_do_suffix	].value; }
-bool do_link_to	 (void) { return BINARY_OPTS[BO_do_link_to	].value; }
+MAKE_BIN_OPT_FUNC(DO_CLEAR)
+MAKE_BIN_OPT_FUNC(DO_HEADER)
+MAKE_BIN_OPT_FUNC(DO_DIVIDERS)
+MAKE_BIN_OPT_FUNC(DO_MOUNT_DEV)
+MAKE_BIN_OPT_FUNC(DO_DIM_HIDDEN)
+MAKE_BIN_OPT_FUNC(SORT_DIRS_FIRST)
+MAKE_BIN_OPT_FUNC(DO_REVERSE_SORT)
 
-bool do_nlink	 (void) { return BINARY_OPTS[BO_do_nlink	].value; }
-bool do_dev_no	 (void) { return BINARY_OPTS[BO_do_dev_no	].value; }
-bool do_inode	 (void) { return BINARY_OPTS[BO_do_inode	].value; }
+/* ————————————————————————————————————————————————————————— */
 
-bool do_flags	 (void) { return BINARY_OPTS[BO_do_flags	].value; }
-bool do_flag_str (void) { return BINARY_OPTS[BO_do_flag_str	].value; }
-bool do_mode	 (void) { return BINARY_OPTS[BO_do_mode		].value; }
-bool do_mode_str (void) { return BINARY_OPTS[BO_do_mode_str	].value; }
-bool do_size	 (void) { return BINARY_OPTS[BO_do_size		].value; }
-bool do_size_str (void) { return BINARY_OPTS[BO_do_size_str	].value; }
-bool do_uid		 (void) { return BINARY_OPTS[BO_do_uid		].value; }
-bool do_usr_name (void) { return BINARY_OPTS[BO_do_usr_name	].value; }
-bool do_gid		 (void) { return BINARY_OPTS[BO_do_gid		].value; }
-bool do_grp_name (void) { return BINARY_OPTS[BO_do_grp_name	].value; }
-bool do_time	 (void) { return BINARY_OPTS[BO_do_time		].value; }
-bool do_time_str (void) { return BINARY_OPTS[BO_do_time_str	].value; }
+MAKE_BIN_OPT_FUNC(do_suffix	 )
+MAKE_BIN_OPT_FUNC(do_link_to )
+
+MAKE_BIN_OPT_FUNC(do_nlink	 )
+MAKE_BIN_OPT_FUNC(do_dev_no	 )
+MAKE_BIN_OPT_FUNC(do_inode	 )
+
+MAKE_BIN_OPT_FUNC(do_flags	 )	MAKE_BIN_OPT_FUNC(do_flag_str)
+MAKE_BIN_OPT_FUNC(do_mode	 )	MAKE_BIN_OPT_FUNC(do_mode_str)
+MAKE_BIN_OPT_FUNC(do_size	 )	MAKE_BIN_OPT_FUNC(do_size_str)
+MAKE_BIN_OPT_FUNC(do_uid	 )	MAKE_BIN_OPT_FUNC(do_usr_name)
+MAKE_BIN_OPT_FUNC(do_gid	 )	MAKE_BIN_OPT_FUNC(do_grp_name)
+MAKE_BIN_OPT_FUNC(do_time	 )	MAKE_BIN_OPT_FUNC(do_time_str)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
