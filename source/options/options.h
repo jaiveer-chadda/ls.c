@@ -13,33 +13,35 @@ int setOptions(const int argc, const char *argv[]);
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define NSF 0 /// No short flag.
+#define MAX_OPT_FLAG_LEN 16
+#define MAX_OPT_FLAG_NUM 3
 
 #define BINARY_OPTIONS_TABLE \
-	X(BO_DO_CLEAR		, false	, false	, 'c', { "clear"									}, 1) \
-	X(BO_DO_HEADER		, false	, false	, 'H', { "header"		, "headers"					}, 2) \
-	X(BO_DO_DIVIDERS	, true	, false	, '_', { "divider"		, "dividers"				}, 2) \
-	X(BO_DO_MOUNT_DEV	, true	, false	, 'M', { "mount"		, "mounts"					}, 2) \
-	X(BO_DO_DIM_HIDDEN	, true	, false	, '.', { "dim-hidden"	, "dim"						}, 2) \
-	X(BO_SORT_DIRS_FIRST, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}, 2) \
-	X(BO_DO_REVERSE_SORT, false	, false	, 'r', { "reverse"		, "rev"						}, 2) \
+	X(BO_DO_CLEAR		, false	, false	, 'c', { "clear"									}) \
+	X(BO_DO_HEADER		, false	, false	, 'H', { "header"		, "headers"					}) \
+	X(BO_DO_DIVIDERS	, true	, false	, '_', { "divider"		, "dividers"				}) \
+	X(BO_DO_MOUNT_DEV	, true	, false	, 'M', { "mount"		, "mounts"					}) \
+	X(BO_DO_DIM_HIDDEN	, true	, false	, '.', { "dim-hidden"	, "dim"						}) \
+	X(BO_SORT_DIRS_FIRST, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}) \
+	X(BO_DO_REVERSE_SORT, false	, false	, 'r', { "reverse"		, "rev"						}) \
 	\
-	X(BO_DO_SUFFIX		, true	, true	, 'P', { "suffix"		, "mark-type"				}, 2) \
-	X(BO_DO_LINK_TO		, true	, true	, 'l', { "link-to"		, "symlinks"				}, 2) \
-	X(BO_DO_NLINK		, true	, true	, 'n', { "nlink"									}, 1) \
-	X(BO_DO_DEV_NO		, false	, true	, NSF, { "dev-no"		, "device-number"			}, 2) \
-	X(BO_DO_INODE		, false	, true	, 'i', { "inode"		, "ino"			, "inum"	}, 3) \
-	X(BO_DO_FLAGS		, false	, true	, NSF, { "flags"									}, 1) \
-	X(BO_DO_FLAG_STR	, true	, true	, NSF, { "flag-str"		, "flags-str"				}, 2) \
-	X(BO_DO_MODE		, false	, true	, NSF, { "mode"										}, 1) \
-	X(BO_DO_MODE_STR	, true	, true	, NSF, { "mode-str"									}, 1) \
-	X(BO_DO_SIZE		, false	, true	, NSF, { "size"										}, 1) \
-	X(BO_DO_SIZE_STR	, true	, true	, NSF, { "size-str"									}, 1) \
-	X(BO_DO_UID			, false	, true	, 'u', { "uid"										}, 1) \
-	X(BO_DO_USR_NAME	, true	, true	, 'U', { "uid-str"		, "usr-name"	, "user"	}, 3) \
-	X(BO_DO_GID			, false	, true	, 'g', { "gid"										}, 1) \
-	X(BO_DO_GRP_NAME	, true	, true	, 'G', { "gid-str"		, "grp-name"	, "group"	}, 3) \
-	X(BO_DO_TIME		, false	, true	, NSF, { "time"										}, 1) \
-	X(BO_DO_TIME_STR	, true	, true	, NSF, { "time-str"									}, 1)
+	X(BO_do_suffix		, true	, true	, 'P', { "suffix"		, "mark-type"				}) \
+	X(BO_do_link_to		, true	, true	, 'l', { "link-to"		, "symlinks"				}) \
+	X(BO_do_nlink		, true	, true	, 'n', { "nlink"									}) \
+	X(BO_do_dev_no		, false	, true	, NSF, { "dev-no"		, "device-number"			}) \
+	X(BO_do_inode		, false	, true	, 'i', { "inode"		, "ino"			, "inum"	}) \
+	X(BO_do_flags		, false	, true	, NSF, { "flags"									}) \
+	X(BO_do_flag_str	, true	, true	, NSF, { "flag-str"		, "flags-str"				}) \
+	X(BO_do_mode		, false	, true	, NSF, { "mode"										}) \
+	X(BO_do_mode_str	, true	, true	, NSF, { "mode-str"									}) \
+	X(BO_do_size		, false	, true	, NSF, { "size"										}) \
+	X(BO_do_size_str	, true	, true	, NSF, { "size-str"									}) \
+	X(BO_do_uid			, false	, true	, 'u', { "uid"										}) \
+	X(BO_do_usr_name	, true	, true	, 'U', { "uid-str"		, "usr-name"	, "user"	}) \
+	X(BO_do_gid			, false	, true	, 'g', { "gid"										}) \
+	X(BO_do_grp_name	, true	, true	, 'G', { "gid-str"		, "grp-name"	, "group"	}) \
+	X(BO_do_time		, false	, true	, NSF, { "time"										}) \
+	X(BO_do_time_str	, true	, true	, NSF, { "time-str"									})
 
 #define X(name, ...) name,
 typedef enum { BINARY_OPTIONS_TABLE BINOPT_COUNT } BinOptIdx;
@@ -49,8 +51,7 @@ typedef struct {
 	bool value;
 	bool is_field;
 	char short_flag;
-	char long_flags[3][16];
-	int  flag_count;
+	char long_flags[MAX_OPT_FLAG_NUM][MAX_OPT_FLAG_LEN];
 } BinaryOption;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

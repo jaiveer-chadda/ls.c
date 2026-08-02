@@ -19,35 +19,12 @@ static SortByField U_SORT_BY  = SB_DEFAULT;
 static bool
 	U_DO_COLOUR, 		// `U_DO_COLOUR` is the only one that doesn't need a default - it'll be set no matter what
 	U_DO_TINY_FLAGS		= false	,
-	U_DO_SHORT_FLAGS	= true	,
-
-	U_DO_CLEAR			= false	,
-	U_DO_HEADER			= false	,
-	U_DO_DIVIDERS		= true	,
-	U_DO_MOUNT_DEV		= true	,
-	U_DO_DIM_HIDDEN		= true	,
-	U_SORT_DIRS_FIRST	= true	,
-	U_DO_REVERSE_SORT	= false	;
-
-static bool
-	U_DO_SUFFIX		= true	,
-	U_DO_LINK_TO	= true	,
-
-	U_DO_NLINK		= true	,
-	U_DO_DEV_NO		= false	,
-	U_DO_INODE		= false	,
-
-	U_DO_FLAGS		= false	,	U_DO_FLAG_STR = true,
-	U_DO_MODE		= false	,	U_DO_MODE_STR = true,
-	U_DO_SIZE		= false	,	U_DO_SIZE_STR = true,
-	U_DO_UID		= false	,	U_DO_USR_NAME = true,
-	U_DO_GID		= false	,	U_DO_GRP_NAME = true,
-	U_DO_TIME		= false	,	U_DO_TIME_STR = true;
+	U_DO_SHORT_FLAGS	= true	;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define X(name, ...) [name] = { __VA_ARGS__ },
-static BinaryOption binary_opts[] = { BINARY_OPTIONS_TABLE };
+static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #undef X
 
 /* —— Set Colour ——————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -99,40 +76,34 @@ static inline bool doColourAuto(void) {
 #define ERR_TAKES_ARG()	  THROW_ERR("`%s` takes an argument", opt)
 #define ERR_BAD_ARG(args) THROW_ERR("invalid argument `%s` for `%s`. possible arguments are: %s", optarg, opt, (args))
 
+/* ——————————————————————————————————————————————————————————————————— */
+
 #define ARR_LEN(array) (int)(sizeof(array) / sizeof(array[0]))
+#define NOT_REACHED_END_OF_ARR(idx, array) idx < ARR_LEN(array) && array[idx] != NULL
 
 /* ——————————————————————————————————————————————————————————————————— */
 
 static inline void allOptsOn(void) {
-	U_DO_HEADER			= true	,
-	U_DO_DIVIDERS		= true	,
-	U_DO_MOUNT_DEV		= true	,
-	U_DO_DIM_HIDDEN		= true	,
-	U_DO_TINY_FLAGS		= false	,
-	U_DO_SHORT_FLAGS	= false	,
-	U_SORT_DIRS_FIRST	= true	;
+	U_DO_TINY_FLAGS	 = false,
+	U_DO_SHORT_FLAGS = false;
+
+	for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
+		BINARY_OPTS[opt_i].value = true;
+	}
 }
 
 static inline void allFieldsOn(void) {
-	U_DO_SUFFIX		= true,
-	U_DO_LINK_TO	= true,
-
-	U_DO_NLINK		= true,
-	U_DO_DEV_NO		= true,
-	U_DO_INODE		= true,
-
-	U_DO_FLAGS		= true, U_DO_FLAG_STR = true,
-	U_DO_MODE		= true, U_DO_MODE_STR = true,
-	U_DO_SIZE		= true, U_DO_SIZE_STR = true,
-	U_DO_UID		= true, U_DO_USR_NAME = true,
-	U_DO_GID		= true, U_DO_GRP_NAME = true,
-	U_DO_TIME		= true, U_DO_TIME_STR = true;
+	for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
+		if (BINARY_OPTS[opt_i].is_field) {
+			BINARY_OPTS[opt_i].value = true;
+		}
+	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 int setOptions(const int argc, const char *argv[]) {
-	if (strcmp(argv[0], "c" PROGRAM_NAME) == 0) U_DO_CLEAR = true;
+	if (strcmp(argv[0], "c" PROGRAM_NAME) == 0) BINARY_OPTS[BO_DO_CLEAR].value = true;
 
 	bool colour_auto = true;
 
@@ -164,7 +135,9 @@ int setOptions(const int argc, const char *argv[]) {
 		}
 
 		if (OPTION_IS_OF("--sort", "--sort-by") || OPTION_IS("--rsort")) {
-			if (OPTION_IS("--rsort")) U_DO_REVERSE_SORT = !U_DO_REVERSE_SORT;
+			if (OPTION_IS("--rsort")) {
+				BINARY_OPTS[BO_DO_REVERSE_SORT].value = !BINARY_OPTS[BO_DO_REVERSE_SORT].value;
+			}
 
 			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE  ;
 			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME  ;
@@ -214,47 +187,26 @@ int setOptions(const int argc, const char *argv[]) {
 			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; i++; continue; }
 			if (HAS_ARG) ERR_BAD_ARG("long, short, tiny");
 			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
-			U_DO_FLAGS = true; continue;
+			BINARY_OPTS[BO_do_flags].value = true; continue;
 		}
 
 		/* —— Binary Options ————————————————————————————————————————————— */
 
-		for (int i = 0; i < BINOPT_COUNT; i++) {
-			BinaryOption bin_opt = binary_opts[i];
+		for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
+			BinaryOption *bin_opt = &BINARY_OPTS[opt_i];
 
-			char long_flag[16];
+			for (int flag_i = 0; NOT_REACHED_END_OF_ARR(flag_i, bin_opt->long_flags); flag_i++) {
+				char long_flag[MAX_OPT_FLAG_LEN + 5];
+				sprintf(long_flag, "--%s", bin_opt->long_flags[flag_i]);
 
-			for (int j = 0; j < bin_opt.flag_count; j++) {
-				sprintf(long_flag, "--%s", bin_opt.long_flags[j]);
+				printf("%s", long_flag); fflush(stdout);
 
-				printf(" %s=", long_flag);
-				fflush(stdout);
-				if (OPTION_IS(long_flag)) bin_opt.value = true;
+				if (OPTION_IS(long_flag)) {
+					bin_opt->value = true;
+					goto end_of_loop;
+				}
 			}
 		}
-
-		// BINARY_OPT(clear			, U_DO_CLEAR		);
-		// BINARY_OPT(headers			, U_DO_HEADER		);
-		// BINARY_OPT(dividers			, U_DO_DIVIDERS		);
-		// BINARY_OPT(mount-dev		, U_DO_MOUNT_DEV	);
-		// BINARY_OPT(dim-hidden		, U_DO_DIM_HIDDEN	);
-		// BINARY_OPT(sort-dirs-first	, U_SORT_DIRS_FIRST	);
-
-		// /* —— Field Setting/Unsetting ——————————————————————————————————— */
-
-		// FIELD_OPT(suffix, U_DO_SUFFIX	);
-		// FIELD_OPT(link	, U_DO_LINK_TO	);
-
-		// FIELD_OPT(nlink	, U_DO_NLINK	);
-		// FIELD_OPT(dev-no, U_DO_DEV_NO	);
-		// FIELD_OPT(inode	, U_DO_INODE	);
-
-		// FIELD_OPT(flags	, U_DO_FLAGS	);	FIELD_OPT(flag-str, U_DO_FLAG_STR);
-		// FIELD_OPT(mode	, U_DO_MODE		);	FIELD_OPT(mode-str, U_DO_MODE_STR);
-		// FIELD_OPT(size	, U_DO_SIZE		);	FIELD_OPT(size-str, U_DO_SIZE_STR);
-		// FIELD_OPT(uid	, U_DO_UID		);	FIELD_OPT(usr-name, U_DO_USR_NAME);
-		// FIELD_OPT(gid	, U_DO_GID		);	FIELD_OPT(grp-name, U_DO_GRP_NAME);
-		// FIELD_OPT(time	, U_DO_TIME		);	FIELD_OPT(time-str, U_DO_TIME_STR);
 
 		/* —— All Fields ————————————————————————————————————————————————— */
 
@@ -264,6 +216,11 @@ int setOptions(const int argc, const char *argv[]) {
 		/* ——————————————————————————————————————————————————————————————— */
 
 		ERR_INVALID_OPT();
+
+		/* ——————————————————————————————————————————————————————————————— */
+
+		end_of_loop:
+			continue;
 	}
 
 	/* ——————————————————————————————————————————————————————————————— */
@@ -283,34 +240,34 @@ bool DO_COLOUR		(void) { return U_DO_COLOUR			; }
 bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS		; }
 bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS	; }
 
-bool DO_CLEAR		(void) { return binary_opts[BO_DO_CLEAR			].value; }
-bool DO_HEADER		(void) { return binary_opts[BO_DO_HEADER		].value; }
-bool DO_DIVIDERS	(void) { return binary_opts[BO_DO_DIVIDERS		].value; }
-bool DO_MOUNT_DEV	(void) { return binary_opts[BO_DO_MOUNT_DEV		].value; }
-bool DO_DIM_HIDDEN	(void) { return binary_opts[BO_DO_DIM_HIDDEN	].value; }
-bool SORT_DIRS_FIRST(void) { return binary_opts[BO_SORT_DIRS_FIRST	].value; }
-bool DO_REVERSE_SORT(void) { return binary_opts[BO_DO_REVERSE_SORT	].value; }
+bool DO_CLEAR		(void) { return BINARY_OPTS[BO_DO_CLEAR			].value; }
+bool DO_HEADER		(void) { return BINARY_OPTS[BO_DO_HEADER		].value; }
+bool DO_DIVIDERS	(void) { return BINARY_OPTS[BO_DO_DIVIDERS		].value; }
+bool DO_MOUNT_DEV	(void) { return BINARY_OPTS[BO_DO_MOUNT_DEV		].value; }
+bool DO_DIM_HIDDEN	(void) { return BINARY_OPTS[BO_DO_DIM_HIDDEN	].value; }
+bool SORT_DIRS_FIRST(void) { return BINARY_OPTS[BO_SORT_DIRS_FIRST	].value; }
+bool DO_REVERSE_SORT(void) { return BINARY_OPTS[BO_DO_REVERSE_SORT	].value; }
 
 /* ————————————————————————————————————————————————————————— */
 
-bool do_suffix	 (void) { return binary_opts[BO_DO_SUFFIX	].value; }
-bool do_link_to	 (void) { return binary_opts[BO_DO_LINK_TO	].value; }
+bool do_suffix	 (void) { return BINARY_OPTS[BO_do_suffix	].value; }
+bool do_link_to	 (void) { return BINARY_OPTS[BO_do_link_to	].value; }
 
-bool do_nlink	 (void) { return binary_opts[BO_DO_NLINK	].value; }
-bool do_dev_no	 (void) { return binary_opts[BO_DO_DEV_NO	].value; }
-bool do_inode	 (void) { return binary_opts[BO_DO_INODE	].value; }
+bool do_nlink	 (void) { return BINARY_OPTS[BO_do_nlink	].value; }
+bool do_dev_no	 (void) { return BINARY_OPTS[BO_do_dev_no	].value; }
+bool do_inode	 (void) { return BINARY_OPTS[BO_do_inode	].value; }
 
-bool do_flags	 (void) { return binary_opts[BO_DO_FLAGS	].value; }
-bool do_flag_str (void) { return binary_opts[BO_DO_FLAG_STR	].value; }
-bool do_mode	 (void) { return binary_opts[BO_DO_MODE		].value; }
-bool do_mode_str (void) { return binary_opts[BO_DO_MODE_STR	].value; }
-bool do_size	 (void) { return binary_opts[BO_DO_SIZE		].value; }
-bool do_size_str (void) { return binary_opts[BO_DO_SIZE_STR	].value; }
-bool do_uid		 (void) { return binary_opts[BO_DO_UID		].value; }
-bool do_usr_name (void) { return binary_opts[BO_DO_USR_NAME	].value; }
-bool do_gid		 (void) { return binary_opts[BO_DO_GID		].value; }
-bool do_grp_name (void) { return binary_opts[BO_DO_GRP_NAME	].value; }
-bool do_time	 (void) { return binary_opts[BO_DO_TIME		].value; }
-bool do_time_str (void) { return binary_opts[BO_DO_TIME_STR	].value; }
+bool do_flags	 (void) { return BINARY_OPTS[BO_do_flags	].value; }
+bool do_flag_str (void) { return BINARY_OPTS[BO_do_flag_str	].value; }
+bool do_mode	 (void) { return BINARY_OPTS[BO_do_mode		].value; }
+bool do_mode_str (void) { return BINARY_OPTS[BO_do_mode_str	].value; }
+bool do_size	 (void) { return BINARY_OPTS[BO_do_size		].value; }
+bool do_size_str (void) { return BINARY_OPTS[BO_do_size_str	].value; }
+bool do_uid		 (void) { return BINARY_OPTS[BO_do_uid		].value; }
+bool do_usr_name (void) { return BINARY_OPTS[BO_do_usr_name	].value; }
+bool do_gid		 (void) { return BINARY_OPTS[BO_do_gid		].value; }
+bool do_grp_name (void) { return BINARY_OPTS[BO_do_grp_name	].value; }
+bool do_time	 (void) { return BINARY_OPTS[BO_do_time		].value; }
+bool do_time_str (void) { return BINARY_OPTS[BO_do_time_str	].value; }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
