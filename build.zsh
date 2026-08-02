@@ -24,7 +24,10 @@ function -- () {
 
   local -r  CC=clang
   local -ra CFLAGS=( O0 )
-  local -ra WARNINGS=( all extra pedantic no-deprecated-declarations )
+  local -ra WARNINGS=(
+    all extra pedantic
+    no-deprecated-declarations no-variadic-macro-arguments-omitted
+  )
 
   # ————————————————————————————————————————————————————————————————————————— #
 

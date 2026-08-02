@@ -44,8 +44,19 @@ static inline bool doColourAuto(void) {
 #define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] != '-'))
 #define HAS_ARG		(strcmp(optarg, "") != 0)
 
-#define OPTION_IS(str) (strcmp(opt	 , (str)) == 0)
+/* ——————————————————————————————————————————————————————————————————— */
+
 #define OPTARG_IS(str) (strcmp(optarg, (str)) == 0)
+#define IS_OPTION(str) (strcmp(opt, (str)) == 0)
+
+#define OPT_1(a)			IS_OPTION(a)
+#define OPT_2(a, b)			IS_OPTION(a) || IS_OPTION(b)
+#define OPT_3(a, b, c)		IS_OPTION(a) || IS_OPTION(b) || IS_OPTION(c)
+#define OPT_4(a, b, c, d)	IS_OPTION(a) || IS_OPTION(b) || IS_OPTION(c) || IS_OPTION(d)
+
+#define GET_MACRO(_1, _2, _3, NAME, ...) NAME
+
+#define OPTION_IS(...) GET_MACRO(__VA_ARGS__, OPT_3, OPT_2, OPT_1)(__VA_ARGS__)
 
 /* ——————————————————————————————————————————————————————————————————— */
 
@@ -114,7 +125,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --help ————————————————————————————————————————————————————— */
 
-		if (OPTION_IS("--help") || OPTION_IS("-h")) usage(EXIT_SUCCESS);
+		if (OPTION_IS("--help", "-h")) usage(EXIT_SUCCESS);
 
 		/* —— --sort-by —————————————————————————————————————————————————— */
 
@@ -123,7 +134,7 @@ int setOptions(const int argc, const char *argv[]) {
 			continue;
 		}
 
-		if (OPTION_IS("--sort") || OPTION_IS("--sort-by") || OPTION_IS("--rsort")) {
+		if (OPTION_IS("--sort", "--sort-by", "--rsort")) {
 			if (OPTION_IS("--rsort")) VALUE_OF(DO_REVERSE_SORT) = !VALUE_OF(DO_REVERSE_SORT);
 
 			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE  ;
@@ -151,12 +162,12 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --colour ——————————————————————————————————————————————————— */
 
-		if (OPTION_IS("--no-colour") || OPTION_IS("--no-color")) {
+		if (OPTION_IS("--no-colour", "--no-color")) {
 			colour_auto = false, U_DO_COLOUR = false;
 			continue;
 		}
 
-		if (OPTION_IS("--colour") || OPTION_IS("--color")) {
+		if (OPTION_IS("--colour", "--color")) {
 			colour_auto = false;
 			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; i++; continue; }
 			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; i++; continue; }
