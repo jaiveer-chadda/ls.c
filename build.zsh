@@ -24,6 +24,12 @@ function -- () {
 
   local -r  CC=clang
   local -ra CFLAGS=( O0 )
+
+  # ————————————————————————————————————————————————————————————————————————— #
+
+  local -a DEFINITIONS=()
+  if [[ "$1" == (--|)debug ]] DEFINITIONS+=( DEBUG_MODE ) && shift
+
   local -ra WARNINGS=(
     all extra pedantic
     no-deprecated-declarations no-variadic-macro-arguments-omitted
@@ -52,6 +58,7 @@ function -- () {
   # ————————————————————————————————————————————————————————————————————————— #
 
   local -ra ALL_BUILD_ARGS=(
+    "-D${(@)^DEFINITIONS}"
     "-W${(@)^WARNINGS}"
     "-I${(@)^INCLUDES}"
     "-l${(@)^LDLIBS}"

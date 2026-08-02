@@ -16,14 +16,22 @@
 
 #include "features/path/path.h"
 #include "features/time/time.h"
+#include "debugging/debugging.h"
 
 path_t G_DOTDIR_PATH = DOTDIR;
 
 int main(const int argc, const char *argv[]) {
 
+	#ifdef DEBUG_MODE
+	printf("%s", CLEAR_SCREEN);
+	fflush(stdout);
+	#endif
+
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
 
 	const int files_start = setOptions(argc, argv);
+
+	debug(DEBUG, "some debugging message");
 
 	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
 
@@ -89,7 +97,9 @@ int main(const int argc, const char *argv[]) {
 
 	/* —— Print Header ——————————————————————————————————————————————————————————————————————————— */
 
+	#ifndef DEBUG_MODE
 	if (DO_CLEAR()) printf("%s", CLEAR_SCREEN);
+	#endif
 
 	// Print the fields' headers
 	if (DO_HEADER()) printHeader();
