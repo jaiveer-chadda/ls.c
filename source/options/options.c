@@ -16,10 +16,6 @@
 
 static SortByField U_SORT_BY  = SB_DEFAULT;
 
-#define X(name, ...) [name] = { __VA_ARGS__ },
-static BinaryOption binary_opts[] = { BINARY_OPTIONS_TABLE };
-#undef X
-
 static bool
 	U_DO_COLOUR, 		// `U_DO_COLOUR` is the only one that doesn't need a default - it'll be set no matter what
 	U_DO_TINY_FLAGS		= false	,

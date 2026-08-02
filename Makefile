@@ -34,7 +34,7 @@ FRAMEWORKS	= -framework CoreFoundation
 # find where the `libmagic` library is stored, and pass it to the linker
 BREW_PREFIX	:= $(shell brew --prefix libmagic)
 INCLUDES	= -I$(BREW_PREFIX)/include
-LDFLAGS		= -L$(BREW_PREFIX)/lib
+LDFLAGS		= -L$(BREW_PREFIX)/lib -fsanitize=address
 LDLIBS		= -lmagic
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
