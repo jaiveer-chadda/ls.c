@@ -117,6 +117,14 @@
 
 #define HARDLN_UNDERLINE		";21;58;5;13"	// \e[21m \e[95m
 
+/* —— Mount Point ——————————————————————————————————————————————————————————— */
+
+// [/dev/disk3s1s1 (apfs)]
+#define MTPT_COL_FROM			"38;5;182"		// /dev/disk3s1s1
+#define MTPT_COL_TYPE			"38;5;146"		//  apfs
+#define MTPT_COL_PUNC_1			PUNCT			// \e[90m
+#define MTPT_COL_PUNC_2			PUNCT			// \e[90m
+
 /* —— Mode / Permissions ———————————————————————————————————————————————————— */
 
 #define NO_PERM_CHAR			'-'

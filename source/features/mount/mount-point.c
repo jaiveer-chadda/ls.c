@@ -55,5 +55,13 @@ void printMountDevice(const name_t filename) {
 	if (statfs(abs_path, &dev_info) != 0) return;
 
 	// recreating `eza`s format: `[source (filesystem)]`
-	printf(" [%s (%s)]", dev_info.f_mntfromname, dev_info.f_fstypename);
+	printf(" %s%s" "%s%s" " %s%s" "%s%s" "%s%s" "%s%s" "%s",
+		ANSI(MTPT_COL_PUNC_1), "[",
+		ANSI(MTPT_COL_FROM	), dev_info.f_mntfromname,
+		ANSI(MTPT_COL_PUNC_2), "(",
+		ANSI(MTPT_COL_TYPE	), dev_info.f_fstypename,
+		ANSI(MTPT_COL_PUNC_2), ")",
+		ANSI(MTPT_COL_PUNC_1), "]",
+		RESET
+	);
 }
