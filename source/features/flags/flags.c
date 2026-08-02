@@ -3,9 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../../model/stat-model.h"
-
 #include "flags.h"
+#include "model/stat-model.h"
 
 const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 	{ UF_NODUMP		, "nodump"		, "nodmp", "nd", FL_U_NODUMP	 }, // do not dump file

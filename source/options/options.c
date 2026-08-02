@@ -6,8 +6,8 @@
 #include <string.h>
 
 #include "options.h"
-#include "../utils/malloc.h"
-#include "../utils/string.h"
+#include "utils/malloc.h"
+#include "utils/string.h"
 
 #ifndef t
 #define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug that my error checker has */

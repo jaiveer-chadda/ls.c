@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "path.h"
-#include "../../info/info.h"
+#include "info/info.h"
 
 void abbrPath(path_t out_path, const path_t abs_path) {
 	// by default, copy the abs_path

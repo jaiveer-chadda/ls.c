@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "../mode/mode.h"
-#include "../path/path.h"
-#include "../../utils/malloc.h"
-#include "../../model/stat-model.h"
+#include "utils/malloc.h"
+#include "model/stat-model.h"
+#include "features/path/path.h"
+#include "features/mode/mode.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

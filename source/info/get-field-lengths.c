@@ -4,8 +4,8 @@
 #include <string.h>
 
 #include "info.h"
-#include "../form/formatting.h"
-#include "../options/options.h"
+#include "form/formatting.h"
+#include "options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../model/stat-model.h"
-#include "../form/formatting.h"
-#include "../options/options.h"
+#include "model/stat-model.h"
+#include "form/formatting.h"
+#include "options/options.h"
 
-#include "../features/flags/flags.h"
+#include "features/flags/flags.h"
 
 void printFlagStr(const flag_t *flags) {
 	if (!do_flag_str()) return;

@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../../model/stat-model.h"
 #include "time.h"
+#include "model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

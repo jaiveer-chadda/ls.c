@@ -4,8 +4,8 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "../../model/stat-model.h"
 #include "size.h"
+#include "model/stat-model.h"
 
 inline void parseSize(sizestr size_str, char *size_unit, off_t *size, const dev_t rdev) {
 	if (rdev != 0) { // if there's any info in `rdev`, then display them instead of the `off_t`

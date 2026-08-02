@@ -3,7 +3,7 @@
 #ifndef INFO_INITIALISED
 #define INFO_INITIALISED
 
-#include "../model/stat-model.h"
+#include "model/stat-model.h"
 
 #define DOTDIR "."
 

@@ -3,7 +3,7 @@
 #ifndef OUTPUT_INITIALIASED
 #define OUTPUT_INITIALIASED
 
-#include "../model/stat-model.h"
+#include "model/stat-model.h"
 
 void  printHeader(void);
 void printFlagStr(const flag_t	 *flags																);

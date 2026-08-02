@@ -3,7 +3,7 @@
 #ifndef FORMATTING_INITIALIASED
 #define FORMATTING_INITIALIASED
 
-#include "../model/stat-model.h"
+#include "model/stat-model.h"
 
 void initFormatting(void);
 

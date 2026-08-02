@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "output.h"
-#include "../options/options.h"
+#include "options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

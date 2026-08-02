@@ -7,19 +7,19 @@
 
 #include "info.h"
 
-#include "../utils/malloc.h"
-#include "../options/options.h"
-#include "../graphics/graphics.h"
+#include "utils/malloc.h"
+#include "options/options.h"
+#include "graphics/graphics.h"
 
-#include "../features/ugid/ugid.h"
-#include "../features/size/size.h"
-#include "../features/time/time.h"
-#include "../features/mode/mode.h"
-#include "../features/path/path.h"
-#include "../features/flags/flags.h"
-#include "../features/links/symlink.h"
-#include "../features/mount/mount-point.h"
-#include "../features/links/apple-alias.h"
+#include "features/ugid/ugid.h"
+#include "features/size/size.h"
+#include "features/time/time.h"
+#include "features/mode/mode.h"
+#include "features/path/path.h"
+#include "features/flags/flags.h"
+#include "features/links/symlink.h"
+#include "features/mount/mount-point.h"
+#include "features/links/apple-alias.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

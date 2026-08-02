@@ -37,7 +37,7 @@ function -- () {
   # ———————————————————————————————————————————————————— #
 
   # recursively find all .c files in the source directory
-  local -ra SOURCE_FILES=( "$_root/"**/*.c )
+  local -ra SOURCE_FILES=( "$_root/source/"**/*.c )
 
   # ———————————————————————————————————————————————————— #
 
@@ -45,7 +45,7 @@ function -- () {
 
   # find where the `libmagic` library is stored, and pass it to the linker
   local -r BREW_PREFIX="$( brew --prefix libmagic )"
-  local -ra INCLUDES=( "$BREW_PREFIX/include"                )
+  local -ra INCLUDES=( "$BREW_PREFIX/include" $_root/source  )
   local -ra  LDFLAGS=( "L$BREW_PREFIX/lib" fsanitize=address )
   local -ra   LDLIBS=( magic                                 )
 

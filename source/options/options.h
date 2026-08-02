@@ -5,7 +5,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#include "../model/stat-model.h"
+#include "model/stat-model.h"
 
 void usage(const int exit_code);
 int setOptions(const int argc, const char *argv[]);

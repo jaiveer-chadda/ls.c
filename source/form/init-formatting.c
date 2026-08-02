@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "formatting.h"
-#include "../options/options.h"
+#include "options/options.h"
 
 Lengths field_lengths;
 FmtStrs fmt_strs_short, fmt_strs_long;

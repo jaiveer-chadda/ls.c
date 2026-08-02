@@ -3,7 +3,7 @@
 #ifndef MODE_INITIALISED
 #define MODE_INITIALISED
 
-#include "../../model/stat-model.h"
+#include "model/stat-model.h"
 
 #define TYPE_MASK S_IFMT	/// A mask to keep just the type information from the Unix octal permissions - (0o170000).
 #define EXEC_MASK 0000111	/// A mask to tell whether a file is an executable or not.

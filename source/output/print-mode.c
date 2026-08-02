@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../form/formatting.h"
-#include "../options/options.h"
+#include "form/formatting.h"
+#include "options/options.h"
 
 #define IF_COLOUR(print) (DO_COLOUR() ? (print) : "")
 

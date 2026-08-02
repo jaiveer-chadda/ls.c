@@ -3,31 +3,31 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../model/stat-model.h"
-#include "../features/mode/mode.h"
+#include "model/stat-model.h"
+#include "features/mode/mode.h"
 
 #include "graphics.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // spell:disable
-static const char  *ALL_COMPRESSED_EXTS[] = {
+static const char *ALL_COMPRESSED_EXTS[] = {
 	"7z" , "ace", "alz", "apk", "arc", "arj", "bz" , "bz2" , "cab", "cpio", "crate", "deb", "drpm", "dwm" , "dz"  ,
 	"ear", "egg", "esd", "gz" , "jar", "lha", "lrz", "lz"  , "lz4", "lzh" , "lzma" , "lzo", "pyz" , "rar" , "rpm" ,
 	"rz" , "sar", "swm", "t7z", "tar", "taz", "tbz", "tbz2", "tgz", "tlz" , "txz"  , "tz" , "tzo" , "tzst", "udeb",
 	"war", "whl", "wim", "xz" , "z"  , "zip", "zoo", "zst" , "dmg"
 };
-static const char 		*ALL_IMAGE_EXTS[] = {
+static const char *ALL_IMAGE_EXTS[] = {
 	"avif", "bmp", "gif", "jpeg", "jpg", "mjpeg", "mjpg", "png", "svg", "svgz", "tif", "tiff", "webm", "webp", "jxl",
 	"pbm" , "pgm", "ppm", "tga" , "xbm", "xpm"  , "mng" , "pcx", "xcf", "xwd" , "cgm", "emf"
 };
-static const char 		*ALL_VIDEO_EXTS[] = {
+static const char *ALL_VIDEO_EXTS[] = {
 	"m2v", "m4v", "mov", "mp4", "mp4v", "mpg", "mpeg", "ogm", "qt", "mkv", "vob", "nuv", "wmv", "asf", "rm", "rmvb",
 	"flc", "fli", "avi", "flv", "gl"  , "dl" , "yuv" , "ogv"
 };
-static const char  *ALL_AUDIO_UNCM_EXTS[] = { "au" , "flac", "m4a", "mid", "midi", "mka", "wav" , "xspf"	  };
-static const char  *ALL_AUDIO_COMP_EXTS[] = { "aac", "mp3" , "mpc", "oga", "ogg" , "ogx", "opus", "ra", "spx" };
-static const char 	*ALL_TEMP_BACK_EXTS[] = {
+static const char *ALL_AUDIO_UNCM_EXTS[] = { "au" , "flac", "m4a", "mid", "midi", "mka", "wav" , "xspf"	  };
+static const char *ALL_AUDIO_COMP_EXTS[] = { "aac", "mp3" , "mpc", "oga", "ogg" , "ogx", "opus", "ra", "spx" };
+static const char *ALL_TEMP_BACK_EXTS [] = {
 	"tmp", "swp", "old" , "part"  , "rpmsave", "rpmorig", "dpkg-tmp", "ucf-dist", "dpkg-dist" ,
 	"rej", "bak", "orig", "rpmnew", "ucf-old", "ucf-new", "dpkg-old", "dpkg-new", "crdownload",
 };

@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../form/formatting.h"
-#include "../options/options.h"
-#include "../graphics/graphics.h"
+#include "form/formatting.h"
+#include "options/options.h"
+#include "graphics/graphics.h"
 
 void printNLink(const nlink_t *nlink, const mode_t *mode) {
 	if (!do_nlink()) return;

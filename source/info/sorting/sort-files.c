@@ -5,8 +5,8 @@
 #include <string.h>
 
 #include "sort.h"
-#include "../info.h"
-#include "../../options/options.h"
+#include "info/info.h"
+#include "options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

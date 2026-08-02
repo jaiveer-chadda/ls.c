@@ -4,7 +4,7 @@
 #define STAT_MODEL_INITIALISED
 
 #include "types.h"
-#include "../graphics/graphics.h"
+#include "graphics/graphics.h"
 
 extern path_t G_DOTDIR_PATH;
 
