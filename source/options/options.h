@@ -54,6 +54,8 @@ typedef struct {
 	char long_flags[MAX_OPT_FLAG_NUM][MAX_OPT_FLAG_LEN];
 } BinaryOption;
 
+typedef char test_flag_t[MAX_OPT_FLAG_LEN + 5];
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 SortByField SORT_BY (void);

@@ -49,19 +49,20 @@ static inline bool doColourAuto(void) {
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-// #define BINARY_OPT(flag, var) \
-// 	if (OPTION_IS("--"	  # flag)) { (var) = true ; continue; } \
-// 	if (OPTION_IS("--no-" # flag)) { (var) = false; continue; }
-
-// #define FIELD_OPT(flag, var) \
-// 	if (OPTION_IS_OF("--" # flag, "--do-" # flag))	{ (var) = true ; continue; } \
-// 	if (OPTION_IS("--no-" # flag))					{ (var) = false; continue; }
-
 #define ARR_LEN(array) (int)(sizeof(array) / sizeof(array[0]))
 #define NOT_REACHED_END_OF_ARR(idx, array) idx < ARR_LEN(array) && array[idx] != NULL
 
-#define BIN_OPT_VAL(option) BINARY_OPTS[BO_ ## option].value
-#define MAKE_BIN_OPT_FUNC(option) bool option(void) { return BIN_OPT_VAL(option); }
+#define VALUE_OF(option) BINARY_OPTS[BO_ ## option].value
+#define MAKE_BIN_OPT_FUNC(option) bool option(void) { return VALUE_OF(option); }
+
+#define CHECK_LONG_FLAG(prefix, bool_val)			\
+	do {											\
+		sprintf(flag_buf, prefix "%s", base_flag);	\
+		if (OPTION_IS(flag_buf)) {					\
+			bin_opt->value = bool_val;				\
+			goto end_of_loop;						\
+		}											\
+	} while (0)
 
 /* ——————————————————————————————————————————————————————————————————— */
 
@@ -97,7 +98,7 @@ static inline void allFieldsOn(void) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 int setOptions(const int argc, const char *argv[]) {
-	if (strcmp(argv[0], "c" PROGRAM_NAME) == 0) BIN_OPT_VAL(DO_CLEAR) = true;
+	if (strcmp(argv[0], "c" PROGRAM_NAME) == 0) VALUE_OF(DO_CLEAR) = true;
 
 	bool colour_auto = true;
 
@@ -108,7 +109,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— End Option Parsing ————————————————————————————————————————— */
 
-		if (opt[0] != '-') break;
+		if (opt[0] != '-' && opt[0] != '+') break;
 		if (OPTION_IS("--")) { i++; break; }
 
 		/* —— --help ————————————————————————————————————————————————————— */
@@ -123,7 +124,7 @@ int setOptions(const int argc, const char *argv[]) {
 		}
 
 		if (OPTION_IS("--sort") || OPTION_IS("--sort-by") || OPTION_IS("--rsort")) {
-			if (OPTION_IS("--rsort")) BIN_OPT_VAL(DO_REVERSE_SORT) = !BIN_OPT_VAL(DO_REVERSE_SORT);
+			if (OPTION_IS("--rsort")) VALUE_OF(DO_REVERSE_SORT) = !VALUE_OF(DO_REVERSE_SORT);
 
 			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE  ;
 			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME  ;
@@ -173,8 +174,13 @@ int setOptions(const int argc, const char *argv[]) {
 			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; i++; continue; }
 			if (HAS_ARG) ERR_BAD_ARG("long, short, tiny");
 			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
-			BIN_OPT_VAL(do_flags) = true; continue;
+			VALUE_OF(do_flags) = true; continue;
 		}
+
+		/* —— All Fields ————————————————————————————————————————————————— */
+
+		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  continue; }
+		if (OPTION_IS("--all"))			{ allFieldsOn(); allOptsOn(); continue; }
 
 		/* —— Binary Options ————————————————————————————————————————————— */
 
@@ -182,22 +188,14 @@ int setOptions(const int argc, const char *argv[]) {
 			BinaryOption *bin_opt = &BINARY_OPTS[opt_i];
 
 			for (int flag_i = 0; NOT_REACHED_END_OF_ARR(flag_i, bin_opt->long_flags); flag_i++) {
-				char long_flag[MAX_OPT_FLAG_LEN + 5];
-				sprintf(long_flag, "--%s", bin_opt->long_flags[flag_i]);
+				const char *base_flag = bin_opt->long_flags[flag_i];
+				test_flag_t flag_buf;
 
-				printf("%s", long_flag); fflush(stdout);
-
-				if (OPTION_IS(long_flag)) {
-					bin_opt->value = true;
-					goto end_of_loop;
-				}
+				CHECK_LONG_FLAG("--"   , true ); // check standard `--...` flag
+				CHECK_LONG_FLAG("--do-", true ); // check `--do-...` flag
+				CHECK_LONG_FLAG("--no-", false); // check `--no-...` flag
 			}
 		}
-
-		/* —— All Fields ————————————————————————————————————————————————— */
-
-		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  continue; }
-		if (OPTION_IS("--all"))			{ allFieldsOn(); allOptsOn(); continue; }
 
 		/* —— Invalid Options ———————————————————————————————————————————— */
 
