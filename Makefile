@@ -5,7 +5,8 @@
 	-O0 -Wall -Wextra -Wpedantic			\
 	-I"$( brew --prefix libmagic )/include"	\
 	-L"$( brew --prefix libmagic )/lib"		\
-	-lmagic									\
+	-lmagic	-framework CoreFoundation		\
+	-fsanitize=address						\
 	-o ~cs/C/ls.c/out/lk					\
 	~cs/C/ls.c/source/**/*.c				\
 		&& lk --clear
