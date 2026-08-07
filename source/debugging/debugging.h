@@ -26,11 +26,17 @@ typedef struct {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void d__debug(const LogLevelIdx level_, const char *message, const char *time, const int line, const char *file);
+void d__func(const char *func, const char *file);
+void d__line(void);
 
 #ifdef DEBUG_MODE
 #	define debug(log_level, message) d__debug(L_##log_level, message, __TIME__, __LINE__, __FILE__)
+#	define Dfunc(func) d__func(#func, __FILE__)
+#	define Dline() d__line()
 #else
 #	define debug(log_level, message)
+#	define Dfunc(func)
+#	define Dline()
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

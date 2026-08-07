@@ -23,9 +23,13 @@
 #define LPA DIMS("(")
 #define RPA DIMS(")")
 
+#define FILENAME ANSI("38;5;217")
+
 #define LEVEL	ANSI("%hu") LBR " %-5s " RBR RESET " "
 #define TIME	LBR "%s" RBR
-#define FILE	ANSI("38;5;217") " %-30s" LPA "%3d" RPA RESET " "
+#define FILE	FILENAME " %-30s" LPA "%3d" RPA RESET " "
+
+#define REL_PATH(file) (char *)(strstr((char *)(file), "source/") + (int)strlen("source/"))
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -45,9 +49,22 @@ static const LogLevel LOG_LEVELS[] = { LOG_LEVEL_TABLE };
 
 void d__debug(const LogLevelIdx level_, const char *message, const char *time, const int line, const char *file) {
 	const LogLevel level = LOG_LEVELS[level_ ? level_ < L_COUNT : L_DEBUG];
-	const char *rel_path = strstr(file, "source/") + strlen("source/");
 
 	toStderr(LEVEL TIME FILE "%s\n",
-		level.colour, level.name, time, rel_path, line, message
+		level.colour, level.name, time, REL_PATH(file), line, message
 	);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void d__func(const char *func, const char *file) {
+	d__line();
+	toStderr(FILENAME "%s() " DIMS("@") " %s" RESET "\n", func, REL_PATH(file));
+	d__line();
+}
+
+void d__line(void) {
+	toStderr(DIMS(
+		"─────────────────────────────────────────────────────────────────────────────────────────────────────────────"
+	) "\n");
 }

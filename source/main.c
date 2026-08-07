@@ -21,7 +21,6 @@
 path_t G_DOTDIR_PATH = DOTDIR;
 
 int main(const int argc, const char *argv[]) {
-
 	#ifdef DEBUG_MODE
 	printf("%s", CLEAR_SCREEN);
 	fflush(stdout);
@@ -30,8 +29,6 @@ int main(const int argc, const char *argv[]) {
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
 
 	const int files_start = setOptions(argc, argv);
-
-	debug(DEBUG, "some debugging message");
 
 	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
 
