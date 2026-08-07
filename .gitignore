@@ -1,7 +1,7 @@
 # .gitignore
 # ‾‾‾‾‾‾‾‾‾‾
 .DS_Store
-Icon?
+Icon[^A-Za-z0-9]
 .vscode/
 
 out/
