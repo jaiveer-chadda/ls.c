@@ -73,14 +73,14 @@ static inline bool doColourAuto(void) {
 #define VALUE_OF(option) BINARY_OPTS[BO_ ## option].value
 #define MAKE_BIN_OPT_FUNC(option) bool option(void) { return VALUE_OF(option); }
 
-#define CHECK_LONG_FLAG(prefix, bool_val)			\
-	do {											\
-		sprintf(flag_buf, prefix "%s", base_flag);	\
-		if (OPTION_IS(flag_buf)) {					\
-			if (HAS_ARG) ERR_NO_ARGS();				\
-			bin_opt->value = bool_val;				\
-			CONTINUE;								\
-		}											\
+#define CHECK_LONG_FLAG(prefix, bool_val)						\
+	do {														\
+		sprintf(flag_buf, prefix "%s", base_flag);				\
+		if (OPTION_IS(flag_buf)) {								\
+			if ((equal_arg != NULL) && HAS_ARG) ERR_NO_ARGS();	\
+			bin_opt->value = bool_val;							\
+			CONTINUE;											\
+		}														\
 	} while (0)
 
 /* —— Error Macros ——————————————————————————————————————————————————— */
