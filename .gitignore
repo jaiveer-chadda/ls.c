@@ -1,11 +1,11 @@
 # .gitignore
 # ‾‾‾‾‾‾‾‾‾‾
 .DS_Store
-Icon[^A-Za-z0-9]
 .vscode/
 
 out/
 archive/
 _test_*
+resources/icons/icons.rs
 
 resources/POSIX/ls.html
