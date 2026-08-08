@@ -32,6 +32,29 @@ int main(const int argc, const char *argv[]) {
 
 	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
 
+	char *input_paths[MAX_FILES_IN_DIR] = {0};
+
+	// if there weren't any directory names passed after the options, then default to as if the user had passed `.`
+	if (argc == files_start || argv[files_start] == NULL) {
+
+		input_paths[0] = malloc(sizeof(char *));
+		strcpy(input_paths[0], DOTDIR);
+
+	} else {
+		for (int i = files_start; i < argc; i++) {
+			printf("%d (%d): %s\n", i, i - files_start, argv[i]);
+			input_paths[i - files_start] = (char *)argv[i];
+		}
+	}
+
+	// int i = 0;
+	// char *str = input_paths[i];
+	//
+	// while (str != NULL) {
+	// 	puts(str);
+	// 	str = input_paths[++i];
+	// }
+
 	path_t input_dir_path;
 
 	// Get the target directory from the user's input
