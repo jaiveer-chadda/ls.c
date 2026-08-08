@@ -33,16 +33,16 @@ int main(const int argc, const char *argv[]) {
 	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
 
 	char *input_paths[MAX_FILES_IN_DIR] = {0};
+	bool do_free_path_0 = false;
 
 	// if there weren't any directory names passed after the options, then default to as if the user had passed `.`
 	if (argc == files_start || argv[files_start] == NULL) {
-
 		input_paths[0] = malloc(sizeof(char *));
+		do_free_path_0 = true;
 		strcpy(input_paths[0], DOTDIR);
 
 	} else {
 		for (int i = files_start; i < argc; i++) {
-			printf("%d (%d): %s\n", i, i - files_start, argv[i]);
 			input_paths[i - files_start] = (char *)argv[i];
 		}
 	}
@@ -64,6 +64,8 @@ int main(const int argc, const char *argv[]) {
 	// Resolve the path to the target directory, which'll be used to replace the `.` directory's name
 	//  (casting to void, since there's nth we can rly do if we don't manage to get it)
 	(void)getDirPath(G_DOTDIR_PATH, input_dir_path);
+
+	if (do_free_path_0) free(input_paths[0]);
 
 	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
 
