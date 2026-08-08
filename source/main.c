@@ -72,7 +72,7 @@ int main(const int argc, const char *argv[]) {
 		}
 	}
 
-	// if all the inputted directories are invalid, then exit with failure
+	// If all the inputted directories are invalid, exit with failure
 	if (!has_any_valid_input) exit(EXIT_FAILURE);
 
 	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
@@ -83,8 +83,12 @@ int main(const int argc, const char *argv[]) {
 	/* —— Process All Directories ———————————————————————————————————————————————————————————————— */
 
 	for (int i = 0; i < input_count; i++) {
+		// Don't print invalid directories
+		if (input_dirs[i] == NULL) continue;
+		// Do the processing & print the details for each directory inputted
 		processDirectory(input_paths[i], input_dirs[i], (i == 0 && do_free_path_0), i == 0);
-		if (input_count > 1 && i != input_count - 1) puts("");
+		// Print a newline between each directory
+		if (i != input_count - 1) puts("");
 	}
 
 	return EXIT_SUCCESS;
