@@ -13,7 +13,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define GET_NAME(name)	(strcmp((name), DOTDIR) == 0 ? G_DOTDIR_PATH : (name))
+/// If `name` is ".", then replace it with the full path to `$PWD`. Otherwise, just reinsert the name.
+// #define GET_NAME(name)	(strcmp((name), DOTDIR) == 0 ? G_DOTDIR_PATH : (name))
 
 #define DO_OCT_ESC(chr) (0 <= (chr) && (chr) <= 7)
 #define DO_HEX_ESC(chr) ((7 < (chr) && (chr) <= 31) || (chr) == 127)
@@ -23,6 +24,13 @@ typedef unsigned int  u_int;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/**
+ * @brief Find the appropriate escape sequence for an inputted character.
+ *
+ * @param esc_seq[out] The escape sequence to represent the escaped character.
+ * @param orig_char[in] The character to be escaped.
+ * @return `true` if the inputted character was escaped, `false` otherwise.
+ */
 static bool escapeCharacter(char *esc_seq, const char orig_char) {
 	const u_char chr = (u_char)orig_char;
 	switch (chr) {
@@ -51,14 +59,16 @@ static bool escapeCharacter(char *esc_seq, const char orig_char) {
 #define IS_END(n) (CHAR(n) == ';' || i + (n) == len)
 
 /**
- * @brief Checks whether an ANSI escape sequence, when used, sets the background colour.
+ * @brief Check whether an ANSI escape sequence, when used, sets the background colour.
  *
- * This function only works for sequences using `\\e[4Nm`, `\\e[10Nm` or `\\e[48;[25];...m` background escape codes.
+ * This function only works for sequences using `\\e[4<N>m`, `\\e[10<N>m` or `\\e[48;<[25]>;...m`
+ * background escape codes.
  *
  * It shouldn't have any false negatives, but it will have false positives on inputs like:
  *  `\\e[38;5;105m` or `\\e[38;2;250;40;125m`
  *
- * @param colour[in] The ANSI escape sequence to check, without the leading `\\e` or trailing `m`.
+ * @param colour[in] The ANSI escape sequence to check, without the leading `\\e` or trailing `m`,
+ * 						but with the leading `[`
  * @return true if `colour` will set the background colour, false otherwise.
  */
 static bool doesSetBackground(const char *colour) {
@@ -77,8 +87,10 @@ static bool doesSetBackground(const char *colour) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_escape) {
-	const char *raw_name = GET_NAME(orig_name);
+	const char *raw_name = orig_name; // GET_NAME(orig_name);
+	/// Whether `colour_escape` is an escape that sets the background colour of the text when used.
 	const bool colour_sets_bg = doesSetBackground(colour_escape);
+	/// Whether any escape characters exist in the inputted name.
 	bool did_do_escape = false;
 
 	int read_idx = 0, write_idx = 0;
@@ -104,8 +116,8 @@ bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_e
 		}
 
 		did_do_escape = true;
+		
 		const int esc_len = (int)strlen(esc_seq);
-
 		strcpy(escaped_name + write_idx, esc_seq);
 		write_idx += esc_len;
 	}

@@ -100,6 +100,7 @@ void printName(const name_t name, const FileColour *colour, const bool *is_hln, 
 	/* ————————————————————————————————————————————————————————————————— */
 
 	path_t escaped_name;
+	// TODO: if name == ".", then input the absolute `$PWD` instead of `name`
 	const bool does_have_escape = escapeName(escaped_name, name, file_colour);
 
 	/* ————————————————————————————————————————————————————————————————— */
