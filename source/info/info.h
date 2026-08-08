@@ -9,8 +9,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-DIR* getDirectory(path_t target_dir, const int files_start, const int argc, const char *argv[]);
-
 void getAllFileInfo(
 	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *directory, const char *dotdir_path
 );

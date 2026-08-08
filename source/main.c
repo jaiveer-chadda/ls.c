@@ -26,46 +26,51 @@ int main(const int argc, const char *argv[]) {
 	fflush(stdout);
 	#endif
 
+	Dline();
+
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
 
 	const int files_start = setOptions(argc, argv);
 
-	/* —— Find Target Directory —————————————————————————————————————————————————————————————————— */
+	/* —— Find Target Directories ———————————————————————————————————————————————————————————————— */
 
 	char *input_paths[MAX_FILES_IN_DIR] = {0};
 	bool do_free_path_0 = false;
+	int path_count = 0;
 
-	// if there weren't any directory names passed after the options, then default to as if the user had passed `.`
+	// If there weren't any directory names passed, then default to as if the user had passed `.` or `$PWD`
 	if (argc == files_start || argv[files_start] == NULL) {
-		input_paths[0] = malloc(sizeof(char *));
-		do_free_path_0 = true;
+		input_paths[0] = emalloc(sizeof(char *));
 		strcpy(input_paths[0], DOTDIR);
+
+		do_free_path_0 = true;
+		path_count = 1;
 
 	} else {
 		for (int i = files_start; i < argc; i++) {
-			input_paths[i - files_start] = (char *)argv[i];
+			input_paths[path_count++] = (char *)argv[i];
 		}
 	}
 
-	// int i = 0;
-	// char *str = input_paths[i];
-	//
-	// while (str != NULL) {
-	// 	puts(str);
-	// 	str = input_paths[++i];
-	// }
+	// Get the target directories from the user's input
+	#define MAX_INPUTS 128
+	DIR *input_dirs[MAX_INPUTS];
 
-	path_t input_dir_path;
+	// Get a `DIR` pointer for each path passed in to the function
+	for (int path_idx = 0; path_idx < path_count; path_idx++) {
+		input_dirs[path_idx] = opendir(input_paths[path_idx]);
 
-	// Get the target directory from the user's input
-	DIR *input_dir = getDirectory(input_dir_path, files_start, argc, argv);
-	if (input_dir == NULL) return EXIT_FAILURE;
+		// if we couldn't open the directory (usually cos it doesn't exist), then exit with an error
+		if (input_dirs[path_idx] == NULL) {
+			// TODO: just ignore a file if it's invalid, rather than exiting
+			fprintf(stderr, ERROR "%s: No such file or directory\n", input_paths[path_idx]);
+			return EXIT_FAILURE;
+		}
+	}
 
 	// Resolve the path to the target directory, which'll be used to replace the `.` directory's name
 	//  (casting to void, since there's nth we can rly do if we don't manage to get it)
-	(void)getDirPath(G_DOTDIR_PATH, input_dir_path);
-
-	if (do_free_path_0) free(input_paths[0]);
+	(void)getDirPath(G_DOTDIR_PATH, input_paths[0]);
 
 	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
 
@@ -84,8 +89,11 @@ int main(const int argc, const char *argv[]) {
 	getAllFileInfo(
 		dirs, files,
 		&dir_count, &file_count,
-		input_dir, input_dir_path
+		// TEMP: both just addressing [0] temporarily, so everything works during development
+		input_dirs[0], input_paths[0]
 	);
+
+	if (do_free_path_0) free(input_paths[0]);
 
 	/* —— Sort Files if Dirs First ——————————————————————————————————————————————————————————————— */
 
