@@ -73,6 +73,7 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path, const bool 
 	/* —— Print Header ——————————————————————————————————————————————————————————————————————————— */
 
 	#ifndef DEBUG_MODE
+	// Only clear the screen if this is the first directory being printed
 	if (DO_CLEAR() && is_first) printf("%s", CLEAR_SCREEN);
 	#endif
 
@@ -86,6 +87,7 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path, const bool 
 
 	/* ——————————————————————————————————————————————————————————————————————————————————————————— */
 
+	// Discard the date for all the files in this directory
 	free(all_files);
 }
 
