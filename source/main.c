@@ -40,33 +40,43 @@ int main(const int argc, const char *argv[]) {
 
 	// If there weren't any directory names passed, then default to as if the user had passed `.` or `$PWD`
 	if (argc == files_start || argv[files_start] == NULL) {
+		// Since "." isn't stored anywhere, we have to alloc some memory for it
 		input_paths[0] = emalloc(sizeof(char *));
-		strcpy(input_paths[0], DOTDIR);
+		do_free_path_0 = true; // & then remember to free it
 
-		do_free_path_0 = true;
+		// Copy the string "." into input_paths[0]
+		strcpy(input_paths[0], DOTDIR);
 		path_count = 1;
 
 	} else {
+		// Copy each of the arguments' addresses into `input_paths`
 		for (int i = files_start; i < argc; i++) {
 			input_paths[path_count++] = (char *)argv[i];
 		}
 	}
 
-	// Get the target directories from the user's input
 	#define MAX_INPUTS 128
-	DIR *input_dirs[MAX_INPUTS];
+
+	/// Whether the user inputted at least one valid directory into the function.
+	bool has_any_valid_input = false;
 
 	// Get a `DIR` pointer for each path passed in to the function
+	// (`DIR` being a "structure describing an open directory")
+	DIR *input_dirs[MAX_INPUTS];
 	for (int path_idx = 0; path_idx < path_count; path_idx++) {
 		input_dirs[path_idx] = opendir(input_paths[path_idx]);
 
-		// if we couldn't open the directory (usually cos it doesn't exist), then exit with an error
+		// If we couldn't open the directory (usually cos it doesn't exist), print an error
 		if (input_dirs[path_idx] == NULL) {
-			// TODO: just ignore a file if it's invalid, rather than exiting
 			fprintf(stderr, ERROR "%s: No such file or directory\n", input_paths[path_idx]);
-			return EXIT_FAILURE;
+		} else {
+			// If at least one inputted directory is valid, then make sure we continue
+			has_any_valid_input = true;
 		}
 	}
+
+	// if all the inputted directories are invalid, then exit with failure
+	if (!has_any_valid_input) exit(EXIT_FAILURE);
 
 	// Resolve the path to the target directory, which'll be used to replace the `.` directory's name
 	//  (casting to void, since there's nth we can rly do if we don't manage to get it)
