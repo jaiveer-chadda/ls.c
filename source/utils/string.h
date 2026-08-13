@@ -5,6 +5,7 @@
 
 #include <stdbool.h>
 
+size_t cstrlen(const char *cstr);
 bool strends(const char *inp, const char *end);
 
 #endif /* !STRING_INITIALISED */

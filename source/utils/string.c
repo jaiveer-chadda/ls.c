@@ -1,7 +1,44 @@
 /// @file utils/string.c
 
-#include <string.h>
+#include <stddef.h>
 #include "string.h"
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+size_t cstrlen(const char *cstr) {
+	char *chr = (char *)cstr;
+	while (*(chr++) != '\0');
+	return (size_t)(chr - cstr - 1);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+typedef struct {
+	char *cstr;
+	size_t len;
+} str_t;
+
+str_t strInit(const char *cstr) {
+	str_t output = {
+		.cstr = (char*)cstr,
+		.len = cstrlen(cstr)
+	};
+
+	output.cstr[output.len] = '\0';
+	return output;
+}
+
+str_t strnInit(const char *cstr, const size_t len) {
+	str_t output = {
+		.cstr = (char*)cstr,
+		.len = len
+	};
+
+	output.cstr[len] = '\0';
+	return output;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /**
  * @brief Find out whether a given string ends in another substring.
@@ -13,7 +50,7 @@
  */
 bool strends(const char *inp, const char *end) {
 	// get the lengths of both strings
-	const int inp_len = strlen(inp), end_len = strlen(end);
+	const int inp_len = cstrlen(inp), end_len = cstrlen(end);
 
 	// if `end` is longer than `inp` itself, return false as it's impossible for `inp` to end with `end`
 	if (end_len > inp_len) return false;
@@ -26,3 +63,5 @@ bool strends(const char *inp, const char *end) {
 
 	return true; // if we didn't find any non-matching chars, `inp` must end with `end`
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
