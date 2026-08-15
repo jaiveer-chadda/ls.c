@@ -48,12 +48,13 @@ function -- () {
   # ———————————————————————————————————————————————————— #
 
   local -ra FRAMEWORKS=( -framework CoreFoundation )
+  local -ra sanitise=( address undefined )
 
   # find where the `libmagic` library is stored, and pass it to the linker
   local -r BREW_PREFIX="$( brew --prefix libmagic )"
-  local -ra INCLUDES=( "$BREW_PREFIX/include" $_root/source  )
-  local -ra  LDFLAGS=( "L$BREW_PREFIX/lib" fsanitize=address )
-  local -ra   LDLIBS=( magic                                 )
+  local -ra INCLUDES=( "$BREW_PREFIX/include" $_root/source )
+  local -ra  LDFLAGS=( "L$BREW_PREFIX/lib" fsanitize=${(j:,:)sanitise} )
+  local -ra   LDLIBS=( magic )
 
   # ————————————————————————————————————————————————————————————————————————— #
 
