@@ -22,7 +22,7 @@ int main(const int argc, const char *argv[]) {
 	#ifdef DEBUG_MODE
 	printf("%s", CLEAR_SCREEN);
 	fflush(stdout);
-	Dline();
+	Dline(); debug(DEBUG, ""); Dline();
 	#endif
 
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
@@ -59,6 +59,7 @@ int main(const int argc, const char *argv[]) {
 
 	// Get a `DIR` pointer for each path passed in to the function
 	// (`DIR` being a "structure describing an open directory")
+	// FIXME: make this a dynamic array, rather than just having a fixed size
 	DIR *input_dirs[MAX_INPUTS];
 	for (int path_idx = 0; path_idx < input_count; path_idx++) {
 		input_dirs[path_idx] = opendir(input_paths[path_idx]);

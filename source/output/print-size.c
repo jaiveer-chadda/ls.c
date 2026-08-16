@@ -7,6 +7,8 @@
 #include "options/options.h"
 #include "graphics/graphics.h"
 
+#include "debugging/debugging.h"
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define IF_COLOUR(yes, no) (DO_COLOUR() ? (yes) : (no))
@@ -41,15 +43,18 @@ static void getValueColour(char *value_colour, const char *unit) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
-	char minor_size[strlen(size_str) - 2];
+	char minor_size[strlen(size_str) + 1];
 	int i = 0;
 
-	// copy everything in `size_str` to `majmin_str`, until the first comma
-	while (i < __INT_MAX__) { // __INT_MAX__ is being used here as an upper bound, so it doesn't loop forever
+	// copy everything in `size_str` to `majmin_str` until the first comma
+	//	(while making sure not to read past the end of the string)
+	while (size_str[i] != '\0') {
 		if (size_str[i] == UNIT_MAJ_MIN) break;
 		minor_size[i] = size_str[i];
 		i++;
 	}
+
+	minor_size[i] = '\0';
 
 	sprintf(majmin_str,
 		"%s"	// maj colour
