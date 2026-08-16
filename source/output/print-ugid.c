@@ -47,12 +47,15 @@ void printUsrName(const uid_t *file_uid, const ugidstr file_usr_name, const bool
 
 /* —————————————————————————————————————————————————————————————— */
 
+__attribute__((no_sanitize("alignment")))
 static inline bool is_user_in_group(
 	const ugidstr usr_name, const gid_t usr_main_gid,
 	const ugidstr grp_name, const gid_t file_gid
 ) {
 	if (usr_main_gid == file_gid) return true;
 
+	// the `getgrnam` function ends up misaligning the memory. this throws a runtime warning,
+	//	but it shouldn't be an issue on macOS
 	const struct group *grp = getgrnam(grp_name);
 	if (grp == NULL) return false;
 
