@@ -12,6 +12,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define ROOT_GRP_GID 0
+
 #define GET_USR_NAME_COLOUR()						\
 	usr_uid == (*file_uid) ? USR_YOU_COL : (		\
 		*file_uid == 0 ? USR_ROOT_COL : USR_OTH_COL	\
@@ -84,7 +86,7 @@ void printGrpName(const gid_t *file_gid, const ugidstr file_grp_name, const bool
 
 	const bool
 		in_usr_grp  = is_user_in_group(usr_name, pw->pw_gid, file_grp_name, *file_gid),
-		in_root_grp = *file_gid == 0;
+		in_root_grp = *file_gid == ROOT_GRP_GID;
 
 	printf("%s%s%s" "%-*s" "%s%s",
 		CSI, GET_GRP_NAME_COLOUR(), END,
