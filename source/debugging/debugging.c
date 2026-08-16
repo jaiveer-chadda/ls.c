@@ -48,7 +48,7 @@ static const LogLevel LOG_LEVELS[] = { LOG_LEVEL_TABLE };
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void d__debug(const LogLevelIdx level_, const char *message, const char *time, const int line, const char *file) {
-	const LogLevel level = LOG_LEVELS[level_ ? level_ < L_COUNT : L_DEBUG];
+	const LogLevel level = LOG_LEVELS[level_ < L_COUNT ? level_ : L_DEBUG];
 
 	toStderr(LEVEL TIME FILE "%s\n",
 		level.colour, level.name, time, REL_PATH(file), line, message
