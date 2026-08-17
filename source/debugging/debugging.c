@@ -1,6 +1,7 @@
 /// @file debugging/debugging.c
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <stdbool.h>
 
@@ -47,12 +48,20 @@ static const LogLevel LOG_LEVELS[] = { LOG_LEVEL_TABLE };
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void d__debug(const LogLevelIdx level_, const char *message, const char *time, const int line, const char *file) {
+void d__debug(const LogLevelIdx level_, const char *time, const int line, const char *file, const char *fmt, ...) {
 	const LogLevel level = LOG_LEVELS[level_ < L_COUNT ? level_ : L_DEBUG];
 
-	toStderr(LEVEL TIME FILE "%s\n",
-		level.colour, level.name, time, REL_PATH(file), line, message
+	toStderr(LEVEL TIME FILE,
+		level.colour, level.name, time, REL_PATH(file), line
 	);
+
+	va_list va_args;
+	va_start(va_args, fmt); // `fmt` is the last known fixed argument
+
+	vfprintf(stderr, fmt, va_args);
+
+	va_end(va_args);
+	fprintf(stderr, "\n");
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
