@@ -85,10 +85,10 @@ static inline bool doColourAuto(void) {
 
 /* —— Error Macros ——————————————————————————————————————————————————— */
 
-#define THROW_ERR(message, ...)								\
-	do {													\
-		fprintf(stderr, (ERROR message "\n"), __VA_ARGS__);	\
-		usage(EXIT_FAILURE);								\
+#define THROW_ERR(fmt, ...)										\
+	do {														\
+		fprintf(stderr, ("%s: " fmt "\n"), argv0, __VA_ARGS__);	\
+		usage(EXIT_FAILURE);									\
 	} while (0)
 
 #define ERR_INVALID_OPT() THROW_ERR("unknown option: `%s`", opt)

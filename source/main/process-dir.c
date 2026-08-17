@@ -18,7 +18,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 
-void processDirectory(char *path, DIR *dir, const bool do_free_path, const bool is_first) {
+void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const bool is_first) {
 	// Resolve the path to the target directory, which'll be used to replace the `.` directory's name
 	//  (casting to void, since there's nth we can rly do if we don't manage to get it)
 	(void)getDirPath(G_DOTDIR_PATH, path);
@@ -38,7 +38,8 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path, const bool 
 		dir, path
 	);
 
-	if (do_free_path) free(path);
+	// if we need to free `path[0]`, and this input _is_ `path[0]`, then free it
+	if (do_free_path_0 && is_first) free(path);
 
 	/* —— Sort Files if Dirs First ——————————————————————————————————————————————————————————————— */
 
@@ -72,9 +73,13 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path, const bool 
 
 	/* —— Print Header ——————————————————————————————————————————————————————————————————————————— */
 
+	// If we're in debug mode, the screen will have already been cleared earlier
 	#ifndef DEBUG_MODE
-	// Only clear the screen if this is the first directory being printed
-	if (DO_CLEAR() && is_first) printf("%s", CLEAR_SCREEN);
+		// Only clear the screen if this is the first directory being printed
+		if (DO_CLEAR() && is_first) {
+			printf("%s", CLEAR_SCREEN);
+			fflush(stdout);
+		}
 	#endif
 
 	// Print the fields' headers

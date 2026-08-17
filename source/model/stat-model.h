@@ -7,6 +7,7 @@
 #include "graphics/graphics.h"
 
 extern path_t G_DOTDIR_PATH;
+extern const char *argv0;
 
 typedef struct {
 	/// Whether we were able to `stat` the file or not.

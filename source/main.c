@@ -15,66 +15,75 @@
 
 #include "debugging/debugging.h"
 
+/// [TEMP] The maximum number of directories that can be passed to the function.
+#define MAX_INPUTS 128
+
 path_t G_DOTDIR_PATH;
+const char *argv0;
 
 int main(const int argc, const char *argv[]) {
+	argv0 = argc >= 1 && argv[0] != NULL && strlen(argv[0]) > 0
+		? argv[0]
+		: PROGRAM_NAME;
 
 	#ifdef DEBUG_MODE
-	printf("%s", CLEAR_SCREEN);
-	fflush(stdout);
-	Dline(); debug(DEBUG, ""); Dline();
+		printf("%s", CLEAR_SCREEN);
+		fflush(stdout);
+		Dline(); debug(DEBUG, ""); Dline();
 	#endif
 
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
 
+	// Parse the user's inputted options, and find where the options end (& where the files start)
+	//	e.g. if the program is run as `lk --clear --sort name ~/.config/options`, then `files_start` will be 4
 	const int files_start = setOptions(argc, argv);
+	const int input_count = (argc == files_start) ? 1 : (argc - files_start);
 
 	/* —— Find Target Directories ———————————————————————————————————————————————————————————————— */
 
-	char *input_paths[MAX_FILES_IN_DIR] = {0};
-	bool do_free_path_0 = false;
-	int input_count = 0;
+	// TODO: make this dynamic
+	/// The raw string paths inputted by the user.
+	char *input_paths[MAX_INPUTS];
 
-	// If there weren't any directory names passed, then default to as if the user had passed `.` or `$PWD`
-	if (argc == files_start || argv[files_start] == NULL) {
+	bool do_free_path_0 = false;
+
+	// If there weren't any directory names passed, then default to as if the user had passed `.`
+	if (argc == files_start) {
 		// Since "." isn't stored anywhere, we have to alloc some memory for it
 		input_paths[0] = emalloc(sizeof(char *));
 		do_free_path_0 = true; // & then remember to free it
 
 		// Copy the string "." into input_paths[0]
 		strcpy(input_paths[0], DOTDIR);
-		input_count = 1;
 
 	} else {
 		// Copy each of the arguments' addresses into `input_paths`
-		for (int i = files_start; i < argc; i++) {
-			input_paths[input_count++] = (char *)argv[i];
+		for (int i = 0; i < input_count; i++) {
+			input_paths[i] = (char *)argv[files_start + i];
 		}
 	}
 
-	#define MAX_INPUTS 128
-
-	/// Whether the user inputted at least one valid directory into the function.
+	/// Whether the user inputted at least one valid input into the function.
 	bool has_any_valid_input = false;
 
 	// Get a `DIR` pointer for each path passed in to the function
 	// (`DIR` being a "structure describing an open directory")
-	// FIXME: make this a dynamic array, rather than just having a fixed size
-	DIR *input_dirs[MAX_INPUTS];
-	for (int path_idx = 0; path_idx < input_count; path_idx++) {
-		input_dirs[path_idx] = opendir(input_paths[path_idx]);
+	DIR *input_dirs[MAX_INPUTS]; // TODO: make this a dynamic array, rather than just having a fixed size
+
+	for (int i = 0; i < input_count; i++) {
+		input_dirs[i] = opendir(input_paths[i]);
 
 		// If we couldn't open the directory (usually cos it doesn't exist), print an error
-		if (input_dirs[path_idx] == NULL) {
-			fprintf(stderr, ERROR "%s: No such file or directory\n", input_paths[path_idx]);
+		if (input_dirs[i] == NULL) {
+			fprintf(stderr, "%s: %s: No such file or directory\n", argv0, input_paths[i]);
 		} else {
 			// If at least one inputted directory is valid, then make sure we continue
 			has_any_valid_input = true;
 		}
 	}
 
-	// If all the inputted directories are invalid, exit with failure
-	if (!has_any_valid_input) exit(EXIT_FAILURE);
+	// If none the inputted directories are valid, exit with failure
+	if (!has_any_valid_input) return EXIT_FAILURE;
 
 	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
 
@@ -86,9 +95,11 @@ int main(const int argc, const char *argv[]) {
 	for (int i = 0; i < input_count; i++) {
 		// Don't print invalid directories
 		if (input_dirs[i] == NULL) continue;
+
 		// Do the processing & print the details for each directory inputted
-		processDirectory(input_paths[i], input_dirs[i], (i == 0 && do_free_path_0), i == 0);
-		// Print a newline between each directory
+		processDirectory(input_paths[i], input_dirs[i], do_free_path_0, i == 0);
+
+		// Print a newline between each directory listing (after each dir except the last)
 		if (i != input_count - 1) puts("");
 	}
 

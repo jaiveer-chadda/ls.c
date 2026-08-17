@@ -5,6 +5,6 @@
 
 #include "info/info.h"
 
-void processDirectory(char *path, DIR *dir, const bool do_free_path, const bool is_first);
+void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const bool is_first);
 
 #endif /* !PROCESS_FILES_INITIALIASED */
