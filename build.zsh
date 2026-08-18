@@ -3,62 +3,66 @@
 # build.zsh
 # ‾‾‾‾‾‾‾‾‾
 
-if ((0)) {
-  clang                                     \
-    -O0 -Wall -Wextra -Wpedantic            \
-    -Wno-deprecated-declarations            \
-    -I"$( brew --prefix libmagic )/include" \
-    -L"$( brew --prefix libmagic )/lib"     \
-    -lmagic	-framework CoreFoundation       \
-    -fsanitize=address                      \
-    -o "${${(%):-%x}:a:h}"/out/lk           \
-    "${${(%):-%x}:a:h}"/source/**/*.c       \
-      && "${${(%):-%x}:a:h}"/out/lk --clear
+if { false; } {
+  clang                                    \
+    -O0 -Wall -Wextra -Wpedantic           \
+    -Wno-deprecated-declarations           \
+    -Wno-variadic-macro-arguments-omitted  \
+    -L"$( brew --prefix libmagic )"lib     \
+    -I"$( brew --prefix libmagic )"include \
+    -I/Users/jv/dev/C/ls.c/source          \
+    -lmagic -framework CoreFoundation      \
+    -fsanitize=address,undefined           \
+    --output "$_root/out/lk"               \
+    "$_root/source/"**/*.c                 \
+      && "$_root/out/lk" --clear
 }
 
 # ——————————————————————————————————————————————————————————————————————————— #
 
 function -- () {
 
-  local -r _root="${${(%):-%x}:a:h}"
+  readonly _root="${${(%):-%x}:a:h}"
 
-  local -r  CC=clang
-  local -ra CFLAGS=( O0 )
+  readonly CC=clang
+  readonly -a CFLAGS=( O0 )
 
   # ————————————————————————————————————————————————————————————————————————— #
 
   local -a DEFINITIONS=()
   if [[ "$1" == (--|)debug ]] DEFINITIONS+=( DEBUG_MODE ) && shift
 
-  local -ra WARNINGS=(
-    all extra pedantic
-    no-deprecated-declarations no-variadic-macro-arguments-omitted
+  readonly -a WARNINGS=( all extra pedantic )
+  readonly -a NO_WARN=(
+    deprecated-declarations
+    variadic-macro-arguments-omitted
   )
 
   # ————————————————————————————————————————————————————————————————————————— #
 
-  local -r TARGET="$_root/out/lk"
-  local -ra CMD=( "$TARGET" --clear )
+  readonly TARGET="$_root/out/lk"
+  readonly -a CMD=( "$TARGET" --clear )
 
   # ———————————————————————————————————————————————————— #
 
-  # recursively find all .c files in the source directory
-  local -ra SOURCE_FILES=( "$_root/source/"**/*.c )
+  readonly -a SOURCE_FILES=( "$_root/source/"**/*.c )
 
   # ———————————————————————————————————————————————————— #
 
-  local -ra FRAMEWORKS=( -framework CoreFoundation )
-  local -ra sanitise=( address undefined )
+  readonly -a FRAMEWORKS=( -framework CoreFoundation )
+  readonly -a _sanitise=( address undefined )
 
   # find where the `libmagic` library is stored, and pass it to the linker
-  local -r BREW_PREFIX="$( brew --prefix libmagic )"
-  local -ra INCLUDES=( "$BREW_PREFIX/include" $_root/source )
-  local -ra  LDFLAGS=( "L$BREW_PREFIX/lib" fsanitize=${(j:,:)sanitise} )
-  local -ra   LDLIBS=( magic )
+  readonly _brew_prefix="$( brew --prefix libmagic )"
+  readonly -a INCLUDES=( "$_brew_prefix/include" "$_root/source" )
+  readonly -a  LDFLAGS=( "L$_brew_prefix/lib" fsanitize=${(j:,:)_sanitise} )
+  readonly -a   LDLIBS=( magic )
 
   # ————————————————————————————————————————————————————————————————————————— #
 
-  local -ra ALL_BUILD_ARGS=(
+  readonly -a ALL_BUILD_ARGS=(
+    "-W-no-${(@)^NO_WARN}"
+    "-W${(@)^WARNINGS}"
     "-D${(@)^DEFINITIONS}"
     "-W${(@)^WARNINGS}"
     "-I${(@)^INCLUDES}"
@@ -69,7 +73,7 @@ function -- () {
     "${(@)SOURCE_FILES}"
   )
 
-  "$CC" "${(@)ALL_BUILD_ARGS}" -o "$TARGET" && "${(@)CMD}" "$@"
+  echo "$CC" "${(@)ALL_BUILD_ARGS}" --output "$TARGET" && "${(@)CMD}" "$@"
 } "$@"
 
 # spell:ignoreRegExp /(?<!-)-\w+/g
