@@ -40,6 +40,8 @@ str_t strnInit(const char *cstr, const size_t len) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#include <string.h>
+
 /**
  * @brief Find out whether a given string ends in another substring.
  *
@@ -50,7 +52,7 @@ str_t strnInit(const char *cstr, const size_t len) {
  */
 bool strends(const char *inp, const char *end) {
 	// get the lengths of both strings
-	const int inp_len = cstrlen(inp), end_len = cstrlen(end);
+	const int inp_len = strlen(inp), end_len = strlen(end);
 
 	// if `end` is longer than `inp` itself, return false as it's impossible for `inp` to end with `end`
 	if (end_len > inp_len) return false;

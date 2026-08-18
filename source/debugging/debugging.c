@@ -74,6 +74,6 @@ void d__func(const char *func, const char *file) {
 
 void d__line(void) {
 	toStderr("%s", DIM);
-	for (int i = 0; i < 120; i++) toStderr("─");
+	for (int i = 0; i < 150; i++) toStderr("─");
 	toStderr("%s\n", RESET);
 }
