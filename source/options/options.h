@@ -8,6 +8,7 @@
 #include "model/stat-model.h"
 
 void usage(const int exit_code);
+bool doColourAuto(void);
 int setOptions(const int argc, const char *argv[]);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

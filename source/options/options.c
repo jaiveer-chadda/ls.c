@@ -24,23 +24,6 @@ static SortByField U_SORT_BY = SB_DEFAULT;
 static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #undef X
 
-/* —— doColourAuto() ——————————————————————————————————————————————————————————————————————————————————————————————— */
-
-static inline bool doColourAuto(void) {
-	if (!isatty(STDOUT_FILENO)) return false;
-
-	const char *NO_COLOR = getenv("NO_COLOR");
-	if (!(NO_COLOR == NULL || strlen(NO_COLOR) == 0)) return false;
-
-	const char *COLORTERM = getenv("COLORTERM");
-	if (COLORTERM == NULL || (
-		strcmp(COLORTERM, "truecolor") != 0 &&
-		strcmp(COLORTERM, "24bit"	 ) != 0
-	)) return false;
-
-	return true;
-}
-
 /* —— Generic Macros ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] != '-'))
@@ -97,7 +80,7 @@ static inline bool doColourAuto(void) {
 #define ERR_NO_ARGS()	  THROW_ERR("`%s` doesn't take an argument", opt)
 #define ERR_BAD_ARG(args) THROW_ERR("invalid argument `%s` for `%s`. possible arguments are: %s", optarg, opt, (args))
 
-/* —— all...On() ————————————————————————————————————————————————————— */
+/* —— all Opts/Fields On() ——————————————————————————————————————————— */
 
 static inline void allOptsOn(void) {
 	U_DO_TINY_FLAGS	 = false,
