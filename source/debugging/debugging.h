@@ -34,7 +34,7 @@ void d__line(void);
 #	define Dfunc(func) d__func(#func, __FILE__)
 #	define Dline() d__line()
 #else
-#	define debug(log_level, message)
+#	define debug(log_level, ...)
 #	define Dfunc(func)
 #	define Dline()
 #endif
