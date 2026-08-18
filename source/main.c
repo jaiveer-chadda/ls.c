@@ -23,19 +23,11 @@ path_t G_DOTDIR_PATH;
 const char *argv0;
 
 int main(const int argc, const char *argv[]) {
+	initDebugging(argv[1]);
+
 	argv0 = argc >= 1 && argv[0] != NULL && strlen(argv[0]) > 0
 		? argv[0]
 		: PROGRAM_NAME;
-
-	#ifdef DEBUG_MODE
-		// this is a very crude way to check for the `--clear` flag,
-		//	but it's only used for debugging, so shouldn't be that big of an issue
-		if (argv[1] != NULL && strcmp(argv[1], "--clear") == 0) {
-			printf("%s", CLEAR_SCREEN);
-			fflush(stdout);
-		}
-		Dline(); debug(DEBUG, ""); Dline();
-	#endif
 
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
 

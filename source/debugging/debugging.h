@@ -33,10 +33,21 @@ void d__line(void);
 #	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __VA_ARGS__)
 #	define Dfunc(func) d__func(#func, __FILE__)
 #	define Dline() d__line()
+#	define initDebugging(argv1) do { \
+	/* this is a very crude way to check for the `--clear` flag, */ \
+	/*	but it's only used for debugging, so shouldn't be that big of an issue */ \
+	if (argv1 != NULL && strcmp(argv1, "--clear") == 0) { \
+		printf("%s", CLEAR_SCREEN); \
+		fflush(stdout); \
+	} \
+	Dline(); debug(DEBUG, ""); Dline(); \
+} while (0)
+
 #else
 #	define debug(log_level, ...)
 #	define Dfunc(func)
 #	define Dline()
+#	define initDebugging(argv1)
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
