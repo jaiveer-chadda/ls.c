@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 
 #include "path.h"
 #include "info/info.h"
+#include "debugging/debugging.h"
 
 void abbrPath(path_t out_path, const path_t abs_path) {
 	// by default, copy the abs_path
@@ -40,12 +42,18 @@ int getDirPath(path_t out_path, const path_t path) {
 		// we're getting the env var instead of running `getcwd`,
 		//  since `getcwd` will chase links when finding the absolute path of `path`
 		const char *PWD = getenv("PWD"); // get PWD
+		const int getenv_errno = errno;
+
 		path_t base_path;
 
-		if (PWD == NULL) {
-			// if `getenv` failed, try `getcwd`, and if that fails, then exit
+		if (PWD == NULL || *PWD == '\0') {
+			debug(WARN, "getenv(\"PWD\"): \n", strerror(getenv_errno));
+
+			// if `getenv` failed, try `getcwd`. if that fails, then exit
 			if (getcwd(base_path, MAX_PATH_LEN) == NULL) {
-				perror("getenv,getcwd");
+				const int getcwd_errno = errno;
+
+				debug(ERROR, "getenv(\"PWD\"): %s\ngetcwd(): %s\n", strerror(getenv_errno), strerror(getcwd_errno));
 				return EXIT_FAILURE;
 			}
 
@@ -62,7 +70,9 @@ int getDirPath(path_t out_path, const path_t path) {
 			// if path != `.` , concatenate abs_path and base_path together
 			//  and make sure the buffer doesn't overflow
 			if (sprintf(abs_path, "%s/%s", base_path, path) >= MAX_PATH_LEN) {
-				perror("path buffer overflow");
+				const int sprintf_errno = errno;
+
+				debug(ERROR, "sprintf: %s\n", strerror(sprintf_errno));
 				return EXIT_FAILURE;
 			}
 		}

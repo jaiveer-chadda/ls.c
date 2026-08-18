@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "main/process-dir.h"
 
@@ -27,8 +28,12 @@ int main(const int argc, const char *argv[]) {
 		: PROGRAM_NAME;
 
 	#ifdef DEBUG_MODE
-		printf("%s", CLEAR_SCREEN);
-		fflush(stdout);
+		// this is a very crude way to check for the `--clear` flag,
+		//	but it's only used for debugging, so shouldn't be that big of an issue
+		if (argv[1] != NULL && strcmp(argv[1], "--clear") == 0) {
+			printf("%s", CLEAR_SCREEN);
+			fflush(stdout);
+		}
 		Dline(); debug(DEBUG, ""); Dline();
 	#endif
 
@@ -72,10 +77,12 @@ int main(const int argc, const char *argv[]) {
 
 	for (int i = 0; i < input_count; i++) {
 		input_dirs[i] = opendir(input_paths[i]);
+		const int opendir_errno = errno;
 
-		// If we couldn't open the directory (usually cos it doesn't exist), print an error
+		// If we couldn't open the directory (usually cos it doesn't exist or
+		//	we don't have permissions for it), print an error
 		if (input_dirs[i] == NULL) {
-			fprintf(stderr, "%s: %s: No such file or directory\n", argv0, input_paths[i]);
+			fprintf(stderr, "%s: %s: %s\n", argv0, input_paths[i], strerror(opendir_errno));
 		} else {
 			// If at least one inputted directory is valid, then make sure we continue
 			has_any_valid_input = true;
