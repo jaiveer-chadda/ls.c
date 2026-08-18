@@ -39,6 +39,10 @@ int getDirPath(path_t out_path, const path_t path) {
 
 	else { // if it's not an absolute path:
 
+		// all the ...errno variables will be unused when not in debug mode
+		#pragma clang diagnostic push
+		#pragma clang diagnostic ignored "-Wunused-variable"
+
 		// we're getting the env var instead of running `getcwd`,
 		//  since `getcwd` will chase links when finding the absolute path of `path`
 		const char *PWD = getenv("PWD"); // get PWD
@@ -76,6 +80,8 @@ int getDirPath(path_t out_path, const path_t path) {
 				return EXIT_FAILURE;
 			}
 		}
+
+		#pragma clang diagnostic pop
 	}
 
 	// once we've got the absolute path, try and abbreviate it by replacing $HOME with `~`.
@@ -84,3 +90,5 @@ int getDirPath(path_t out_path, const path_t path) {
 	// abbrPath will always succeed, so return with success
 	return EXIT_SUCCESS;
 }
+
+// spell:ignoreRegexp /(?<!\w)-W(\w+)/g
