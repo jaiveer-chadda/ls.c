@@ -3,21 +3,7 @@
 # build.zsh
 # ‾‾‾‾‾‾‾‾‾
 
-if { false; } {
-  clang                                    \
-    -O0 -Wall -Wextra -Wpedantic           \
-    -Wno-deprecated-declarations           \
-    -Wno-variadic-macro-arguments-omitted  \
-    -L"$( brew --prefix libmagic )"lib     \
-    -I"$( brew --prefix libmagic )"include \
-    -I$HOME/dev/C/ls.c/source              \
-    -lmagic -framework CoreFoundation      \
-    -fsanitize=address,undefined           \
-    "$root/source/"**/*.c                  \
-    --output "$root/out/lk"                \
-      &&     "$root/out/lk" --clear        \
-      && cp  "$root/out/lk" "$HOME/bin/lk"
-}
+if [[ "$ZSH_EVAL_CONTEXT" != 'toplevel' ]] return 1
 
 # ——————————————————————————————————————————————————————————————————————————— #
 
@@ -25,23 +11,46 @@ function -- () {
 
   # equivalent to running `dirname` on this file's path (w/o resolving links)
   local -r _proj_root="${${(%):-%x}:a:h}"
-
-  # ————————————————————————————————————————————————————————————————————————— #
-
   local -r CC='clang'
-  local -ra CFLAGS=( O0 )
 
   # ————————————————————————————————————————————————————————————————————————— #
 
-  # if the `--debug` flag is passed to this script, then define the
-  #  `DEBUG_MODE` macro for the compiler to build with debug enabled
-  local mode
-  if [[ "$1" == --debug ]] mode=debug && shift
+  # dev mode is supposed to be halfway between the debug and production modes
+  local mode=dev
+  local -i 2 print_cmd=0 do_time=0
+
+  while [[ -n "$1" ]] { #
+    case "$1" {
+      ( --(print-|)cmd   ) print_cmd=1 ;;
+      ( --debug(ging|)   ) mode=debug  ;;
+      ( --prod(uction|)  ) mode=prod   ;;
+      ( --dev(elopment|) ) mode=dev    ;;
+      ( --time           ) do_time=1   ;;
+      ( -- ) shift ;&
+      ( *  ) break ;;
+    }
+    shift
+  }
+
+  # ————————————————————————————————————————————————————————————————————————— #
 
   local -a DEFINITIONS
   if [[ "$mode" == debug ]] DEFINITIONS+=( DEBUG_MODE )
 
   # ————————————————————————————————————————————————————————————————————————— #
+
+  local -a CFLAGS
+  local optimisation
+
+  case "$mode" {
+    ( debug ) optimisation=0; CFLAGS+=( g ) ;;
+    ( dev   ) optimisation=1 ;;
+    ( prod  ) optimisation=3 ;;
+  }
+
+  local -ra CFLAGS=( O$optimisation )
+
+  # ———————————————————————————————————————————————————— #
 
   # all `-W...` warnings to enable
   local -a WARNINGS=( all extra pedantic )
@@ -61,9 +70,12 @@ function -- () {
 
   # location of the outputted binary
   local -r TARGET="$_proj_root/out/lk"
-  local -r COPY_TO="$_proj_root/out/lk"
-  # the command that should be run after compilation & linking
-  local -ra CMD=( "$TARGET" --clear )
+  # where the binary should be copied to
+  local -r COPY_TO="$HOME/bin/lk"
+
+  # the command that should be run after compilation
+  local -a CMD=( "$TARGET" --clear "$@" )
+  if (( do_time )) CMD=( zsh -c "time ${(@q)CMD}" )
 
   # ———————————————————————————————————————————————————— #
 
@@ -74,12 +86,14 @@ function -- () {
 
   # find where the `libmagic` library is stored, to be passed to the linker
   local -r _lmagic_prefix="$( brew --prefix libmagic )"
+  local -ra LIBPATHS=( "$_lmagic_prefix/lib" )
+  local -ra INCLUDES=( "$_lmagic_prefix/include" "$_proj_root/source" )
+  local -ra   LDLIBS=( magic )
 
   local -ra FRAMEWORKS=( CoreFoundation )
-  local -ra   LIBPATHS=( "$_lmagic_prefix/lib" )
-  local -ra   INCLUDES=( "$_lmagic_prefix/include" "$_proj_root/source" )
-  local -ra   SANITISE=( address undefined )
-  local -ra     LDLIBS=( magic )
+
+  local -a SANITISE=( address undefined )
+  if [[ "$mode" == prod ]] SANITISE=()
 
   # ————————————————————————————————————————————————————————————————————————— #
 
@@ -96,23 +110,31 @@ function -- () {
   if (( $#FRAMEWORKS  )) BUILD_ARGS+=( "-framework ${(@)^FRAMEWORKS}" )
   if (( $#SANITISE    )) BUILD_ARGS+=( "-fsanitize=${(j:,:)SANITISE}" )
 
-  # always add the target and source files
-  BUILD_ARGS+=( --output "$TARGET" -- )
-  BUILD_ARGS+=( "${(@)SOURCE_FILES}"  )
+  # always add the target file
+  BUILD_ARGS+=( --output "$TARGET" )
 
-  # echo "$CC" "${(@z)BUILD_ARGS}" '\ \n\t' \
-  #   '&&' "${(@)CMD}" "$@"         '\ \n\t' \
-  #   '&&' cp "$TARGET" "$HOME/bin/${TARGET##*/}" $'\e[m'
+  # ———————————————————————————————————————————————————— #
+
+  if (( print_cmd )) {
+    bat -pp -lzsh <<< "${"${:-"$CC $BUILD_ARGS source/**/*.c \\
+      && $CMD \\
+      && cp $TARGET ~/bin/${TARGET##*/}"}"//$_proj_root\//./}"
+  }
+
+  # ———————————————————————————————————————————————————— #
+
+  # source files are added here so they don't mess up the `print_cmd` output
+  BUILD_ARGS=( "${(@z)BUILD_ARGS}" -- "${(@)SOURCE_FILES}" )
 
   # pass that array of arguments to the compiler
   # then, if successful, execute the program
   # and if that _also_ works, make a copy of the binary available in `~/bin`
-  "$CC" "${(@z)BUILD_ARGS}" \
-    &&  "${(@)CMD}" "$@"     \
+  "$CC" "${(@)BUILD_ARGS}" \
+    &&  "${(@)CMD}"         \
     && cp "$TARGET" "$HOME/bin/${TARGET##*/}"
 
 } "$@"
 
 # ——————————————————————————————————————————————————————————————————————————— #
 
-# spell:ignoreRegExp /(?<!-)[-_]\w+/g
+# spell:ignoreRegExp /(?<!-)[-_]\w+|\w+(?=\|)/g
