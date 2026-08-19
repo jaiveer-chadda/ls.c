@@ -22,7 +22,7 @@
 path_t G_DOTDIR_PATH;
 const char *argv0;
 
-int main(const int argc, const char *argv[]) { dfunc(main);
+int main(const int argc, const char *argv[]) {
 	initDebugging(argv[1]);
 
 	argv0 = argc >= 1 && argv[0] != NULL && strlen(argv[0]) > 0

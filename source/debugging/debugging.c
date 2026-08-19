@@ -82,12 +82,8 @@ void d__debug(const LogLevelIdx level_, const char *time, const int lineno, cons
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void d__func(const char *func, const char *file) {
-	(void)file;
-	if (strcmp(last_func, func) != 0) {
-		// toStderr("——————————————————————— %-22s ———————————————————————————————————————————————————————\n", func);
-		last_func = (char*)func;
-	}
+void d__func(const char *func) {
+	if (strcmp(last_func, func) != 0) last_func = (char*)func;
 }
 
 void d__line(void) {

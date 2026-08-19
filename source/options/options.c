@@ -84,7 +84,7 @@ static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 
 /* —— all Opts/Fields On() ——————————————————————————————————————————— */
 
-static inline void allOptsOn(void) { dfunc(allOptsOn);
+static inline void allOptsOn(void) {
 	U_DO_TINY_FLAGS	 = false,
 	U_DO_SHORT_FLAGS = false;
 
@@ -93,7 +93,7 @@ static inline void allOptsOn(void) { dfunc(allOptsOn);
 	}
 }
 
-static inline void allFieldsOn(void) { dfunc(allFieldsOn);
+static inline void allFieldsOn(void) {
 	for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
 		if (BINARY_OPTS[opt_i].is_field) {
 			BINARY_OPTS[opt_i].value = true;
@@ -103,7 +103,7 @@ static inline void allFieldsOn(void) { dfunc(allFieldsOn);
 
 /* ── ── setOptions() ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
-int setOptions(const int argc, const char *argv[]) { dfunc(setOptions);
+int setOptions(const int argc, const char *argv[]) {
 	if (strends(argv[0], "c" PROGRAM_NAME)) VALUE_OF(DO_CLEAR) = true;
 
 	bool colour_auto = true;
@@ -234,6 +234,7 @@ int setOptions(const int argc, const char *argv[]) { dfunc(setOptions);
 
 		label_continue:
 			if (did_malloc) free(opt);
+			continue;
 	}
 
 	/* —— Handle Colour & Return ————————————————————————————————————— */

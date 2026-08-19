@@ -33,7 +33,7 @@ typedef unsigned int  u_int;
  * @param orig_char[in] The character to be escaped.
  * @return `true` if the inputted character was escaped, `false` otherwise.
  */
-static bool escapeCharacter(char *esc_seq, const char orig_char) { dfunc(escapeCharacter);
+static bool escapeCharacter(char *esc_seq, const char orig_char) {
 	const u_char chr = (u_char)orig_char;
 	switch (chr) {
 		case '\\'	: strcpy(esc_seq, "\\\\");	return true;
@@ -73,7 +73,7 @@ static bool escapeCharacter(char *esc_seq, const char orig_char) { dfunc(escapeC
  * 						but with the leading `[`
  * @return true if `colour` will set the background colour, false otherwise.
  */
-static bool doesSetBackground(const char *colour) { dfunc(doesSetBackground);
+static bool doesSetBackground(const char *colour) {
 	const int start_at = colour[0] == ';' ? 1 : 0;
 	const int len = (int)strlen(colour);
 
@@ -88,8 +88,8 @@ static bool doesSetBackground(const char *colour) { dfunc(doesSetBackground);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_escape) { dfunc(escapeName);
-	if (orig_name == NULL) debug(FATAL, "%s", orig_name);
+bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_escape) {
+	// TODO: add some assertations here (e.g. orig_name != NULL)
 
 	const char *raw_name = GET_NAME(orig_name); // orig_name;
 	/// Whether `colour_escape` is an escape that sets the background colour of the text when used.

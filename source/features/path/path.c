@@ -13,15 +13,9 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void abbrPath(path_t out_path, const path_t abs_path) { dfunc(abbrPath);
-	debug(TRACE, "  abs_path: %s", abs_path);
-	debug(TRACE, "& out_path: %p", out_path);
-	// debug(TRACE, "1");
-
-	// by default, copy the `abs_path`
+void abbrPath(path_t out_path, const path_t abs_path) {
+	// by default, copy the `abs_path` over to `out_path`
 	strcpy(out_path, abs_path);
-	// debug(TRACE, "2");
-
 	const char *HOME = getenv("HOME");
 
 	if (HOME != NULL) {
@@ -42,7 +36,7 @@ void abbrPath(path_t out_path, const path_t abs_path) { dfunc(abbrPath);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-int getDirPath(path_t out_path, const path_t path) { dfunc(getDirPath);
+int getDirPath(path_t out_path, const path_t path) {
 	path_t abs_path;
 
 	// if `path` is already an absolute path, then just copy it over

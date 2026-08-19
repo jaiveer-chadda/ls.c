@@ -84,7 +84,7 @@ typedef unsigned int u_int;
 #	define ff
 #endif
 
-inline void printFields(const FileInfo *all_files, const int *count) { dfunc(printFields);
+inline void printFields(const FileInfo *all_files, const int *count) {
 	/// The `printf` format string that'll be used to construct a field's output.
 	char fmt_str[16];
 

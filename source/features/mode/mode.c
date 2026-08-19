@@ -27,7 +27,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline void getPermStr(const mode_t oct_digit, char *perm_str) { dfunc(getPermStr);
+static inline void getPermStr(const mode_t oct_digit, char *perm_str) {
 	strcpy(perm_str, (char[]){NO_PERM_CHAR, NO_PERM_CHAR, NO_PERM_CHAR, '\0'});
 
 	if (oct_digit & 04) perm_str[0] = READ_BIT_CHAR;
@@ -36,7 +36,7 @@ static inline void getPermStr(const mode_t oct_digit, char *perm_str) { dfunc(ge
 }
 
 /// @brief Gets the character representing the filetype specified by an octal type integer.
-static inline char getModeType(const mode_t mode) { dfunc(getModeType);
+static inline char getModeType(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
 		case S_IFIFO:	return PIPE_CHAR	; // named pipe		('|' or 'p')
 		case S_IFCHR:	return CHRDEV_CHAR	; // char device
@@ -52,7 +52,7 @@ static inline char getModeType(const mode_t mode) { dfunc(getModeType);
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
-inline char getTypeSuffix(const mode_t mode) { dfunc(getTypeSuffix);
+inline char getTypeSuffix(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
 		case S_IFLNK:	return SYMLINK_SUFFIX;	// symlink
 		case S_IFDIR:	return DIR_SUFFIX;		// directory
@@ -67,7 +67,7 @@ inline char getTypeSuffix(const mode_t mode) { dfunc(getTypeSuffix);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void getMode(modestr mode_str, const mode_t oct_mode) { dfunc(getMode);
+void getMode(modestr mode_str, const mode_t oct_mode) {
 	// separate oct_mode by bit shifting it, leaving just one digit from 0-7 in each var
 	const mode_t // Note: 3 = log2(8)
 		ext_oct = (oct_mode & EXT_MASK) >> (3 * 3), // `d--s--s--t` == `7000`

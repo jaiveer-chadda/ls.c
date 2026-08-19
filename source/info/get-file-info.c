@@ -35,8 +35,6 @@
 
 // [[ called by `getFileInfo()` ]]
 static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, const path_t path) {
-	dfunc(parseStatObject);
-
 	// move all the raw stat info that we need over to `file`
 	pFile->nlink	= pInfo->st_nlink;
 	pFile->dev_no	= pInfo->st_dev;
@@ -88,7 +86,7 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
  * @param pFile[out] @param pInfo[out] @param entry[in]
  */
 static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const struct dirent *entry) {
-	dfunc(getInfoFromDirent);
+
 
 	*pInfo = (struct stat){0};
 	*pFile = (FileInfo){0};
@@ -104,20 +102,17 @@ static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // [[ called by `getFileInfo()` ]]
-static inline bool getTargetInfo(FileInfo *pFile, const path_t path) { dfunc(getTargetInfo);
+static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
 	bool stat_did_fail = false;
 
 	// file is a link - run `stat()` to get some of the info from the target file
 	struct stat target_info = {0};
 	stat_did_fail = stat(path, &target_info) == -1;
 
-	if (stat_did_fail)	debug(WARNING, "`stat()` failed");
-	else				debug(SUCCESS, "`stat()` succeeded");
-
 	// extract the necessary info from the target file
 	// i.e. only the info that is relevant to when it's printed after the -> arrow
-	if (pFile->ln_suf != INVALID_LINK) pFile->link_to	= getLink(path);
-	pFile->ln_suf	= getTypeSuffix(target_info.st_mode);
+	if (pFile->ln_suf == '\0') pFile->link_to = getLink(path);
+	pFile->ln_suf = getTypeSuffix(target_info.st_mode);
 	pFile->is_mount	= isMountPoint(target_info.st_dev, path);
 	setFileColour(&pFile->link_col, pFile->link_to, target_info.st_mode, target_info.st_flags, pFile->is_mount);
 
@@ -132,7 +127,7 @@ static inline void getFileInfo(
 	const struct dirent *entry,
 	FileInfo dirs[], FileInfo files[],
 	int *dir_count, int *file_count, const char *dotdir_path
-) { dfunc(getFileInfo);
+) {
 	// Initialise the struct so we can assign to it later
 	FileInfo file = { .is_valid = true };
 
@@ -153,7 +148,6 @@ static inline void getFileInfo(
 
 	// If the file's a symlink, get the information of its target
 	if (S_ISLNK(info.st_mode)) {
-		debug(DEBUG, "regular symlink:");
 		stat_did_fail = getTargetInfo(&file, path);
 
 	// If it's not a symlink, check if its an Apple alias instead
@@ -169,27 +163,14 @@ static inline void getFileInfo(
 
 		if (is_apple_alias) {
 
-			debug(DEBUG, "target_path: %s", target_path);
-
-			// if (is_valid_alias)	{
-			// 	debug(SUCCESS, "valid apple alias: %s", entry->d_name);
-			// } else {
-			// 	debug(WARNING, "invalid apl alias: %s", entry->d_name);
-			// 	dline();
-			// }
-
 			file.link_to = emalloc(sizeof(path_t));
 
-			if (!is_valid_alias) {
-				file.ln_suf = INVALID_LINK;
+			// if its a valid  alias, get its info from the filepath we just found, as normal
+			// if it isn't - mark it as such, and move on
+			if (!is_valid_alias) file.ln_suf = INVALID_LINK;
+			else stat_did_fail = getTargetInfo(&file, target_path);
 
-			} else {
-				debug(TRACE, "ran getTargetInfo");
-				// If its an  alias, get its info from the filepath we just found, as normal
-				stat_did_fail = getTargetInfo(&file, target_path);
-			}
-
-			// Then abbreviate the path, so it can be displayed nicely
+			// finally, abbreviate the path, so it can be displayed nicely
 			abbrPath(file.link_to, target_path);
 
 		} else {
@@ -219,7 +200,7 @@ static inline void getFileInfo(
 
 void getAllFileInfo(
 	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *dotdir_path)
-{ dfunc(getAllFileInfo);
+{
 	*dir_count	= 0, /// How many directories have been read & processed.
 	*file_count	= 0; /// How many non-directory files have been read & processed.
 
@@ -235,10 +216,6 @@ void getAllFileInfo(
 	while ((entry = readdir(dir_obj)) != NULL && *dir_count + *file_count <= MAX_FILES_IN_DIR) {
 		// don't process the `..` directory.
 		if (DO_IGNORE_FILE(entry)) continue;
-
-		dfunc(getAllFileInfo);
-		dline();
-		debug(TRACE, "\33[31m────────────────────────── %s", entry->d_name);
 
 		// from the file entry, get the required information, and store it in the `dirs` or `files` arrays
 		getFileInfo(entry, dirs, files, dir_count, file_count, dotdir_path);

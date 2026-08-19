@@ -13,18 +13,12 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-link_t getLink(const path_t link_path) { dfunc(getLink);
+link_t getLink(const path_t link_path) {
 	path_t target_path = "";
 
+	// TODO: handle this
 	const ssize_t target_path_len = readlink(link_path, target_path, sizeof(path_t));
-
-	debug(INFO, "link_path       : %s", link_path);
-	debug(INFO, "target_path_len : %zd", target_path_len);
-	debug(INFO, "target_path     : '%s'", target_path);
-	debug(INFO, "&target_path    : %p", target_path);
-
 	target_path[target_path_len != -1 ? target_path_len : 0] = '\0';
-	// target_path[target_path_len] = '\0';
 
 	/* ————————————————————————————————————————————————————— */
 

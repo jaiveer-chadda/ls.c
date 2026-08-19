@@ -26,12 +26,12 @@ typedef struct {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void d__debug(const LogLevelIdx level_, const char *time, const int lineno, const char *file, const char *fmt, ...);
-void d__func(const char *func, const char *file);
+void d__func(const char *func);
 void d__line(void);
 
 #ifdef DEBUG_MODE
 #	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __VA_ARGS__)
-#	define dfunc(func) d__func(#func, __FILE__)
+#	define dfunc(func) d__func(#func)
 #	define dline() d__line()
 #	define initDebugging(argv1) do {													\
 		/* this is a very crude way to check for the `--clear` flag, */					\
@@ -40,7 +40,8 @@ void d__line(void);
 			printf("%s", CLEAR_SCREEN);													\
 			fflush(stdout);																\
 		}																				\
-		/* debug(DEBUG, "────── DEBUGGING ──────"); */										\
+		debug(DEBUG, "────── DEBUGGING ──────");										\
+		dline();																		\
 	} while (0)
 #else
 #	define debug(log_level, ...)
