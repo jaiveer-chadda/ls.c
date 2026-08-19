@@ -146,6 +146,8 @@ static inline void getFileInfo(
 	const bool lstat_did_fail = lstat(path, &info) == -1;
 	bool stat_did_fail = true;
 
+	// TODO: collapse this deep nesting (somehow)
+
 	// If the file's a symlink, get the information of its target
 	if (S_ISLNK(info.st_mode)) {
 		stat_did_fail = getTargetInfo(&file, path);
@@ -198,6 +200,14 @@ static inline void getFileInfo(
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/**
+ * @brief Runs `getFileInfo` on each file in the directory given by `dotdir_path`.
+ *
+ * @param  dirs[out] @param  dir_count[out]
+ * @param files[out] @param file_count[out]
+ * @param dir_obj[in,mod] (isn't modified, only closed) TODO: fix this
+ * @param dotdir_path[in]
+ */
 void getAllFileInfo(
 	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *dotdir_path)
 {
@@ -214,14 +224,14 @@ void getAllFileInfo(
 	struct dirent *entry;
 	// now process the rest of the directory
 	while ((entry = readdir(dir_obj)) != NULL && *dir_count + *file_count <= MAX_FILES_IN_DIR) {
-		// don't process the `..` directory.
+		// don't process the `..` directory, and don't re-process `.`
 		if (DO_IGNORE_FILE(entry)) continue;
 
 		// from the file entry, get the required information, and store it in the `dirs` or `files` arrays
 		getFileInfo(entry, dirs, files, dir_count, file_count, dotdir_path);
 	}
 
-	// the directory info isn't needed anymore, so it can be closed
+	// the directory info isn't needed anymore - it can be closed
 	closedir(dir_obj);
 }
 
