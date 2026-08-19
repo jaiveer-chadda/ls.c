@@ -45,8 +45,8 @@ str_t strnInit(const char *cstr, const size_t len) {
 /**
  * @brief Find out whether a given string ends in another substring.
  *
- * With thanks to portfoliocourses (https://github.com/portfoliocourses)
- * https://github.com/portfoliocourses/c-example-code/blob/main/endswith.c
+ * With thanks to [portfoliocourses](https://github.com/portfoliocourses)
+ * ([source](https://github.com/portfoliocourses/c-example-code/blob/main/endswith.c))
  *
  * @return true if `inp` ends with the substring `end`, and false otherwise.
  */

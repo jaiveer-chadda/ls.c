@@ -12,6 +12,7 @@
 #include "main/process-dir.h"
 
 #include "utils/malloc.h"
+#include "utils/string.h"
 #include "options/options.h"
 #include "features/time/time.h"
 
@@ -26,7 +27,10 @@ const char *argv0;
 int main(const int argc, const char *argv[]) {
 	initDebugging(argv[1]);
 
-	setlocale(LC_ALL, "");
+	// Set the locale to the system default (it'll check the env vars)
+	//	(this is to ensure that multibyte characters can be printed as file icons)
+	const char *locale = setlocale(LC_ALL, "");
+	if(!strends(locale, "UTF-8")) debug(WARNING, "Non-UTF-8 locale - locale is '%s'", locale);
 
 	argv0 = argc >= 1 && argv[0] != NULL && strlen(argv[0]) > 0
 		? argv[0]
