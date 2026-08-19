@@ -9,23 +9,31 @@
 #include "features/path/path.h"
 #include "features/mode/mode.h"
 
+#include "debugging/debugging.h"
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-link_t getLink(const path_t link_path) {
-	path_t link;
+link_t getLink(const path_t link_path) { dfunc(getLink);
+	path_t target_path = "";
 
-	const ssize_t path_len = readlink(link_path, link, sizeof(path_t));
-	link[path_len] = '\0';
+	const ssize_t target_path_len = readlink(link_path, target_path, sizeof(path_t));
+
+	debug(INFO, "link_path       : %s", link_path);
+	debug(INFO, "target_path_len : %zd", target_path_len);
+	debug(INFO, "target_path     : '%s'", target_path);
+	debug(INFO, "&target_path    : %p", target_path);
+
+	target_path[target_path_len != -1 ? target_path_len : 0] = '\0';
+	// target_path[target_path_len] = '\0';
 
 	/* ————————————————————————————————————————————————————— */
 
-	// this memory is freed once the link is printed (in `printSymlink()`)
+	// this memory is freed once the target is printed (in `printSymlink()`)
 	// ReSharper disable once CppLocalVariableMayBeConst
-	link_t link_str = emalloc(sizeof(char) * MAX_PATH_LEN);
+	link_t target_str = emalloc(sizeof(path_t));
 
-	abbrPath(link_str, link);
-
-	return link_str;
+	abbrPath(target_str, target_path);
+	return target_str;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

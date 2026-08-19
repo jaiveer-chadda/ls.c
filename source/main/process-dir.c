@@ -14,13 +14,15 @@
 
 #include "features/path/path.h"
 
+#include "debugging/debugging.h"
+
 // `is_first` will be unused when compiled in debug mode
 #ifdef DEBUG_MODE
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #endif
 
-void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const bool is_first) {
+void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const bool is_first) { dfunc(processDirectory);
 	// Resolve the path to the target directory, which'll be used to replace the `.` directory's name
 	//  (casting to void, since there's nth we can rly do if we don't manage to get it)
 	(void)getDirPath(G_DOTDIR_PATH, path);

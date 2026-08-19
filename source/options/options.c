@@ -9,6 +9,8 @@
 #include "utils/malloc.h"
 #include "utils/string.h"
 
+#include "debugging/debugging.h"
+
 #ifndef t
 #define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug that my error checker has */
 #define f 0
@@ -82,7 +84,7 @@ static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 
 /* —— all Opts/Fields On() ——————————————————————————————————————————— */
 
-static inline void allOptsOn(void) {
+static inline void allOptsOn(void) { dfunc(allOptsOn);
 	U_DO_TINY_FLAGS	 = false,
 	U_DO_SHORT_FLAGS = false;
 
@@ -91,7 +93,7 @@ static inline void allOptsOn(void) {
 	}
 }
 
-static inline void allFieldsOn(void) {
+static inline void allFieldsOn(void) { dfunc(allFieldsOn);
 	for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
 		if (BINARY_OPTS[opt_i].is_field) {
 			BINARY_OPTS[opt_i].value = true;
@@ -101,7 +103,7 @@ static inline void allFieldsOn(void) {
 
 /* ── ── setOptions() ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
-int setOptions(const int argc, const char *argv[]) {
+int setOptions(const int argc, const char *argv[]) { dfunc(setOptions);
 	if (strends(argv[0], "c" PROGRAM_NAME)) VALUE_OF(DO_CLEAR) = true;
 
 	bool colour_auto = true;

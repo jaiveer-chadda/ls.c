@@ -8,13 +8,19 @@
 
 #include "path.h"
 #include "info/info.h"
+
 #include "debugging/debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void abbrPath(path_t out_path, const path_t abs_path) {
+void abbrPath(path_t out_path, const path_t abs_path) { dfunc(abbrPath);
+	debug(TRACE, "  abs_path: %s", abs_path);
+	debug(TRACE, "& out_path: %p", out_path);
+	// debug(TRACE, "1");
+
 	// by default, copy the `abs_path`
 	strcpy(out_path, abs_path);
+	// debug(TRACE, "2");
 
 	const char *HOME = getenv("HOME");
 
@@ -36,7 +42,7 @@ void abbrPath(path_t out_path, const path_t abs_path) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-int getDirPath(path_t out_path, const path_t path) {
+int getDirPath(path_t out_path, const path_t path) { dfunc(getDirPath);
 	path_t abs_path;
 
 	// if `path` is already an absolute path, then just copy it over
@@ -62,7 +68,7 @@ int getDirPath(path_t out_path, const path_t path) {
 
 		// if `$PWD` can't be found, or if its empty
 		if (PWD == NULL || *PWD == '\0') {
-			debug(WARN, "getenv(\"PWD\"): \n", strerror(getenv_errno));
+			debug(WARNING, "getenv(\"PWD\"): \n", strerror(getenv_errno));
 
 			// if `getenv` failed, try `getcwd`. if that fails, then give up
 			if (getcwd(base_path, MAX_PATH_LEN) == NULL) {

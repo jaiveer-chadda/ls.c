@@ -11,6 +11,8 @@
 
 #include "output.h"
 
+#include "debugging/debugging.h"
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// If `name` is ".", then replace it with the full path to `$PWD`. Otherwise, just reinsert the name.
@@ -31,7 +33,7 @@ typedef unsigned int  u_int;
  * @param orig_char[in] The character to be escaped.
  * @return `true` if the inputted character was escaped, `false` otherwise.
  */
-static bool escapeCharacter(char *esc_seq, const char orig_char) {
+static bool escapeCharacter(char *esc_seq, const char orig_char) { dfunc(escapeCharacter);
 	const u_char chr = (u_char)orig_char;
 	switch (chr) {
 		case '\\'	: strcpy(esc_seq, "\\\\");	return true;
@@ -71,7 +73,7 @@ static bool escapeCharacter(char *esc_seq, const char orig_char) {
  * 						but with the leading `[`
  * @return true if `colour` will set the background colour, false otherwise.
  */
-static bool doesSetBackground(const char *colour) {
+static bool doesSetBackground(const char *colour) { dfunc(doesSetBackground);
 	const int start_at = colour[0] == ';' ? 1 : 0;
 	const int len = (int)strlen(colour);
 
@@ -86,7 +88,9 @@ static bool doesSetBackground(const char *colour) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_escape) {
+bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_escape) { dfunc(escapeName);
+	if (orig_name == NULL) debug(FATAL, "%s", orig_name);
+
 	const char *raw_name = GET_NAME(orig_name); // orig_name;
 	/// Whether `colour_escape` is an escape that sets the background colour of the text when used.
 	const bool colour_sets_bg = doesSetBackground(colour_escape);

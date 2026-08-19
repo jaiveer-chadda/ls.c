@@ -105,6 +105,8 @@ void setFileColour(FileColour *colour, const name_t name, const mode_t mode, con
 
 	/* —— Specific Filenames ———————————————————————————————————— */
 
+	if (name == NULL) return;
+
 	const size_t name_len = strlen(name);
 
 	// if a file ends with a `~` or `#`, then it's a temporary file

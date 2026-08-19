@@ -10,6 +10,8 @@
 
 #include "output.h"
 
+#include "debugging/debugging.h"
+
 typedef unsigned int u_int;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -76,7 +78,13 @@ typedef unsigned int u_int;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-inline void printFields(const FileInfo *all_files, const int *count) {
+#ifdef DEBUG_MODE
+#	define ff fflush(stdout)
+#else
+#	define ff
+#endif
+
+inline void printFields(const FileInfo *all_files, const int *count) { dfunc(printFields);
 	/// The `printf` format string that'll be used to construct a field's output.
 	char fmt_str[16];
 
@@ -84,25 +92,25 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		FileInfo file = all_files[i];
 
 		// print each of the fields in order
-		PRINT_FIELD(inode)	; PRINT_FIELD(dev_no);
-		PRINT_FIELD(mode)	; PRINT_MODE_STR();
+		PRINT_FIELD(inode)	; ff; PRINT_FIELD(dev_no)	; ff; 
+		PRINT_FIELD(mode)	; ff; PRINT_MODE_STR()		; ff; 
 
-		PRINT_NLINK()		;
-		PRINT_SIZE()		; PRINT_SIZE_STR();
-		PRINT_FIELD(uid)	; PRINT_USR_NAME();
-		PRINT_FIELD(gid)	; PRINT_GRP_NAME();
-		PRINT_FIELD(flags)	; PRINT_FLAG_STR();
-		PRINT_TIME (time)	; PRINT_TIME(time_str);
+		PRINT_NLINK()		; ff;
+		PRINT_SIZE()		; ff; PRINT_SIZE_STR()		; ff; 
+		PRINT_FIELD(uid)	; ff; PRINT_USR_NAME()		; ff; 
+		PRINT_FIELD(gid)	; ff; PRINT_GRP_NAME()		; ff; 
+		PRINT_FIELD(flags)	; ff; PRINT_FLAG_STR()		; ff; 
+		PRINT_TIME (time)	; ff; PRINT_TIME(time_str)	; ff; 
 
 		// print the file's name and its suffix (if enabled)
 		printName(file.name, &file.file_col, &file.do_link_hl, &file.flags, &file.suffix);
-		if (do_suffix() && file.suffix != '\0') putchar(file.suffix);
+		if (do_suffix() && file.suffix != '\0') { putchar(file.suffix); ff; }
 
 		// next, if the file's a symlink, print the pointed-to path
-		if (DO_SYMLINK()) printSymlink(file.link_to, file.ln_suf, file.link_col);
+		if (DO_SYMLINK()) { printSymlink(file.link_to, file.ln_suf, file.link_col); ff; }
 
 		// then, if the file's a mount point, print some information about the mount
-		if (DO_MOUNT_DEV() && file.is_mount) printMountDevice(file.name);
+		if (DO_MOUNT_DEV() && file.is_mount) { printMountDevice(file.name); ff; }
 
 		// finally, print a newline and move onto the next file
 		putchar('\n');

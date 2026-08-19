@@ -10,7 +10,6 @@
 #include "utils/malloc.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
-#include "debugging/debugging.h"
 
 #include "features/ugid/ugid.h"
 #include "features/size/size.h"
@@ -21,6 +20,8 @@
 #include "features/links/symlink.h"
 #include "features/mount/mount-point.h"
 #include "features/links/apple-alias.h"
+
+#include "debugging/debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -34,6 +35,8 @@
 
 // [[ called by `getFileInfo()` ]]
 static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, const path_t path) {
+	dfunc(parseStatObject);
+
 	// move all the raw stat info that we need over to `file`
 	pFile->nlink	= pInfo->st_nlink;
 	pFile->dev_no	= pInfo->st_dev;
@@ -85,6 +88,8 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
  * @param pFile[out] @param pInfo[out] @param entry[in]
  */
 static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const struct dirent *entry) {
+	dfunc(getInfoFromDirent);
+
 	*pInfo = (struct stat){0};
 	*pFile = (FileInfo){0};
 
@@ -99,16 +104,19 @@ static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // [[ called by `getFileInfo()` ]]
-static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
+static inline bool getTargetInfo(FileInfo *pFile, const path_t path) { dfunc(getTargetInfo);
 	bool stat_did_fail = false;
 
 	// file is a link - run `stat()` to get some of the info from the target file
 	struct stat target_info = {0};
 	stat_did_fail = stat(path, &target_info) == -1;
 
+	if (stat_did_fail)	debug(WARNING, "`stat()` failed");
+	else				debug(SUCCESS, "`stat()` succeeded");
+
 	// extract the necessary info from the target file
 	// i.e. only the info that is relevant to when it's printed after the -> arrow
-	pFile->link_to	= getLink(path);
+	if (pFile->ln_suf != INVALID_LINK) pFile->link_to	= getLink(path);
 	pFile->ln_suf	= getTypeSuffix(target_info.st_mode);
 	pFile->is_mount	= isMountPoint(target_info.st_dev, path);
 	setFileColour(&pFile->link_col, pFile->link_to, target_info.st_mode, target_info.st_flags, pFile->is_mount);
@@ -124,7 +132,7 @@ static inline void getFileInfo(
 	const struct dirent *entry,
 	FileInfo dirs[], FileInfo files[],
 	int *dir_count, int *file_count, const char *dotdir_path
-) {
+) { dfunc(getFileInfo);
 	// Initialise the struct so we can assign to it later
 	FileInfo file = { .is_valid = true };
 
@@ -145,24 +153,44 @@ static inline void getFileInfo(
 
 	// If the file's a symlink, get the information of its target
 	if (S_ISLNK(info.st_mode)) {
+		debug(DEBUG, "regular symlink:");
 		stat_did_fail = getTargetInfo(&file, path);
 
 	// If it's not a symlink, check if its an Apple alias instead
 	} else if (S_ISREG(info.st_mode) && info.st_size > 0) {
-		path_t orig_target_path = {0};
+		path_t target_path = {0};
 
-		/// Tracks whether or not an Apple alias points to a valid file or not.
-		///	 Its value is meaningless if this file isn't an Apple alias.
+		/// Indicates whether or not an Apple alias points to a valid file or not.
+		///	 Its value is always false if this file isn't an Apple alias.
 		bool is_valid_alias = false;
 
-		/// Tracks whether a file is an Apple alias or not.
-		const bool is_apple_alias = resolveAppleAlias(orig_target_path, &is_valid_alias, path);
+		/// Indicates whether a file is an Apple alias or not.
+		const bool is_apple_alias = resolveAppleAlias(target_path, &is_valid_alias, path);
 
 		if (is_apple_alias) {
-			// If its an  alias, get its info from the filepath we just found, as normal
-			stat_did_fail = getTargetInfo(&file, orig_target_path);
+
+			debug(DEBUG, "target_path: %s", target_path);
+
+			// if (is_valid_alias)	{
+			// 	debug(SUCCESS, "valid apple alias: %s", entry->d_name);
+			// } else {
+			// 	debug(WARNING, "invalid apl alias: %s", entry->d_name);
+			// 	dline();
+			// }
+
+			file.link_to = emalloc(sizeof(path_t));
+
+			if (!is_valid_alias) {
+				file.ln_suf = INVALID_LINK;
+
+			} else {
+				debug(TRACE, "ran getTargetInfo");
+				// If its an  alias, get its info from the filepath we just found, as normal
+				stat_did_fail = getTargetInfo(&file, target_path);
+			}
+
 			// Then abbreviate the path, so it can be displayed nicely
-			abbrPath(file.link_to, orig_target_path);
+			abbrPath(file.link_to, target_path);
 
 		} else {
 			file.ln_suf = NOT_LINK;
@@ -191,7 +219,7 @@ static inline void getFileInfo(
 
 void getAllFileInfo(
 	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *dotdir_path)
-{
+{ dfunc(getAllFileInfo);
 	*dir_count	= 0, /// How many directories have been read & processed.
 	*file_count	= 0; /// How many non-directory files have been read & processed.
 
@@ -207,6 +235,11 @@ void getAllFileInfo(
 	while ((entry = readdir(dir_obj)) != NULL && *dir_count + *file_count <= MAX_FILES_IN_DIR) {
 		// don't process the `..` directory.
 		if (DO_IGNORE_FILE(entry)) continue;
+
+		dfunc(getAllFileInfo);
+		dline();
+		debug(TRACE, "\33[31m────────────────────────── %s", entry->d_name);
+
 		// from the file entry, get the required information, and store it in the `dirs` or `files` arrays
 		getFileInfo(entry, dirs, files, dir_count, file_count, dotdir_path);
 	}

@@ -6,67 +6,110 @@
 
 #include "apple-alias.h"
 
+#include "debugging/debugging.h"
+
 #define FILE_EXISTS(path) (access((path), F_OK) == 0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t alias_path) {
+	dfunc(resolveAppleAlias);
 	*is_valid_alias = false;
+
+	/* ——————————————————————————————————————————————————————————— */
+
+	debug(DEBUG, "alias_path: \33[31m%s", alias_path);
+	debug(INFO, "assigning alias_url");
 
 	// convert `alias_path` to a CFURL object
 	const CFURLRef alias_url = CFURLCreateFromFileSystemRepresentation(
-		/* allocator	*/ kCFAllocatorDefault,
+		/* allocator	*/ NULL,
 		/* buffer		*/ (const UInt8 *)alias_path,
 		/* bufLen		*/ (CFIndex)strlen(alias_path),
 		/* isDirectory	*/ false
 	);
 
-	if (!alias_url) return false; //= is not an apple alias
 
-	// read the alias file into a bookmark `CFData` object
-	CFErrorRef error_;
-	const CFDataRef bookmark_data = CFURLCreateBookmarkDataFromFile(
-		/* allocator */ kCFAllocatorDefault,
-		/* fileURL	 */ alias_url,
-		/* errorRef	 */ &error_
-	);
-
-	// we don't care about the error, but I also don't want to cause memory leaks lol
-	if (error_) CFRelease(error_);
-
-	if (!bookmark_data) {
-		CFRelease(alias_url);
-		return false; //= is not an apple alias
+	if (alias_url == NULL) {
+		debug(ERROR, "alias_url == NULL - file is not apple alias");
+		return false;
 	}
 
+	debug(SUCCESS, "alias_url != NULL");
+
+	/* ——————————————————————————————————————————————————————————— */
+
+	debug(INFO, "assigning bookmark_data");
+	// read the alias file into a bookmark `CFData` object
+	const CFDataRef bookmark_data = CFURLCreateBookmarkDataFromFile(
+		/* allocator */ NULL,
+		/* fileURL	 */ alias_url,
+		/* errorRef	 */ NULL
+	);
+	debug(INFO, "releasing alias_url");
+	CFRelease(alias_url);
+	debug(SUCCESS, "released alias_url");
+
+	if (bookmark_data == NULL) {
+		debug(ERROR, "bookmark_data == NULL - file is not apple alias");
+		return false;
+	}
+
+	debug(SUCCESS, "bookmark_data != NULL");
+
+	/* ——————————————————————————————————————————————————————————— */
+
+	debug(INFO, "assigning alias_string");
 	// extract the stored metadata
-	const CFStringRef alias_path_ref = CFURLCreateResourcePropertyForKeyFromBookmarkData(
-		/* allocator */ kCFAllocatorDefault,
+	const CFStringRef alias_string = CFURLCreateResourcePropertyForKeyFromBookmarkData(
+		/* allocator */ NULL,
 		/* key		 */ kCFURLPathKey,
 		/* bookmark	 */ bookmark_data
 	);
+	debug(INFO, "releasing bookmark_data");
+	CFRelease(bookmark_data);
+	debug(SUCCESS, "released bookmark_data");
 
-	if (alias_path_ref) {
-		path_t target_path;
+	/* ——————————————————————————————————————————————————————————— */
 
-		// using `FileSystemRepresentation` here to ensure that APFS Unicode normalisation is handled safely
-		if (CFStringGetFileSystemRepresentation(
-			/* string	 */ alias_path_ref,
-			/* buffer	 */ target_path,
-			/* maxBufLen */ sizeof(target_path)
-		)) {
-			strcpy(target_buffer, target_path);
-			*is_valid_alias = FILE_EXISTS(target_path);
-		}
+	if (alias_string != NULL) {
+		debug(SUCCESS, "alias_string != NULL");
+		// path_t target_path;
 
-		CFRelease(alias_path_ref);
+		// if (CFStringGetFileSystemRepresentation(
+		// 	/* string	 */ alias_string,
+		// 	/* buffer	 */ target_path,
+		// 	/* maxBufLen */ sizeof(target_path)
+		// )) {
+		// 	debug(SUCCESS, "file is avalid alias");
+		// 	strcpy(target_buffer, target_path);
+		// 	*is_valid_alias = FILE_EXISTS(target_path);
+		// } else {
+		// 	debug(WARNING, "file is an invalid apple alias");
+		// }
+
+		CFStringGetFileSystemRepresentation(
+			/* string	 */ alias_string,
+			/* buffer	 */ target_buffer,
+			/* maxBufLen */ sizeof(path_t)
+		);
+
+		debug(SUCCESS, "file is a valid alias");
+
+		// strcpy(target_buffer, target_path);
+		*is_valid_alias = FILE_EXISTS(target_buffer);
+
+	} else {
+		debug(WARNING, "alias_string == NULL - file is an invalid apple alias");
 	}
 
-	// clean up the rest of the allocated CoreFoundation memory
-	CFRelease(bookmark_data);
-	CFRelease(alias_url);
+	debug(INFO, "releasing alias_string");
+	CFRelease(alias_string);
+	debug(SUCCESS, "released alias_string");
 
-	return true; //= IS an apple alias
+	/* ——————————————————————————————————————————————————————————— */
+
+	return true;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
