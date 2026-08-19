@@ -29,8 +29,10 @@
 	}
 
 inline void printHeader(void) {
-	const size_t hl_len = IF_COLOUR(strlen(ANSI(HEADER_HL) RESET), 0);
+	/// The constant length of the ANSI escape sequences which enable/disable the header's colour & underline.
+	const size_t hl_len = IF_COLOUR(strlen( ANSI(HEADER_HL) RESET ), 0);
 
+	// print a header for each of the active fields.
 	PRINT_HEADER(inode)	;	PRINT_HEADER(dev_no)  ;
 	PRINT_HEADER(mode)	;	PRINT_HEADER(mode_str);
 	PRINT_HEADER(nlink)	;
@@ -40,6 +42,7 @@ inline void printHeader(void) {
 	PRINT_HEADER(flags)	;	PRINT_HEADER(flag_str);
 	PRINT_HEADER(time)	;	PRINT_HEADER(time_str);
 
+	// finally, print a header for the name, which will always be an exception
 	printf("%s%s" "%s" "%s\n",
 		PRE_NAME_PAD, IF_COLOUR(ANSI(HEADER_HL), NO_COLOUR),
 		name_TITLE,

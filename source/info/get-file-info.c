@@ -10,6 +10,7 @@
 #include "utils/malloc.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
+#include "debugging/debugging.h"
 
 #include "features/ugid/ugid.h"
 #include "features/size/size.h"
@@ -31,7 +32,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// called by `getFileInfo()`
+// [[ called by `getFileInfo()` ]]
 static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, const path_t path) {
 	// move all the raw stat info that we need over to `file`
 	pFile->nlink	= pInfo->st_nlink;
@@ -48,20 +49,27 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	// work out whether ths file is a mount point or not
 	pFile->is_mount = isMountPoint(pInfo->st_dev, path);
 
-	// parse the raw stat information into more human-readable formats.
+	// parse the raw stat information into human-readable display formats
 	if (do_suffix  ()) pFile->suffix = getTypeSuffix(pInfo->st_mode);
 	if (do_flag_str()) parseFlags(pFile->flag_str, pInfo->st_flags);
 	if (do_size_str())	parseSize(pFile->size_str, &pFile->size_unit, &pFile->size, pInfo->st_rdev);
-	if (do_mode_str())	  getMode(pFile->mode_str, pInfo->st_mode);
 	if (do_usr_name())	  getUser(pFile->usr_name, pInfo->st_uid);
 	if (do_grp_name())	 getGroup(pFile->grp_name, pInfo->st_gid);
 	if (do_time_str())	parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &pFile->time_col);
 
-	if (do_mode_str())	 checkACL(&pFile->has_acl, path);
-	if (do_mode_str()) checkXattr(&pFile->has_xattr, path);
+	if (do_mode_str()) {
+		getMode(pFile->mode_str, pInfo->st_mode);	// find the basic mode string ("drwxr-xr-x")
+		checkACL(&pFile->has_acl, path);			// find out whether the file has an access control list ("+")
+		checkXattr(&pFile->has_xattr, path);		// find out whether the file has any extended attributes ("@")
+	} 
 
+	// work out the colour of the filename
 	if (DO_COLOUR()) setFileColour(&pFile->file_col, pFile->name, pInfo->st_mode, pInfo->st_flags, pFile->is_mount);
-	if (!S_ISDIR(pInfo->st_mode) && pInfo->st_nlink > 1) pFile->do_link_hl = true;
+
+	// if the file has more than one link, and isn't a directory, then mark it for highlighting as hardlinked
+	if (!S_ISDIR(pInfo->st_mode) && pInfo->st_nlink > 1) {
+		pFile->do_link_hl = true;
+	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -90,7 +98,7 @@ static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const 
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// called by `getFileInfo()`
+// [[ called by `getFileInfo()` ]]
 static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
 	bool stat_did_fail = false;
 
@@ -111,19 +119,19 @@ static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// called by `getAllFileInfo()`
+// [[ called by `getAllFileInfo()` ]]
 static inline void getFileInfo(
 	const struct dirent *entry,
 	FileInfo dirs[], FileInfo files[],
 	int *dir_count, int *file_count, const char *dotdir_path
 ) {
-	// initialise the struct so we can assign to it later
+	// Initialise the struct so we can assign to it later
 	FileInfo file = { .is_valid = true };
 
-	// get the raw filename stored in `entry`
+	// Get the raw filename stored in `entry`
 	strcpy(file.name, entry->d_name);
 
-	// concatenate the target dir together with the filename to get the absolute path to the file
+	// Concatenate the target dir together with the filename to get the absolute path to the file
 	path_t path;
 	sprintf(path, "%s/%s", dotdir_path, file.name);
 
@@ -135,36 +143,45 @@ static inline void getFileInfo(
 	const bool lstat_did_fail = lstat(path, &info) == -1;
 	bool stat_did_fail = true;
 
-	// if the file is a link, get the information of its target
+	// If the file's a symlink, get the information of its target
 	if (S_ISLNK(info.st_mode)) {
 		stat_did_fail = getTargetInfo(&file, path);
 
+	// If it's not a symlink, check if its an Apple alias instead
 	} else if (S_ISREG(info.st_mode) && info.st_size > 0) {
-		char *orig_target_path = emalloc(sizeof(path_t));
+		path_t orig_target_path = {0};
 
+		/// Tracks whether or not an Apple alias points to a valid file or not.
+		///	 Its value is meaningless if this file isn't an Apple alias.
 		bool is_valid_alias = false;
+
+		/// Tracks whether a file is an Apple alias or not.
 		const bool is_apple_alias = resolveAppleAlias(orig_target_path, &is_valid_alias, path);
 
 		if (is_apple_alias) {
+			// If its an  alias, get its info from the filepath we just found, as normal
 			stat_did_fail = getTargetInfo(&file, orig_target_path);
+			// Then abbreviate the path, so it can be displayed nicely
 			abbrPath(file.link_to, orig_target_path);
+
 		} else {
 			file.ln_suf = NOT_LINK;
 		}
 
-	} else { // if it isn't a link, then keep the `lstat` info, and mark the file as such
+	} else { // If it isn't a link, then keep the `lstat` info, and mark the file as such
 		file.ln_suf = NOT_LINK;
 	}
 
-	// if none of the stat calls worked, then we don't have any extra information
+	// If none of the stat calls worked, then we don't have any extra information
 	//  so extract just the info that we can get from `dirent`, and parse things from there
 	if (stat_did_fail && lstat_did_fail) getInfoFromDirent(&file, &info, entry);
 
 	/* ——————————————————————————————————————————————————————————————————— */
 
+	// Do the main processing - getting the information for each of the files that are going to be displayed
 	parseStatObject(&file, &info, path);
 
-	// add the `FileInfo` object to the end of its respective array
+	// Add the `FileInfo` object to the end of its respective array
 	if (IS_REALPATH_DIR())	dirs [(*dir_count )++] = file;
 	else					files[(*file_count)++] = file;
 }
@@ -172,7 +189,6 @@ static inline void getFileInfo(
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// ReSharper disable once CppParameterNamesMismatch
 void getAllFileInfo(
 	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *dotdir_path)
 {

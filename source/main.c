@@ -99,7 +99,7 @@ int main(const int argc, const char *argv[]) {
 		processDirectory(input_paths[i], input_dirs[i], do_free_path_0, i == 0);
 
 		// Print a newline between each directory listing (after each dir except the last)
-		if (i != input_count - 1) puts("");
+		if (i != input_count - 1) putchar('\n');
 	}
 
 	return EXIT_SUCCESS;

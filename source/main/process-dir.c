@@ -15,8 +15,10 @@
 #include "features/path/path.h"
 
 // `is_first` will be unused when compiled in debug mode
+#ifdef DEBUG_MODE
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
+#endif
 
 void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const bool is_first) {
 	// Resolve the path to the target directory, which'll be used to replace the `.` directory's name
@@ -38,13 +40,14 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const boo
 		dir, path
 	);
 
-	// if we need to free `path[0]`, and this input _is_ `path[0]`, then free it
+	// If we need to free `path[0]`, and this input is `path[0]`, then free it
 	if (do_free_path_0 && is_first) free(path);
 
 	/* —— Sort Files if Dirs First ——————————————————————————————————————————————————————————————— */
 
+	// If we're putting the directories first, then they have to be sorted separately from the files
 	if (SORT_DIRS_FIRST()) {
-		sortFiles( dirs,  &dir_count);
+		sortFiles( dirs, & dir_count);
 		sortFiles(files, &file_count);
 	}
 
@@ -52,6 +55,7 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const boo
 
 	const int count = dir_count + file_count;
 
+	// Concatenate the directories & files into one list by copying the memory over
 	FileInfo *all_files = emalloc(count * sizeof(FileInfo));
 
 	memcpy(all_files,			  dirs,  dir_count  * sizeof(FileInfo));
@@ -61,6 +65,7 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const boo
 
 	/* —— Sort Files if not Dirs First ——————————————————————————————————————————————————————————— */
 
+	// If dirs aren't sorted first, then sort everything as one
 	if (!SORT_DIRS_FIRST()) sortFiles(all_files, &count);
 
 	/* —— Find Widths of Fields —————————————————————————————————————————————————————————————————— */
@@ -96,6 +101,8 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const boo
 	free(all_files);
 }
 
+#ifdef DEBUG_MODE
 #pragma clang diagnostic pop
+#endif
 
 // spell:ignoreRegexp /(?<!\w)-W(\w+)/g

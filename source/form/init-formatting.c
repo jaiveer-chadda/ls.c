@@ -10,13 +10,12 @@ FmtStrs fmt_strs_short, fmt_strs_long;
 
 inline void initFormatting(void) {
 	if (DO_HEADER()) {
-		// these will be precomputed when compiler optimisation is set to `-O2` or `-O3`
+		// these will be precomputed when compiler optimisation is set to `-O2` or above
 		field_lengths = (Lengths){
 			.nlink	= strlen(nlink_TITLE),
 			.dev_no	= strlen(dev_no_TITLE),	.inode	  =	strlen(inode_TITLE),
-
 			// `mode` and `mode_str` have constant sizes
-			.mode	= OCT_MODE_LEN,			.mode_str =	MODE_STR_LEN - 1,
+			.mode	= OCT_MODE_LEN,			.mode_str =	MODE_STR_LEN - 1, // -1 to disregard the nullbyte
 			.flags	= strlen(flags_TITLE),	.flag_str =	strlen(flag_str_TITLE),
 			.size	= strlen(size_TITLE),	.size_str =	strlen(size_str_TITLE),
 			.uid	= strlen(uid_TITLE),	.usr_name =	strlen(usr_name_TITLE),
