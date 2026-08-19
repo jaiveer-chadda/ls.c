@@ -3,10 +3,11 @@
  * @file main.c
  */
 
+#include <errno.h>
 #include <stdio.h>
+#include <locale.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 #include "main/process-dir.h"
 
@@ -24,6 +25,8 @@ const char *argv0;
 
 int main(const int argc, const char *argv[]) {
 	initDebugging(argv[1]);
+
+	setlocale(LC_ALL, "");
 
 	argv0 = argc >= 1 && argv[0] != NULL && strlen(argv[0]) > 0
 		? argv[0]

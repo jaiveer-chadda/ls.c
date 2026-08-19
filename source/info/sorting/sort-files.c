@@ -35,7 +35,6 @@ static int REVERSE;
 		if (strcmp(name_2, DOTDIR) == 0) return  1; \
 	} while (0)
 
-
 /// Define a function that can be passed into `qsort` by the `SORT_FILES_BY` macro.
 #define DEFINE_COMPARE_FUNCTION(field) \
 	static inline int compare_ ## field ## s(const void *file_1, const void *file_2) { \

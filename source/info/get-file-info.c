@@ -7,6 +7,7 @@
 
 #include "info.h"
 
+#include "icons/icons.h"
 #include "utils/malloc.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
@@ -57,6 +58,7 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	if (do_usr_name())	  getUser(pFile->usr_name, pInfo->st_uid);
 	if (do_grp_name())	 getGroup(pFile->grp_name, pInfo->st_gid);
 	if (do_time_str())	parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &pFile->time_col);
+	if (do_icon	   ()) 	 getIcon(&pFile->icon	 , pFile->name);
 
 	if (do_mode_str()) {
 		getMode(pFile->mode_str, pInfo->st_mode);	// find the basic mode string ("drwxr-xr-x")
@@ -86,8 +88,6 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
  * @param pFile[out] @param pInfo[out] @param entry[in]
  */
 static inline void getInfoFromDirent(FileInfo *pFile, struct stat *pInfo, const struct dirent *entry) {
-
-
 	*pInfo = (struct stat){0};
 	*pFile = (FileInfo){0};
 

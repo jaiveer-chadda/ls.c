@@ -3,14 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "icons/icons.h"
 #include "form/formatting.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
+#include "debugging/debugging.h"
 #include "features/mount/mount-point.h"
 
 #include "output.h"
-
-#include "debugging/debugging.h"
 
 typedef unsigned int u_int;
 
@@ -101,6 +101,8 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(gid)	; ff; PRINT_GRP_NAME()		; ff; 
 		PRINT_FIELD(flags)	; ff; PRINT_FLAG_STR()		; ff; 
 		PRINT_TIME (time)	; ff; PRINT_TIME(time_str)	; ff; 
+
+		if (do_icon()) printIcon(file.icon);
 
 		// print the file's name and its suffix (if enabled)
 		printName(file.name, &file.file_col, &file.do_link_hl, &file.flags, &file.suffix);

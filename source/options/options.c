@@ -265,7 +265,7 @@ MAKE_BIN_OPT_FUNC(DO_REVERSE_SORT)
 
 /* ————————————————————————————————————————————————————————— */
 
-MAKE_BIN_OPT_FUNC(do_suffix	 )
+MAKE_BIN_OPT_FUNC(do_suffix	 )	MAKE_BIN_OPT_FUNC(do_icon)
 MAKE_BIN_OPT_FUNC(do_link_to )
 
 MAKE_BIN_OPT_FUNC(do_nlink	 )

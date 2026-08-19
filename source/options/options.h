@@ -18,31 +18,33 @@ int setOptions(const int argc, const char *argv[]);
 #define MAX_OPT_FLAG_NUM 3
 
 #define BINARY_OPTIONS_TABLE \
-	X(BO_DO_CLEAR		, false	, false	, 'c', { "clear"									}) \
-	X(BO_DO_HEADER		, false	, false	, 'H', { "header"		, "headers"					}) \
-	X(BO_DO_DIVIDERS	, true	, false	, '_', { "divider"		, "dividers"				}) \
-	X(BO_DO_MOUNT_DEV	, true	, false	, 'M', { "mount"		, "mounts"					}) \
-	X(BO_DO_DIM_HIDDEN	, true	, false	, '.', { "dim-hidden"	, "dim"						}) \
-	X(BO_SORT_DIRS_FIRST, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}) \
-	X(BO_DO_REVERSE_SORT, false	, false	, 'r', { "reverse"		, "rev"						}) \
+	/* when set here, column 2 (↓) marks the default value of each option */\
+	X(BO_DO_CLEAR			, false	, false	, 'c', { "clear"									}) \
+	X(BO_DO_HEADER			, false	, false	, 'H', { "header"		, "headers"					}) \
+	X(BO_DO_DIVIDERS		, true	, false	, '_', { "divider"		, "dividers"				}) \
+	X(BO_DO_MOUNT_DEV		, true	, false	, 'M', { "mount"		, "mounts"					}) \
+	X(BO_DO_DIM_HIDDEN		, true	, false	, '.', { "dim-hidden"	, "dim"						}) \
+	X(BO_SORT_DIRS_FIRST	, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}) \
+	X(BO_DO_REVERSE_SORT	, false	, false	, 'r', { "reverse"		, "rev"						}) \
 	\
-	X(BO_do_suffix		, true	, true	, 'P', { "suffix"		, "mark-type"				}) \
-	X(BO_do_link_to		, true	, true	, 'l', { "link-to"		, "symlinks"				}) \
-	X(BO_do_nlink		, true	, true	, 'n', { "nlink"									}) \
-	X(BO_do_dev_no		, false	, true	, NSF, { "dev-no"		, "device-number"			}) \
-	X(BO_do_inode		, false	, true	, 'i', { "inode"		, "ino"			, "inum"	}) \
-	X(BO_do_flags		, false	, true	, NSF, { "flags"									}) \
-	X(BO_do_flag_str	, true	, true	, NSF, { "flag-str"		, "flags-str"				}) \
-	X(BO_do_mode		, false	, true	, NSF, { "mode"										}) \
-	X(BO_do_mode_str	, true	, true	, NSF, { "mode-str"									}) \
-	X(BO_do_size		, false	, true	, NSF, { "size"										}) \
-	X(BO_do_size_str	, true	, true	, NSF, { "size-str"									}) \
-	X(BO_do_uid			, false	, true	, 'u', { "uid"										}) \
-	X(BO_do_usr_name	, true	, true	, 'U', { "uid-str"		, "usr-name"	, "user"	}) \
-	X(BO_do_gid			, false	, true	, 'g', { "gid"										}) \
-	X(BO_do_grp_name	, true	, true	, 'G', { "gid-str"		, "grp-name"	, "group"	}) \
-	X(BO_do_time		, false	, true	, NSF, { "time"										}) \
-	X(BO_do_time_str	, true	, true	, NSF, { "time-str"									})
+	X(BO_do_icon			, true	, true	, 'I', { "icon"			, "icons"					}) \
+	X(BO_do_suffix			, true	, true	, 'P', { "suffix"		, "mark-type"				}) \
+	X(BO_do_link_to			, true	, true	, 'l', { "link-to"		, "symlinks"				}) \
+	X(BO_do_nlink			, true	, true	, 'n', { "nlink"									}) \
+	X(BO_do_dev_no			, false	, true	, NSF, { "dev-no"		, "device-number"			}) \
+	X(BO_do_inode			, false	, true	, 'i', { "inode"		, "ino"			, "inum"	}) \
+	X(BO_do_flags			, false	, true	, NSF, { "flags"									}) \
+	X(BO_do_flag_str		, true	, true	, NSF, { "flag-str"		, "flags-str"				}) \
+	X(BO_do_mode			, false	, true	, NSF, { "mode"										}) \
+	X(BO_do_mode_str		, true	, true	, NSF, { "mode-str"									}) \
+	X(BO_do_size			, false	, true	, NSF, { "size"										}) \
+	X(BO_do_size_str		, true	, true	, NSF, { "size-str"									}) \
+	X(BO_do_uid				, false	, true	, 'u', { "uid"										}) \
+	X(BO_do_usr_name		, true	, true	, 'U', { "uid-str"		, "usr-name"	, "user"	}) \
+	X(BO_do_gid				, false	, true	, 'g', { "gid"										}) \
+	X(BO_do_grp_name		, true	, true	, 'G', { "gid-str"		, "grp-name"	, "group"	}) \
+	X(BO_do_time			, false	, true	, NSF, { "time"										}) \
+	X(BO_do_time_str		, true	, true	, NSF, { "time-str"									})
 
 #define X(name, ...) name,
 typedef enum { BINARY_OPTIONS_TABLE BINOPT_COUNT } BinOptIdx;
@@ -74,7 +76,7 @@ bool SORT_DIRS_FIRST(void);
 
 /* —————————————————————————————————————————————————————————————— */
 
-bool do_suffix	(void);
+bool do_suffix	(void);		bool do_icon(void);
 bool do_link_to	(void);
 
 bool do_nlink	(void);

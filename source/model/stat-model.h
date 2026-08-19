@@ -37,6 +37,8 @@ typedef struct {
 	FileColour	link_col	; // int				-	 4
 	TimeColour	time_col	; // int				-	 4
 
+	icon_t		icon		; // wchar_t			-	 4
+
 	time_t		time		; // long				-	 8
 	link_t		link_to		; // char*				-	 8
 	off_t		size		; // long long			-	 8
