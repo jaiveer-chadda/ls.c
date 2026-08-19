@@ -24,17 +24,11 @@
 #define LPA DIMS("(")
 #define RPA DIMS(")")
 
-#define FILENAME ANSI("38;5;217")
-
-#define LEVEL	ANSI("%hu") LBR " %-5s " RBR RESET " "
-#define TIME	LBR "%s" RBR
-#define FILE	FILENAME " %-30s" LPA "%3d" RPA RESET " "
-
 #define REL_PATH(file) (char *)(strstr((char *)(file), "source/") + (int)strlen("source/"))
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define toStderr(...) fprintf(stderr, __VA_ARGS__)
+#define toStderr(...) do { fprintf(stderr, __VA_ARGS__); fflush(stderr); } while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -48,32 +42,58 @@ static const LogLevel LOG_LEVELS[] = { LOG_LEVEL_TABLE };
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void d__debug(const LogLevelIdx level_, const char *time, const int line, const char *file, const char *fmt, ...) {
+static char *last_file = "";
+static char *last_func = "";
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void d__debug(const LogLevelIdx level_, const char *time, const int lineno, const char *file, const char *fmt, ...) {
+	if (strcmp(last_file, file) != 0) {
+		last_file = (char*)file;
+		dline();
+	}
+
 	const LogLevel level = LOG_LEVELS[level_ < L_COUNT ? level_ : L_DEBUG];
 
-	toStderr(LEVEL TIME FILE,
-		level.colour, level.name, time, REL_PATH(file), line
+	toStderr(
+		ANSI("%hu") LBR " %-7s " RBR RESET " "	// [ WARNING ]
+		LBR "%s" RBR " "						//		[02:41:15]
+		ANSI("38;5;217") " %-22s" DIMS("@")		// 			getTargetInfo @
+		ANSI("38;5;111") " %-30s"				//				info/get-file-info.c
+		LPA "%3d" RPA RESET " "					//					(110)
+		ANSI("%hu")
+		,
+		level.colour, level.name,
+		time,
+		last_func,
+		REL_PATH(file),
+		lineno,
+		level.colour
 	);
 
 	va_list va_args;
 	va_start(va_args, fmt); // `fmt` is the last known fixed argument
 
 	vfprintf(stderr, fmt, va_args);
-
 	va_end(va_args);
-	fprintf(stderr, "\n");
+
+	fputs(RESET "\n", stderr);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void d__func(const char *func, const char *file) {
-	d__line();
-	toStderr(FILENAME "%s() " DIMS("@") " %s" RESET "\n", func, REL_PATH(file));
-	d__line();
+	(void)file;
+	if (strcmp(last_func, func) != 0) {
+		// toStderr("——————————————————————— %-22s ———————————————————————————————————————————————————————\n", func);
+		last_func = (char*)func;
+	}
 }
 
 void d__line(void) {
 	toStderr("%s", DIM);
-	for (int i = 0; i < 150; i++) toStderr("─");
+	for (int i = 0; i < 150; i++) fputs("─", stderr);
 	toStderr("%s\n", RESET);
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
