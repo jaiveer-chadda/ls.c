@@ -30,7 +30,7 @@
 #define  IS_VALID_PATH(path)  (access((path), F_OK) == 0)
 
 /// Add to the dirs array if it's a directory, or if it's a link, and the file it points to is a directory.
-#define IS_REALPATH_DIR() (S_ISDIR(info.st_mode) || file.ln_suf == DIR_SUFFIX)
+#define IS_REALPATH_DIR(mode_, suffix_) (S_ISDIR(mode_) || suffix_ == DIR_SUFFIX)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -50,8 +50,8 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 
 	// parse the raw stat information into human-readable display formats
 	if (DO_MOUNT_DEV()) pFile->is_mount	= isMountPoint(pInfo->st_dev, path);
-	if (do_icon		())	pFile->icon		= getIcon(pFile->name, S_ISDIR(pInfo->st_mode));
 	if (do_suffix  	())	pFile->suffix	= getTypeSuffix(pInfo->st_mode);
+	if (do_icon		())	pFile->icon		= getIcon(pFile->name, IS_REALPATH_DIR(pInfo->st_mode, pFile->ln_suf));
 
 	if (do_flag_str	()) parseFlags(pFile->flag_str, pInfo->st_flags);
 	if (do_size_str	())	 parseSize(pFile->size_str, &pFile->size_unit, &pFile->size, pInfo->st_rdev);
@@ -192,8 +192,9 @@ static inline void getFileInfo(
 	parseStatObject(&file, &info, path);
 
 	// Add the `FileInfo` object to the end of its respective array
-	if (IS_REALPATH_DIR())	dirs [(*dir_count )++] = file;
-	else					files[(*file_count)++] = file;
+	if (IS_REALPATH_DIR(info.st_mode, file.ln_suf))
+		 dirs [(*dir_count )++] = file;
+	else files[(*file_count)++] = file;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
