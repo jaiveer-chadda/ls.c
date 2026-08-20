@@ -25,7 +25,7 @@ path_t G_DOTDIR_PATH;
 const char *argv0;
 
 int main(const int argc, const char *argv[]) {
-	initDebugging(argv[1]);
+	initDebugging(argv);
 
 	// Set the locale to the system default (it'll check the env vars)
 	//	(this is to ensure that multibyte characters can be printed as file icons)
