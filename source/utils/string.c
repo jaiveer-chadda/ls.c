@@ -48,17 +48,10 @@ void arg1__toLower(char *str) {
 	}
 }
 
-// void arg1__toLower(char *str) {
-// 	char chr = str[0];
-// 	for (int i = 0; chr != '\0'; chr = str[i++]) {
-// 		if (IS_UPPER(chr)) chr += ('a' - 'A');
-// 	}
-// }
-
 void arg2__toLower(char *str_out, const char *str_in) {
-	int i; char chr = str_in[0];
-	for (i = 0; chr != '\0'; chr = str_in[i++]) {
-		str_out[i] = chr + (IS_UPPER(chr) ? ('a' - 'A') : 0);
+	int i;
+	for (i = 0; str_in[i] != '\0'; i++) {
+		str_out[i] = str_in[i] + (IS_UPPER(str_in[i]) ? ('a' - 'A') : 0);
 	}
 	str_out[i] = '\0';
 }
