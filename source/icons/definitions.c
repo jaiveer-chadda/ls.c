@@ -26,6 +26,7 @@
 #define IC_CALENDAR			L'' /*  EAB0  	[ • • E ] */
 #define IC_CLOCK			L'' /*  F43A  	[ • F • ] */
 #define IC_CLOJURE_1		L'' /*  E768  	[ • • E ] */
+#define IC_BACKUP_DIR		L'󰴋' /* F0D0B  󰴋	  [ D • • ] */
 #define IC_CLOJURE_2		L'' /*  E76A  	[ • • E ] */
 #define IC_CMAKE			L'' /*  E794  	[ • F E ] */
 #define IC_CODE_OF_CONDUCT	L'' /*  F4AE  	[ • F • ] */
@@ -608,7 +609,15 @@ const Icon FILENAME_ICONS[] = {
 	END_OF_ICONS
 };
 
-/* —— Extension Icons —————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Directory Extension Icons ———————————————————————————————————————————————————————————————————————————————————— */
+
+/// Array of lowercase file extensions and their icons.
+const Icon DIR_EXT_ICONS[] = {
+	{ "bak"				, IC_BACKUP_DIR		}, // F0D0B  󰴋
+	END_OF_ICONS
+};
+
+/* —— File Extension Icons ————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// Array of lowercase file extensions and their icons.
 const Icon FILE_EXT_ICONS[] = {

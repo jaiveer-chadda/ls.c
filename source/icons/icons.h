@@ -48,6 +48,9 @@ extern const icon_t DEFAULT_DIR_ICON;
 extern const Icon DIRNAME_ICONS[];
 /// Array containing full filenames & their icons.
 extern const Icon FILENAME_ICONS[];
+
+/// Array of lowercase directory extensions and their icons.
+extern const Icon DIR_EXT_ICONS[];
 /// Array of lowercase file extensions and their icons.
 extern const Icon FILE_EXT_ICONS[];
 
