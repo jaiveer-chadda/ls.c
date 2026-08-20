@@ -40,6 +40,31 @@ str_t strnInit(const char *cstr, const size_t len) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define IS_UPPER(chr) ('A' <= (chr) && (chr) <= 'Z')
+
+void arg1__toLower(char *str) {
+	for (int i = 0; str[i] != '\0'; i++) {
+		if (IS_UPPER(str[i])) str[i] += ('a' - 'A');
+	}
+}
+
+// void arg1__toLower(char *str) {
+// 	char chr = str[0];
+// 	for (int i = 0; chr != '\0'; chr = str[i++]) {
+// 		if (IS_UPPER(chr)) chr += ('a' - 'A');
+// 	}
+// }
+
+void arg2__toLower(char *str_out, const char *str_in) {
+	int i; char chr = str_in[0];
+	for (i = 0; chr != '\0'; chr = str_in[i++]) {
+		str_out[i] = chr + (IS_UPPER(chr) ? ('a' - 'A') : 0);
+	}
+	str_out[i] = '\0';
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #include <string.h>
 
 /**

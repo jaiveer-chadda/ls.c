@@ -6,6 +6,7 @@
 
 #include "sort.h"
 #include "info/info.h"
+#include "utils/string.h"
 #include "options/options.h"
 #include "features/mode/mode.h"
 #include "debugging/debugging.h"
@@ -48,18 +49,9 @@ static int REVERSE;
 	}
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define IS_UPPER(chr) ('A' <= (chr) && (chr) <= 'Z')
 #define IS_DIGIT(chr) ('0' <= (chr) && (chr) <= '9')
 
 /* ——————————————————————————————————————————————— */
-
-static inline void toLower(char *s_out, const char *s_in) {
-	int i;
-	for (i = 0; s_in[i] != '\0'; i++) {
-		s_out[i] = s_in[i] + (IS_UPPER(s_in[i]) ? ('a' - 'A') : 0);
-	}
-	s_out[i] = '\0';
-}
 
 // Note: I know this function's name goes against convention, but I'm doing some macro magic ot make this all easier,
 //	so it's been done for a reason (see the `SORT_FILES_BY` macro)
