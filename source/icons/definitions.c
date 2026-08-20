@@ -318,6 +318,28 @@
 #define IC_WEB              L'󰖟'
 #define IC_GEAR             L''
 
+#define IC_NOTES            L''
+#define IC_FILEPATHS		L''
+#define IC_BASH				L''
+#define IC_TOP				L'󰨇'
+#define IC_VPN				L'󰲝'
+#define IC_EZA				L'󰉻'
+#define IC_FISH				L''
+#define IC_FONTFORGE		L''
+#define IC_GEM				L''
+#define IC_ITERM2			L''
+#define IC_JUPYTER			L''
+#define IC_LINEARMOUSE		L'󰍽'
+#define IC_NEOFETCH			L'󱥈'
+#define IC_NVM				L''
+#define IC_PIP				L''
+#define IC_PIPES			L'󰟥'
+#define IC_SPOTIFY			L''
+#define IC_SVN				L''
+
+#define IC_FUNCTIONS		L'󰡱'
+#define IC_LANG_C_HEADER	L''
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Default Icons ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -330,7 +352,7 @@ const icon_t DEFAULT_DIR_ICON  = IC_FOLDER;
 /// An array containing the basenames of directories, and their associated icons.
 /// This array should contain all the directories that have custom icons.
 const Icon DIRNAME_ICONS[] = {
-	{ ".config"			, IC_FOLDER_CONFIG	}, // 
+	{ ".config"			, IC_GEAR			}, //   – JV
 	{ ".exercism"		, IC_EXERCISM		}, // 
 	{ ".git"			, IC_FOLDER_GIT		}, // 󰊢  – JV
 	{ ".github"			, IC_FOLDER_GITHUB	}, // 
@@ -339,6 +361,7 @@ const Icon DIRNAME_ICONS[] = {
 	{ ".ssh"			, IC_FOLDER_KEY		}, // 󰢬
 	{ ".trash"			, IC_TRASH			}, // 
 	{ "build"			, IC_FOLDER_BUILD	}, // 󱧼
+	{ "out"				, IC_FOLDER_BUILD	}, // 󱧼  – JV
 	{ "cabal"			, IC_LANG_HASKELL	}, // 
 	{ "config"			, IC_FOLDER_CONFIG	}, // 
 	{ "contacts"		, IC_CONTACTS		}, // 󰉌
@@ -436,6 +459,53 @@ const Icon DIRNAME_ICONS[] = {
 	{ "y_settings_etc", IC_GEAR },
 	{ "z_other", IC_ARCHIVE },
 	{ "hdd", IC_VOLUME },
+
+	{ "notes", IC_NOTES },
+	{ "__filepaths__", IC_FILEPATHS },
+	{ ".archive", IC_ARCHIVE },
+	{ ".history", IC_CLOCK },
+	{ "anaconda", IC_CONDA },
+	{ "bash", IC_BASH },
+	{ "bottom", IC_TOP },
+	{ "bpytop", IC_TOP },
+	{ "cargo", IC_LANG_RUST },
+	{ "conda", IC_CONDA },
+	{ "configstore", IC_GEAR },
+	{ "expressvpn", IC_VPN },
+	{ "eza", IC_EZA },
+	{ "fish", IC_FISH },
+	{ "fontforge", IC_FONTFORGE },
+	{ "gem", IC_GEM },
+	{ "git", IC_GIT },
+	{ "gh", IC_GIT },
+	{ "jgit", IC_GIT },
+	{ "lazygit", IC_GIT },
+	{ "htop", IC_TOP },
+	{ "ipython", IC_LANG_PYTHON },
+	{ "iterm2", IC_ITERM2 },
+	{ "jupyter", IC_JUPYTER },
+	{ "linearmouse", IC_LINEARMOUSE },
+	{ "neofetch", IC_NEOFETCH },
+	{ "npm", IC_FOLDER_NPM },
+	{ "nvim", IC_VIM },
+	{ "nvm", IC_NVM },
+	{ "pip", IC_PIP },
+	{ "pipes-rs", IC_PIPES },
+
+	{ "shpotify", IC_SPOTIFY },
+	{ "spicetify", IC_SPOTIFY },
+	{ "spotify-player", IC_SPOTIFY },
+	{ "svn", IC_SVN },
+	{ "homebrew", IC_HOMEBREW },
+	{ "brew", IC_HOMEBREW },
+	{ "vscode-custom", IC_VSCODE },
+	{ "powershell", IC_POWERSHELL },
+	{ "vim", IC_VIM },
+
+	{ "rdoc", IC_LANG_RUBY },
+	{ "rustup", IC_LANG_RUST },
+	{ "functions", IC_FUNCTIONS },
+	{ "zsh", IC_SHELL_CMD },
 
 	END_OF_ICONS
 };
@@ -996,7 +1066,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "gradle"			, IC_GRADLE			}, // 
 	{ "m"				, IC_LANG_C			}, // 
 	{ "inl"				, IC_LANG_C			}, // 
-	{ "h"				, IC_LANG_C			}, // 
+	{ "h"				, IC_LANG_C_HEADER	}, //   – JV
 	{ "c"				, IC_LANG_C			}, // 
 	{ "di"				, IC_LANG_D			}, // 
 	{ "d"				, IC_LANG_D			}, // 
