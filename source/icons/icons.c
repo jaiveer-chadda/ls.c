@@ -32,19 +32,21 @@ static inline icon_t findIconMatch(const char *check_str, const Icon icon_arr[])
 }
 
 icon_t getIcon(const char *filename, const bool is_dir) {
+	name_t name;
+	// make the filename lowercase, so we can find more matches
+	toLower(name, filename);
+
 	const Icon *NAME_ARRAY = (Icon *)(is_dir ? &DIRNAME_ICONS : &FILENAME_ICONS);
 	// see if the filename matches any of the names in `NAME_ARRAY`
-	icon_t icon = findIconMatch(filename, NAME_ARRAY);
+	icon_t icon = findIconMatch(name, NAME_ARRAY);
 	// if it matches, then it was a success - return that icon
 	if (icon != NO_ICON) return icon;
 
 	// if it didn't match any exact names, then check if it has an extension by finding the last full stop
-	char *extension = strrchr(filename, '.');
+	char *extension = strrchr(name, '.');
 	// if it doesn't have an extension, return one of the default icons
 	if (extension == NULL) return is_dir ? DEFAULT_DIR_ICON : DEFAULT_FILE_ICON; //  / 
 
-	// make the extension lowercase, as per unix convention (also to find more matches)
-	toLower(extension);
 	// once again, find the appropriate icon array for dirs/files
 	const Icon *EXT_ARRAY = (Icon *)(is_dir ? &DIR_EXT_ICONS : &FILE_EXT_ICONS);
 

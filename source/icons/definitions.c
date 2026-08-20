@@ -336,7 +336,7 @@ const Icon DIRNAME_ICONS[] = {
 
 /// Array containing full filenames & their icons.
 const Icon FILENAME_ICONS[] = {
-	{ "._DS_Store"					, IC_OS_APPLE			}, //  F179  
+	{ "._ds_store"					, IC_OS_APPLE			}, //  F179  
 	{ ".aliases"					, IC_SHELL				}, // F1183  󱆃
 	{ ".atom"						, IC_ATOM				}, //  E764  
 	{ ".bash_aliases"				, IC_SHELL				}, // F1183  󱆃
@@ -344,13 +344,13 @@ const Icon FILENAME_ICONS[] = {
 	{ ".bash_logout"				, IC_SHELL				}, // F1183  󱆃
 	{ ".bash_profile"				, IC_SHELL				}, // F1183  󱆃
 	{ ".bashrc"						, IC_SHELL				}, // F1183  󱆃
-	{ ".CFUserTextEncoding"			, IC_OS_APPLE			}, //  F179  
+	{ ".cfusertextencoding"			, IC_OS_APPLE			}, //  F179  
 	{ ".clang-format"				, IC_CONFIG				}, // F107B  󱁻
 	{ ".clang-tidy"					, IC_CONFIG				}, // F107B  󱁻
 	{ ".codespellrc"				, IC_CODESPELL			}, // F04C6  󰓆
 	{ ".condarc"					, IC_CONDA				}, //  E715  
 	{ ".cshrc"						, IC_SHELL				}, // F1183  󱆃
-	{ ".DS_Store"					, IC_OS_APPLE			}, //  F179  
+	{ ".ds_store"					, IC_OS_APPLE			}, //  F179  
 	{ ".editorconfig"				, IC_EDITORCONFIG		}, //  E652  
 	{ ".emacs"						, IC_EMACS				}, //  E632  
 	{ ".envrc"						, IC_ENV				}, //  F462  
@@ -403,14 +403,14 @@ const Icon FILENAME_ICONS[] = {
 	{ ".rustfmt.toml"				, IC_LANG_RUST			}, //  E68B  
 	{ ".rvm"						, IC_LANG_RUBY			}, //  E739  
 	{ ".rvmrc"						, IC_LANG_RUBY			}, //  E739  
-	{ ".SRCINFO"					, IC_ARCHBTW			}, //  F303  
+	{ ".srcinfo"					, IC_ARCHBTW			}, //  F303  
 	{ ".stowrc"						, IC_STOW				}, //  EEF1  
 	{ ".tcshrc"						, IC_SHELL				}, // F1183  󱆃
 	{ ".viminfo"					, IC_VIM				}, //  E7C5  
 	{ ".vimrc"						, IC_VIM				}, //  E7C5  
-	{ ".Xauthority"					, IC_XORG				}, //  F369  
+	{ ".xauthority"					, IC_XORG				}, //  F369  
 	{ ".xinitrc"					, IC_XORG				}, //  F369  
-	{ ".Xresources"					, IC_XORG				}, //  F369  
+	{ ".xresources"					, IC_XORG				}, //  F369  
 	{ ".xsession"					, IC_XORG				}, //  F369  
 	{ ".yarnrc"						, IC_YARN				}, //  E6A7  
 	{ ".zlogin"						, IC_SHELL				}, // F1183  󱆃
@@ -424,26 +424,26 @@ const Icon FILENAME_ICONS[] = {
 	{ "_vimrc"						, IC_VIM				}, //  E7C5  
 	{ "a.out"						, IC_SHELL_CMD			}, //  F489  
 	{ "authorized_keys"				, IC_SSH_LOGO			}, // F08C0  󰣀
-	{ "AUTHORS"						, IC_PEOPLE				}, //  EDCA  
-	{ "AUTHORS.txt"					, IC_PEOPLE				}, //  EDCA  
+	{ "authors"						, IC_PEOPLE				}, //  EDCA  
+	{ "authors.txt"					, IC_PEOPLE				}, //  EDCA  
 	{ "bashrc"						, IC_SHELL				}, // F1183  󱆃
-	{ "Brewfile"					, IC_HOMEBREW			}, // F1116  󱄖
-	{ "Brewfile.lock.json"			, IC_HOMEBREW			}, // F1116  󱄖
+	{ "brewfile"					, IC_HOMEBREW			}, // F1116  󱄖
+	{ "brewfile.lock.json"			, IC_HOMEBREW			}, // F1116  󱄖
 	{ "bspwmrc"						, IC_BSPWM				}, //  F355  
 	{ "build.gradle.kts"			, IC_GRADLE				}, //  E660  
 	{ "build.zig.zon"				, IC_ZIG				}, //  E6A9  
 	{ "bun.lockb"					, IC_BUN				}, //  E76F  
 	{ "cantorrc"					, IC_KDE				}, //  F373  
-	{ "Cargo.lock"					, IC_LANG_RUST			}, //  E68B  
-	{ "Cargo.toml"					, IC_LANG_RUST			}, //  E68B  
-	{ "CHANGELOG"					, IC_NEWS				}, //  F1EA  
-	{ "CHANGELOG.md"				, IC_NEWS				}, //  F1EA  
-	{ "CHANGES"						, IC_NEWS				}, //  F1EA  
-	{ "CHANGES.md"					, IC_NEWS				}, //  F1EA  
-	{ "CMakeLists.txt"				, IC_CMAKE				}, //  E794  
-	{ "CODE_OF_CONDUCT"				, IC_CODE_OF_CONDUCT	}, //  F4AE  
-	{ "CODE_OF_CONDUCT.md"			, IC_CODE_OF_CONDUCT	}, //  F4AE  
-	{ "COMMIT_EDITMSG"				, IC_GIT				}, // F02A2  󰊢
+	{ "cargo.lock"					, IC_LANG_RUST			}, //  E68B  
+	{ "cargo.toml"					, IC_LANG_RUST			}, //  E68B  
+	{ "changelog"					, IC_NEWS				}, //  F1EA  
+	{ "changelog.md"				, IC_NEWS				}, //  F1EA  
+	{ "changes"						, IC_NEWS				}, //  F1EA  
+	{ "changes.md"					, IC_NEWS				}, //  F1EA  
+	{ "cmakelists.txt"				, IC_CMAKE				}, //  E794  
+	{ "code_of_conduct"				, IC_CODE_OF_CONDUCT	}, //  F4AE  
+	{ "code_of_conduct.md"			, IC_CODE_OF_CONDUCT	}, //  F4AE  
+	{ "commit_editmsg"				, IC_GIT				}, // F02A2  󰊢
 	{ "compose.yaml"				, IC_DOCKER				}, //  E650  
 	{ "compose.yml"					, IC_DOCKER				}, //  E650  
 	{ "composer.json"				, IC_LANG_PHP			}, //  E73D  
@@ -455,8 +455,8 @@ const Icon FILENAME_ICONS[] = {
 	{ "configure.ac"				, IC_CONFIG				}, // F107B  󱁻
 	{ "configure.in"				, IC_CONFIG				}, // F107B  󱁻
 	{ "constraints.txt"				, IC_LANG_PYTHON		}, //  E606  
-	{ "COPYING"						, IC_LICENSE			}, //  F02D  
-	{ "COPYRIGHT"					, IC_LICENSE			}, //  F02D  
+	{ "copying"						, IC_LICENSE			}, //  F02D  
+	{ "copyright"					, IC_LICENSE			}, //  F02D  
 	{ "crontab"						, IC_CONFIG				}, // F107B  󱁻
 	{ "crypttab"					, IC_CONFIG				}, // F107B  󱁻
 	{ "csh.cshrc"					, IC_SHELL				}, // F1183  󱆃
@@ -464,11 +464,11 @@ const Icon FILENAME_ICONS[] = {
 	{ "csh.logout"					, IC_SHELL				}, // F1183  󱆃
 	{ "docker-compose.yaml"			, IC_DOCKER				}, //  E650  
 	{ "docker-compose.yml"			, IC_DOCKER				}, //  E650  
-	{ "Dockerfile"					, IC_DOCKER				}, //  E650  
+	{ "dockerfile"					, IC_DOCKER				}, //  E650  
 	{ "dropbox"						, IC_DROPBOX			}, //  E707  
 	{ "dune"						, IC_LANG_OCAML			}, //  E67A  
 	{ "dune-project"				, IC_WRENCH				}, //  F0AD  
-	{ "Earthfile"					, IC_EARTH				}, //  F0AC  
+	{ "earthfile"					, IC_EARTH				}, //  F0AC  
 	{ "environment"					, IC_CONFIG				}, // F107B  󱁻
 	{ "favicon.ico"					, IC_STAR				}, //  E623  
 	{ "fennelrc"					, IC_LANG_FENNEL		}, //  E6AF  
@@ -476,10 +476,10 @@ const Icon FILENAME_ICONS[] = {
 	{ "fonts.conf"					, IC_FONT				}, //  F031  
 	{ "fp-info-cache"				, IC_KICAD				}, //  F34C  
 	{ "fp-lib-table"				, IC_KICAD				}, //  F34C  
-	{ "FreeCAD.conf"				, IC_FREECAD			}, //  F336  
-	{ "Gemfile"						, IC_LANG_RUBY			}, //  E739  
-	{ "Gemfile.lock"				, IC_LANG_RUBY			}, //  E739  
-	{ "GNUmakefile"					, IC_MAKE				}, //  E673  
+	{ "freecad.conf"				, IC_FREECAD			}, //  F336  
+	{ "gemfile"						, IC_LANG_RUBY			}, //  E739  
+	{ "gemfile.lock"				, IC_LANG_RUBY			}, //  E739  
+	{ "gnumakefile"					, IC_MAKE				}, //  E673  
 	{ "go.mod"						, IC_LANG_GO			}, //  E65E  
 	{ "go.sum"						, IC_LANG_GO			}, //  E65E  
 	{ "go.work"						, IC_LANG_GO			}, //  E65E  
@@ -512,9 +512,9 @@ const Icon FILENAME_ICONS[] = {
 	{ "id_rsa"						, IC_PRIVATE_KEY		}, // F0306  󰌆
 	{ "index.theme"					, IC_PAINTBRUSH			}, //  EE72  
 	{ "inputrc"						, IC_CONFIG				}, // F107B  󱁻
-	{ "Jenkinsfile"					, IC_JENKINSFILE		}, //  E66E  
+	{ "jenkinsfile"					, IC_JENKINSFILE		}, //  E66E  
 	{ "jsconfig.json"				, IC_LANG_JSCPT			}, //  E74E  
-	{ "Justfile"					, IC_WRENCH				}, //  F0AD  
+	{ "justfile"					, IC_WRENCH				}, //  F0AD  
 	{ "justfile"					, IC_WRENCH				}, //  F0AD  
 	{ "kalgebrarc"					, IC_KDE				}, //  F373  
 	{ "kdeglobals"					, IC_KDE				}, //  F373  
@@ -523,62 +523,62 @@ const Icon FILENAME_ICONS[] = {
 	{ "known_hosts"					, IC_SSH_LOGO			}, // F08C0  󰣀
 	{ "kritadisplayrc"				, IC_KRITA				}, //  F33D  
 	{ "kritarc"						, IC_KRITA				}, //  F33D  
-	{ "LICENCE"						, IC_LICENSE			}, //  F02D  
-	{ "LICENCE.md"					, IC_LICENSE			}, //  F02D  
-	{ "LICENCE.txt"					, IC_LICENSE			}, //  F02D  
-	{ "LICENSE"						, IC_LICENSE			}, //  F02D  
-	{ "LICENSE-APACHE"				, IC_LICENSE			}, //  F02D  
-	{ "LICENSE-MIT"					, IC_LICENSE			}, //  F02D  
-	{ "LICENSE.md"					, IC_LICENSE			}, //  F02D  
-	{ "LICENSE.txt"					, IC_LICENSE			}, //  F02D  
+	{ "licence"						, IC_LICENSE			}, //  F02D  
+	{ "licence.md"					, IC_LICENSE			}, //  F02D  
+	{ "licence.txt"					, IC_LICENSE			}, //  F02D  
+	{ "license"						, IC_LICENSE			}, //  F02D  
+	{ "license-apache"				, IC_LICENSE			}, //  F02D  
+	{ "license-mit"					, IC_LICENSE			}, //  F02D  
+	{ "license.md"					, IC_LICENSE			}, //  F02D  
+	{ "license.txt"					, IC_LICENSE			}, //  F02D  
 	{ "localized"					, IC_OS_APPLE			}, //  F179  
 	{ "localtime"					, IC_CLOCK				}, //  F43A  
 	{ "lock"						, IC_LOCK				}, //  F023  
-	{ "LOCK"						, IC_LOCK				}, //  F023  
+	{ "lock"						, IC_LOCK				}, //  F023  
 	{ "log"							, IC_LOG				}, //  F18D  
-	{ "LOG"							, IC_LOG				}, //  F18D  
+	{ "log"							, IC_LOG				}, //  F18D  
 	{ "lxde-rc.xml"					, IC_LXDE				}, //  F363  
 	{ "lxqt.conf"					, IC_LXQT				}, //  F364  
-	{ "Makefile"					, IC_MAKE				}, //  E673  
 	{ "makefile"					, IC_MAKE				}, //  E673  
-	{ "Makefile.ac"					, IC_MAKE				}, //  E673  
-	{ "Makefile.am"					, IC_MAKE				}, //  E673  
-	{ "Makefile.in"					, IC_MAKE				}, //  E673  
-	{ "MANIFEST"					, IC_LANG_PYTHON		}, //  E606  
-	{ "MANIFEST.in"					, IC_LANG_PYTHON		}, //  E606  
+	{ "makefile"					, IC_MAKE				}, //  E673  
+	{ "makefile.ac"					, IC_MAKE				}, //  E673  
+	{ "makefile.am"					, IC_MAKE				}, //  E673  
+	{ "makefile.in"					, IC_MAKE				}, //  E673  
+	{ "manifest"					, IC_LANG_PYTHON		}, //  E606  
+	{ "manifest.in"					, IC_LANG_PYTHON		}, //  E606  
 	{ "mix.lock"					, IC_LANG_ELIXIR		}, //  E62D  
 	{ "mpv.conf"					, IC_MPV				}, //  F36E  
-	{ "NEWS"						, IC_NEWS				}, //  F1EA  
-	{ "NEWS.md"						, IC_NEWS				}, //  F1EA  
+	{ "news"						, IC_NEWS				}, //  F1EA  
+	{ "news.md"						, IC_NEWS				}, //  F1EA  
 	{ "npm-shrinkwrap.json"			, IC_NPM				}, //  E71E  
 	{ "npmrc"						, IC_NPM				}, //  E71E  
 	{ "package-lock.json"			, IC_NPM				}, //  E71E  
 	{ "package.json"				, IC_NPM				}, //  E71E  
 	{ "passwd"						, IC_LOCK				}, //  F023  
 	{ "php.ini"						, IC_LANG_PHP			}, //  E73D  
-	{ "PKGBUILD"					, IC_ARCHBTW			}, //  F303  
+	{ "pkgbuild"					, IC_ARCHBTW			}, //  F303  
 	{ "platformio.ini"				, IC_PLATFORMIO			}, //  E682  
 	{ "pom.xml"						, IC_POM				}, //  E674  
-	{ "Procfile"					, IC_HEROKU				}, //  E77B  
+	{ "procfile"					, IC_HEROKU				}, //  E77B  
 	{ "profile"						, IC_SHELL				}, // F1183  󱆃
-	{ "PrusaSlicer.ini"				, IC_PRUSASLICER		}, //  F351  
-	{ "PrusaSlicerGcodeViewer.ini"	, IC_PRUSASLICER		}, //  F351  
+	{ "prusaslicer.ini"				, IC_PRUSASLICER		}, //  F351  
+	{ "prusaslicergcodeviewer.ini"	, IC_PRUSASLICER		}, //  F351  
 	{ "pyproject.toml"				, IC_LANG_PYTHON		}, //  E606  
 	{ "pyvenv.cfg"					, IC_LANG_PYTHON		}, //  E606  
 	{ "qt5ct.conf"					, IC_QT					}, //  F375  
 	{ "qt6ct.conf"					, IC_QT					}, //  F375  
-	{ "QtProject.conf"				, IC_QT					}, //  F375  
-	{ "Rakefile"					, IC_LANG_RUBY			}, //  E739  
-	{ "README"						, IC_README				}, // F00BA  󰂺
-	{ "README.md"					, IC_README				}, // F00BA  󰂺
+	{ "qtproject.conf"				, IC_QT					}, //  F375  
+	{ "rakefile"					, IC_LANG_RUBY			}, //  E739  
+	{ "readme"						, IC_README				}, // F00BA  󰂺
+	{ "readme.md"					, IC_README				}, // F00BA  󰂺
 	{ "release.toml"				, IC_LANG_RUST			}, //  E68B  
 	{ "renovate.json"				, IC_RENOVATE			}, // F027C  󰉼
 	{ "requirements.txt"			, IC_LANG_PYTHON		}, //  E606  
 	{ "robots.txt"					, IC_ROBOT				}, // F06A9  󰚩
 	{ "rubydoc"						, IC_LANG_RBRAILS		}, //  E73B  
 	{ "rvmrc"						, IC_LANG_RUBY			}, //  E739  
-	{ "SECURITY"					, IC_SECURITY			}, // F0483  󰒃
-	{ "SECURITY.md"					, IC_SECURITY			}, // F0483  󰒃
+	{ "security"					, IC_SECURITY			}, // F0483  󰒃
+	{ "security.md"					, IC_SECURITY			}, // F0483  󰒃
 	{ "settings.gradle.kts"			, IC_GRADLE				}, //  E660  
 	{ "shadow"						, IC_LOCK				}, //  F023  
 	{ "shells"						, IC_CONFIG				}, // F107B  󱁻
@@ -588,10 +588,10 @@ const Icon FILENAME_ICONS[] = {
 	{ "timezone"					, IC_CLOCK				}, //  F43A  
 	{ "tmux.conf"					, IC_TMUX				}, //  EBC8  
 	{ "tmux.conf.local"				, IC_TMUX				}, //  EBC8  
-	{ "TODO"						, IC_TODO				}, //  F0AE  
-	{ "TODO.md"						, IC_TODO				}, //  F0AE  
+	{ "todo"						, IC_TODO				}, //  F0AE  
+	{ "todo.md"						, IC_TODO				}, //  F0AE  
 	{ "tsconfig.json"				, IC_LANG_TSCPT			}, //  E628  
-	{ "Vagrantfile"					, IC_VAGRANT			}, //  2371  ⍱
+	{ "vagrantfile"					, IC_VAGRANT			}, //  2371  ⍱
 	{ "vlcrc"						, IC_VLC				}, // F057C  󰕼
 	{ "webpack.config.js"			, IC_WEBPACK			}, // F072B  󰜫
 	{ "weston.ini"					, IC_WESTON				}, //  F367  
