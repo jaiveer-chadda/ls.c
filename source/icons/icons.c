@@ -7,6 +7,7 @@
 
 #include "icons.h"
 
+#include "utils/string.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
 
@@ -38,11 +39,15 @@ icon_t getIcon(const char *filename, const bool is_dir) {
 	if (icon != NO_ICON) return icon;
 
 	// if it didn't match any exact names, then check if it has an extension by finding the last full stop
-	const char *extension = strrchr(filename, '.');
+	char *extension = strrchr(filename, '.');
 	// if it doesn't have an extension, return one of the default icons
 	if (extension == NULL) return is_dir ? DEFAULT_DIR_ICON : DEFAULT_FILE_ICON; //  / 
 
+	// make the extension lowercase, as per unix convention (also to find more matches)
+	toLower(extension);
+	// once again, find the appropriate icon array for dirs/files
 	const Icon *EXT_ARRAY = (Icon *)(is_dir ? &DIR_EXT_ICONS : &FILE_EXT_ICONS);
+
 	// if it _does_ have an extension, check that extension for matches
 	icon = findIconMatch(extension + 1, EXT_ARRAY); // note: +1 so we don't include the literal '.'
 	if (icon != NO_ICON) return icon;
