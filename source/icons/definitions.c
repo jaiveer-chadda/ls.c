@@ -4,341 +4,335 @@
 
 /* —— Base Icon Definitions ———————————————————————————————————————————————————————————————————————————————————————— */
 
-#define IC_FILE				L'' /* [ • • • ] */
-#define IC_FILE_UNKNOWN		L'󰡯' /* [ • • • ] */
+#define IC_FILE				L''
+#define IC_FILE_UNKNOWN		L'󰡯'
 
-#define IC_FOLDER			L'' /* [ • • • ] */
-#define IC_FOLDER_OPEN		L'' /* [ • • • ] */
+#define IC_FOLDER			L''
+#define IC_FOLDER_OPEN		L''
 
-#define IC_ACF				L'' /* [ • • E ] */
-#define IC_AI				L'' /* [ • • E ] */
-#define IC_ARCHBTW			L'' /* [ • F • ] */
-#define IC_ASP				L'' /* [ • • E ] */
-#define IC_ATOM				L'' /* [ • F • ] */
-#define IC_AUDIO			L'' /* [ • • E ] */
-#define IC_BINARY			L'' /* [ D • E ] — JV */
-#define IC_BLEND			L'󰂫' /* [ • • E ] */
-#define IC_BOOK				L'' /* [ • • E ] */
-#define IC_BSPWM			L'' /* [ • F • ] */
-#define IC_BUN				L'' /* [ • F • ] */
-#define IC_CACHE			L'' /* [ • • E ] */
-#define IC_CAD				L'󰻫' /* [ • • E ] */
-#define IC_CALENDAR			L'' /* [ • • E ] */
-#define IC_CLOCK			L'' /* [ • F • ] */
-#define IC_CLOJURE_1		L'' /* [ • • E ] */
-#define IC_CLOJURE_2		L'' /* [ • • E ] */
-#define IC_CMAKE			L'' /* [ • F E ] */
-#define IC_CODE_OF_CONDUCT	L'' /* [ • F • ] */
-#define IC_CODESPELL		L'󰓆' /* [ • F • ] */
-#define IC_COFFEE			L'' /* [ • • E ] */
-#define IC_COM				L'' /* [ • • E ] */
-#define IC_COMPRESSED		L'' /* [ • • E ] */
-#define IC_CONDA			L'' /* [ • F E ] */
-#define IC_CONFIG			L'󱁻' /* [ • F E ] */
-#define IC_CONTACTS			L'󰉌' /* [ D • • ] */
-#define IC_COW				L'󰆚' /* [ • • E ] */
-#define IC_CR				L'' /* [ • • E ] */
-#define IC_CSS3				L'' /* [ • • E ] */
-#define IC_CSV				L'' /* [ • • E ] */
-#define IC_CU				L'' /* [ • • E ] */
-#define IC_DART				L'' /* [ • • E ] */
-#define IC_DATABASE			L'' /* [ • • E ] */
-#define IC_DEB				L'' /* [ • • E ] */
-#define IC_DESKTOP			L'' /* [ D • • ] */
-#define IC_DESKTOP_EXT		L'' /* [ • • E ] */
-#define IC_DIFF				L'' /* [ • • E ] */
-#define IC_DISK_IMAGE		L'' /* [ • • E ] */
-#define IC_DOCKER			L'' /* [ • F E ] */
-#define IC_DOCUMENT			L'' /* [ • • E ] */
-#define IC_DOCUMENTS		L'󰲂' /* [ D • • ] */
-#define IC_DOWNLOAD			L'󰇚' /* [ • • E ] */
-#define IC_DOWNLOADS		L'󰉍' /* [ D • • ] */
-#define IC_DRAWIO			L'' /* [ • • E ] */
-#define IC_DROPBOX			L'' /* [ • F • ] */
-#define IC_EARTH			L'' /* [ • F • ] */
-#define IC_EBUILD			L'' /* [ • • E ] */
-#define IC_EDA_PCB			L'' /* [ • • E ] */
-#define IC_EDA_SCH			L'󰭅' /* [ • • E ] */
-#define IC_EDITORCONFIG		L'' /* [ • F E ] */
-#define IC_EJS				L'' /* [ • • E ] */
-#define IC_ELM				L'' /* [ • • E ] */
-#define IC_EMACS			L'' /* [ • F E ] */
-#define IC_EML				L'' /* [ • • E ] */
-#define IC_ENV				L'' /* [ • F E ] */
-#define IC_ERLANG			L'' /* [ • • E ] */
-#define IC_ESLINT			L'' /* [ • F • ] */
-#define IC_EXERCISM			L'' /* [ D • • ] */
-#define IC_FAVORITES		L'󰚝' /* [ D • • ] */
-#define IC_FILE_3D			L'󰆧' /* [ • • E ] */
-#define IC_FLAKE			L'' /* [ • F E ] */
-#define IC_FOLDER_BUILD		L'󱧼' /* [ D • • ] */
-#define IC_FOLDER_CONFIG	L'' /* [ D • • ] */
-#define IC_FOLDER_GIT		L'' /* [ D • • ] */
-#define IC_FOLDER_GITHUB	L'' /* [ D • • ] */
-#define IC_FOLDER_HIDDEN	L'󱞞' /* [ D • • ] */
-#define IC_FOLDER_KEY		L'󰢬' /* [ D • • ] */
-#define IC_FOLDER_NPM		L'' /* [ D • • ] */
-#define IC_FONT				L'' /* [ • F E ] */
-#define IC_FREECAD			L'' /* [ • F E ] */
-#define IC_GBA				L'󱎓' /* [ • • E ] */
-#define IC_GCODE			L'󰫴' /* [ • • E ] */
-#define IC_GFORM			L'' /* [ • • E ] */
-#define IC_GIMP				L'' /* [ • • E ] */
-#define IC_GIST_SECRET		L'' /* [ • • E ] */
-#define IC_GIT				L'󰊢' /* [ • F E ] */
-#define IC_GITLAB			L'' /* [ • F • ] */
-#define IC_GODOT			L'' /* [ • • E ] */
-#define IC_GOOGLE_CLOUD		L'󱇶' /* [ • F • ] */
-#define IC_GRADLE			L'' /* [ • F E ] */
-#define IC_GRAPH			L'󱁉' /* [ • • E ] */
-#define IC_GRAPHQL			L'' /* [ • • E ] */
-#define IC_GRUNT			L'' /* [ • F • ] */
-#define IC_GTK				L'' /* [ • • E ] */
-#define IC_GULP				L'' /* [ • F • ] */
-#define IC_HAML				L'' /* [ • • E ] */
-#define IC_HEROKU			L'' /* [ • F • ] */
-#define IC_HEX				L'󱊧' /* [ • • E ] */
-#define IC_HOME				L'󱂵' /* [ D • • ] */
-#define IC_HOMEBREW			L'󱄖' /* [ • F • ] */
-#define IC_HOOK				L'󰛢' /* [ • F • ] */
-#define IC_HTML5			L'' /* [ • • E ] */
-#define IC_HYPRLAND			L'' /* [ • F • ] */
-#define IC_I3				L'' /* [ • F • ] */
-#define IC_IMAGE			L'' /* [ • • E ] */
-#define IC_INFO				L'' /* [ • • E ] */
-#define IC_INTELLIJ			L'' /* [ • F E ] */
-#define IC_JENKINSFILE		L'' /* [ • F • ] */
-#define IC_JL				L'' /* [ • • E ] */
-#define IC_JSON				L'' /* [ • • E ] */
-#define IC_JWMRC			L'' /* [ • • E ] */
-#define IC_KDE				L'' /* [ • F • ] */
-#define IC_KDENLIVE			L'' /* [ • F E ] */
-#define IC_KEY				L'' /* [ • • E ] */
-#define IC_KEYPASS			L'' /* [ • • E ] */
-#define IC_KICAD			L'' /* [ • F E ] */
-#define IC_KRITA			L'' /* [ • F E ] */
-#define IC_LANG_ARDUINO		L'' /* [ • • E ] */
-#define IC_LANG_ASSEMBLY	L'' /* [ • • E ] */
-#define IC_LANG_C			L'' /* [ • • E ] */
-#define IC_LANG_CPP			L'' /* [ • • E ] */
-#define IC_LANG_CSHARP		L'󰌛' /* [ • • E ] */
-#define IC_LANG_D			L'' /* [ • • E ] */
-#define IC_LANG_ELIXIR		L'' /* [ • F E ] */
-#define IC_LANG_FENNEL		L'' /* [ • F E ] */
-#define IC_LANG_FORTRAN		L'󱈚' /* [ • • E ] */
-#define IC_LANG_FSHARP		L'' /* [ • • E ] */
-#define IC_LANG_GLEAM		L'󰦥' /* [ • • E ] */
-#define IC_LANG_GO			L'' /* [ • F E ] */
-#define IC_LANG_GROOVY		L'' /* [ • • E ] */
-#define IC_LANG_HASKELL		L'' /* [ D • E ] */
-#define IC_LANG_HDL			L'󰍛' /* [ • • E ] */
-#define IC_LANG_HOLYC		L'󰂢' /* [ • • E ] */
-#define IC_LANG_JAVA		L'' /* [ • • E ] */
-#define IC_LANG_JSCPT		L'' /* [ • F E ] */
-#define IC_LANG_KOTLIN		L'' /* [ • • E ] */
-#define IC_LANG_LUA			L'' /* [ • • E ] */
-#define IC_LANG_NIM			L'' /* [ • • E ] */
-#define IC_LANG_OCAML		L'' /* [ D F E ] */
-#define IC_LANG_PERL		L'' /* [ • • E ] */
-#define IC_LANG_PHP			L'' /* [ • F E ] */
-#define IC_LANG_PYTHON		L'' /* [ • F E ] */
-#define IC_LANG_R			L'' /* [ • • E ] */
-#define IC_LANG_RBRAILS		L'' /* [ • F E ] */
-#define IC_LANG_RUBY		L'' /* [ • F E ] */
-#define IC_LANG_RUST		L'' /* [ • F E ] */
-#define IC_LANG_SASS		L'' /* [ • • E ] */
-#define IC_LANG_SCHEME		L'' /* [ • • E ] */
-#define IC_LANG_STYLUS		L'' /* [ • • E ] */
-#define IC_LANG_TEX			L'' /* [ • • E ] */
-#define IC_LANG_TSCPT		L'' /* [ • F E ] */
-#define IC_LANG_V			L'' /* [ • • E ] */
-#define IC_LESS				L'' /* [ • • E ] */
-#define IC_LIBRARY			L'' /* [ • • E ] — JV */
-#define IC_LICENSE			L'' /* [ • F E ] */
-#define IC_LISP				L'󰅲' /* [ • • E ] */
-#define IC_LOCK				L'' /* [ • F E ] */
-#define IC_LOG				L'' /* [ • F E ] */
-#define IC_LXDE				L'' /* [ • F • ] */
-#define IC_LXQT				L'' /* [ • F • ] */
-#define IC_MAGNET			L'' /* [ • • E ] */
-#define IC_MAIL				L'󰇰' /* [ D • • ] */
-#define IC_MAKE				L'' /* [ • F E ] */
-#define IC_MARKDOWN			L'' /* [ • • E ] */
-#define IC_MID				L'󰣲' /* [ • • E ] */
-#define IC_MOVIES			L'󰿎' /* [ D • • ] */
-#define IC_MPV				L'' /* [ • F • ] */
-#define IC_MSF				L'' /* [ • • E ] */
-#define IC_MUSIC			L'󱍙' /* [ D • • ] */
-#define IC_MUSTACHE			L'' /* [ • • E ] */
-#define IC_NANO				L'' /* [ • F • ] */
-#define IC_NEWS				L'' /* [ • F • ] */
-#define IC_NINJA			L'󰝴' /* [ • • E ] */
-#define IC_NODEJS			L'' /* [ • F E ] */
-#define IC_NORG				L'' /* [ • • E ] */
-#define IC_NOTEBOOK			L'' /* [ • • E ] */
-#define IC_NPM				L'' /* [ • F • ] */
-#define IC_NUXT				L'󱄆' /* [ • F • ] */
-#define IC_ODF				L'' /* [ • • E ] */
-#define IC_ODG				L'' /* [ • • E ] */
-#define IC_ODP				L'' /* [ • • E ] */
-#define IC_ODS				L'' /* [ • • E ] */
-#define IC_ODT				L'' /* [ • • E ] */
-#define IC_OPAM				L'󰘧' /* [ • • E ] */
-#define IC_ORG				L'' /* [ • • E ] */
-#define IC_OS_ANDROID		L'' /* [ • • E ] */
-#define IC_OS_APPLE			L'' /* [ • F E ] */
-#define IC_OS_LINUX			L'' /* [ • • E ] */
-#define IC_OS_WINDOWS		L'' /* [ • • E ] */
-#define IC_OS_WINDOWS_CMD	L'' /* [ • • E ] */
-#define IC_OUT				L'' /* [ • • E ] */
-#define IC_PAINTBRUSH		L'' /* [ • F • ] */
-#define IC_PDF				L'' /* [ • • E ] */
-#define IC_PEOPLE			L'' /* [ • F • ] */
-#define IC_PHOTOSHOP		L'' /* [ • • E ] */
-#define IC_PICTURES			L'󰉏' /* [ D • • ] */
-#define IC_PKG				L'' /* [ • • E ] */
-#define IC_PLATFORMIO		L'' /* [ • F • ] */
-#define IC_PLAYLIST			L'󰲹' /* [ • • E ] */
-#define IC_POM				L'' /* [ • F • ] */
-#define IC_POWERSHELL		L'' /* [ • • E ] */
-#define IC_PP				L'' /* [ • • E ] */
-#define IC_PRETTIER			L'' /* [ • F • ] */
-#define IC_PRIVATE_KEY		L'󰌆' /* [ • F • ] */
-#define IC_PRUSASLICER		L'' /* [ • F • ] */
-#define IC_PUBLIC_KEY		L'󰷖' /* [ • • E ] */
-#define IC_PURS				L'' /* [ • • E ] */
-#define IC_QT				L'' /* [ • F E ] */
-#define IC_RAZOR			L'' /* [ • • E ] */
-#define IC_RDB				L'' /* [ • • E ] */
-#define IC_REACT			L'' /* [ • • E ] */
-#define IC_README			L'󰂺' /* [ • F E ] */
-#define IC_RENOVATE			L'󰉼' /* [ • F • ] */
-#define IC_ROBOT			L'󰚩' /* [ • F • ] */
-#define IC_RPM				L'' /* [ • • E ] */
-#define IC_RSS				L'' /* [ • • E ] */
-#define IC_SCAD				L'' /* [ • • E ] */
-#define IC_SCALA			L'' /* [ • • E ] */
-#define IC_SECURITY			L'󰒃' /* [ • F • ] */
-#define IC_SERVICE			L'' /* [ • • E ] */
-#define IC_SHEET			L'' /* [ • • E ] */
-#define IC_SHELL			L'󱆃' /* [ • F E ] */
-#define IC_SHELL_CMD		L'' /* [ • F E ] */
-#define IC_SHIELD_CHECK		L'󰕥' /* [ • • E ] */
-#define IC_SHIELD_KEY		L'󰯄' /* [ • • E ] */
-#define IC_SHIELD_LOCK		L'󰦝' /* [ • • E ] */
-#define IC_SIGNED_FILE		L'󱧃' /* [ • • E ] */
-#define IC_SLIDE			L'' /* [ • • E ] */
-#define IC_SQ_WAVE			L'󱑻' /* [ • • E ] */
-#define IC_SQLITE			L'' /* [ • • E ] */
-#define IC_SRC				L'󰣞' /* [ D • • ] */
-#define IC_SSH_LOGO			L'󰣀' /* [ • F • ] */
-#define IC_STAR				L'' /* [ • F • ] */
-#define IC_STOW				L'' /* [ • F • ] */
-#define IC_SUBLIME			L'' /* [ • • E ] */
-#define IC_SUBTITLE			L'󰨖' /* [ • • E ] */
-#define IC_SVELTE			L'' /* [ • • E ] */
-#define IC_SWIFT			L'' /* [ • • E ] — JV */
-#define IC_SWITCH			L'󰟡' /* [ • • E ] */
-#define IC_TCL				L'󰛓' /* [ • • E ] */
-#define IC_TERRAFORM		L'󱁢' /* [ • • E ] */
-#define IC_TEXT				L'' /* [ • • E ] */
-#define IC_TMUX				L'' /* [ • F E ] */
-#define IC_TODO				L'' /* [ • F • ] */
-#define IC_TOML				L'' /* [ • • E ] */
-#define IC_TORRENT			L'' /* [ • • E ] */
-#define IC_TRANSLATION		L'󰗊' /* [ • • E ] */
-#define IC_TRASH			L'' /* [ D • • ] */
-#define IC_TREB_CLEF		L'󰽰' /* [ • • E ] */
-#define IC_TWIG				L'' /* [ • • E ] */
-#define IC_TYPST			L'' /* [ • • E ] */
-#define IC_UI				L'' /* [ • • E ] */
-#define IC_UNITY			L'' /* [ • • E ] */
-#define IC_VAGRANT			L'⍱' /* [ • F • ] */
-#define IC_VALA				L'' /* [ • • E ] */
-#define IC_VECTOR			L'󰕙' /* [ • • E ] */
-#define IC_VHS				L'󰨛' /* [ • • E ] */
-#define IC_VI				L'' /* [ • • E ] */
-#define IC_VIDEOS			L'' /* [ D • E ] */
-#define IC_VIM				L'' /* [ • F E ] */
-#define IC_VLC				L'󰕼' /* [ • F • ] */
-#define IC_VSCODE			L'' /* [ • • E ] */
-#define IC_VSIX				L'󰨞' /* [ • • E ] */
-#define IC_VUE				L'󰡄' /* [ • • E ] */
-#define IC_WEBPACK			L'󰜫' /* [ • F • ] */
-#define IC_WESTON			L'' /* [ • F • ] */
-#define IC_WRENCH			L'' /* [ • F • ] */
-#define IC_XAML				L'󰙳' /* [ • • E ] */
-#define IC_XML				L'󰗀' /* [ • • E ] */
-#define IC_XORG				L'' /* [ • F • ] */
-#define IC_XPI				L'' /* [ • • E ] */
-#define IC_YAML				L'' /* [ • • • ] */
-#define IC_YARN				L'' /* [ • F • ] */
-#define IC_ZIG				L'' /* [ • F E ] */
-
-
-#define IC_JV				L'↧'
-#define IC_APP				L''
-#define IC_ARCHIVE			L'󱝏'
-#define IC_BACKUP_DIR		L'󰴋'
-#define IC_BACKUP_FILE		L'󰁯'
-#define IC_RESOURCES		L'󱂸'
-#define IC_APPLICATIONS		L''
-#define IC_NOFOLLOW         L''
-#define IC_RESOLVE          L'󰕟'
-#define IC_VOLUME           L'󰥠'
-#define IC_COREDUMP         L''
-#define IC_DEVICES          L'󰾰'
-#define IC_OPT              L''
-#define IC_SYSTEM           L'󰡀'
-#define IC_TEMP             L'󰔛'
-#define IC_USERS            L''
-#define IC_USER             L''
-#define IC_VAR              L'󰫧'
-#define IC_SHARED           L'󱒃'
-#define IC_DEBUG            L''
-#define IC_LAPTOP           L''
-#define IC_VSC_SHARED       L''
-#define IC_PUBLIC           L'󰛍'
-
-#define IC_CHIP				L''
-#define IC_BUILDING			L'󱔟'
-#define IC_CROWN			L''
-#define IC_ROSE				L'󰧲'
-#define IC_CAR				L'󰞬'
-#define IC_HAMMER			L'󰣪'
-#define IC_SHIP				L''
-#define IC_CAMERA			L'󰄀'
-#define IC_GRAD_CAP			L''
-
-#define IC_DISCORD          L''
-#define IC_KEYBOARD         L''
-#define IC_MAN_PAGES        L'󰺄'
-#define IC_RAYCAST          L''
-#define IC_LANG_SHELL       L''
-#define IC_WEB              L'󰖟'
-#define IC_GEAR             L''
-
-#define IC_NOTES            L''
-#define IC_FILEPATHS		L''
-#define IC_BASH				L''
-#define IC_TOP				L'󰨇'
-#define IC_VPN				L'󰲝'
-#define IC_EZA				L'󰉻'
-#define IC_FISH				L''
-#define IC_FONTFORGE		L''
-#define IC_GEM				L''
-#define IC_ITERM2			L''
-#define IC_JUPYTER			L''
-#define IC_LINEARMOUSE		L'󰍽'
-#define IC_NEOFETCH			L'󱥈'
-#define IC_NVM				L''
-#define IC_PIP				L''
-#define IC_PIPES			L'󰟥'
-#define IC_SPOTIFY			L''
-#define IC_SVN				L''
-
-#define IC_FUNCTIONS		L'󰡱'
-#define IC_LANG_C_HEADER	L''
+#define IC_ACF				L''
+#define IC_AI				L''
+#define IC_APP				L'' // — JV
+#define IC_APPLICATIONS		L'' // — JV
+#define IC_ARCHBTW			L''
+#define IC_ARCHIVE			L'󱝏' // — JV
+#define IC_ASP				L''
+#define IC_ATOM				L''
+#define IC_AUDIO			L''
+#define IC_BACKUP_DIR		L'󰴋' // — JV
+#define IC_BACKUP_FILE		L'󰁯' // — JV
+#define IC_BASH				L'' // — JV
+#define IC_BINARY			L'' // — JV
+#define IC_BLEND			L'󰂫'
+#define IC_BOOK				L''
+#define IC_BSPWM			L''
+#define IC_BUILDING			L'󱔟' // — JV
+#define IC_BUN				L''
+#define IC_CACHE			L''
+#define IC_CAD				L'󰻫'
+#define IC_CALENDAR			L''
+#define IC_CAMERA			L'󰄀' // — JV
+#define IC_CAR				L'󰞬' // — JV
+#define IC_CHIP				L'' // — JV
+#define IC_CLOCK			L''
+#define IC_CLOJURE_1		L''
+#define IC_CLOJURE_2		L''
+#define IC_CMAKE			L''
+#define IC_CODE_OF_CONDUCT	L''
+#define IC_CODESPELL		L'󰓆'
+#define IC_COFFEE			L''
+#define IC_COM				L''
+#define IC_COMPRESSED		L''
+#define IC_CONDA			L''
+#define IC_CONFIG			L'󱁻'
+#define IC_CONTACTS			L'󰉌'
+#define IC_COREDUMP			L'' // — JV
+#define IC_COW				L'󰆚'
+#define IC_CR				L''
+#define IC_CROWN			L'' // — JV
+#define IC_CSS3				L''
+#define IC_CSV				L''
+#define IC_CU				L''
+#define IC_DART				L''
+#define IC_DATABASE			L''
+#define IC_DEB				L''
+#define IC_DEBUG			L'' // — JV
+#define IC_DESKTOP			L''
+#define IC_DESKTOP_EXT		L''
+#define IC_DEVICES			L'󰾰' // — JV
+#define IC_DIFF				L''
+#define IC_DISCORD			L'' // — JV
+#define IC_DISK_IMAGE		L''
+#define IC_DOCKER			L''
+#define IC_DOCUMENT			L''
+#define IC_DOCUMENTS		L'󰲂'
+#define IC_DOWNLOAD			L'󰇚'
+#define IC_DOWNLOADS		L'󰉍'
+#define IC_DRAWIO			L''
+#define IC_DROPBOX			L''
+#define IC_EARTH			L''
+#define IC_EBUILD			L''
+#define IC_EDA_PCB			L''
+#define IC_EDA_SCH			L'󰭅'
+#define IC_EDITORCONFIG		L''
+#define IC_EJS				L''
+#define IC_ELM				L''
+#define IC_EMACS			L''
+#define IC_EML				L''
+#define IC_ENV				L''
+#define IC_ERLANG			L''
+#define IC_ESLINT			L''
+#define IC_EXERCISM			L''
+#define IC_EZA				L'󰉻' // — JV
+#define IC_FAVORITES		L'󰚝'
+#define IC_FILE_3D			L'󰆧'
+#define IC_FILEPATHS		L'' // — JV
+#define IC_FISH				L'' // — JV
+#define IC_FLAKE			L''
+#define IC_FOLDER_BUILD		L'󱧼'
+#define IC_FOLDER_CONFIG	L''
+#define IC_FOLDER_GIT		L''
+#define IC_FOLDER_GITHUB	L''
+#define IC_FOLDER_HIDDEN	L'󱞞'
+#define IC_FOLDER_KEY		L'󰢬'
+#define IC_FOLDER_NPM		L''
+#define IC_FONT				L''
+#define IC_FONTFORGE		L'' // — JV
+#define IC_FREECAD			L''
+#define IC_FUNCTIONS		L'󰡱' // — JV
+#define IC_GBA				L'󱎓'
+#define IC_GCODE			L'󰫴'
+#define IC_GEAR				L'' // — JV
+#define IC_GEM				L'' // — JV
+#define IC_GFORM			L''
+#define IC_GIMP				L''
+#define IC_GIST_SECRET		L''
+#define IC_GIT				L'󰊢'
+#define IC_GITLAB			L''
+#define IC_GODOT			L''
+#define IC_GOOGLE_CLOUD		L'󱇶'
+#define IC_GRAD_CAP			L'' // — JV
+#define IC_GRADLE			L''
+#define IC_GRAPH			L'󱁉'
+#define IC_GRAPHQL			L''
+#define IC_GRUNT			L''
+#define IC_GTK				L''
+#define IC_GULP				L''
+#define IC_HAML				L''
+#define IC_HAMMER			L'󰣪' // — JV
+#define IC_HEROKU			L''
+#define IC_HEX				L'󱊧'
+#define IC_HOME				L'󱂵'
+#define IC_HOMEBREW			L'󱄖'
+#define IC_HOOK				L'󰛢'
+#define IC_HTML5			L''
+#define IC_HYPRLAND			L''
+#define IC_I3				L''
+#define IC_IMAGE			L''
+#define IC_INFO				L''
+#define IC_INTELLIJ			L''
+#define IC_ITERM2			L'' // — JV
+#define IC_JENKINSFILE		L''
+#define IC_JL				L''
+#define IC_JSON				L''
+#define IC_JUPYTER			L'' // — JV
+#define IC_JV				L'↧' // — JV
+#define IC_JWMRC			L''
+#define IC_KDE				L''
+#define IC_KDENLIVE			L''
+#define IC_KEY				L''
+#define IC_KEYBOARD			L'' // — JV
+#define IC_KEYPASS			L''
+#define IC_KICAD			L''
+#define IC_KRITA			L''
+#define IC_LANG_ARDUINO		L''
+#define IC_LANG_ASSEMBLY	L''
+#define IC_LANG_C			L''
+#define IC_LANG_C_HEADER	L'' // — JV
+#define IC_LANG_CPP			L''
+#define IC_LANG_CSHARP		L'󰌛'
+#define IC_LANG_D			L''
+#define IC_LANG_ELIXIR		L''
+#define IC_LANG_FENNEL		L''
+#define IC_LANG_FORTRAN		L'󱈚'
+#define IC_LANG_FSHARP		L''
+#define IC_LANG_GLEAM		L'󰦥'
+#define IC_LANG_GO			L''
+#define IC_LANG_GROOVY		L''
+#define IC_LANG_HASKELL		L''
+#define IC_LANG_HDL			L'󰍛'
+#define IC_LANG_HOLYC		L'󰂢'
+#define IC_LANG_JAVA		L''
+#define IC_LANG_JSCPT		L''
+#define IC_LANG_KOTLIN		L''
+#define IC_LANG_LUA			L''
+#define IC_LANG_NIM			L''
+#define IC_LANG_OCAML		L''
+#define IC_LANG_PERL		L''
+#define IC_LANG_PHP			L''
+#define IC_LANG_PYTHON		L''
+#define IC_LANG_R			L''
+#define IC_LANG_RBRAILS		L''
+#define IC_LANG_RUBY		L''
+#define IC_LANG_RUST		L''
+#define IC_LANG_SASS		L''
+#define IC_LANG_SCHEME		L''
+#define IC_LANG_SHELL		L'' // — JV
+#define IC_LANG_STYLUS		L''
+#define IC_LANG_TEX			L''
+#define IC_LANG_TSCPT		L''
+#define IC_LANG_V			L''
+#define IC_LAPTOP			L'' // — JV
+#define IC_LESS				L''
+#define IC_LIBRARY			L'' // — JV
+#define IC_LICENSE			L''
+#define IC_LINEARMOUSE		L'󰍽' // — JV
+#define IC_LISP				L'󰅲'
+#define IC_LOCK				L''
+#define IC_LOG				L''
+#define IC_LXDE				L''
+#define IC_LXQT				L''
+#define IC_MAGNET			L''
+#define IC_MAIL				L'󰇰'
+#define IC_MAKE				L''
+#define IC_MAN_PAGES		L'󰺄' // — JV
+#define IC_MARKDOWN			L''
+#define IC_MID				L'󰣲'
+#define IC_MOVIES			L'󰿎'
+#define IC_MPV				L''
+#define IC_MSF				L''
+#define IC_MUSIC			L'󱍙'
+#define IC_MUSTACHE			L''
+#define IC_NANO				L''
+#define IC_NEOFETCH			L'󱥈' // — JV
+#define IC_NEWS				L''
+#define IC_NINJA			L'󰝴'
+#define IC_NODEJS			L''
+#define IC_NOFOLLOW			L'' // — JV
+#define IC_NORG				L''
+#define IC_NOTEBOOK			L''
+#define IC_NOTES			L'' // — JV
+#define IC_NPM				L''
+#define IC_NUXT				L'󱄆'
+#define IC_NVM				L'' // — JV
+#define IC_ODF				L''
+#define IC_ODG				L''
+#define IC_ODP				L''
+#define IC_ODS				L''
+#define IC_ODT				L''
+#define IC_OPAM				L'󰘧'
+#define IC_OPT				L'' // — JV
+#define IC_ORG				L''
+#define IC_OS_ANDROID		L''
+#define IC_OS_APPLE			L''
+#define IC_OS_LINUX			L''
+#define IC_OS_WINDOWS		L''
+#define IC_OS_WINDOWS_CMD	L''
+#define IC_OUT				L''
+#define IC_PAINTBRUSH		L''
+#define IC_PDF				L''
+#define IC_PEOPLE			L''
+#define IC_PHOTOSHOP		L''
+#define IC_PICTURES			L'󰉏'
+#define IC_PIP				L'' // — JV
+#define IC_PIPES			L'󰟥' // — JV
+#define IC_PKG				L''
+#define IC_PLATFORMIO		L''
+#define IC_PLAYLIST			L'󰲹'
+#define IC_POM				L''
+#define IC_POWERSHELL		L''
+#define IC_PP				L''
+#define IC_PRETTIER			L''
+#define IC_PRIVATE_KEY		L'󰌆'
+#define IC_PRUSASLICER		L''
+#define IC_PUBLIC			L'󰛍' // — JV
+#define IC_PUBLIC_KEY		L'󰷖'
+#define IC_PURS				L''
+#define IC_QT				L''
+#define IC_RAYCAST			L'' // — JV
+#define IC_RAZOR			L''
+#define IC_RDB				L''
+#define IC_REACT			L''
+#define IC_README			L'󰂺'
+#define IC_RENOVATE			L'󰉼'
+#define IC_RESOLVE			L'󰕟' // — JV
+#define IC_RESOURCES		L'󱂸' // — JV
+#define IC_ROBOT			L'󰚩'
+#define IC_ROSE				L'󰧲' // — JV
+#define IC_RPM				L''
+#define IC_RSS				L''
+#define IC_SCAD				L''
+#define IC_SCALA			L''
+#define IC_SECURITY			L'󰒃'
+#define IC_SERVICE			L''
+#define IC_SHARED			L'󱒃' // — JV
+#define IC_SHEET			L''
+#define IC_SHELL			L'󱆃'
+#define IC_SHELL_CMD		L''
+#define IC_SHIELD_CHECK		L'󰕥'
+#define IC_SHIELD_KEY		L'󰯄'
+#define IC_SHIELD_LOCK		L'󰦝'
+#define IC_SHIP				L'' // — JV
+#define IC_SIGNED_FILE		L'󱧃'
+#define IC_SLIDE			L''
+#define IC_SPOTIFY			L'' // — JV
+#define IC_SQ_WAVE			L'󱑻'
+#define IC_SQLITE			L''
+#define IC_SRC				L'󰣞'
+#define IC_SSH_LOGO			L'󰣀'
+#define IC_STAR				L''
+#define IC_STOW				L''
+#define IC_SUBLIME			L''
+#define IC_SUBTITLE			L'󰨖'
+#define IC_SVELTE			L''
+#define IC_SVN				L'' // — JV
+#define IC_SWIFT			L'' // — JV
+#define IC_SWITCH			L'󰟡'
+#define IC_SYSTEM			L'󰡀' // — JV
+#define IC_TCL				L'󰛓'
+#define IC_TEMP				L'󰔛' // — JV
+#define IC_TERRAFORM		L'󱁢'
+#define IC_TEXT				L''
+#define IC_TMUX				L''
+#define IC_TODO				L''
+#define IC_TOML				L''
+#define IC_TOP				L'󰨇' // — JV
+#define IC_TORRENT			L''
+#define IC_TRANSLATION		L'󰗊'
+#define IC_TRASH			L''
+#define IC_TREB_CLEF		L'󰽰'
+#define IC_TWIG				L''
+#define IC_TYPST			L''
+#define IC_UI				L''
+#define IC_UNITY			L''
+#define IC_USER				L'' // — JV
+#define IC_USERS			L'' // — JV
+#define IC_VAGRANT			L'⍱'
+#define IC_VALA				L''
+#define IC_VAR				L'󰫧' // — JV
+#define IC_VECTOR			L'󰕙'
+#define IC_VHS				L'󰨛'
+#define IC_VI				L''
+#define IC_VIDEOS			L''
+#define IC_VIM				L''
+#define IC_VLC				L'󰕼'
+#define IC_VOLUME			L'󰥠' // — JV
+#define IC_VPN				L'󰲝' // — JV
+#define IC_VSC_SHARED		L'' // — JV
+#define IC_VSCODE			L''
+#define IC_VSIX				L'󰨞'
+#define IC_VUE				L'󰡄'
+#define IC_WEB				L'󰖟' // — JV
+#define IC_WEBPACK			L'󰜫'
+#define IC_WESTON			L''
+#define IC_WRENCH			L''
+#define IC_XAML				L'󰙳'
+#define IC_XML				L'󰗀'
+#define IC_XORG				L''
+#define IC_XPI				L''
+#define IC_YAML				L''
+#define IC_YARN				L''
+#define IC_ZIG				L''
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Default Icons ———————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -352,161 +346,153 @@ const icon_t DEFAULT_DIR_ICON  = IC_FOLDER;
 /// An array containing the basenames of directories, and their associated icons.
 /// This array should contain all the directories that have custom icons.
 const Icon DIRNAME_ICONS[] = {
+	{ "__filepaths__"	, IC_FILEPATHS 		}, //   – JV
+	{ ".archive"		, IC_ARCHIVE 		}, // 󱝏  – JV
+	{ ".cache"			, IC_CACHE 			}, //   – JV
 	{ ".config"			, IC_GEAR			}, //   – JV
 	{ ".exercism"		, IC_EXERCISM		}, // 
 	{ ".git"			, IC_FOLDER_GIT		}, // 󰊢  – JV
 	{ ".github"			, IC_FOLDER_GITHUB	}, // 
+	{ ".history"		, IC_CLOCK 			}, //   – JV
+	{ ".idea"			, IC_INTELLIJ		}, //   – JV
+	{ ".local"			, IC_LAPTOP 		}, //   – JV
+	{ ".nofollow"		, IC_NOFOLLOW		}, //   – JV
 	{ ".npm"			, IC_FOLDER_NPM		}, // 
 	{ ".opam"			, IC_LANG_OCAML		}, // 
+	{ ".resolve"		, IC_RESOLVE 		}, // 󰕟  – JV
 	{ ".ssh"			, IC_FOLDER_KEY		}, // 󰢬
+	{ ".swiftpm"		, IC_SWIFT 			}, //   – JV
 	{ ".trash"			, IC_TRASH			}, // 
+	{ ".vol"			, IC_VOLUME 		}, // 󰥠  – JV
+	{ ".vscode-shared"	, IC_VSC_SHARED 	}, //   – JV
+	{ ".vscode"			, IC_VSCODE 		}, //   – JV
+	{ "anaconda"		, IC_CONDA 			}, //   – JV
+	{ "applescript"		, IC_OS_APPLE 		}, //   – JV
+	{ "applications"	, IC_APPLICATIONS	}, //   – JV
+	{ "apps"			, IC_APPLICATIONS	}, //   – JV
+	{ "archive"			, IC_ARCHIVE		}, // 󱝏  – JV
+	{ "archives"		, IC_ARCHIVE		}, // 󱝏  – JV
+	{ "bash"			, IC_BASH 			}, //   – JV
+	{ "bin"				, IC_BINARY			}, //   – JV
+	{ "bottom"			, IC_TOP 			}, // 󰨇  – JV
+	{ "bpytop"			, IC_TOP 			}, // 󰨇  – JV
+	{ "brew"			, IC_HOMEBREW 		}, // 󱄖  – JV
 	{ "build"			, IC_FOLDER_BUILD	}, // 󱧼
-	{ "out"				, IC_FOLDER_BUILD	}, // 󱧼  – JV
+	{ "c"				, IC_LANG_C 		}, //   – JV
+	{ "c#"				, IC_LANG_CSHARP 	}, // 󰌛  – JV
 	{ "cabal"			, IC_LANG_HASKELL	}, // 
+	{ "cargo"			, IC_LANG_RUST 		}, //   – JV
+	{ "conda"			, IC_CONDA 			}, //   – JV
 	{ "config"			, IC_FOLDER_CONFIG	}, // 
+	{ "configstore"		, IC_GEAR 			}, //   – JV
 	{ "contacts"		, IC_CONTACTS		}, // 󰉌
+	{ "cores"			, IC_COREDUMP 		}, //   – JV
 	{ "cron.d"			, IC_FOLDER_CONFIG	}, // 
 	{ "cron.daily"		, IC_FOLDER_CONFIG	}, // 
 	{ "cron.hourly"		, IC_FOLDER_CONFIG	}, // 
 	{ "cron.minutely"	, IC_FOLDER_CONFIG	}, // 
 	{ "cron.monthly"	, IC_FOLDER_CONFIG	}, // 
 	{ "cron.weekly"		, IC_FOLDER_CONFIG	}, // 
+	{ "cs"				, IC_CHIP 			}, //   – JV
+	{ "debug"			, IC_DEBUG 			}, //   – JV
+	{ "debugging"		, IC_DEBUG 			}, //   – JV
 	{ "desktop"			, IC_DESKTOP		}, // 
+	{ "dev"				, IC_DEVICES 		}, // 󰾰  – JV
+	{ "discord"			, IC_DISCORD 		}, //   – JV
 	{ "documents"		, IC_DOCUMENTS		}, // 󰲂
 	{ "downloads"		, IC_DOWNLOADS		}, // 󰉍
 	{ "etc"				, IC_FOLDER_CONFIG	}, // 
+	{ "expressvpn"		, IC_VPN 			}, // 󰲝  – JV
+	{ "ey"				, IC_BUILDING 		}, // 󱔟  – JV
+	{ "eza"				, IC_EZA 			}, // 󰉻  – JV
 	{ "favorites"		, IC_FAVORITES		}, // 󰚝
+	{ "fish"			, IC_FISH 			}, //   – JV
+	{ "fontforge"		, IC_FONTFORGE 		}, //   – JV
+	{ "functions"		, IC_FUNCTIONS 		}, // 󰡱  – JV
+	{ "gem"				, IC_GEM 			}, //   – JV
+	{ "gh"				, IC_GIT 			}, // 󰊢  – JV
+	{ "git"				, IC_GIT 			}, // 󰊢  – JV
+	{ "hdd"				, IC_VOLUME 		}, // 󰥠  – JV
 	{ "hidden"			, IC_FOLDER_HIDDEN	}, // 󱞞
 	{ "home"			, IC_HOME			}, // 󱂵
+	{ "homebrew"		, IC_HOMEBREW 		}, // 󱄖  – JV
+	{ "house of lords"	, IC_CROWN 			}, //   – JV
+	{ "htop"			, IC_TOP 			}, // 󰨇  – JV
 	{ "include"			, IC_FOLDER_CONFIG	}, // 
+	{ "ipython"			, IC_LANG_PYTHON 	}, //   – JV
+	{ "iterm2"			, IC_ITERM2 		}, //   – JV
+	{ "java"			, IC_LANG_JAVA 		}, //   – JV
+	{ "jgit"			, IC_GIT 			}, // 󰊢  – JV
+	{ "jupyter"			, IC_JUPYTER 		}, //   – JV
+	{ "jv"				, IC_JV				}, // ↧  – JV
+	{ "karabiner"		, IC_KEYBOARD 		}, //   – JV
+	{ "labour"			, IC_ROSE 			}, // 󰧲  – JV
+	{ "lazygit"			, IC_GIT 			}, // 󰊢  – JV
+	{ "lib"				, IC_LIBRARY 		}, //   – JV
+	{ "library"			, IC_LIBRARY 		}, //   – JV
+	{ "linearmouse"		, IC_LINEARMOUSE 	}, // 󰍽  – JV
 	{ "mail"			, IC_MAIL			}, // 󰇰
+	{ "man pages"		, IC_MAN_PAGES 		}, // 󰺄  – JV
+	{ "mclaren"			, IC_CAR 			}, // 󰞬  – JV
 	{ "movies"			, IC_MOVIES			}, // 󰿎
 	{ "music"			, IC_MUSIC			}, // 󱍙
+	{ "neofetch"		, IC_NEOFETCH 		}, // 󱥈  – JV
 	{ "node_modules"	, IC_FOLDER_NPM		}, // 
+	{ "notes"			, IC_NOTES 			}, //   – JV
 	{ "npm_cache"		, IC_FOLDER_NPM		}, // 
+	{ "npm"				, IC_FOLDER_NPM 	}, //   – JV
+	{ "nvim"			, IC_VIM 			}, //   – JV
+	{ "nvm"				, IC_NVM 			}, //   – JV
+	{ "old desktop"		, IC_DESKTOP 		}, //   – JV
+	{ "opt"				, IC_OPT 			}, //   – JV
+	{ "out"				, IC_FOLDER_BUILD	}, // 󱧼  – JV
 	{ "pacman.d"		, IC_FOLDER_CONFIG	}, // 
 	{ "pam.d"			, IC_FOLDER_KEY		}, // 󰢬
 	{ "pictures"		, IC_PICTURES		}, // 󰉏
-	{ "src"				, IC_SRC			}, // 󰣞
+	{ "pip"				, IC_PIP 			}, //   – JV
+	{ "pipes-rs"		, IC_PIPES 			}, // 󰟥  – JV
+	{ "powershell"		, IC_POWERSHELL 	}, //   – JV
+	{ "private"			, IC_LOCK			}, //   – JV
+	{ "public"			, IC_PUBLIC 		}, // 󰛍  – JV
+	{ "python"			, IC_LANG_PYTHON 	}, //   – JV
+	{ "ra"				, IC_HAMMER 		}, // 󰣪  – JV
+	{ "raycast"			, IC_RAYCAST 		}, //   – JV
+	{ "rdoc"			, IC_LANG_RUBY 		}, //   – JV
+	{ "resources"		, IC_RESOURCES		}, // 󱂸  – JV
+	{ "rn"				, IC_SHIP 			}, //   – JV
+	{ "rust"			, IC_LANG_RUST 		}, //   – JV
+	{ "rustup"			, IC_LANG_RUST 		}, //   – JV
+	{ "sbin"			, IC_BINARY			}, //   – JV
+	{ "screenshots"		, IC_CAMERA 		}, // 󰄀  – JV
+	{ "shared"			, IC_SHARED 		}, // 󱒃  – JV
+	{ "shellscript"		, IC_LANG_SHELL 	}, //   – JV
+	{ "shpotify"		, IC_SPOTIFY 		}, //   – JV
 	{ "source"			, IC_SRC			}, // 󰣞  – JV
+	{ "spicetify"		, IC_SPOTIFY 		}, //   – JV
+	{ "spotify-player"	, IC_SPOTIFY 		}, //   – JV
+	{ "src"				, IC_SRC			}, // 󰣞
 	{ "ssh"				, IC_FOLDER_KEY		}, // 󰢬
 	{ "sudoers.d"		, IC_FOLDER_KEY		}, // 󰢬
+	{ "svn"				, IC_SVN 			}, //   – JV
+	{ "swift"			, IC_SWIFT 			}, //   – JV
+	{ "system"			, IC_SYSTEM 		}, // 󰡀  – JV
+	{ "tmp"				, IC_TEMP 			}, // 󰔛  – JV
+	{ "university work"	, IC_GRAD_CAP 		}, //   – JV
+	{ "users"			, IC_USERS 			}, //   – JV
+	{ "usr"				, IC_USER 			}, //   – JV
+	{ "var"				, IC_VAR 			}, // 󰫧  – JV
 	{ "videos"			, IC_VIDEOS			}, // 
+	{ "vim"				, IC_VIM 			}, //   – JV
+	{ "volumes"			, IC_VOLUME 		}, // 󰥠  – JV
+	{ "vs_code"			, IC_VSCODE 		}, //   – JV
+	{ "vscode-custom"	, IC_VSCODE 		}, //   – JV
+	{ "web"				, IC_WEB 			}, // 󰖟  – JV
+	{ "x_automation"	, IC_ROBOT 			}, // 󰚩  – JV
 	{ "xbps.d"			, IC_FOLDER_CONFIG	}, // 
 	{ "xorg.conf.d"		, IC_FOLDER_CONFIG	}, // 
-
-	{ "jv"				, IC_JV				}, // ↧  – JV
-	{ "archive"			, IC_ARCHIVE		},
-	{ "archives"		, IC_ARCHIVE		},
-	{ ".idea"			, IC_INTELLIJ		}, //   – JV
-	{ "bin"				, IC_BINARY			}, //   – JV
-	{ "sbin"			, IC_BINARY			}, //   – JV
-	{ "private"			, IC_LOCK			}, // 
-	{ "resources"		, IC_RESOURCES		}, // 󱂸
-	{ "applications"	, IC_APPLICATIONS	},
-	{ "apps"			, IC_APPLICATIONS	},
-	{ ".nofollow"		, IC_NOFOLLOW		},
-	{ ".resolve", IC_RESOLVE },
-	{ ".vol", IC_VOLUME },
-	{ "volumes", IC_VOLUME },
-	{ "cores", IC_COREDUMP },
-	{ "dev", IC_DEVICES },
-	{ "opt", IC_OPT },
-	{ "system", IC_SYSTEM },
-	{ "tmp", IC_TEMP },
-	{ "users", IC_USERS },
-	{ "usr", IC_USER },
-	{ "var", IC_VAR },
-	{ "shared", IC_SHARED },
-	{ "library", IC_LIBRARY },
-	{ "lib", IC_LIBRARY },
-	{ "debug", IC_DEBUG },
-	{ "debugging", IC_DEBUG },
-	{ ".cache", IC_CACHE },
-	{ ".local", IC_LAPTOP },
-	{ ".swiftpm", IC_SWIFT },
-	{ ".vscode", IC_VSCODE },
-	{ ".vscode-shared", IC_VSC_SHARED },
-	{ "public", IC_PUBLIC },
-
-	{ "cs", IC_CHIP },
-	{ "ey", IC_BUILDING },
-	{ "house of lords", IC_CROWN },
-	{ "labour", IC_ROSE },
-	{ "mclaren", IC_CAR },
-	{ "old desktop", IC_DESKTOP },
-	{ "ra", IC_HAMMER },
-	{ "rn", IC_SHIP },
-	{ "screenshots", IC_CAMERA },
-	{ "university work", IC_GRAD_CAP },
-
-	{ "applescript", IC_OS_APPLE },
-	{ "c#", IC_LANG_CSHARP },
-	{ "discord", IC_DISCORD },
-	{ "karabiner", IC_KEYBOARD },
-	{ "jave", IC_LANG_JAVA },
-	{ "man pages", IC_MAN_PAGES },
-	{ "python", IC_LANG_PYTHON },
-	{ "raycast", IC_RAYCAST },
-	{ "rust", IC_LANG_RUST },
-	{ "shellscript", IC_LANG_SHELL },
-	{ "swift", IC_SWIFT },
-	{ "vs_code", IC_VSCODE },
-	{ "web", IC_WEB },
-	{ "java", IC_LANG_JAVA },
-	{ "c", IC_LANG_C },
-	{ "x_automation", IC_ROBOT },
-	{ "y_settings_etc", IC_GEAR },
-	{ "z_other", IC_ARCHIVE },
-	{ "hdd", IC_VOLUME },
-
-	{ "notes", IC_NOTES },
-	{ "__filepaths__", IC_FILEPATHS },
-	{ ".archive", IC_ARCHIVE },
-	{ ".history", IC_CLOCK },
-	{ "anaconda", IC_CONDA },
-	{ "bash", IC_BASH },
-	{ "bottom", IC_TOP },
-	{ "bpytop", IC_TOP },
-	{ "cargo", IC_LANG_RUST },
-	{ "conda", IC_CONDA },
-	{ "configstore", IC_GEAR },
-	{ "expressvpn", IC_VPN },
-	{ "eza", IC_EZA },
-	{ "fish", IC_FISH },
-	{ "fontforge", IC_FONTFORGE },
-	{ "gem", IC_GEM },
-	{ "git", IC_GIT },
-	{ "gh", IC_GIT },
-	{ "jgit", IC_GIT },
-	{ "lazygit", IC_GIT },
-	{ "htop", IC_TOP },
-	{ "ipython", IC_LANG_PYTHON },
-	{ "iterm2", IC_ITERM2 },
-	{ "jupyter", IC_JUPYTER },
-	{ "linearmouse", IC_LINEARMOUSE },
-	{ "neofetch", IC_NEOFETCH },
-	{ "npm", IC_FOLDER_NPM },
-	{ "nvim", IC_VIM },
-	{ "nvm", IC_NVM },
-	{ "pip", IC_PIP },
-	{ "pipes-rs", IC_PIPES },
-
-	{ "shpotify", IC_SPOTIFY },
-	{ "spicetify", IC_SPOTIFY },
-	{ "spotify-player", IC_SPOTIFY },
-	{ "svn", IC_SVN },
-	{ "homebrew", IC_HOMEBREW },
-	{ "brew", IC_HOMEBREW },
-	{ "vscode-custom", IC_VSCODE },
-	{ "powershell", IC_POWERSHELL },
-	{ "vim", IC_VIM },
-
-	{ "rdoc", IC_LANG_RUBY },
-	{ "rustup", IC_LANG_RUST },
-	{ "functions", IC_FUNCTIONS },
-	{ "zsh", IC_SHELL_CMD },
-
+	{ "y_settings_etc"	, IC_GEAR 			}, //   – JV
+	{ "z_other"			, IC_ARCHIVE 		}, // 󱝏  – JV
+	{ "zsh"				, IC_SHELL_CMD 		}, //   – JV
 	END_OF_ICONS
 };
 
@@ -514,10 +500,6 @@ const Icon DIRNAME_ICONS[] = {
 
 /// Array containing full filenames & their icons.
 const Icon FILENAME_ICONS[] = {
-	{ ".VolumeIcon.icns"			, IC_IMAGE				},
-	{ ".localized"					, IC_TRANSLATION		}, // 󰗊  — JV
-	{ "hdd", IC_VOLUME },
-
 	{ "._ds_store"					, IC_OS_APPLE			}, // 
 	{ ".aliases"					, IC_SHELL				}, // 󱆃
 	{ ".atom"						, IC_ATOM				}, // 
@@ -559,6 +541,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".ideavimrc"					, IC_VIM				}, // 
 	{ ".inputrc"					, IC_CONFIG				}, // 󱁻
 	{ ".kshrc"						, IC_SHELL				}, // 󱆃
+	{ ".localized"					, IC_TRANSLATION		}, // 󰗊  — JV
 	{ ".login"						, IC_SHELL				}, // 󱆃
 	{ ".logout"						, IC_SHELL				}, // 󱆃
 	{ ".luacheckrc"					, IC_CONFIG				}, // 󱁻
@@ -590,6 +573,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".tcshrc"						, IC_SHELL				}, // 󱆃
 	{ ".viminfo"					, IC_VIM				}, // 
 	{ ".vimrc"						, IC_VIM				}, // 
+	{ ".VolumeIcon.icns"			, IC_IMAGE				}, // •  — JV
 	{ ".xauthority"					, IC_XORG				}, // 
 	{ ".xinitrc"					, IC_XORG				}, // 
 	{ ".xresources"					, IC_XORG				}, // 
@@ -678,6 +662,7 @@ const Icon FILENAME_ICONS[] = {
 	{ "gulpfile.coffee"				, IC_GULP				}, // 
 	{ "gulpfile.js"					, IC_GULP				}, // 
 	{ "gulpfile.ls"					, IC_GULP				}, // 
+	{ "hdd"							, IC_VOLUME 			}, // 󰥠  — JV
 	{ "heroku.yml"					, IC_HEROKU				}, // 
 	{ "hostname"					, IC_CONFIG				}, // 󱁻
 	{ "hypridle.conf"				, IC_HYPRLAND			}, // 
@@ -804,630 +789,630 @@ const Icon DIR_EXT_ICONS[] = {
 
 /// Array of lowercase file extensions and their icons.
 const Icon FILE_EXT_ICONS[] = {
-	{ "ai"				, IC_AI				}, // 
-	{ "cr"				, IC_CR				}, // 
-	{ "cu"				, IC_CU				}, // 
-	{ "jl"				, IC_JL				}, // 
-	{ "pp"				, IC_PP				}, // 
-	{ "qss"				, IC_QT				}, // 
-	{ "qrc"				, IC_QT				}, // 
-	{ "qml"				, IC_QT				}, // 
-	{ "ui"				, IC_UI				}, // 
-	{ "vi"				, IC_VI				}, // 
-	{ "acf"				, IC_ACF			}, // 
-	{ "asp"				, IC_ASP			}, // 
-	{ "x_t"				, IC_CAD			}, // 󰻫
-	{ "x_b"				, IC_CAD			}, // 󰻫
-	{ "stp"				, IC_CAD			}, // 󰻫
-	{ "step"			, IC_CAD			}, // 󰻫
-	{ "ste"				, IC_CAD			}, // 󰻫
-	{ "slvs"			, IC_CAD			}, // 󰻫
-	{ "sldprt"			, IC_CAD			}, // 󰻫
-	{ "sldasm"			, IC_CAD			}, // 󰻫
-	{ "skp"				, IC_CAD			}, // 󰻫
-	{ "psm"				, IC_CAD			}, // 󰻫
-	{ "ipt"				, IC_CAD			}, // 󰻫
-	{ "igs"				, IC_CAD			}, // 󰻫
-	{ "iges"			, IC_CAD			}, // 󰻫
-	{ "ige"				, IC_CAD			}, // 󰻫
-	{ "ifc"				, IC_CAD			}, // 󰻫
-	{ "iam"				, IC_CAD			}, // 󰻫
-	{ "f3z"				, IC_CAD			}, // 󰻫
-	{ "f3d"				, IC_CAD			}, // 󰻫
-	{ "dxf"				, IC_CAD			}, // 󰻫
-	{ "dwg"				, IC_CAD			}, // 󰻫
-	{ "catproduct"		, IC_CAD			}, // 󰻫
-	{ "catpart"			, IC_CAD			}, // 󰻫
-	{ "brep"			, IC_CAD			}, // 󰻫
-	{ "3dm"				, IC_CAD			}, // 󰻫
 	{ "123dx"			, IC_CAD			}, // 󰻫
+	{ "3dm"				, IC_CAD			}, // 󰻫
+	{ "3g2"				, IC_VIDEOS			}, // 
+	{ "3gp"				, IC_VIDEOS			}, // 
+	{ "3gp2"			, IC_VIDEOS			}, // 
+	{ "3gpp"			, IC_VIDEOS			}, // 
+	{ "3gpp2"			, IC_VIDEOS			}, // 
+	{ "3mf"				, IC_FILE_3D		}, // 󰆧
+	{ "7z"				, IC_COMPRESSED		}, // 
+	{ "a"				, IC_OS_LINUX		}, // 
+	{ "aac"				, IC_AUDIO			}, // 
+	{ "acf"				, IC_ACF			}, // 
+	{ "age"				, IC_SHIELD_LOCK	}, // 󰦝
+	{ "ai"				, IC_AI				}, // 
+	{ "aif"				, IC_AUDIO			}, // 
+	{ "aifc"			, IC_AUDIO			}, // 
+	{ "aiff"			, IC_AUDIO			}, // 
+	{ "alac"			, IC_AUDIO			}, // 
+	{ "android"			, IC_OS_ANDROID		}, // 
+	{ "ape"				, IC_AUDIO			}, // 
+	{ "apk"				, IC_OS_ANDROID		}, // 
+	{ "app"				, IC_BINARY			}, // 
+	{ "apple"			, IC_OS_APPLE		}, // 
+	{ "applescript"		, IC_OS_APPLE		}, // 
+	{ "ar"				, IC_COMPRESSED		}, // 
+	{ "arj"				, IC_COMPRESSED		}, // 
+	{ "arw"				, IC_IMAGE			}, // 
+	{ "asc"				, IC_SHIELD_LOCK	}, // 󰦝
+	{ "asm"				, IC_LANG_ASSEMBLY	}, // 
+	{ "asp"				, IC_ASP			}, // 
+	{ "ass"				, IC_SUBTITLE		}, // 󰨖
+	{ "avi"				, IC_VIDEOS			}, // 
+	{ "avif"			, IC_IMAGE			}, // 
+	{ "avro"			, IC_JSON			}, // 
+	{ "awk"				, IC_SHELL_CMD		}, // 
+	{ "bak"				, IC_BACKUP_FILE	}, // 󰁯  – JV
+	{ "bash"			, IC_SHELL_CMD		}, // 
+	{ "bat"				, IC_OS_WINDOWS_CMD	}, // 
+	{ "bats"			, IC_SHELL_CMD		}, // 
+	{ "bdf"				, IC_FONT			}, // 
+	{ "bib"				, IC_LANG_TEX		}, // 
+	{ "bin"				, IC_BINARY			}, // 
+	{ "blend"			, IC_BLEND			}, // 󰂫
+	{ "bmp"				, IC_IMAGE			}, // 
+	{ "br"				, IC_COMPRESSED		}, // 
+	{ "brd"				, IC_EDA_PCB		}, // 
+	{ "brep"			, IC_CAD			}, // 󰻫
+	{ "bst"				, IC_LANG_TEX		}, // 
+	{ "bundle"			, IC_OS_APPLE		}, // 
+	{ "bz"				, IC_COMPRESSED		}, // 
+	{ "bz2"				, IC_COMPRESSED		}, // 
+	{ "bz3"				, IC_COMPRESSED		}, // 
+	{ "c"				, IC_LANG_C			}, // 
+	{ "c++"				, IC_LANG_CPP		}, // 
+	{ "cab"				, IC_OS_WINDOWS		}, // 
+	{ "cache"			, IC_CACHE			}, // 
+	{ "cast"			, IC_VIDEOS			}, // 
+	{ "catpart"			, IC_CAD			}, // 󰻫
+	{ "catproduct"		, IC_CAD			}, // 󰻫
+	{ "cbr"				, IC_IMAGE			}, // 
+	{ "cbz"				, IC_IMAGE			}, // 
+	{ "cc"				, IC_LANG_CPP		}, // 
+	{ "cert"			, IC_GIST_SECRET	}, // 
+	{ "cfg"				, IC_CONFIG			}, // 󱁻
+	{ "cjs"				, IC_LANG_JSCPT		}, // 
+	{ "class"			, IC_LANG_JAVA		}, // 
+	{ "clj"				, IC_CLOJURE_1		}, // 
+	{ "cljc"			, IC_CLOJURE_1		}, // 
+	{ "cljs"			, IC_CLOJURE_2		}, // 
+	{ "cls"				, IC_LANG_TEX		}, // 
+	{ "cmake"			, IC_CMAKE			}, // 
+	{ "cmd"				, IC_OS_WINDOWS		}, // 
+	{ "coffee"			, IC_COFFEE			}, // 
 	{ "com"				, IC_COM			}, // 
+	{ "conda"			, IC_CONDA			}, // 
+	{ "conf"			, IC_CONFIG			}, // 󱁻
+	{ "config"			, IC_CONFIG			}, // 󱁻
 	{ "cow"				, IC_COW			}, // 󰆚
+	{ "cp"				, IC_LANG_CPP		}, // 
+	{ "cpio"			, IC_COMPRESSED		}, // 
+	{ "cpp"				, IC_LANG_CPP		}, // 
+	{ "cr"				, IC_CR				}, // 
+	{ "cr2"				, IC_IMAGE			}, // 
+	{ "crdownload"		, IC_DOWNLOAD		}, // 󰇚
+	{ "crt"				, IC_GIST_SECRET	}, // 
+	{ "cs"				, IC_LANG_CSHARP	}, // 󰌛
+	{ "csh"				, IC_SHELL_CMD		}, // 
+	{ "cshtml"			, IC_RAZOR			}, // 
+	{ "csproj"			, IC_LANG_CSHARP	}, // 󰌛
+	{ "css"				, IC_CSS3			}, // 
 	{ "csv"				, IC_CSV			}, // 
+	{ "csx"				, IC_LANG_CSHARP	}, // 󰌛
+	{ "cts"				, IC_LANG_TSCPT		}, // 
+	{ "cu"				, IC_CU				}, // 
+	{ "cue"				, IC_PLAYLIST		}, // 󰲹
+	{ "cxx"				, IC_LANG_CPP		}, // 
+	{ "d"				, IC_LANG_D			}, // 
+	{ "dart"			, IC_DART			}, // 
+	{ "db"				, IC_DATABASE		}, // 
+	{ "db3"				, IC_SQLITE			}, // 
+	{ "dconf"			, IC_DATABASE		}, // 
 	{ "deb"				, IC_DEB			}, // 
+	{ "desktop"			, IC_DESKTOP_EXT	}, // 
+	{ "di"				, IC_LANG_D			}, // 
+	{ "diff"			, IC_DIFF			}, // 
+	{ "djv"				, IC_DOCUMENT		}, // 
+	{ "djvu"			, IC_DOCUMENT		}, // 
+	{ "dll"				, IC_LIBRARY		}, // 
+	{ "dmg"				, IC_DISK_IMAGE		}, // 
+	{ "doc"				, IC_DOCUMENT		}, // 
+	{ "dockerfile"		, IC_DOCKER			}, // 
+	{ "dockerignore"	, IC_DOCKER			}, // 
+	{ "docm"			, IC_DOCUMENT		}, // 
+	{ "docx"			, IC_DOCUMENT		}, // 
+	{ "dot"				, IC_GRAPH			}, // 󱁉
+	{ "download"		, IC_DOWNLOAD		}, // 󰇚
+	{ "drawio"			, IC_DRAWIO			}, // 
+	{ "dump"			, IC_DATABASE		}, // 
+	{ "dvi"				, IC_IMAGE			}, // 
+	{ "dwg"				, IC_CAD			}, // 󰻫
+	{ "dxf"				, IC_CAD			}, // 󰻫
+	{ "dylib"			, IC_OS_APPLE		}, // 
+	{ "ebook"			, IC_BOOK			}, // 
+	{ "ebuild"			, IC_EBUILD			}, // 
+	{ "editorconfig"	, IC_EDITORCONFIG	}, // 
+	{ "edn"				, IC_CLOJURE_2		}, // 
+	{ "eex"				, IC_LANG_ELIXIR	}, // 
 	{ "ejs"				, IC_EJS			}, // 
+	{ "el"				, IC_EMACS			}, // 
+	{ "elc"				, IC_EMACS			}, // 
+	{ "elf"				, IC_BINARY			}, // 
 	{ "elm"				, IC_ELM			}, // 
 	{ "eml"				, IC_EML			}, // 
 	{ "env"				, IC_ENV			}, // 
-	{ "z64"				, IC_GBA			}, // 󱎓
+	{ "eot"				, IC_FONT			}, // 
+	{ "eps"				, IC_VECTOR			}, // 󰕙
+	{ "epub"			, IC_BOOK			}, // 
+	{ "erb"				, IC_LANG_RBRAILS	}, // 
+	{ "erl"				, IC_ERLANG			}, // 
+	{ "ex"				, IC_LANG_ELIXIR	}, // 
+	{ "exe"				, IC_OS_WINDOWS_CMD	}, // 
+	{ "exs"				, IC_LANG_ELIXIR	}, // 
+	{ "f"				, IC_LANG_FORTRAN	}, // 󱈚
+	{ "f#"				, IC_LANG_FSHARP	}, // 
+	{ "f3d"				, IC_CAD			}, // 󰻫
+	{ "f3z"				, IC_CAD			}, // 󰻫
+	{ "f90"				, IC_LANG_FORTRAN	}, // 󱈚
+	{ "fbx"				, IC_FILE_3D		}, // 󰆧
+	{ "fcbak"			, IC_FREECAD		}, // 
+	{ "fcmacro"			, IC_FREECAD		}, // 
+	{ "fcmat"			, IC_FREECAD		}, // 
+	{ "fcparam"			, IC_FREECAD		}, // 
+	{ "fcscript"		, IC_FREECAD		}, // 
+	{ "fcstd"			, IC_FREECAD		}, // 
+	{ "fcstd1"			, IC_FREECAD		}, // 
+	{ "fctb"			, IC_FREECAD		}, // 
+	{ "fctl"			, IC_FREECAD		}, // 
+	{ "fdmdownload"		, IC_DOWNLOAD		}, // 󰇚
+	{ "fish"			, IC_SHELL_CMD		}, // 
+	{ "flac"			, IC_AUDIO			}, // 
+	{ "flc"				, IC_FONT			}, // 
+	{ "flf"				, IC_FONT			}, // 
+	{ "flv"				, IC_VIDEOS			}, // 
+	{ "fnl"				, IC_LANG_FENNEL	}, // 
+	{ "fnt"				, IC_FONT			}, // 
+	{ "fodg"			, IC_ODG			}, // 
+	{ "fodp"			, IC_ODP			}, // 
+	{ "fods"			, IC_ODS			}, // 
+	{ "fodt"			, IC_ODT			}, // 
+	{ "fon"				, IC_FONT			}, // 
+	{ "font"			, IC_FONT			}, // 
+	{ "for"				, IC_LANG_FORTRAN	}, // 󱈚
+	{ "fs"				, IC_LANG_FSHARP	}, // 
+	{ "fsi"				, IC_LANG_FSHARP	}, // 
+	{ "fsproj"			, IC_LANG_FSHARP	}, // 
+	{ "fsscript"		, IC_LANG_FSHARP	}, // 
+	{ "fsx"				, IC_LANG_FSHARP	}, // 
 	{ "gba"				, IC_GBA			}, // 󱎓
+	{ "gbl"				, IC_EDA_PCB		}, // 
+	{ "gbo"				, IC_EDA_PCB		}, // 
+	{ "gbp"				, IC_EDA_PCB		}, // 
+	{ "gbr"				, IC_EDA_PCB		}, // 
+	{ "gbs"				, IC_EDA_PCB		}, // 
+	{ "gcode"			, IC_GCODE			}, // 󰫴
+	{ "gd"				, IC_GODOT			}, // 
+	{ "gdoc"			, IC_DOCUMENT		}, // 
+	{ "gem"				, IC_LANG_RUBY		}, // 
+	{ "gemfile"			, IC_LANG_RUBY		}, // 
+	{ "gemspec"			, IC_LANG_RUBY		}, // 
+	{ "gform"			, IC_GFORM			}, // 
+	{ "gif"				, IC_IMAGE			}, // 
 	{ "git"				, IC_GIT			}, // 󰊢
+	{ "gleam"			, IC_LANG_GLEAM		}, // 󰦥
+	{ "gm1"				, IC_EDA_PCB		}, // 
+	{ "gml"				, IC_EDA_PCB		}, // 
+	{ "go"				, IC_LANG_GO		}, // 
+	{ "godot"			, IC_GODOT			}, // 
+	{ "gpg"				, IC_SHIELD_LOCK	}, // 󰦝
+	{ "gql"				, IC_GRAPHQL		}, // 
+	{ "gradle"			, IC_GRADLE			}, // 
+	{ "graphql"			, IC_GRAPHQL		}, // 
 	{ "gresource"		, IC_GTK			}, // 
+	{ "groovy"			, IC_LANG_GROOVY	}, // 
+	{ "gsheet"			, IC_SHEET			}, // 
+	{ "gslides"			, IC_SLIDE			}, // 
+	{ "gtl"				, IC_EDA_PCB		}, // 
+	{ "gto"				, IC_EDA_PCB		}, // 
+	{ "gtp"				, IC_EDA_PCB		}, // 
+	{ "gts"				, IC_EDA_PCB		}, // 
+	{ "guardfile"		, IC_LANG_RUBY		}, // 
+	{ "gv"				, IC_GRAPH			}, // 󱁉
+	{ "gvy"				, IC_LANG_GROOVY	}, // 
+	{ "gz"				, IC_COMPRESSED		}, // 
+	{ "h"				, IC_LANG_C_HEADER	}, //   – JV
+	{ "h++"				, IC_LANG_CPP		}, // 
+	{ "h264"			, IC_VIDEOS			}, // 
+	{ "haml"			, IC_HAML			}, // 
+	{ "hbs"				, IC_MUSTACHE		}, // 
+	{ "hc"				, IC_LANG_HOLYC		}, // 󰂢
+	{ "heic"			, IC_IMAGE			}, // 
+	{ "heics"			, IC_VIDEOS			}, // 
+	{ "heif"			, IC_IMAGE			}, // 
 	{ "hex"				, IC_HEX			}, // 󱊧
-	{ "pfx"				, IC_KEY			}, // 
-	{ "pem"				, IC_KEY			}, // 
-	{ "p12"				, IC_KEY			}, // 
+	{ "hh"				, IC_LANG_CPP		}, // 
+	{ "hi"				, IC_BINARY			}, // 
+	{ "hpp"				, IC_LANG_CPP		}, // 
+	{ "hrl"				, IC_ERLANG			}, // 
+	{ "hs"				, IC_LANG_HASKELL	}, // 
+	{ "htm"				, IC_HTML5			}, // 
+	{ "html"			, IC_HTML5			}, // 
+	{ "hxx"				, IC_LANG_CPP		}, // 
+	{ "iam"				, IC_CAD			}, // 󰻫
+	{ "ical"			, IC_CALENDAR		}, // 
+	{ "icalendar"		, IC_CALENDAR		}, // 
+	{ "ico"				, IC_IMAGE			}, // 
+	{ "ics"				, IC_CALENDAR		}, // 
+	{ "ifb"				, IC_CALENDAR		}, // 
+	{ "ifc"				, IC_CAD			}, // 󰻫
+	{ "ige"				, IC_CAD			}, // 󰻫
+	{ "iges"			, IC_CAD			}, // 󰻫
+	{ "igs"				, IC_CAD			}, // 󰻫
+	{ "image"			, IC_DISK_IMAGE		}, // 
+	{ "img"				, IC_DISK_IMAGE		}, // 
+	{ "iml"				, IC_INTELLIJ		}, // 
+	{ "info"			, IC_INFO			}, // 
+	{ "ini"				, IC_CONFIG			}, // 󱁻
+	{ "inl"				, IC_LANG_C			}, // 
+	{ "ino"				, IC_LANG_ARDUINO	}, // 
+	{ "ipt"				, IC_CAD			}, // 󰻫
+	{ "ipynb"			, IC_NOTEBOOK		}, // 
+	{ "iso"				, IC_DISK_IMAGE		}, // 
+	{ "j2c"				, IC_IMAGE			}, // 
+	{ "j2k"				, IC_IMAGE			}, // 
+	{ "jad"				, IC_LANG_JAVA		}, // 
+	{ "jar"				, IC_LANG_JAVA		}, // 
+	{ "java"			, IC_LANG_JAVA		}, // 
+	{ "jfi"				, IC_IMAGE			}, // 
+	{ "jfif"			, IC_IMAGE			}, // 
+	{ "jif"				, IC_IMAGE			}, // 
+	{ "jl"				, IC_JL				}, // 
+	{ "jmd"				, IC_MARKDOWN		}, // 
+	{ "jp2"				, IC_IMAGE			}, // 
+	{ "jpe"				, IC_IMAGE			}, // 
+	{ "jpeg"			, IC_IMAGE			}, // 
+	{ "jpf"				, IC_IMAGE			}, // 
+	{ "jpg"				, IC_IMAGE			}, // 
+	{ "jpx"				, IC_IMAGE			}, // 
+	{ "js"				, IC_LANG_JSCPT		}, // 
+	{ "json"			, IC_JSON			}, // 
+	{ "json5"			, IC_JSON			}, // 
+	{ "jsonc"			, IC_JSON			}, // 
+	{ "jsx"				, IC_REACT			}, // 
+	{ "jwmrc"			, IC_JWMRC			}, // 
+	{ "jxl"				, IC_IMAGE			}, // 
+	{ "kbx"				, IC_SHIELD_KEY		}, // 󰯄
+	{ "kdb"				, IC_KEYPASS		}, // 
+	{ "kdbx"			, IC_KEYPASS		}, // 
+	{ "kdenlive"		, IC_KDENLIVE		}, // 
+	{ "kdenlivetitle"	, IC_KDENLIVE		}, // 
 	{ "key"				, IC_KEY			}, // 
+	{ "kicad_dru"		, IC_KICAD			}, // 
+	{ "kicad_mod"		, IC_KICAD			}, // 
+	{ "kicad_pcb"		, IC_KICAD			}, // 
+	{ "kicad_prl"		, IC_KICAD			}, // 
+	{ "kicad_pro"		, IC_KICAD			}, // 
+	{ "kicad_sch"		, IC_KICAD			}, // 
+	{ "kicad_sym"		, IC_KICAD			}, // 
+	{ "kicad_wks"		, IC_KICAD			}, // 
+	{ "ko"				, IC_OS_LINUX		}, // 
+	{ "kpp"				, IC_KRITA			}, // 
+	{ "kra"				, IC_KRITA			}, // 
+	{ "krz"				, IC_KRITA			}, // 
+	{ "ksh"				, IC_SHELL_CMD		}, // 
+	{ "kt"				, IC_LANG_KOTLIN	}, // 
+	{ "kts"				, IC_LANG_KOTLIN	}, // 
+	{ "latex"			, IC_LANG_TEX		}, // 
+	{ "lbr"				, IC_LIBRARY		}, // 
+	{ "lck"				, IC_LOCK			}, // 
+	{ "ldb"				, IC_DATABASE		}, // 
+	{ "leex"			, IC_LANG_ELIXIR	}, // 
+	{ "less"			, IC_LESS			}, // 
+	{ "lff"				, IC_FONT			}, // 
+	{ "lhs"				, IC_LANG_HASKELL	}, // 
+	{ "lib"				, IC_LIBRARY		}, // 
+	{ "license"			, IC_LICENSE		}, // 
+	{ "lisp"			, IC_LISP			}, // 󰅲
+	{ "localized"		, IC_OS_APPLE		}, // 
+	{ "lock"			, IC_LOCK			}, // 
 	{ "log"				, IC_LOG			}, // 
+	{ "lpp"				, IC_EDA_PCB		}, // 
+	{ "lrc"				, IC_SUBTITLE		}, // 󰨖
+	{ "ltx"				, IC_LANG_TEX		}, // 
+	{ "lua"				, IC_LANG_LUA		}, // 
+	{ "luac"			, IC_LANG_LUA		}, // 
+	{ "luau"			, IC_LANG_LUA		}, // 
+	{ "lz"				, IC_COMPRESSED		}, // 
+	{ "lz4"				, IC_COMPRESSED		}, // 
+	{ "lzh"				, IC_COMPRESSED		}, // 
+	{ "lzma"			, IC_COMPRESSED		}, // 
+	{ "lzo"				, IC_COMPRESSED		}, // 
+	{ "m"				, IC_LANG_C			}, // 
+	{ "m2ts"			, IC_VIDEOS			}, // 
+	{ "m2v"				, IC_VIDEOS			}, // 
+	{ "m3u"				, IC_PLAYLIST		}, // 󰲹
+	{ "m3u8"			, IC_PLAYLIST		}, // 󰲹
+	{ "m4a"				, IC_AUDIO			}, // 
+	{ "m4v"				, IC_VIDEOS			}, // 
+	{ "magnet"			, IC_MAGNET			}, // 
+	{ "markdown"		, IC_MARKDOWN		}, // 
+	{ "md"				, IC_MARKDOWN		}, // 
+	{ "md5"				, IC_SHIELD_CHECK	}, // 󰕥
+	{ "mdb"				, IC_DATABASE		}, // 
+	{ "mdx"				, IC_MARKDOWN		}, // 
 	{ "mid"				, IC_MID			}, // 󰣲
+	{ "mjs"				, IC_LANG_JSCPT		}, // 
+	{ "mk"				, IC_MAKE			}, // 
+	{ "mka"				, IC_AUDIO			}, // 
+	{ "mkd"				, IC_MARKDOWN		}, // 
+	{ "mkv"				, IC_VIDEOS			}, // 
+	{ "ml"				, IC_LANG_OCAML		}, // 
+	{ "mli"				, IC_LANG_OCAML		}, // 
+	{ "mll"				, IC_LANG_OCAML		}, // 
+	{ "mly"				, IC_LANG_OCAML		}, // 
+	{ "mm"				, IC_LANG_CPP		}, // 
+	{ "mo"				, IC_TRANSLATION	}, // 󰗊
+	{ "mobi"			, IC_BOOK			}, // 
+	{ "mov"				, IC_VIDEOS			}, // 
+	{ "mp2"				, IC_AUDIO			}, // 
+	{ "mp3"				, IC_AUDIO			}, // 
+	{ "mp4"				, IC_VIDEOS			}, // 
+	{ "mpeg"			, IC_VIDEOS			}, // 
+	{ "mpg"				, IC_VIDEOS			}, // 
 	{ "msf"				, IC_MSF			}, // 
+	{ "msi"				, IC_OS_WINDOWS		}, // 
+	{ "mts"				, IC_LANG_TSCPT		}, // 
+	{ "mustache"		, IC_MUSTACHE		}, // 
+	{ "nef"				, IC_IMAGE			}, // 
+	{ "nfo"				, IC_INFO			}, // 
+	{ "nim"				, IC_LANG_NIM		}, // 
+	{ "nimble"			, IC_LANG_NIM		}, // 
+	{ "nims"			, IC_LANG_NIM		}, // 
+	{ "ninja"			, IC_NINJA			}, // 󰝴
+	{ "nix"				, IC_FLAKE			}, // 
+	{ "node"			, IC_NODEJS			}, // 
+	{ "norg"			, IC_NORG			}, // 
+	{ "nsp"				, IC_SWITCH			}, // 󰟡
+	{ "nu"				, IC_SHELL_CMD		}, // 
+	{ "o"				, IC_BINARY			}, // 
+	{ "obj"				, IC_FILE_3D		}, // 󰆧
+	{ "odb"				, IC_DATABASE		}, // 
 	{ "odf"				, IC_ODF			}, // 
 	{ "odg"				, IC_ODG			}, // 
-	{ "fodg"			, IC_ODG			}, // 
 	{ "odp"				, IC_ODP			}, // 
-	{ "fodp"			, IC_ODP			}, // 
 	{ "ods"				, IC_ODS			}, // 
-	{ "fods"			, IC_ODS			}, // 
 	{ "odt"				, IC_ODT			}, // 
-	{ "fodt"			, IC_ODT			}, // 
-	{ "org"				, IC_ORG			}, // 
-	{ "out"				, IC_OUT			}, // 
-	{ "pdf"				, IC_PDF			}, // 
-	{ "pkg"				, IC_PKG			}, // 
-	{ "rdb"				, IC_RDB			}, // 
-	{ "rpm"				, IC_RPM			}, // 
-	{ "rss"				, IC_RSS			}, // 
-	{ "tcl"				, IC_TCL			}, // 󰛓
-	{ "tbc"				, IC_TCL			}, // 󰛓
-	{ "vhs"				, IC_VHS			}, // 󰨛
-	{ "vim"				, IC_VIM			}, // 
-	{ "vue"				, IC_VUE			}, // 󰡄
-	{ "xul"				, IC_XML			}, // 󰗀
-	{ "xml"				, IC_XML			}, // 󰗀
-	{ "opml"			, IC_XML			}, // 󰗀
-	{ "xpi"				, IC_XPI			}, // 
-	{ "zig"				, IC_ZIG			}, // 
-	{ "mobi"			, IC_BOOK			}, // 
-	{ "epub"			, IC_BOOK			}, // 
-	{ "ebook"			, IC_BOOK			}, // 
-	{ "css"				, IC_CSS3			}, // 
-	{ "dart"			, IC_DART			}, // 
-	{ "patch"			, IC_DIFF			}, // 
-	{ "diff"			, IC_DIFF			}, // 
-	{ "woff2"			, IC_FONT			}, // 
-	{ "woff"			, IC_FONT			}, // 
-	{ "ttf"				, IC_FONT			}, // 
-	{ "ttc"				, IC_FONT			}, // 
-	{ "psf"				, IC_FONT			}, // 
-	{ "otf"				, IC_FONT			}, // 
-	{ "lff"				, IC_FONT			}, // 
-	{ "font"			, IC_FONT			}, // 
-	{ "fon"				, IC_FONT			}, // 
-	{ "fnt"				, IC_FONT			}, // 
-	{ "flf"				, IC_FONT			}, // 
-	{ "flc"				, IC_FONT			}, // 
-	{ "eot"				, IC_FONT			}, // 
-	{ "bdf"				, IC_FONT			}, // 
-	{ "xcf"				, IC_GIMP			}, // 
-	{ "haml"			, IC_HAML			}, // 
-	{ "nfo"				, IC_INFO			}, // 
-	{ "info"			, IC_INFO			}, // 
-	{ "webmanifest"		, IC_JSON			}, // 
-	{ "properties"		, IC_JSON			}, // 
-	{ "jsonc"			, IC_JSON			}, // 
-	{ "json5"			, IC_JSON			}, // 
-	{ "json"			, IC_JSON			}, // 
-	{ "avro"			, IC_JSON			}, // 
-	{ "less"			, IC_LESS			}, // 
-	{ "lisp"			, IC_LISP			}, // 󰅲
-	{ "lock"			, IC_LOCK			}, // 
-	{ "lck"				, IC_LOCK			}, // 
-	{ "mk"				, IC_MAKE			}, // 
-	{ "norg"			, IC_NORG			}, // 
+	{ "ogg"				, IC_AUDIO			}, // 
+	{ "ogm"				, IC_VIDEOS			}, // 
+	{ "ogv"				, IC_VIDEOS			}, // 
 	{ "opam"			, IC_OPAM			}, // 󰘧
+	{ "opml"			, IC_XML			}, // 󰗀
+	{ "opus"			, IC_AUDIO			}, // 
+	{ "orf"				, IC_IMAGE			}, // 
+	{ "org"				, IC_ORG			}, // 
+	{ "otf"				, IC_FONT			}, // 
+	{ "out"				, IC_OUT			}, // 
+	{ "p12"				, IC_KEY			}, // 
+	{ "par"				, IC_COMPRESSED		}, // 
+	{ "part"			, IC_DOWNLOAD		}, // 󰇚
+	{ "patch"			, IC_DIFF			}, // 
+	{ "pbm"				, IC_IMAGE			}, // 
+	{ "pcbdoc"			, IC_EDA_PCB		}, // 
+	{ "pcm"				, IC_AUDIO			}, // 
+	{ "pdf"				, IC_PDF			}, // 
+	{ "pem"				, IC_KEY			}, // 
+	{ "pfx"				, IC_KEY			}, // 
+	{ "pgm"				, IC_IMAGE			}, // 
+	{ "phar"			, IC_LANG_PHP		}, // 
+	{ "php"				, IC_LANG_PHP		}, // 
+	{ "pkg"				, IC_PKG			}, // 
+	{ "pl"				, IC_LANG_PERL		}, // 
+	{ "plist"			, IC_OS_APPLE		}, // 
+	{ "pls"				, IC_PLAYLIST		}, // 󰲹
+	{ "plx"				, IC_LANG_PERL		}, // 
+	{ "ply"				, IC_FILE_3D		}, // 󰆧
+	{ "pm"				, IC_LANG_PERL		}, // 
+	{ "png"				, IC_IMAGE			}, // 
+	{ "pnm"				, IC_IMAGE			}, // 
+	{ "po"				, IC_TRANSLATION	}, // 󰗊
+	{ "pod"				, IC_LANG_PERL		}, // 
+	{ "pot"				, IC_TRANSLATION	}, // 󰗊
+	{ "pp"				, IC_PP				}, // 
+	{ "ppm"				, IC_IMAGE			}, // 
+	{ "pps"				, IC_SLIDE			}, // 
+	{ "ppsx"			, IC_SLIDE			}, // 
+	{ "ppt"				, IC_SLIDE			}, // 
+	{ "pptx"			, IC_SLIDE			}, // 
+	{ "prjpcb"			, IC_EDA_PCB		}, // 
+	{ "procfile"		, IC_LANG_RUBY		}, // 
+	{ "properties"		, IC_JSON			}, // 
+	{ "prql"			, IC_DATABASE		}, // 
+	{ "ps"				, IC_VECTOR			}, // 󰕙
+	{ "ps1"				, IC_POWERSHELL		}, // 
+	{ "psb"				, IC_PHOTOSHOP		}, // 
+	{ "psd"				, IC_PHOTOSHOP		}, // 
+	{ "psd1"			, IC_POWERSHELL		}, // 
+	{ "psf"				, IC_FONT			}, // 
+	{ "psm"				, IC_CAD			}, // 󰻫
+	{ "psm1"			, IC_POWERSHELL		}, // 
+	{ "pub"				, IC_PUBLIC_KEY		}, // 󰷖
 	{ "purs"			, IC_PURS			}, // 
-	{ "scad"			, IC_SCAD			}, // 
-	{ "txt"				, IC_TEXT			}, // 
-	{ "rtf"				, IC_TEXT			}, // 
+	{ "pxd"				, IC_LANG_PYTHON	}, // 
+	{ "pxm"				, IC_IMAGE			}, // 
+	{ "py"				, IC_LANG_PYTHON	}, // 
+	{ "pyc"				, IC_LANG_PYTHON	}, // 
+	{ "pyd"				, IC_LANG_PYTHON	}, // 
+	{ "pyi"				, IC_LANG_PYTHON	}, // 
+	{ "pyo"				, IC_LANG_PYTHON	}, // 
+	{ "pyw"				, IC_LANG_PYTHON	}, // 
+	{ "pyx"				, IC_LANG_PYTHON	}, // 
+	{ "qcow"			, IC_DISK_IMAGE		}, // 
+	{ "qcow2"			, IC_DISK_IMAGE		}, // 
+	{ "qm"				, IC_TRANSLATION	}, // 󰗊
+	{ "qml"				, IC_QT				}, // 
+	{ "qrc"				, IC_QT				}, // 
+	{ "qss"				, IC_QT				}, // 
+	{ "r"				, IC_LANG_R			}, // 
+	{ "rake"			, IC_LANG_RUBY		}, // 
+	{ "rakefile"		, IC_LANG_RUBY		}, // 
+	{ "rar"				, IC_COMPRESSED		}, // 
+	{ "raw"				, IC_IMAGE			}, // 
+	{ "razor"			, IC_RAZOR			}, // 
+	{ "rb"				, IC_LANG_RUBY		}, // 
+	{ "rdata"			, IC_LANG_R			}, // 
+	{ "rdb"				, IC_RDB			}, // 
+	{ "rdoc"			, IC_MARKDOWN		}, // 
+	{ "rds"				, IC_LANG_R			}, // 
+	{ "readme"			, IC_README			}, // 󰂺
+	{ "rkt"				, IC_LANG_SCHEME	}, // 
+	{ "rlib"			, IC_LANG_RUST		}, // 
+	{ "rmd"				, IC_MARKDOWN		}, // 
+	{ "rmeta"			, IC_LANG_RUST		}, // 
+	{ "rpm"				, IC_RPM			}, // 
+	{ "rs"				, IC_LANG_RUST		}, // 
+	{ "rspec_parallel"	, IC_LANG_RUBY		}, // 
+	{ "rspec_status"	, IC_LANG_RUBY		}, // 
+	{ "rspec"			, IC_LANG_RUBY		}, // 
+	{ "rss"				, IC_RSS			}, // 
 	{ "rst"				, IC_TEXT			}, // 
+	{ "rtf"				, IC_TEXT			}, // 
+	{ "ru"				, IC_LANG_RUBY		}, // 
+	{ "rubydoc"			, IC_LANG_RBRAILS	}, // 
+	{ "s"				, IC_LANG_ASSEMBLY	}, // 
+	{ "s3db"			, IC_SQLITE			}, // 
+	{ "sal"				, IC_SQ_WAVE		}, // 󱑻
+	{ "sass"			, IC_LANG_SASS		}, // 
+	{ "sbt"				, IC_SUBTITLE		}, // 󰨖
+	{ "scad"			, IC_SCAD			}, // 
+	{ "scala"			, IC_SCALA			}, // 
+	{ "sch"				, IC_EDA_SCH		}, // 󰭅
+	{ "schdoc"			, IC_EDA_SCH		}, // 󰭅
+	{ "scm"				, IC_LANG_SCHEME	}, // 
+	{ "scss"			, IC_LANG_SASS		}, // 
+	{ "service"			, IC_SERVICE		}, // 
+	{ "sf2"				, IC_TREB_CLEF		}, // 󰽰
+	{ "sfz"				, IC_TREB_CLEF		}, // 󰽰
+	{ "sh"				, IC_SHELL_CMD		}, // 
+	{ "sha1"			, IC_SHIELD_CHECK	}, // 󰕥
+	{ "sha224"			, IC_SHIELD_CHECK	}, // 󰕥
+	{ "sha256"			, IC_SHIELD_CHECK	}, // 󰕥
+	{ "sha384"			, IC_SHIELD_CHECK	}, // 󰕥
+	{ "sha512"			, IC_SHIELD_CHECK	}, // 󰕥
+	{ "shell"			, IC_SHELL_CMD		}, // 
+	{ "shtml"			, IC_HTML5			}, // 
+	{ "sig"				, IC_SIGNED_FILE	}, // 󱧃
+	{ "signature"		, IC_SIGNED_FILE	}, // 󱧃
+	{ "skp"				, IC_CAD			}, // 󰻫
+	{ "sl3"				, IC_SQLITE			}, // 
+	{ "sld"				, IC_LANG_SCHEME	}, // 
+	{ "sldasm"			, IC_CAD			}, // 󰻫
+	{ "sldprt"			, IC_CAD			}, // 󰻫
+	{ "slim"			, IC_LANG_RBRAILS	}, // 
+	{ "sln"				, IC_VSCODE			}, // 
+	{ "slvs"			, IC_CAD			}, // 󰻫
+	{ "so"				, IC_OS_LINUX		}, // 
+	{ "sql"				, IC_DATABASE		}, // 
+	{ "sqlite"			, IC_SQLITE			}, // 
+	{ "sqlite3"			, IC_SQLITE			}, // 
+	{ "sr"				, IC_SQ_WAVE		}, // 󱑻
+	{ "srt"				, IC_SUBTITLE		}, // 󰨖
+	{ "ss"				, IC_LANG_SCHEME	}, // 
+	{ "ssa"				, IC_SUBTITLE		}, // 󰨖
+	{ "ste"				, IC_CAD			}, // 󰻫
+	{ "step"			, IC_CAD			}, // 󰻫
+	{ "stl"				, IC_FILE_3D		}, // 󰆧
+	{ "stp"				, IC_CAD			}, // 󰻫
+	{ "sty"				, IC_LANG_TEX		}, // 
+	{ "styl"			, IC_LANG_STYLUS	}, // 
+	{ "stylus"			, IC_LANG_STYLUS	}, // 
+	{ "sub"				, IC_SUBTITLE		}, // 󰨖
+	{ "sublime-build"	, IC_SUBLIME		}, // 
+	{ "sublime-keymap"	, IC_SUBLIME		}, // 
+	{ "sublime-menu"	, IC_SUBLIME		}, // 
+	{ "sublime-options"	, IC_SUBLIME		}, // 
+	{ "sublime-package"	, IC_SUBLIME		}, // 
+	{ "sublime-project"	, IC_SUBLIME		}, // 
+	{ "sublime-session"	, IC_SUBLIME		}, // 
+	{ "sublime-settings", IC_SUBLIME		}, // 
+	{ "sublime-snippet"	, IC_SUBLIME		}, // 
+	{ "sublime-theme"	, IC_SUBLIME		}, // 
+	{ "suo"				, IC_VSCODE			}, // 
+	{ "sv"				, IC_LANG_HDL		}, // 󰍛
+	{ "svelte"			, IC_SVELTE			}, // 
+	{ "svg"				, IC_VECTOR			}, // 󰕙
+	{ "svh"				, IC_LANG_HDL		}, // 󰍛
+	{ "swf"				, IC_AUDIO			}, // 
+	{ "swift"			, IC_SWIFT			}, // 
+	{ "t"				, IC_LANG_PERL		}, // 
+	{ "tar"				, IC_COMPRESSED		}, // 
+	{ "taz"				, IC_COMPRESSED		}, // 
+	{ "tbc"				, IC_TCL			}, // 󰛓
+	{ "tbz"				, IC_COMPRESSED		}, // 
+	{ "tbz2"			, IC_COMPRESSED		}, // 
+	{ "tc"				, IC_DISK_IMAGE		}, // 
+	{ "tcl"				, IC_TCL			}, // 󰛓
+	{ "tex"				, IC_LANG_TEX		}, // 
+	{ "tf"				, IC_TERRAFORM		}, // 󱁢
+	{ "tfstate"			, IC_TERRAFORM		}, // 󱁢
+	{ "tfvars"			, IC_TERRAFORM		}, // 󱁢
+	{ "tgz"				, IC_COMPRESSED		}, // 
+	{ "tif"				, IC_IMAGE			}, // 
+	{ "tiff"			, IC_IMAGE			}, // 
+	{ "tlz"				, IC_COMPRESSED		}, // 
+	{ "tml"				, IC_CONFIG			}, // 󱁻
 	{ "tmux"			, IC_TMUX			}, // 
 	{ "toml"			, IC_TOML			}, // 
-	{ "twig"			, IC_TWIG			}, // 
-	{ "vala"			, IC_VALA			}, // 
-	{ "vsix"			, IC_VSIX			}, // 󰨞
-	{ "xaml"			, IC_XAML			}, // 󰙳
-	{ "yml"				, IC_YAML			}, // 
-	{ "yaml"			, IC_YAML			}, // 
-	{ "wv"				, IC_AUDIO			}, // 
-	{ "wma"				, IC_AUDIO			}, // 
-	{ "wav"				, IC_AUDIO			}, // 
-	{ "swf"				, IC_AUDIO			}, // 
-	{ "pcm"				, IC_AUDIO			}, // 
-	{ "opus"			, IC_AUDIO			}, // 
-	{ "ogg"				, IC_AUDIO			}, // 
-	{ "mp3"				, IC_AUDIO			}, // 
-	{ "mp2"				, IC_AUDIO			}, // 
-	{ "mka"				, IC_AUDIO			}, // 
-	{ "m4a"				, IC_AUDIO			}, // 
-	{ "flac"			, IC_AUDIO			}, // 
-	{ "ape"				, IC_AUDIO			}, // 
-	{ "alac"			, IC_AUDIO			}, // 
-	{ "aiff"			, IC_AUDIO			}, // 
-	{ "aifc"			, IC_AUDIO			}, // 
-	{ "aif"				, IC_AUDIO			}, // 
-	{ "aac"				, IC_AUDIO			}, // 
-	{ "blend"			, IC_BLEND			}, // 󰂫
-	{ "cache"			, IC_CACHE			}, // 
-	{ "cmake"			, IC_CMAKE			}, // 
-	{ "conda"			, IC_CONDA			}, // 
-	{ "elc"				, IC_EMACS			}, // 
-	{ "el"				, IC_EMACS			}, // 
-	{ "nix"				, IC_FLAKE			}, // 
-	{ "gcode"			, IC_GCODE			}, // 󰫴
-	{ "gform"			, IC_GFORM			}, // 
-	{ "tscn"			, IC_GODOT			}, // 
-	{ "tres"			, IC_GODOT			}, // 
-	{ "godot"			, IC_GODOT			}, // 
-	{ "gd"				, IC_GODOT			}, // 
-	{ "gv"				, IC_GRAPH			}, // 󱁉
-	{ "dot"				, IC_GRAPH			}, // 󱁉
-	{ "xhtml"			, IC_HTML5			}, // 
-	{ "shtml"			, IC_HTML5			}, // 
-	{ "html"			, IC_HTML5			}, // 
-	{ "htm"				, IC_HTML5			}, // 
-	{ "xpm"				, IC_IMAGE			}, // 
-	{ "webp"			, IC_IMAGE			}, // 
-	{ "tiff"			, IC_IMAGE			}, // 
-	{ "tif"				, IC_IMAGE			}, // 
-	{ "raw"				, IC_IMAGE			}, // 
-	{ "pxm"				, IC_IMAGE			}, // 
-	{ "ppm"				, IC_IMAGE			}, // 
-	{ "pnm"				, IC_IMAGE			}, // 
-	{ "png"				, IC_IMAGE			}, // 
-	{ "pgm"				, IC_IMAGE			}, // 
-	{ "pbm"				, IC_IMAGE			}, // 
-	{ "orf"				, IC_IMAGE			}, // 
-	{ "nef"				, IC_IMAGE			}, // 
-	{ "jxl"				, IC_IMAGE			}, // 
-	{ "jpx"				, IC_IMAGE			}, // 
-	{ "jpg"				, IC_IMAGE			}, // 
-	{ "jpf"				, IC_IMAGE			}, // 
-	{ "jpeg"			, IC_IMAGE			}, // 
-	{ "jpe"				, IC_IMAGE			}, // 
-	{ "jp2"				, IC_IMAGE			}, // 
-	{ "jif"				, IC_IMAGE			}, // 
-	{ "jfif"			, IC_IMAGE			}, // 
-	{ "jfi"				, IC_IMAGE			}, // 
-	{ "j2k"				, IC_IMAGE			}, // 
-	{ "j2c"				, IC_IMAGE			}, // 
-	{ "ico"				, IC_IMAGE			}, // 
-	{ "heif"			, IC_IMAGE			}, // 
-	{ "heic"			, IC_IMAGE			}, // 
-	{ "gif"				, IC_IMAGE			}, // 
-	{ "dvi"				, IC_IMAGE			}, // 
-	{ "cr2"				, IC_IMAGE			}, // 
-	{ "cbz"				, IC_IMAGE			}, // 
-	{ "cbr"				, IC_IMAGE			}, // 
-	{ "bmp"				, IC_IMAGE			}, // 
-	{ "avif"			, IC_IMAGE			}, // 
-	{ "arw"				, IC_IMAGE			}, // 
-	{ "jwmrc"			, IC_JWMRC			}, // 
-	{ "kicad_wks"		, IC_KICAD			}, // 
-	{ "kicad_sym"		, IC_KICAD			}, // 
-	{ "kicad_sch"		, IC_KICAD			}, // 
-	{ "kicad_pro"		, IC_KICAD			}, // 
-	{ "kicad_prl"		, IC_KICAD			}, // 
-	{ "kicad_pcb"		, IC_KICAD			}, // 
-	{ "kicad_mod"		, IC_KICAD			}, // 
-	{ "kicad_dru"		, IC_KICAD			}, // 
-	{ "krz"				, IC_KRITA			}, // 
-	{ "kra"				, IC_KRITA			}, // 
-	{ "kpp"				, IC_KRITA			}, // 
-	{ "ninja"			, IC_NINJA			}, // 󰝴
-	{ "razor"			, IC_RAZOR			}, // 
-	{ "cshtml"			, IC_RAZOR			}, // 
-	{ "tsx"				, IC_REACT			}, // 
-	{ "jsx"				, IC_REACT			}, // 
-	{ "scala"			, IC_SCALA			}, // 
-	{ "xlsx"			, IC_SHEET			}, // 
-	{ "xlsm"			, IC_SHEET			}, // 
-	{ "xls"				, IC_SHEET			}, // 
-	{ "xlr"				, IC_SHEET			}, // 
-	{ "tsv"				, IC_SHEET			}, // 
-	{ "gsheet"			, IC_SHEET			}, // 
-	{ "zsh-theme"		, IC_SHELL			}, // 󱆃
-	{ "pptx"			, IC_SLIDE			}, // 
-	{ "ppt"				, IC_SLIDE			}, // 
-	{ "ppsx"			, IC_SLIDE			}, // 
-	{ "pps"				, IC_SLIDE			}, // 
-	{ "gslides"			, IC_SLIDE			}, // 
-	{ "xcplayground"	, IC_SWIFT			}, // 
-	{ "swift"			, IC_SWIFT			}, // 
-	{ "typ"				, IC_TYPST			}, // 
-	{ "unity3d"			, IC_UNITY			}, // 
-	{ "unity"			, IC_UNITY			}, // 
-	{ "o"				, IC_BINARY			}, // 
-	{ "hi"				, IC_BINARY			}, // 
-	{ "elf"				, IC_BINARY			}, // 
-	{ "bin"				, IC_BINARY			}, // 
-	{ "app"				, IC_BINARY			}, // 
-	{ "coffee"			, IC_COFFEE			}, // 
-	{ "tml"				, IC_CONFIG			}, // 󱁻
-	{ "ini"				, IC_CONFIG			}, // 󱁻
-	{ "config"			, IC_CONFIG			}, // 󱁻
-	{ "conf"			, IC_CONFIG			}, // 󱁻
-	{ "cfg"				, IC_CONFIG			}, // 󱁻
-	{ "dockerignore"	, IC_DOCKER			}, // 
-	{ "dockerfile"		, IC_DOCKER			}, // 
-	{ "drawio"			, IC_DRAWIO			}, // 
-	{ "ebuild"			, IC_EBUILD			}, // 
-	{ "hrl"				, IC_ERLANG			}, // 
-	{ "erl"				, IC_ERLANG			}, // 
-	{ "gradle"			, IC_GRADLE			}, // 
-	{ "m"				, IC_LANG_C			}, // 
-	{ "inl"				, IC_LANG_C			}, // 
-	{ "h"				, IC_LANG_C_HEADER	}, //   – JV
-	{ "c"				, IC_LANG_C			}, // 
-	{ "di"				, IC_LANG_D			}, // 
-	{ "d"				, IC_LANG_D			}, // 
-	{ "rds"				, IC_LANG_R			}, // 
-	{ "rdata"			, IC_LANG_R			}, // 
-	{ "r"				, IC_LANG_R			}, // 
-	{ "v"				, IC_LANG_V			}, // 
-	{ "magnet"			, IC_MAGNET			}, // 
-	{ "node"			, IC_NODEJS			}, // 
-	{ "readme"			, IC_README			}, // 󰂺
-	{ "sqlite3"			, IC_SQLITE			}, // 
-	{ "sqlite"			, IC_SQLITE			}, // 
-	{ "sl3"				, IC_SQLITE			}, // 
-	{ "s3db"			, IC_SQLITE			}, // 
-	{ "db3"				, IC_SQLITE			}, // 
-	{ "svelte"			, IC_SVELTE			}, // 
-	{ "xci"				, IC_SWITCH			}, // 󰟡
-	{ "nsp"				, IC_SWITCH			}, // 󰟡
-	{ "svg"				, IC_VECTOR			}, // 󰕙
-	{ "ps"				, IC_VECTOR			}, // 󰕙
-	{ "eps"				, IC_VECTOR			}, // 󰕙
-	{ "wmv"				, IC_VIDEOS			}, // 
-	{ "webm"			, IC_VIDEOS			}, // 
-	{ "vob"				, IC_VIDEOS			}, // 
-	{ "video"			, IC_VIDEOS			}, // 
-	{ "ogv"				, IC_VIDEOS			}, // 
-	{ "ogm"				, IC_VIDEOS			}, // 
-	{ "mpg"				, IC_VIDEOS			}, // 
-	{ "mpeg"			, IC_VIDEOS			}, // 
-	{ "mp4"				, IC_VIDEOS			}, // 
-	{ "mov"				, IC_VIDEOS			}, // 
-	{ "mkv"				, IC_VIDEOS			}, // 
-	{ "m4v"				, IC_VIDEOS			}, // 
-	{ "m2v"				, IC_VIDEOS			}, // 
-	{ "m2ts"			, IC_VIDEOS			}, // 
-	{ "heics"			, IC_VIDEOS			}, // 
-	{ "h264"			, IC_VIDEOS			}, // 
-	{ "flv"				, IC_VIDEOS			}, // 
-	{ "cast"			, IC_VIDEOS			}, // 
-	{ "avi"				, IC_VIDEOS			}, // 
-	{ "3gpp2"			, IC_VIDEOS			}, // 
-	{ "3gpp"			, IC_VIDEOS			}, // 
-	{ "3gp2"			, IC_VIDEOS			}, // 
-	{ "3gp"				, IC_VIDEOS			}, // 
-	{ "3g2"				, IC_VIDEOS			}, // 
-	{ "suo"				, IC_VSCODE			}, // 
-	{ "sln"				, IC_VSCODE			}, // 
-	{ "prjpcb"			, IC_EDA_PCB		}, // 
-	{ "pcbdoc"			, IC_EDA_PCB		}, // 
-	{ "lpp"				, IC_EDA_PCB		}, // 
-	{ "gts"				, IC_EDA_PCB		}, // 
-	{ "gtp"				, IC_EDA_PCB		}, // 
-	{ "gto"				, IC_EDA_PCB		}, // 
-	{ "gtl"				, IC_EDA_PCB		}, // 
-	{ "gml"				, IC_EDA_PCB		}, // 
-	{ "gm1"				, IC_EDA_PCB		}, // 
-	{ "gbs"				, IC_EDA_PCB		}, // 
-	{ "gbr"				, IC_EDA_PCB		}, // 
-	{ "gbp"				, IC_EDA_PCB		}, // 
-	{ "gbo"				, IC_EDA_PCB		}, // 
-	{ "gbl"				, IC_EDA_PCB		}, // 
-	{ "brd"				, IC_EDA_PCB		}, // 
-	{ "schdoc"			, IC_EDA_SCH		}, // 󰭅
-	{ "sch"				, IC_EDA_SCH		}, // 󰭅
-	{ "wrz"				, IC_FILE_3D		}, // 󰆧
-	{ "wrl"				, IC_FILE_3D		}, // 󰆧
-	{ "stl"				, IC_FILE_3D		}, // 󰆧
-	{ "ply"				, IC_FILE_3D		}, // 󰆧
-	{ "obj"				, IC_FILE_3D		}, // 󰆧
-	{ "fbx"				, IC_FILE_3D		}, // 󰆧
-	{ "3mf"				, IC_FILE_3D		}, // 󰆧
-	{ "fctl"			, IC_FREECAD		}, // 
-	{ "fctb"			, IC_FREECAD		}, // 
-	{ "fcstd1"			, IC_FREECAD		}, // 
-	{ "fcstd"			, IC_FREECAD		}, // 
-	{ "fcscript"		, IC_FREECAD		}, // 
-	{ "fcparam"			, IC_FREECAD		}, // 
-	{ "fcmat"			, IC_FREECAD		}, // 
-	{ "fcmacro"			, IC_FREECAD		}, // 
-	{ "fcbak"			, IC_FREECAD		}, // 
-	{ "graphql"			, IC_GRAPHQL		}, // 
-	{ "gql"				, IC_GRAPHQL		}, // 
-	{ "kdbx"			, IC_KEYPASS		}, // 
-	{ "kdb"				, IC_KEYPASS		}, // 
-	{ "go"				, IC_LANG_GO		}, // 
-	{ "lib"				, IC_LIBRARY		}, // 
-	{ "lbr"				, IC_LIBRARY		}, // 
-	{ "dll"				, IC_LIBRARY		}, // 
-	{ "license"			, IC_LICENSE		}, // 
-	{ "service"			, IC_SERVICE		}, // 
-	{ "sr"				, IC_SQ_WAVE		}, // 󱑻
-	{ "sal"				, IC_SQ_WAVE		}, // 󱑻
-	{ "sublime-theme"	, IC_SUBLIME		}, // 
-	{ "sublime-snippet"	, IC_SUBLIME		}, // 
-	{ "sublime-settings", IC_SUBLIME		}, // 
-	{ "sublime-session"	, IC_SUBLIME		}, // 
-	{ "sublime-project"	, IC_SUBLIME		}, // 
-	{ "sublime-package"	, IC_SUBLIME		}, // 
-	{ "sublime-options"	, IC_SUBLIME		}, // 
-	{ "sublime-menu"	, IC_SUBLIME		}, // 
-	{ "sublime-keymap"	, IC_SUBLIME		}, // 
-	{ "sublime-build"	, IC_SUBLIME		}, // 
 	{ "torrent"			, IC_TORRENT		}, // 
-	{ "ifb"				, IC_CALENDAR		}, // 
-	{ "ics"				, IC_CALENDAR		}, // 
-	{ "icalendar"		, IC_CALENDAR		}, // 
-	{ "ical"			, IC_CALENDAR		}, // 
-	{ "sql"				, IC_DATABASE		}, // 
-	{ "prql"			, IC_DATABASE		}, // 
-	{ "odb"				, IC_DATABASE		}, // 
-	{ "mdb"				, IC_DATABASE		}, // 
-	{ "ldb"				, IC_DATABASE		}, // 
-	{ "dump"			, IC_DATABASE		}, // 
-	{ "dconf"			, IC_DATABASE		}, // 
-	{ "db"				, IC_DATABASE		}, // 
-	{ "gdoc"			, IC_DOCUMENT		}, // 
-	{ "docx"			, IC_DOCUMENT		}, // 
-	{ "docm"			, IC_DOCUMENT		}, // 
-	{ "doc"				, IC_DOCUMENT		}, // 
-	{ "djvu"			, IC_DOCUMENT		}, // 
-	{ "djv"				, IC_DOCUMENT		}, // 
-	{ "part"			, IC_DOWNLOAD		}, // 󰇚
-	{ "fdmdownload"		, IC_DOWNLOAD		}, // 󰇚
-	{ "download"		, IC_DOWNLOAD		}, // 󰇚
-	{ "crdownload"		, IC_DOWNLOAD		}, // 󰇚
-	{ "iml"				, IC_INTELLIJ		}, // 
-	{ "kdenlivetitle"	, IC_KDENLIVE		}, // 
-	{ "kdenlive"		, IC_KDENLIVE		}, // 
-	{ "mm"				, IC_LANG_CPP		}, // 
-	{ "hxx"				, IC_LANG_CPP		}, // 
-	{ "hpp"				, IC_LANG_CPP		}, // 
-	{ "hh"				, IC_LANG_CPP		}, // 
-	{ "h++"				, IC_LANG_CPP		}, // 
-	{ "cxx"				, IC_LANG_CPP		}, // 
-	{ "cpp"				, IC_LANG_CPP		}, // 
-	{ "cp"				, IC_LANG_CPP		}, // 
-	{ "cc"				, IC_LANG_CPP		}, // 
-	{ "c++"				, IC_LANG_CPP		}, // 
-	{ "vhdl"			, IC_LANG_HDL		}, // 󰍛
-	{ "svh"				, IC_LANG_HDL		}, // 󰍛
-	{ "sv"				, IC_LANG_HDL		}, // 󰍛
-	{ "luau"			, IC_LANG_LUA		}, // 
-	{ "luac"			, IC_LANG_LUA		}, // 
-	{ "lua"				, IC_LANG_LUA		}, // 
-	{ "nims"			, IC_LANG_NIM		}, // 
-	{ "nimble"			, IC_LANG_NIM		}, // 
-	{ "nim"				, IC_LANG_NIM		}, // 
-	{ "php"				, IC_LANG_PHP		}, // 
-	{ "phar"			, IC_LANG_PHP		}, // 
-	{ "tex"				, IC_LANG_TEX		}, // 
-	{ "sty"				, IC_LANG_TEX		}, // 
-	{ "ltx"				, IC_LANG_TEX		}, // 
-	{ "latex"			, IC_LANG_TEX		}, // 
-	{ "cls"				, IC_LANG_TEX		}, // 
-	{ "bst"				, IC_LANG_TEX		}, // 
-	{ "bib"				, IC_LANG_TEX		}, // 
-	{ "rmd"				, IC_MARKDOWN		}, // 
-	{ "rdoc"			, IC_MARKDOWN		}, // 
-	{ "mkd"				, IC_MARKDOWN		}, // 
-	{ "mdx"				, IC_MARKDOWN		}, // 
-	{ "md"				, IC_MARKDOWN		}, // 
-	{ "markdown"		, IC_MARKDOWN		}, // 
-	{ "jmd"				, IC_MARKDOWN		}, // 
-	{ "mustache"		, IC_MUSTACHE		}, // 
-	{ "hbs"				, IC_MUSTACHE		}, // 
-	{ "ipynb"			, IC_NOTEBOOK		}, // 
-	{ "plist"			, IC_OS_APPLE		}, // 
-	{ "localized"		, IC_OS_APPLE		}, // 
-	{ "dylib"			, IC_OS_APPLE		}, // 
-	{ "bundle"			, IC_OS_APPLE		}, // 
-	{ "applescript"		, IC_OS_APPLE		}, // 
-	{ "apple"			, IC_OS_APPLE		}, // 
-	{ "so"				, IC_OS_LINUX		}, // 
-	{ "ko"				, IC_OS_LINUX		}, // 
-	{ "a"				, IC_OS_LINUX		}, // 
-	{ "pls"				, IC_PLAYLIST		}, // 󰲹
-	{ "m3u8"			, IC_PLAYLIST		}, // 󰲹
-	{ "m3u"				, IC_PLAYLIST		}, // 󰲹
-	{ "cue"				, IC_PLAYLIST		}, // 󰲹
-	{ "sub"				, IC_SUBTITLE		}, // 󰨖
-	{ "ssa"				, IC_SUBTITLE		}, // 󰨖
-	{ "srt"				, IC_SUBTITLE		}, // 󰨖
-	{ "sbt"				, IC_SUBTITLE		}, // 󰨖
-	{ "lrc"				, IC_SUBTITLE		}, // 󰨖
-	{ "ass"				, IC_SUBTITLE		}, // 󰨖
-	{ "cljc"			, IC_CLOJURE_1		}, // 
-	{ "clj"				, IC_CLOJURE_1		}, // 
-	{ "edn"				, IC_CLOJURE_2		}, // 
-	{ "cljs"			, IC_CLOJURE_2		}, // 
-	{ "war"				, IC_LANG_JAVA		}, // 
-	{ "java"			, IC_LANG_JAVA		}, // 
-	{ "jar"				, IC_LANG_JAVA		}, // 
-	{ "jad"				, IC_LANG_JAVA		}, // 
-	{ "class"			, IC_LANG_JAVA		}, // 
-	{ "t"				, IC_LANG_PERL		}, // 
-	{ "pod"				, IC_LANG_PERL		}, // 
-	{ "pm"				, IC_LANG_PERL		}, // 
-	{ "plx"				, IC_LANG_PERL		}, // 
-	{ "pl"				, IC_LANG_PERL		}, // 
-	{ "ru"				, IC_LANG_RUBY		}, // 
-	{ "rspec_status"	, IC_LANG_RUBY		}, // 
-	{ "rspec_parallel"	, IC_LANG_RUBY		}, // 
-	{ "rspec"			, IC_LANG_RUBY		}, // 
-	{ "rb"				, IC_LANG_RUBY		}, // 
-	{ "rakefile"		, IC_LANG_RUBY		}, // 
-	{ "rake"			, IC_LANG_RUBY		}, // 
-	{ "procfile"		, IC_LANG_RUBY		}, // 
-	{ "guardfile"		, IC_LANG_RUBY		}, // 
-	{ "gemspec"			, IC_LANG_RUBY		}, // 
-	{ "gemfile"			, IC_LANG_RUBY		}, // 
-	{ "gem"				, IC_LANG_RUBY		}, // 
-	{ "rs"				, IC_LANG_RUST		}, // 
-	{ "rmeta"			, IC_LANG_RUST		}, // 
-	{ "rlib"			, IC_LANG_RUST		}, // 
-	{ "scss"			, IC_LANG_SASS		}, // 
-	{ "sass"			, IC_LANG_SASS		}, // 
-	{ "psd"				, IC_PHOTOSHOP		}, // 
-	{ "psb"				, IC_PHOTOSHOP		}, // 
-	{ "zsh"				, IC_SHELL_CMD		}, // 
-	{ "shell"			, IC_SHELL_CMD		}, // 
-	{ "sh"				, IC_SHELL_CMD		}, // 
-	{ "nu"				, IC_SHELL_CMD		}, // 
-	{ "ksh"				, IC_SHELL_CMD		}, // 
-	{ "fish"			, IC_SHELL_CMD		}, // 
-	{ "csh"				, IC_SHELL_CMD		}, // 
-	{ "bats"			, IC_SHELL_CMD		}, // 
-	{ "bash"			, IC_SHELL_CMD		}, // 
-	{ "awk"				, IC_SHELL_CMD		}, // 
-	{ "tfvars"			, IC_TERRAFORM		}, // 󱁢
-	{ "tfstate"			, IC_TERRAFORM		}, // 󱁢
-	{ "tf"				, IC_TERRAFORM		}, // 󱁢
-	{ "sfz"				, IC_TREB_CLEF		}, // 󰽰
-	{ "sf2"				, IC_TREB_CLEF		}, // 󰽰
-	{ "zst"				, IC_COMPRESSED		}, // 
-	{ "zip"				, IC_COMPRESSED		}, // 
-	{ "z"				, IC_COMPRESSED		}, // 
-	{ "xz"				, IC_COMPRESSED		}, // 
-	{ "tzo"				, IC_COMPRESSED		}, // 
-	{ "tz"				, IC_COMPRESSED		}, // 
-	{ "txz"				, IC_COMPRESSED		}, // 
-	{ "tlz"				, IC_COMPRESSED		}, // 
-	{ "tgz"				, IC_COMPRESSED		}, // 
-	{ "tbz2"			, IC_COMPRESSED		}, // 
-	{ "tbz"				, IC_COMPRESSED		}, // 
-	{ "taz"				, IC_COMPRESSED		}, // 
-	{ "tar"				, IC_COMPRESSED		}, // 
-	{ "rar"				, IC_COMPRESSED		}, // 
-	{ "par"				, IC_COMPRESSED		}, // 
-	{ "lzo"				, IC_COMPRESSED		}, // 
-	{ "lzma"			, IC_COMPRESSED		}, // 
-	{ "lzh"				, IC_COMPRESSED		}, // 
-	{ "lz4"				, IC_COMPRESSED		}, // 
-	{ "lz"				, IC_COMPRESSED		}, // 
-	{ "gz"				, IC_COMPRESSED		}, // 
-	{ "cpio"			, IC_COMPRESSED		}, // 
-	{ "bz3"				, IC_COMPRESSED		}, // 
-	{ "bz2"				, IC_COMPRESSED		}, // 
-	{ "bz"				, IC_COMPRESSED		}, // 
-	{ "br"				, IC_COMPRESSED		}, // 
-	{ "arj"				, IC_COMPRESSED		}, // 
-	{ "ar"				, IC_COMPRESSED		}, // 
-	{ "7z"				, IC_COMPRESSED		}, // 
-	{ "vmdk"			, IC_DISK_IMAGE		}, // 
-	{ "vhd"				, IC_DISK_IMAGE		}, // 
-	{ "vdi"				, IC_DISK_IMAGE		}, // 
-	{ "tc"				, IC_DISK_IMAGE		}, // 
-	{ "qcow2"			, IC_DISK_IMAGE		}, // 
-	{ "qcow"			, IC_DISK_IMAGE		}, // 
-	{ "iso"				, IC_DISK_IMAGE		}, // 
-	{ "img"				, IC_DISK_IMAGE		}, // 
-	{ "image"			, IC_DISK_IMAGE		}, // 
-	{ "dmg"				, IC_DISK_IMAGE		}, // 
-	{ "gleam"			, IC_LANG_GLEAM		}, // 󰦥
-	{ "hc"				, IC_LANG_HOLYC		}, // 󰂢
-	{ "mjs"				, IC_LANG_JSCPT		}, // 
-	{ "js"				, IC_LANG_JSCPT		}, // 
-	{ "cjs"				, IC_LANG_JSCPT		}, // 
-	{ "mly"				, IC_LANG_OCAML		}, // 
-	{ "mll"				, IC_LANG_OCAML		}, // 
-	{ "mli"				, IC_LANG_OCAML		}, // 
-	{ "ml"				, IC_LANG_OCAML		}, // 
+	{ "tres"			, IC_GODOT			}, // 
 	{ "ts"				, IC_LANG_TSCPT		}, // 
-	{ "mts"				, IC_LANG_TSCPT		}, // 
-	{ "cts"				, IC_LANG_TSCPT		}, // 
-	{ "apk"				, IC_OS_ANDROID		}, // 
-	{ "android"			, IC_OS_ANDROID		}, // 
-	{ "windows"			, IC_OS_WINDOWS		}, // 
-	{ "msi"				, IC_OS_WINDOWS		}, // 
-	{ "cmd"				, IC_OS_WINDOWS		}, // 
-	{ "cab"				, IC_OS_WINDOWS		}, // 
-	{ "psm1"			, IC_POWERSHELL		}, // 
-	{ "psd1"			, IC_POWERSHELL		}, // 
-	{ "ps1"				, IC_POWERSHELL		}, // 
-	{ "pub"				, IC_PUBLIC_KEY		}, // 󰷖
-	{ "kbx"				, IC_SHIELD_KEY		}, // 󰯄
-	{ "bak"				, IC_BACKUP_FILE	}, // 󰁯  – JV
-	{ "desktop"			, IC_DESKTOP_EXT	}, // 
-	{ "crt"				, IC_GIST_SECRET	}, // 
-	{ "cert"			, IC_GIST_SECRET	}, // 
-	{ "csx"				, IC_LANG_CSHARP	}, // 󰌛
-	{ "csproj"			, IC_LANG_CSHARP	}, // 󰌛
-	{ "cs"				, IC_LANG_CSHARP	}, // 󰌛
-	{ "leex"			, IC_LANG_ELIXIR	}, // 
-	{ "exs"				, IC_LANG_ELIXIR	}, // 
-	{ "ex"				, IC_LANG_ELIXIR	}, // 
-	{ "eex"				, IC_LANG_ELIXIR	}, // 
-	{ "fnl"				, IC_LANG_FENNEL	}, // 
-	{ "fsx"				, IC_LANG_FSHARP	}, // 
-	{ "fsscript"		, IC_LANG_FSHARP	}, // 
-	{ "fsproj"			, IC_LANG_FSHARP	}, // 
-	{ "fsi"				, IC_LANG_FSHARP	}, // 
-	{ "fs"				, IC_LANG_FSHARP	}, // 
-	{ "f#"				, IC_LANG_FSHARP	}, // 
-	{ "gvy"				, IC_LANG_GROOVY	}, // 
-	{ "groovy"			, IC_LANG_GROOVY	}, // 
-	{ "kts"				, IC_LANG_KOTLIN	}, // 
-	{ "kt"				, IC_LANG_KOTLIN	}, // 
+	{ "tscn"			, IC_GODOT			}, // 
+	{ "tsv"				, IC_SHEET			}, // 
+	{ "tsx"				, IC_REACT			}, // 
+	{ "ttc"				, IC_FONT			}, // 
+	{ "ttf"				, IC_FONT			}, // 
+	{ "twig"			, IC_TWIG			}, // 
+	{ "txt"				, IC_TEXT			}, // 
+	{ "txz"				, IC_COMPRESSED		}, // 
+	{ "typ"				, IC_TYPST			}, // 
+	{ "tz"				, IC_COMPRESSED		}, // 
+	{ "tzo"				, IC_COMPRESSED		}, // 
+	{ "ui"				, IC_UI				}, // 
+	{ "unity"			, IC_UNITY			}, // 
+	{ "unity3d"			, IC_UNITY			}, // 
+	{ "v"				, IC_LANG_V			}, // 
+	{ "vala"			, IC_VALA			}, // 
+	{ "vdi"				, IC_DISK_IMAGE		}, // 
+	{ "vhd"				, IC_DISK_IMAGE		}, // 
+	{ "vhdl"			, IC_LANG_HDL		}, // 󰍛
+	{ "vhs"				, IC_VHS			}, // 󰨛
+	{ "vi"				, IC_VI				}, // 
+	{ "video"			, IC_VIDEOS			}, // 
+	{ "vim"				, IC_VIM			}, // 
+	{ "vmdk"			, IC_DISK_IMAGE		}, // 
+	{ "vob"				, IC_VIDEOS			}, // 
+	{ "vsix"			, IC_VSIX			}, // 󰨞
+	{ "vue"				, IC_VUE			}, // 󰡄
+	{ "war"				, IC_LANG_JAVA		}, // 
+	{ "wav"				, IC_AUDIO			}, // 
+	{ "webm"			, IC_VIDEOS			}, // 
+	{ "webmanifest"		, IC_JSON			}, // 
+	{ "webp"			, IC_IMAGE			}, // 
 	{ "whl"				, IC_LANG_PYTHON	}, // 
-	{ "pyx"				, IC_LANG_PYTHON	}, // 
-	{ "pyw"				, IC_LANG_PYTHON	}, // 
-	{ "pyo"				, IC_LANG_PYTHON	}, // 
-	{ "pyi"				, IC_LANG_PYTHON	}, // 
-	{ "pyd"				, IC_LANG_PYTHON	}, // 
-	{ "pyc"				, IC_LANG_PYTHON	}, // 
-	{ "py"				, IC_LANG_PYTHON	}, // 
-	{ "pxd"				, IC_LANG_PYTHON	}, // 
-	{ "ss"				, IC_LANG_SCHEME	}, // 
-	{ "sld"				, IC_LANG_SCHEME	}, // 
-	{ "scm"				, IC_LANG_SCHEME	}, // 
-	{ "rkt"				, IC_LANG_SCHEME	}, // 
-	{ "stylus"			, IC_LANG_STYLUS	}, // 
-	{ "styl"			, IC_LANG_STYLUS	}, // 
-	{ "gpg"				, IC_SHIELD_LOCK	}, // 󰦝
-	{ "asc"				, IC_SHIELD_LOCK	}, // 󰦝
-	{ "age"				, IC_SHIELD_LOCK	}, // 󰦝
-	{ "signature"		, IC_SIGNED_FILE	}, // 󱧃
-	{ "sig"				, IC_SIGNED_FILE	}, // 󱧃
-	{ "qm"				, IC_TRANSLATION	}, // 󰗊
-	{ "pot"				, IC_TRANSLATION	}, // 󰗊
-	{ "po"				, IC_TRANSLATION	}, // 󰗊
-	{ "mo"				, IC_TRANSLATION	}, // 󰗊
-	{ "editorconfig"	, IC_EDITORCONFIG	}, // 
-	{ "ino"				, IC_LANG_ARDUINO	}, // 
-	{ "for"				, IC_LANG_FORTRAN	}, // 󱈚
-	{ "f90"				, IC_LANG_FORTRAN	}, // 󱈚
-	{ "f"				, IC_LANG_FORTRAN	}, // 󱈚
-	{ "lhs"				, IC_LANG_HASKELL	}, // 
-	{ "hs"				, IC_LANG_HASKELL	}, // 
-	{ "slim"			, IC_LANG_RBRAILS	}, // 
-	{ "rubydoc"			, IC_LANG_RBRAILS	}, // 
-	{ "erb"				, IC_LANG_RBRAILS	}, // 
-	{ "sha512"			, IC_SHIELD_CHECK	}, // 󰕥
-	{ "sha384"			, IC_SHIELD_CHECK	}, // 󰕥
-	{ "sha256"			, IC_SHIELD_CHECK	}, // 󰕥
-	{ "sha224"			, IC_SHIELD_CHECK	}, // 󰕥
-	{ "sha1"			, IC_SHIELD_CHECK	}, // 󰕥
-	{ "md5"				, IC_SHIELD_CHECK	}, // 󰕥
-	{ "s"				, IC_LANG_ASSEMBLY	}, // 
-	{ "asm"				, IC_LANG_ASSEMBLY	}, // 
-	{ "exe"				, IC_OS_WINDOWS_CMD	}, // 
-	{ "bat"				, IC_OS_WINDOWS_CMD	}, // 
+	{ "windows"			, IC_OS_WINDOWS		}, // 
+	{ "wma"				, IC_AUDIO			}, // 
+	{ "wmv"				, IC_VIDEOS			}, // 
+	{ "woff"			, IC_FONT			}, // 
+	{ "woff2"			, IC_FONT			}, // 
+	{ "wrl"				, IC_FILE_3D		}, // 󰆧
+	{ "wrz"				, IC_FILE_3D		}, // 󰆧
+	{ "wv"				, IC_AUDIO			}, // 
+	{ "x_b"				, IC_CAD			}, // 󰻫
+	{ "x_t"				, IC_CAD			}, // 󰻫
+	{ "xaml"			, IC_XAML			}, // 󰙳
+	{ "xcf"				, IC_GIMP			}, // 
+	{ "xci"				, IC_SWITCH			}, // 󰟡
+	{ "xcplayground"	, IC_SWIFT			}, // 
+	{ "xhtml"			, IC_HTML5			}, // 
+	{ "xlr"				, IC_SHEET			}, // 
+	{ "xls"				, IC_SHEET			}, // 
+	{ "xlsm"			, IC_SHEET			}, // 
+	{ "xlsx"			, IC_SHEET			}, // 
+	{ "xml"				, IC_XML			}, // 󰗀
+	{ "xpi"				, IC_XPI			}, // 
+	{ "xpm"				, IC_IMAGE			}, // 
+	{ "xul"				, IC_XML			}, // 󰗀
+	{ "xz"				, IC_COMPRESSED		}, // 
+	{ "yaml"			, IC_YAML			}, // 
+	{ "yml"				, IC_YAML			}, // 
+	{ "z"				, IC_COMPRESSED		}, // 
+	{ "z64"				, IC_GBA			}, // 󱎓
+	{ "zig"				, IC_ZIG			}, // 
+	{ "zip"				, IC_COMPRESSED		}, // 
+	{ "zsh-theme"		, IC_SHELL			}, // 󱆃
+	{ "zsh"				, IC_SHELL_CMD		}, // 
+	{ "zst"				, IC_COMPRESSED		}, // 
 	END_OF_ICONS
 };
 
