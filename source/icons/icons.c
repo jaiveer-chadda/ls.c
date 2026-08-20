@@ -22,25 +22,25 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline icon_t getDirIcon(const char *filename) {
-	Icon icon = DIR_ICONS[0];
-	for (int i = 0; !REACHED_END_OF_ICONS(icon); icon = DIR_ICONS[i++] ) {
+icon_t getIcon(const char *filename, const bool is_dir) {
+	const Icon *ICON_ARRAY = (Icon *)(is_dir ? &DIR_ICONS : &FILENAME_ICONS);
+	Icon icon = ICON_ARRAY[0];
+
+	for (int i = 0; !REACHED_END_OF_ICONS(icon); icon = ICON_ARRAY[i++] ) {
 		if (strcmp(icon.pattern, filename) == 0) return icon.icon;
 	}
-	return DEFAULT_DIR_ICON;
-}
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+	if (is_dir) return DEFAULT_DIR_ICON;
 
-static inline icon_t getFileIcon(const char *filename) {
-	(void) filename;
+	const char *file_ext = strrchr(filename, '.');
+	if (file_ext == NULL) return DEFAULT_FILE_ICON;
+
+	icon = EXT_ICONS[0];
+	for (int i = 0; !REACHED_END_OF_ICONS(icon); icon = EXT_ICONS[i++] ) {
+		if (strcmp(icon.pattern, file_ext + 1) == 0) return icon.icon;
+	}
+
 	return DEFAULT_FILE_ICON;
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-icon_t getIcon(const char *filename, const bool is_dir) {
-	return (is_dir ? getDirIcon : getFileIcon)(filename);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
