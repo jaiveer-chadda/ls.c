@@ -5,7 +5,7 @@
 /* —— Base Icon Definitions ———————————————————————————————————————————————————————————————————————————————————————— */
 
 #define IC_FILE				L'' /*  F15B  	[ • • • ] */
-#define IC_FILE_UNKNOW		L'󰡯' /* F086F  󰡯	  [ • • • ] */
+#define IC_FILE_UNKNOWN		L'󰡯' /* F086F  󰡯	  [ • • • ] */
 
 #define IC_FOLDER			L'' /*  E5FF  	[ • • • ] */
 #define IC_FOLDER_OPEN		L'' /*  F115  	[ • • • ] */
@@ -276,956 +276,966 @@
 #define IC_ZIG				L'' /*  E6A9  	[ • F E ] */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Default Icons ———————————————————————————————————————————————————————————————————————————————————————————————— */
+
+const icon_t DEFAULT_FILE_ICON = IC_FILE;
+const icon_t UNKNOWN_FILE_ICON = IC_FILE_UNKNOWN;
+const icon_t DEFAULT_DIR_ICON  = IC_FOLDER;
+
 /* —— Directory Icons —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// An array containing the basenames of directories, and their associated icons.
 /// This array should contain all the directories that have custom icons.
 const Icon DIR_ICONS[] = {
-	{ ".config"			, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ ".exercism"		, IC_EXERCISM		}, /*  EBE5   */
-	{ ".git"			, IC_FOLDER_GIT		}, /*  E5FB   */
-	{ ".github"			, IC_FOLDER_GITHUB	}, /*  E5FD   */
-	{ ".npm"			, IC_FOLDER_NPM		}, /*  E5FA   */
-	{ ".opam"			, IC_LANG_OCAML		}, /*  E67A   */
-	{ ".ssh"			, IC_FOLDER_KEY		}, /* F08AC  󰢬 */
-	{ ".Trash"			, IC_TRASH			}, /*  F1F8   */
-	{ "build"			, IC_FOLDER_BUILD	}, /* F19FC  󱧼 */
-	{ "cabal"			, IC_LANG_HASKELL	}, /*  E777   */
-	{ "config"			, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "Contacts"		, IC_CONTACTS		}, /* F024C  󰉌 */
-	{ "cron.d"			, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "cron.daily"		, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "cron.hourly"		, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "cron.minutely"	, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "cron.monthly"	, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "cron.weekly"		, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "Desktop"			, IC_DESKTOP		}, /*  F108   */
-	{ "Documents"		, IC_DOCUMENTS		}, /* F0C82  󰲂 */
-	{ "Downloads"		, IC_DOWNLOADS		}, /* F024D  󰉍 */
-	{ "etc"				, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "Favorites"		, IC_FAVORITES		}, /* F069D  󰚝 */
-	{ "hidden"			, IC_FOLDER_HIDDEN	}, /* F179E  󱞞 */
-	{ "home"			, IC_HOME			}, /* F10B5  󱂵 */
-	{ "include"			, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "Mail"			, IC_MAIL			}, /* F01F0  󰇰 */
-	{ "Movies"			, IC_MOVIES			}, /* F0FCE  󰿎 */
-	{ "Music"			, IC_MUSIC			}, /* F1359  󱍙 */
-	{ "node_modules"	, IC_FOLDER_NPM		}, /*  E5FA   */
-	{ "npm_cache"		, IC_FOLDER_NPM		}, /*  E5FA   */
-	{ "pacman.d"		, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "pam.d"			, IC_FOLDER_KEY		}, /* F08AC  󰢬 */
-	{ "Pictures"		, IC_PICTURES		}, /* F024F  󰉏 */
-	{ "src"				, IC_SRC			}, /* F08DE  󰣞 */
-	{ "ssh"				, IC_FOLDER_KEY		}, /* F08AC  󰢬 */
-	{ "sudoers.d"		, IC_FOLDER_KEY		}, /* F08AC  󰢬 */
-	{ "Videos"			, IC_VIDEOS			}, /*  F03D   */
-	{ "xbps.d"			, IC_FOLDER_CONFIG	}, /*  E5FC   */
-	{ "xorg.conf.d"		, IC_FOLDER_CONFIG	}, /*  E5FC   */
+	{ ".config"			, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ ".exercism"		, IC_EXERCISM		}, //  EBE5  
+	{ ".git"			, IC_FOLDER_GIT		}, //  E5FB  
+	{ ".github"			, IC_FOLDER_GITHUB	}, //  E5FD  
+	{ ".npm"			, IC_FOLDER_NPM		}, //  E5FA  
+	{ ".opam"			, IC_LANG_OCAML		}, //  E67A  
+	{ ".ssh"			, IC_FOLDER_KEY		}, // F08AC  󰢬
+	{ ".Trash"			, IC_TRASH			}, //  F1F8  
+	{ "build"			, IC_FOLDER_BUILD	}, // F19FC  󱧼
+	{ "cabal"			, IC_LANG_HASKELL	}, //  E777  
+	{ "config"			, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "Contacts"		, IC_CONTACTS		}, // F024C  󰉌
+	{ "cron.d"			, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "cron.daily"		, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "cron.hourly"		, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "cron.minutely"	, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "cron.monthly"	, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "cron.weekly"		, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "Desktop"			, IC_DESKTOP		}, //  F108  
+	{ "Documents"		, IC_DOCUMENTS		}, // F0C82  󰲂
+	{ "Downloads"		, IC_DOWNLOADS		}, // F024D  󰉍
+	{ "etc"				, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "Favorites"		, IC_FAVORITES		}, // F069D  󰚝
+	{ "hidden"			, IC_FOLDER_HIDDEN	}, // F179E  󱞞
+	{ "home"			, IC_HOME			}, // F10B5  󱂵
+	{ "include"			, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "Mail"			, IC_MAIL			}, // F01F0  󰇰
+	{ "Movies"			, IC_MOVIES			}, // F0FCE  󰿎
+	{ "Music"			, IC_MUSIC			}, // F1359  󱍙
+	{ "node_modules"	, IC_FOLDER_NPM		}, //  E5FA  
+	{ "npm_cache"		, IC_FOLDER_NPM		}, //  E5FA  
+	{ "pacman.d"		, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "pam.d"			, IC_FOLDER_KEY		}, // F08AC  󰢬
+	{ "Pictures"		, IC_PICTURES		}, // F024F  󰉏
+	{ "src"				, IC_SRC			}, // F08DE  󰣞
+	{ "source"			, IC_SRC			}, // F08DE  󰣞  – JV
+	{ "ssh"				, IC_FOLDER_KEY		}, // F08AC  󰢬
+	{ "sudoers.d"		, IC_FOLDER_KEY		}, // F08AC  󰢬
+	{ "Videos"			, IC_VIDEOS			}, //  F03D  
+	{ "xbps.d"			, IC_FOLDER_CONFIG	}, //  E5FC  
+	{ "xorg.conf.d"		, IC_FOLDER_CONFIG	}, //  E5FC  
+	END_OF_ICONS
 };
 
 /* —— Filename Icons ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// Array containing full filenames & their icons.
 const Icon FILENAME_ICONS[] = {
-	{ "._DS_Store"					, IC_OS_APPLE			}, /*  F179   */
-	{ ".aliases"					, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".atom"						, IC_ATOM				}, /*  E764   */
-	{ ".bash_aliases"				, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".bash_history"				, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".bash_logout"				, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".bash_profile"				, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".bashrc"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".CFUserTextEncoding"			, IC_OS_APPLE			}, /*  F179   */
-	{ ".clang-format"				, IC_CONFIG				}, /* F107B  󱁻 */
-	{ ".clang-tidy"					, IC_CONFIG				}, /* F107B  󱁻 */
-	{ ".codespellrc"				, IC_CODESPELL			}, /* F04C6  󰓆 */
-	{ ".condarc"					, IC_CONDA				}, /*  E715   */
-	{ ".cshrc"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".DS_Store"					, IC_OS_APPLE			}, /*  F179   */
-	{ ".editorconfig"				, IC_EDITORCONFIG		}, /*  E652   */
-	{ ".emacs"						, IC_EMACS				}, /*  E632   */
-	{ ".envrc"						, IC_ENV				}, /*  F462   */
-	{ ".eslintignore"				, IC_ESLINT				}, /*  E655   */
-	{ ".eslintrc.cjs"				, IC_ESLINT				}, /*  E655   */
-	{ ".eslintrc.js"				, IC_ESLINT				}, /*  E655   */
-	{ ".eslintrc.json"				, IC_ESLINT				}, /*  E655   */
-	{ ".eslintrc.yaml"				, IC_ESLINT				}, /*  E655   */
-	{ ".eslintrc.yml"				, IC_ESLINT				}, /*  E655   */
-	{ ".fennelrc"					, IC_LANG_FENNEL		}, /*  E6AF   */
-	{ ".gcloudignore"				, IC_GOOGLE_CLOUD		}, /* F11F6  󱇶 */
-	{ ".git-blame-ignore-revs"		, IC_GIT				}, /* F02A2  󰊢 */
-	{ ".gitattributes"				, IC_GIT				}, /* F02A2  󰊢 */
-	{ ".gitconfig"					, IC_GIT				}, /* F02A2  󰊢 */
-	{ ".gitignore"					, IC_GIT				}, /* F02A2  󰊢 */
-	{ ".gitignore_global"			, IC_GIT				}, /* F02A2  󰊢 */
-	{ ".gitlab-ci.yml"				, IC_GITLAB				}, /*  F296   */
-	{ ".gitmodules"					, IC_GIT				}, /* F02A2  󰊢 */
-	{ ".gtkrc-2.0"					, IC_GRUNT				}, /*  E611   */
-	{ ".gvimrc"						, IC_VIM				}, /*  E7C5   */
-	{ ".htaccess"					, IC_CONFIG				}, /* F107B  󱁻 */
-	{ ".htpasswd"					, IC_CONFIG				}, /* F107B  󱁻 */
-	{ ".idea"						, IC_INTELLIJ			}, /*  E7B5   */
-	{ ".ideavimrc"					, IC_VIM				}, /*  E7C5   */
-	{ ".inputrc"					, IC_CONFIG				}, /* F107B  󱁻 */
-	{ ".kshrc"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".login"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".logout"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".luacheckrc"					, IC_CONFIG				}, /* F107B  󱁻 */
-	{ ".luaurc"						, IC_CONFIG				}, /* F107B  󱁻 */
-	{ ".mailmap"					, IC_GIT				}, /* F02A2  󰊢 */
-	{ ".nanorc"						, IC_NANO				}, /*  E838   */
-	{ ".node_repl_history"			, IC_NODEJS				}, /*  E718   */
-	{ ".npmignore"					, IC_NPM				}, /*  E71E   */
-	{ ".npmrc"						, IC_NPM				}, /*  E71E   */
-	{ ".nuxtrc"						, IC_NUXT				}, /* F1106  󱄆 */
-	{ ".ocamlinit"					, IC_LANG_OCAML			}, /*  E67A   */
-	{ ".parentlock"					, IC_LOCK				}, /*  F023   */
-	{ ".pre-commit-config.yaml"		, IC_HOOK				}, /* F06E2  󰛢 */
-	{ ".prettierignore"				, IC_PRETTIER			}, /*  E6B4   */
-	{ ".prettierrc"					, IC_PRETTIER			}, /*  E6B4   */
-	{ ".prettierrc.json"			, IC_PRETTIER			}, /*  E6B4   */
-	{ ".prettierrc.json5"			, IC_PRETTIER			}, /*  E6B4   */
-	{ ".prettierrc.toml"			, IC_PRETTIER			}, /*  E6B4   */
-	{ ".prettierrc.yaml"			, IC_PRETTIER			}, /*  E6B4   */
-	{ ".prettierrc.yml"				, IC_PRETTIER			}, /*  E6B4   */
-	{ ".profile"					, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".pylintrc"					, IC_CONFIG				}, /* F107B  󱁻 */
-	{ ".python_history"				, IC_LANG_PYTHON		}, /*  E606   */
-	{ ".rustfmt.toml"				, IC_LANG_RUST			}, /*  E68B   */
-	{ ".rvm"						, IC_LANG_RUBY			}, /*  E739   */
-	{ ".rvmrc"						, IC_LANG_RUBY			}, /*  E739   */
-	{ ".SRCINFO"					, IC_ARCHBTW			}, /*  F303   */
-	{ ".stowrc"						, IC_STOW				}, /*  EEF1   */
-	{ ".tcshrc"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".viminfo"					, IC_VIM				}, /*  E7C5   */
-	{ ".vimrc"						, IC_VIM				}, /*  E7C5   */
-	{ ".Xauthority"					, IC_XORG				}, /*  F369   */
-	{ ".xinitrc"					, IC_XORG				}, /*  F369   */
-	{ ".Xresources"					, IC_XORG				}, /*  F369   */
-	{ ".xsession"					, IC_XORG				}, /*  F369   */
-	{ ".yarnrc"						, IC_YARN				}, /*  E6A7   */
-	{ ".zlogin"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".zlogout"					, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".zprofile"					, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".zsh_history"				, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".zsh_sessions"				, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".zshenv"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ ".zshrc"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ "_gvimrc"						, IC_VIM				}, /*  E7C5   */
-	{ "_vimrc"						, IC_VIM				}, /*  E7C5   */
-	{ "a.out"						, IC_SHELL_CMD			}, /*  F489   */
-	{ "authorized_keys"				, IC_SSH_LOGO			}, /* F08C0  󰣀 */
-	{ "AUTHORS"						, IC_PEOPLE				}, /*  EDCA   */
-	{ "AUTHORS.txt"					, IC_PEOPLE				}, /*  EDCA   */
-	{ "bashrc"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ "Brewfile"					, IC_HOMEBREW			}, /* F1116  󱄖 */
-	{ "Brewfile.lock.json"			, IC_HOMEBREW			}, /* F1116  󱄖 */
-	{ "bspwmrc"						, IC_BSPWM				}, /*  F355   */
-	{ "build.gradle.kts"			, IC_GRADLE				}, /*  E660   */
-	{ "build.zig.zon"				, IC_ZIG				}, /*  E6A9   */
-	{ "bun.lockb"					, IC_BUN				}, /*  E76F   */
-	{ "cantorrc"					, IC_KDE				}, /*  F373   */
-	{ "Cargo.lock"					, IC_LANG_RUST			}, /*  E68B   */
-	{ "Cargo.toml"					, IC_LANG_RUST			}, /*  E68B   */
-	{ "CHANGELOG"					, IC_NEWS				}, /*  F1EA   */
-	{ "CHANGELOG.md"				, IC_NEWS				}, /*  F1EA   */
-	{ "CHANGES"						, IC_NEWS				}, /*  F1EA   */
-	{ "CHANGES.md"					, IC_NEWS				}, /*  F1EA   */
-	{ "CMakeLists.txt"				, IC_CMAKE				}, /*  E794   */
-	{ "CODE_OF_CONDUCT"				, IC_CODE_OF_CONDUCT	}, /*  F4AE   */
-	{ "CODE_OF_CONDUCT.md"			, IC_CODE_OF_CONDUCT	}, /*  F4AE   */
-	{ "COMMIT_EDITMSG"				, IC_GIT				}, /* F02A2  󰊢 */
-	{ "compose.yaml"				, IC_DOCKER				}, /*  E650   */
-	{ "compose.yml"					, IC_DOCKER				}, /*  E650   */
-	{ "composer.json"				, IC_LANG_PHP			}, /*  E73D   */
-	{ "composer.lock"				, IC_LANG_PHP			}, /*  E73D   */
-	{ "config"						, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "config.ru"					, IC_LANG_RUBY			}, /*  E739   */
-	{ "config.status"				, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "configure"					, IC_WRENCH				}, /*  F0AD   */
-	{ "configure.ac"				, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "configure.in"				, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "constraints.txt"				, IC_LANG_PYTHON		}, /*  E606   */
-	{ "COPYING"						, IC_LICENSE			}, /*  F02D   */
-	{ "COPYRIGHT"					, IC_LICENSE			}, /*  F02D   */
-	{ "crontab"						, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "crypttab"					, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "csh.cshrc"					, IC_SHELL				}, /* F1183  󱆃 */
-	{ "csh.login"					, IC_SHELL				}, /* F1183  󱆃 */
-	{ "csh.logout"					, IC_SHELL				}, /* F1183  󱆃 */
-	{ "docker-compose.yaml"			, IC_DOCKER				}, /*  E650   */
-	{ "docker-compose.yml"			, IC_DOCKER				}, /*  E650   */
-	{ "Dockerfile"					, IC_DOCKER				}, /*  E650   */
-	{ "dropbox"						, IC_DROPBOX			}, /*  E707   */
-	{ "dune"						, IC_LANG_OCAML			}, /*  E67A   */
-	{ "dune-project"				, IC_WRENCH				}, /*  F0AD   */
-	{ "Earthfile"					, IC_EARTH				}, /*  F0AC   */
-	{ "environment"					, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "favicon.ico"					, IC_STAR				}, /*  E623   */
-	{ "fennelrc"					, IC_LANG_FENNEL		}, /*  E6AF   */
-	{ "flake.lock"					, IC_FLAKE				}, /*  F313   */
-	{ "fonts.conf"					, IC_FONT				}, /*  F031   */
-	{ "fp-info-cache"				, IC_KICAD				}, /*  F34C   */
-	{ "fp-lib-table"				, IC_KICAD				}, /*  F34C   */
-	{ "FreeCAD.conf"				, IC_FREECAD			}, /*  F336   */
-	{ "Gemfile"						, IC_LANG_RUBY			}, /*  E739   */
-	{ "Gemfile.lock"				, IC_LANG_RUBY			}, /*  E739   */
-	{ "GNUmakefile"					, IC_MAKE				}, /*  E673   */
-	{ "go.mod"						, IC_LANG_GO			}, /*  E65E   */
-	{ "go.sum"						, IC_LANG_GO			}, /*  E65E   */
-	{ "go.work"						, IC_LANG_GO			}, /*  E65E   */
-	{ "gradle"						, IC_GRADLE				}, /*  E660   */
-	{ "gradle.properties"			, IC_GRADLE				}, /*  E660   */
-	{ "gradlew"						, IC_GRADLE				}, /*  E660   */
-	{ "gradlew.bat"					, IC_GRADLE				}, /*  E660   */
-	{ "group"						, IC_LOCK				}, /*  F023   */
-	{ "gruntfile.coffee"			, IC_GRUNT				}, /*  E611   */
-	{ "gruntfile.js"				, IC_GRUNT				}, /*  E611   */
-	{ "gruntfile.ls"				, IC_GRUNT				}, /*  E611   */
-	{ "gshadow"						, IC_LOCK				}, /*  F023   */
-	{ "gtkrc"						, IC_GRUNT				}, /*  E611   */
-	{ "gulpfile.coffee"				, IC_GULP				}, /*  E610   */
-	{ "gulpfile.js"					, IC_GULP				}, /*  E610   */
-	{ "gulpfile.ls"					, IC_GULP				}, /*  E610   */
-	{ "heroku.yml"					, IC_HEROKU				}, /*  E77B   */
-	{ "hostname"					, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "hypridle.conf"				, IC_HYPRLAND			}, /*  F359   */
-	{ "hyprland.conf"				, IC_HYPRLAND			}, /*  F359   */
-	{ "hyprlock.conf"				, IC_HYPRLAND			}, /*  F359   */
-	{ "hyprpaper.conf"				, IC_HYPRLAND			}, /*  F359   */
-	{ "i3blocks.conf"				, IC_I3					}, /*  F35A   */
-	{ "i3status.conf"				, IC_I3					}, /*  F35A   */
-	{ "id_dsa"						, IC_PRIVATE_KEY		}, /* F0306  󰌆 */
-	{ "id_ecdsa"					, IC_PRIVATE_KEY		}, /* F0306  󰌆 */
-	{ "id_ecdsa_sk"					, IC_PRIVATE_KEY		}, /* F0306  󰌆 */
-	{ "id_ed25519"					, IC_PRIVATE_KEY		}, /* F0306  󰌆 */
-	{ "id_ed25519_sk"				, IC_PRIVATE_KEY		}, /* F0306  󰌆 */
-	{ "id_rsa"						, IC_PRIVATE_KEY		}, /* F0306  󰌆 */
-	{ "index.theme"					, IC_PAINTBRUSH			}, /*  EE72   */
-	{ "inputrc"						, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "Jenkinsfile"					, IC_JENKINSFILE		}, /*  E66E   */
-	{ "jsconfig.json"				, IC_LANG_JSCPT			}, /*  E74E   */
-	{ "Justfile"					, IC_WRENCH				}, /*  F0AD   */
-	{ "justfile"					, IC_WRENCH				}, /*  F0AD   */
-	{ "kalgebrarc"					, IC_KDE				}, /*  F373   */
-	{ "kdeglobals"					, IC_KDE				}, /*  F373   */
-	{ "kdenlive-layoutsrc"			, IC_KDENLIVE			}, /*  F33C   */
-	{ "kdenliverc"					, IC_KDENLIVE			}, /*  F33C   */
-	{ "known_hosts"					, IC_SSH_LOGO			}, /* F08C0  󰣀 */
-	{ "kritadisplayrc"				, IC_KRITA				}, /*  F33D   */
-	{ "kritarc"						, IC_KRITA				}, /*  F33D   */
-	{ "LICENCE"						, IC_LICENSE			}, /*  F02D   */
-	{ "LICENCE.md"					, IC_LICENSE			}, /*  F02D   */
-	{ "LICENCE.txt"					, IC_LICENSE			}, /*  F02D   */
-	{ "LICENSE"						, IC_LICENSE			}, /*  F02D   */
-	{ "LICENSE-APACHE"				, IC_LICENSE			}, /*  F02D   */
-	{ "LICENSE-MIT"					, IC_LICENSE			}, /*  F02D   */
-	{ "LICENSE.md"					, IC_LICENSE			}, /*  F02D   */
-	{ "LICENSE.txt"					, IC_LICENSE			}, /*  F02D   */
-	{ "localized"					, IC_OS_APPLE			}, /*  F179   */
-	{ "localtime"					, IC_CLOCK				}, /*  F43A   */
-	{ "lock"						, IC_LOCK				}, /*  F023   */
-	{ "LOCK"						, IC_LOCK				}, /*  F023   */
-	{ "log"							, IC_LOG				}, /*  F18D   */
-	{ "LOG"							, IC_LOG				}, /*  F18D   */
-	{ "lxde-rc.xml"					, IC_LXDE				}, /*  F363   */
-	{ "lxqt.conf"					, IC_LXQT				}, /*  F364   */
-	{ "Makefile"					, IC_MAKE				}, /*  E673   */
-	{ "makefile"					, IC_MAKE				}, /*  E673   */
-	{ "Makefile.ac"					, IC_MAKE				}, /*  E673   */
-	{ "Makefile.am"					, IC_MAKE				}, /*  E673   */
-	{ "Makefile.in"					, IC_MAKE				}, /*  E673   */
-	{ "MANIFEST"					, IC_LANG_PYTHON		}, /*  E606   */
-	{ "MANIFEST.in"					, IC_LANG_PYTHON		}, /*  E606   */
-	{ "mix.lock"					, IC_LANG_ELIXIR		}, /*  E62D   */
-	{ "mpv.conf"					, IC_MPV				}, /*  F36E   */
-	{ "NEWS"						, IC_NEWS				}, /*  F1EA   */
-	{ "NEWS.md"						, IC_NEWS				}, /*  F1EA   */
-	{ "npm-shrinkwrap.json"			, IC_NPM				}, /*  E71E   */
-	{ "npmrc"						, IC_NPM				}, /*  E71E   */
-	{ "package-lock.json"			, IC_NPM				}, /*  E71E   */
-	{ "package.json"				, IC_NPM				}, /*  E71E   */
-	{ "passwd"						, IC_LOCK				}, /*  F023   */
-	{ "php.ini"						, IC_LANG_PHP			}, /*  E73D   */
-	{ "PKGBUILD"					, IC_ARCHBTW			}, /*  F303   */
-	{ "platformio.ini"				, IC_PLATFORMIO			}, /*  E682   */
-	{ "pom.xml"						, IC_POM				}, /*  E674   */
-	{ "Procfile"					, IC_HEROKU				}, /*  E77B   */
-	{ "profile"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ "PrusaSlicer.ini"				, IC_PRUSASLICER		}, /*  F351   */
-	{ "PrusaSlicerGcodeViewer.ini"	, IC_PRUSASLICER		}, /*  F351   */
-	{ "pyproject.toml"				, IC_LANG_PYTHON		}, /*  E606   */
-	{ "pyvenv.cfg"					, IC_LANG_PYTHON		}, /*  E606   */
-	{ "qt5ct.conf"					, IC_QT					}, /*  F375   */
-	{ "qt6ct.conf"					, IC_QT					}, /*  F375   */
-	{ "QtProject.conf"				, IC_QT					}, /*  F375   */
-	{ "Rakefile"					, IC_LANG_RUBY			}, /*  E739   */
-	{ "README"						, IC_README				}, /* F00BA  󰂺 */
-	{ "README.md"					, IC_README				}, /* F00BA  󰂺 */
-	{ "release.toml"				, IC_LANG_RUST			}, /*  E68B   */
-	{ "renovate.json"				, IC_RENOVATE			}, /* F027C  󰉼 */
-	{ "requirements.txt"			, IC_LANG_PYTHON		}, /*  E606   */
-	{ "robots.txt"					, IC_ROBOT				}, /* F06A9  󰚩 */
-	{ "rubydoc"						, IC_LANG_RBRAILS		}, /*  E73B   */
-	{ "rvmrc"						, IC_LANG_RUBY			}, /*  E739   */
-	{ "SECURITY"					, IC_SECURITY			}, /* F0483  󰒃 */
-	{ "SECURITY.md"					, IC_SECURITY			}, /* F0483  󰒃 */
-	{ "settings.gradle.kts"			, IC_GRADLE				}, /*  E660   */
-	{ "shadow"						, IC_LOCK				}, /*  F023   */
-	{ "shells"						, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "sudoers"						, IC_LOCK				}, /*  F023   */
-	{ "sxhkdrc"						, IC_CONFIG				}, /* F107B  󱁻 */
-	{ "sym-lib-table"				, IC_KICAD				}, /*  F34C   */
-	{ "timezone"					, IC_CLOCK				}, /*  F43A   */
-	{ "tmux.conf"					, IC_TMUX				}, /*  EBC8   */
-	{ "tmux.conf.local"				, IC_TMUX				}, /*  EBC8   */
-	{ "TODO"						, IC_TODO				}, /*  F0AE   */
-	{ "TODO.md"						, IC_TODO				}, /*  F0AE   */
-	{ "tsconfig.json"				, IC_LANG_TSCPT			}, /*  E628   */
-	{ "Vagrantfile"					, IC_VAGRANT			}, /*  2371  ⍱ */
-	{ "vlcrc"						, IC_VLC				}, /* F057C  󰕼 */
-	{ "webpack.config.js"			, IC_WEBPACK			}, /* F072B  󰜫 */
-	{ "weston.ini"					, IC_WESTON				}, /*  F367   */
-	{ "xmobarrc"					, IC_XORG				}, /*  F369   */
-	{ "xmobarrc.hs"					, IC_XORG				}, /*  F369   */
-	{ "xmonad.hs"					, IC_XORG				}, /*  F369   */
-	{ "xorg.conf"					, IC_XORG				}, /*  F369   */
-	{ "xsettingsd.conf"				, IC_XORG				}, /*  F369   */
-	{ "yarn.lock"					, IC_YARN				}, /*  E6A7   */
-	{ "zlogin"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ "zlogout"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ "zprofile"					, IC_SHELL				}, /* F1183  󱆃 */
-	{ "zshenv"						, IC_SHELL				}, /* F1183  󱆃 */
-	{ "zshrc"						, IC_SHELL				}, /* F1183  󱆃 */
+	{ "._DS_Store"					, IC_OS_APPLE			}, //  F179  
+	{ ".aliases"					, IC_SHELL				}, // F1183  󱆃
+	{ ".atom"						, IC_ATOM				}, //  E764  
+	{ ".bash_aliases"				, IC_SHELL				}, // F1183  󱆃
+	{ ".bash_history"				, IC_SHELL				}, // F1183  󱆃
+	{ ".bash_logout"				, IC_SHELL				}, // F1183  󱆃
+	{ ".bash_profile"				, IC_SHELL				}, // F1183  󱆃
+	{ ".bashrc"						, IC_SHELL				}, // F1183  󱆃
+	{ ".CFUserTextEncoding"			, IC_OS_APPLE			}, //  F179  
+	{ ".clang-format"				, IC_CONFIG				}, // F107B  󱁻
+	{ ".clang-tidy"					, IC_CONFIG				}, // F107B  󱁻
+	{ ".codespellrc"				, IC_CODESPELL			}, // F04C6  󰓆
+	{ ".condarc"					, IC_CONDA				}, //  E715  
+	{ ".cshrc"						, IC_SHELL				}, // F1183  󱆃
+	{ ".DS_Store"					, IC_OS_APPLE			}, //  F179  
+	{ ".editorconfig"				, IC_EDITORCONFIG		}, //  E652  
+	{ ".emacs"						, IC_EMACS				}, //  E632  
+	{ ".envrc"						, IC_ENV				}, //  F462  
+	{ ".eslintignore"				, IC_ESLINT				}, //  E655  
+	{ ".eslintrc.cjs"				, IC_ESLINT				}, //  E655  
+	{ ".eslintrc.js"				, IC_ESLINT				}, //  E655  
+	{ ".eslintrc.json"				, IC_ESLINT				}, //  E655  
+	{ ".eslintrc.yaml"				, IC_ESLINT				}, //  E655  
+	{ ".eslintrc.yml"				, IC_ESLINT				}, //  E655  
+	{ ".fennelrc"					, IC_LANG_FENNEL		}, //  E6AF  
+	{ ".gcloudignore"				, IC_GOOGLE_CLOUD		}, // F11F6  󱇶
+	{ ".git-blame-ignore-revs"		, IC_GIT				}, // F02A2  󰊢
+	{ ".gitattributes"				, IC_GIT				}, // F02A2  󰊢
+	{ ".gitconfig"					, IC_GIT				}, // F02A2  󰊢
+	{ ".gitignore"					, IC_GIT				}, // F02A2  󰊢
+	{ ".gitignore_global"			, IC_GIT				}, // F02A2  󰊢
+	{ ".gitlab-ci.yml"				, IC_GITLAB				}, //  F296  
+	{ ".gitmodules"					, IC_GIT				}, // F02A2  󰊢
+	{ ".gtkrc-2.0"					, IC_GRUNT				}, //  E611  
+	{ ".gvimrc"						, IC_VIM				}, //  E7C5  
+	{ ".htaccess"					, IC_CONFIG				}, // F107B  󱁻
+	{ ".htpasswd"					, IC_CONFIG				}, // F107B  󱁻
+	{ ".idea"						, IC_INTELLIJ			}, //  E7B5  
+	{ ".ideavimrc"					, IC_VIM				}, //  E7C5  
+	{ ".inputrc"					, IC_CONFIG				}, // F107B  󱁻
+	{ ".kshrc"						, IC_SHELL				}, // F1183  󱆃
+	{ ".login"						, IC_SHELL				}, // F1183  󱆃
+	{ ".logout"						, IC_SHELL				}, // F1183  󱆃
+	{ ".luacheckrc"					, IC_CONFIG				}, // F107B  󱁻
+	{ ".luaurc"						, IC_CONFIG				}, // F107B  󱁻
+	{ ".mailmap"					, IC_GIT				}, // F02A2  󰊢
+	{ ".nanorc"						, IC_NANO				}, //  E838  
+	{ ".node_repl_history"			, IC_NODEJS				}, //  E718  
+	{ ".npmignore"					, IC_NPM				}, //  E71E  
+	{ ".npmrc"						, IC_NPM				}, //  E71E  
+	{ ".nuxtrc"						, IC_NUXT				}, // F1106  󱄆
+	{ ".ocamlinit"					, IC_LANG_OCAML			}, //  E67A  
+	{ ".parentlock"					, IC_LOCK				}, //  F023  
+	{ ".pre-commit-config.yaml"		, IC_HOOK				}, // F06E2  󰛢
+	{ ".prettierignore"				, IC_PRETTIER			}, //  E6B4  
+	{ ".prettierrc"					, IC_PRETTIER			}, //  E6B4  
+	{ ".prettierrc.json"			, IC_PRETTIER			}, //  E6B4  
+	{ ".prettierrc.json5"			, IC_PRETTIER			}, //  E6B4  
+	{ ".prettierrc.toml"			, IC_PRETTIER			}, //  E6B4  
+	{ ".prettierrc.yaml"			, IC_PRETTIER			}, //  E6B4  
+	{ ".prettierrc.yml"				, IC_PRETTIER			}, //  E6B4  
+	{ ".profile"					, IC_SHELL				}, // F1183  󱆃
+	{ ".pylintrc"					, IC_CONFIG				}, // F107B  󱁻
+	{ ".python_history"				, IC_LANG_PYTHON		}, //  E606  
+	{ ".rustfmt.toml"				, IC_LANG_RUST			}, //  E68B  
+	{ ".rvm"						, IC_LANG_RUBY			}, //  E739  
+	{ ".rvmrc"						, IC_LANG_RUBY			}, //  E739  
+	{ ".SRCINFO"					, IC_ARCHBTW			}, //  F303  
+	{ ".stowrc"						, IC_STOW				}, //  EEF1  
+	{ ".tcshrc"						, IC_SHELL				}, // F1183  󱆃
+	{ ".viminfo"					, IC_VIM				}, //  E7C5  
+	{ ".vimrc"						, IC_VIM				}, //  E7C5  
+	{ ".Xauthority"					, IC_XORG				}, //  F369  
+	{ ".xinitrc"					, IC_XORG				}, //  F369  
+	{ ".Xresources"					, IC_XORG				}, //  F369  
+	{ ".xsession"					, IC_XORG				}, //  F369  
+	{ ".yarnrc"						, IC_YARN				}, //  E6A7  
+	{ ".zlogin"						, IC_SHELL				}, // F1183  󱆃
+	{ ".zlogout"					, IC_SHELL				}, // F1183  󱆃
+	{ ".zprofile"					, IC_SHELL				}, // F1183  󱆃
+	{ ".zsh_history"				, IC_SHELL				}, // F1183  󱆃
+	{ ".zsh_sessions"				, IC_SHELL				}, // F1183  󱆃
+	{ ".zshenv"						, IC_SHELL				}, // F1183  󱆃
+	{ ".zshrc"						, IC_SHELL				}, // F1183  󱆃
+	{ "_gvimrc"						, IC_VIM				}, //  E7C5  
+	{ "_vimrc"						, IC_VIM				}, //  E7C5  
+	{ "a.out"						, IC_SHELL_CMD			}, //  F489  
+	{ "authorized_keys"				, IC_SSH_LOGO			}, // F08C0  󰣀
+	{ "AUTHORS"						, IC_PEOPLE				}, //  EDCA  
+	{ "AUTHORS.txt"					, IC_PEOPLE				}, //  EDCA  
+	{ "bashrc"						, IC_SHELL				}, // F1183  󱆃
+	{ "Brewfile"					, IC_HOMEBREW			}, // F1116  󱄖
+	{ "Brewfile.lock.json"			, IC_HOMEBREW			}, // F1116  󱄖
+	{ "bspwmrc"						, IC_BSPWM				}, //  F355  
+	{ "build.gradle.kts"			, IC_GRADLE				}, //  E660  
+	{ "build.zig.zon"				, IC_ZIG				}, //  E6A9  
+	{ "bun.lockb"					, IC_BUN				}, //  E76F  
+	{ "cantorrc"					, IC_KDE				}, //  F373  
+	{ "Cargo.lock"					, IC_LANG_RUST			}, //  E68B  
+	{ "Cargo.toml"					, IC_LANG_RUST			}, //  E68B  
+	{ "CHANGELOG"					, IC_NEWS				}, //  F1EA  
+	{ "CHANGELOG.md"				, IC_NEWS				}, //  F1EA  
+	{ "CHANGES"						, IC_NEWS				}, //  F1EA  
+	{ "CHANGES.md"					, IC_NEWS				}, //  F1EA  
+	{ "CMakeLists.txt"				, IC_CMAKE				}, //  E794  
+	{ "CODE_OF_CONDUCT"				, IC_CODE_OF_CONDUCT	}, //  F4AE  
+	{ "CODE_OF_CONDUCT.md"			, IC_CODE_OF_CONDUCT	}, //  F4AE  
+	{ "COMMIT_EDITMSG"				, IC_GIT				}, // F02A2  󰊢
+	{ "compose.yaml"				, IC_DOCKER				}, //  E650  
+	{ "compose.yml"					, IC_DOCKER				}, //  E650  
+	{ "composer.json"				, IC_LANG_PHP			}, //  E73D  
+	{ "composer.lock"				, IC_LANG_PHP			}, //  E73D  
+	{ "config"						, IC_CONFIG				}, // F107B  󱁻
+	{ "config.ru"					, IC_LANG_RUBY			}, //  E739  
+	{ "config.status"				, IC_CONFIG				}, // F107B  󱁻
+	{ "configure"					, IC_WRENCH				}, //  F0AD  
+	{ "configure.ac"				, IC_CONFIG				}, // F107B  󱁻
+	{ "configure.in"				, IC_CONFIG				}, // F107B  󱁻
+	{ "constraints.txt"				, IC_LANG_PYTHON		}, //  E606  
+	{ "COPYING"						, IC_LICENSE			}, //  F02D  
+	{ "COPYRIGHT"					, IC_LICENSE			}, //  F02D  
+	{ "crontab"						, IC_CONFIG				}, // F107B  󱁻
+	{ "crypttab"					, IC_CONFIG				}, // F107B  󱁻
+	{ "csh.cshrc"					, IC_SHELL				}, // F1183  󱆃
+	{ "csh.login"					, IC_SHELL				}, // F1183  󱆃
+	{ "csh.logout"					, IC_SHELL				}, // F1183  󱆃
+	{ "docker-compose.yaml"			, IC_DOCKER				}, //  E650  
+	{ "docker-compose.yml"			, IC_DOCKER				}, //  E650  
+	{ "Dockerfile"					, IC_DOCKER				}, //  E650  
+	{ "dropbox"						, IC_DROPBOX			}, //  E707  
+	{ "dune"						, IC_LANG_OCAML			}, //  E67A  
+	{ "dune-project"				, IC_WRENCH				}, //  F0AD  
+	{ "Earthfile"					, IC_EARTH				}, //  F0AC  
+	{ "environment"					, IC_CONFIG				}, // F107B  󱁻
+	{ "favicon.ico"					, IC_STAR				}, //  E623  
+	{ "fennelrc"					, IC_LANG_FENNEL		}, //  E6AF  
+	{ "flake.lock"					, IC_FLAKE				}, //  F313  
+	{ "fonts.conf"					, IC_FONT				}, //  F031  
+	{ "fp-info-cache"				, IC_KICAD				}, //  F34C  
+	{ "fp-lib-table"				, IC_KICAD				}, //  F34C  
+	{ "FreeCAD.conf"				, IC_FREECAD			}, //  F336  
+	{ "Gemfile"						, IC_LANG_RUBY			}, //  E739  
+	{ "Gemfile.lock"				, IC_LANG_RUBY			}, //  E739  
+	{ "GNUmakefile"					, IC_MAKE				}, //  E673  
+	{ "go.mod"						, IC_LANG_GO			}, //  E65E  
+	{ "go.sum"						, IC_LANG_GO			}, //  E65E  
+	{ "go.work"						, IC_LANG_GO			}, //  E65E  
+	{ "gradle"						, IC_GRADLE				}, //  E660  
+	{ "gradle.properties"			, IC_GRADLE				}, //  E660  
+	{ "gradlew"						, IC_GRADLE				}, //  E660  
+	{ "gradlew.bat"					, IC_GRADLE				}, //  E660  
+	{ "group"						, IC_LOCK				}, //  F023  
+	{ "gruntfile.coffee"			, IC_GRUNT				}, //  E611  
+	{ "gruntfile.js"				, IC_GRUNT				}, //  E611  
+	{ "gruntfile.ls"				, IC_GRUNT				}, //  E611  
+	{ "gshadow"						, IC_LOCK				}, //  F023  
+	{ "gtkrc"						, IC_GRUNT				}, //  E611  
+	{ "gulpfile.coffee"				, IC_GULP				}, //  E610  
+	{ "gulpfile.js"					, IC_GULP				}, //  E610  
+	{ "gulpfile.ls"					, IC_GULP				}, //  E610  
+	{ "heroku.yml"					, IC_HEROKU				}, //  E77B  
+	{ "hostname"					, IC_CONFIG				}, // F107B  󱁻
+	{ "hypridle.conf"				, IC_HYPRLAND			}, //  F359  
+	{ "hyprland.conf"				, IC_HYPRLAND			}, //  F359  
+	{ "hyprlock.conf"				, IC_HYPRLAND			}, //  F359  
+	{ "hyprpaper.conf"				, IC_HYPRLAND			}, //  F359  
+	{ "i3blocks.conf"				, IC_I3					}, //  F35A  
+	{ "i3status.conf"				, IC_I3					}, //  F35A  
+	{ "id_dsa"						, IC_PRIVATE_KEY		}, // F0306  󰌆
+	{ "id_ecdsa"					, IC_PRIVATE_KEY		}, // F0306  󰌆
+	{ "id_ecdsa_sk"					, IC_PRIVATE_KEY		}, // F0306  󰌆
+	{ "id_ed25519"					, IC_PRIVATE_KEY		}, // F0306  󰌆
+	{ "id_ed25519_sk"				, IC_PRIVATE_KEY		}, // F0306  󰌆
+	{ "id_rsa"						, IC_PRIVATE_KEY		}, // F0306  󰌆
+	{ "index.theme"					, IC_PAINTBRUSH			}, //  EE72  
+	{ "inputrc"						, IC_CONFIG				}, // F107B  󱁻
+	{ "Jenkinsfile"					, IC_JENKINSFILE		}, //  E66E  
+	{ "jsconfig.json"				, IC_LANG_JSCPT			}, //  E74E  
+	{ "Justfile"					, IC_WRENCH				}, //  F0AD  
+	{ "justfile"					, IC_WRENCH				}, //  F0AD  
+	{ "kalgebrarc"					, IC_KDE				}, //  F373  
+	{ "kdeglobals"					, IC_KDE				}, //  F373  
+	{ "kdenlive-layoutsrc"			, IC_KDENLIVE			}, //  F33C  
+	{ "kdenliverc"					, IC_KDENLIVE			}, //  F33C  
+	{ "known_hosts"					, IC_SSH_LOGO			}, // F08C0  󰣀
+	{ "kritadisplayrc"				, IC_KRITA				}, //  F33D  
+	{ "kritarc"						, IC_KRITA				}, //  F33D  
+	{ "LICENCE"						, IC_LICENSE			}, //  F02D  
+	{ "LICENCE.md"					, IC_LICENSE			}, //  F02D  
+	{ "LICENCE.txt"					, IC_LICENSE			}, //  F02D  
+	{ "LICENSE"						, IC_LICENSE			}, //  F02D  
+	{ "LICENSE-APACHE"				, IC_LICENSE			}, //  F02D  
+	{ "LICENSE-MIT"					, IC_LICENSE			}, //  F02D  
+	{ "LICENSE.md"					, IC_LICENSE			}, //  F02D  
+	{ "LICENSE.txt"					, IC_LICENSE			}, //  F02D  
+	{ "localized"					, IC_OS_APPLE			}, //  F179  
+	{ "localtime"					, IC_CLOCK				}, //  F43A  
+	{ "lock"						, IC_LOCK				}, //  F023  
+	{ "LOCK"						, IC_LOCK				}, //  F023  
+	{ "log"							, IC_LOG				}, //  F18D  
+	{ "LOG"							, IC_LOG				}, //  F18D  
+	{ "lxde-rc.xml"					, IC_LXDE				}, //  F363  
+	{ "lxqt.conf"					, IC_LXQT				}, //  F364  
+	{ "Makefile"					, IC_MAKE				}, //  E673  
+	{ "makefile"					, IC_MAKE				}, //  E673  
+	{ "Makefile.ac"					, IC_MAKE				}, //  E673  
+	{ "Makefile.am"					, IC_MAKE				}, //  E673  
+	{ "Makefile.in"					, IC_MAKE				}, //  E673  
+	{ "MANIFEST"					, IC_LANG_PYTHON		}, //  E606  
+	{ "MANIFEST.in"					, IC_LANG_PYTHON		}, //  E606  
+	{ "mix.lock"					, IC_LANG_ELIXIR		}, //  E62D  
+	{ "mpv.conf"					, IC_MPV				}, //  F36E  
+	{ "NEWS"						, IC_NEWS				}, //  F1EA  
+	{ "NEWS.md"						, IC_NEWS				}, //  F1EA  
+	{ "npm-shrinkwrap.json"			, IC_NPM				}, //  E71E  
+	{ "npmrc"						, IC_NPM				}, //  E71E  
+	{ "package-lock.json"			, IC_NPM				}, //  E71E  
+	{ "package.json"				, IC_NPM				}, //  E71E  
+	{ "passwd"						, IC_LOCK				}, //  F023  
+	{ "php.ini"						, IC_LANG_PHP			}, //  E73D  
+	{ "PKGBUILD"					, IC_ARCHBTW			}, //  F303  
+	{ "platformio.ini"				, IC_PLATFORMIO			}, //  E682  
+	{ "pom.xml"						, IC_POM				}, //  E674  
+	{ "Procfile"					, IC_HEROKU				}, //  E77B  
+	{ "profile"						, IC_SHELL				}, // F1183  󱆃
+	{ "PrusaSlicer.ini"				, IC_PRUSASLICER		}, //  F351  
+	{ "PrusaSlicerGcodeViewer.ini"	, IC_PRUSASLICER		}, //  F351  
+	{ "pyproject.toml"				, IC_LANG_PYTHON		}, //  E606  
+	{ "pyvenv.cfg"					, IC_LANG_PYTHON		}, //  E606  
+	{ "qt5ct.conf"					, IC_QT					}, //  F375  
+	{ "qt6ct.conf"					, IC_QT					}, //  F375  
+	{ "QtProject.conf"				, IC_QT					}, //  F375  
+	{ "Rakefile"					, IC_LANG_RUBY			}, //  E739  
+	{ "README"						, IC_README				}, // F00BA  󰂺
+	{ "README.md"					, IC_README				}, // F00BA  󰂺
+	{ "release.toml"				, IC_LANG_RUST			}, //  E68B  
+	{ "renovate.json"				, IC_RENOVATE			}, // F027C  󰉼
+	{ "requirements.txt"			, IC_LANG_PYTHON		}, //  E606  
+	{ "robots.txt"					, IC_ROBOT				}, // F06A9  󰚩
+	{ "rubydoc"						, IC_LANG_RBRAILS		}, //  E73B  
+	{ "rvmrc"						, IC_LANG_RUBY			}, //  E739  
+	{ "SECURITY"					, IC_SECURITY			}, // F0483  󰒃
+	{ "SECURITY.md"					, IC_SECURITY			}, // F0483  󰒃
+	{ "settings.gradle.kts"			, IC_GRADLE				}, //  E660  
+	{ "shadow"						, IC_LOCK				}, //  F023  
+	{ "shells"						, IC_CONFIG				}, // F107B  󱁻
+	{ "sudoers"						, IC_LOCK				}, //  F023  
+	{ "sxhkdrc"						, IC_CONFIG				}, // F107B  󱁻
+	{ "sym-lib-table"				, IC_KICAD				}, //  F34C  
+	{ "timezone"					, IC_CLOCK				}, //  F43A  
+	{ "tmux.conf"					, IC_TMUX				}, //  EBC8  
+	{ "tmux.conf.local"				, IC_TMUX				}, //  EBC8  
+	{ "TODO"						, IC_TODO				}, //  F0AE  
+	{ "TODO.md"						, IC_TODO				}, //  F0AE  
+	{ "tsconfig.json"				, IC_LANG_TSCPT			}, //  E628  
+	{ "Vagrantfile"					, IC_VAGRANT			}, //  2371  ⍱
+	{ "vlcrc"						, IC_VLC				}, // F057C  󰕼
+	{ "webpack.config.js"			, IC_WEBPACK			}, // F072B  󰜫
+	{ "weston.ini"					, IC_WESTON				}, //  F367  
+	{ "xmobarrc"					, IC_XORG				}, //  F369  
+	{ "xmobarrc.hs"					, IC_XORG				}, //  F369  
+	{ "xmonad.hs"					, IC_XORG				}, //  F369  
+	{ "xorg.conf"					, IC_XORG				}, //  F369  
+	{ "xsettingsd.conf"				, IC_XORG				}, //  F369  
+	{ "yarn.lock"					, IC_YARN				}, //  E6A7  
+	{ "zlogin"						, IC_SHELL				}, // F1183  󱆃
+	{ "zlogout"						, IC_SHELL				}, // F1183  󱆃
+	{ "zprofile"					, IC_SHELL				}, // F1183  󱆃
+	{ "zshenv"						, IC_SHELL				}, // F1183  󱆃
+	{ "zshrc"						, IC_SHELL				}, // F1183  󱆃
+	END_OF_ICONS
 };
 
 /* —— Extension Icons —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// Array of lowercase file extensions and their icons.
 const Icon EXT_ICONS[] = {
-	{ "ai"				, IC_AI				}, /*  E7B4   */
-	{ "cr"				, IC_CR				}, /*  E62F   */
-	{ "cu"				, IC_CU				}, /*  E64B   */
-	{ "jl"				, IC_JL				}, /*  E624   */
-	{ "pp"				, IC_PP				}, /*  E631   */
-	{ "qss"				, IC_QT				}, /*  F375   */
-	{ "qrc"				, IC_QT				}, /*  F375   */
-	{ "qml"				, IC_QT				}, /*  F375   */
-	{ "ui"				, IC_UI				}, /*  F2D0   */
-	{ "vi"				, IC_VI				}, /*  E81E   */
-	{ "acf"				, IC_ACF			}, /*  F1B6   */
-	{ "asp"				, IC_ASP			}, /*  F121   */
-	{ "x_t"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "x_b"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "stp"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "step"			, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "ste"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "slvs"			, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "sldprt"			, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "sldasm"			, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "skp"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "psm"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "ipt"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "igs"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "iges"			, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "ige"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "ifc"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "iam"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "f3z"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "f3d"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "dxf"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "dwg"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "catproduct"		, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "catpart"			, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "brep"			, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "3dm"				, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "123dx"			, IC_CAD			}, /* F0EEB  󰻫 */
-	{ "com"				, IC_COM			}, /*  E629   */
-	{ "cow"				, IC_COW			}, /* F019A  󰆚 */
-	{ "csv"				, IC_CSV			}, /*  EEFC   */
-	{ "deb"				, IC_DEB			}, /*  E77D   */
-	{ "ejs"				, IC_EJS			}, /*  E618   */
-	{ "elm"				, IC_ELM			}, /*  E62C   */
-	{ "eml"				, IC_EML			}, /*  F003   */
-	{ "env"				, IC_ENV			}, /*  F462   */
-	{ "z64"				, IC_GBA			}, /* F1393  󱎓 */
-	{ "gba"				, IC_GBA			}, /* F1393  󱎓 */
-	{ "git"				, IC_GIT			}, /* F02A2  󰊢 */
-	{ "gresource"		, IC_GTK			}, /*  F362   */
-	{ "hex"				, IC_HEX			}, /* F12A7  󱊧 */
-	{ "pfx"				, IC_KEY			}, /*  EB11   */
-	{ "pem"				, IC_KEY			}, /*  EB11   */
-	{ "p12"				, IC_KEY			}, /*  EB11   */
-	{ "key"				, IC_KEY			}, /*  EB11   */
-	{ "log"				, IC_LOG			}, /*  F18D   */
-	{ "mid"				, IC_MID			}, /* F08F2  󰣲 */
-	{ "msf"				, IC_MSF			}, /*  F370   */
-	{ "odf"				, IC_ODF			}, /*  F37B   */
-	{ "odg"				, IC_ODG			}, /*  F379   */
-	{ "fodg"			, IC_ODG			}, /*  F379   */
-	{ "odp"				, IC_ODP			}, /*  F37A   */
-	{ "fodp"			, IC_ODP			}, /*  F37A   */
-	{ "ods"				, IC_ODS			}, /*  F378   */
-	{ "fods"			, IC_ODS			}, /*  F378   */
-	{ "odt"				, IC_ODT			}, /*  F37C   */
-	{ "fodt"			, IC_ODT			}, /*  F37C   */
-	{ "org"				, IC_ORG			}, /*  E633   */
-	{ "out"				, IC_OUT			}, /*  EB2C   */
-	{ "pdf"				, IC_PDF			}, /*  F1C1   */
-	{ "pkg"				, IC_PKG			}, /*  EB29   */
-	{ "rdb"				, IC_RDB			}, /*  E76D   */
-	{ "rpm"				, IC_RPM			}, /*  E7BB   */
-	{ "rss"				, IC_RSS			}, /*  F09E   */
-	{ "tcl"				, IC_TCL			}, /* F06D3  󰛓 */
-	{ "tbc"				, IC_TCL			}, /* F06D3  󰛓 */
-	{ "vhs"				, IC_VHS			}, /* F0A1B  󰨛 */
-	{ "vim"				, IC_VIM			}, /*  E7C5   */
-	{ "vue"				, IC_VUE			}, /* F0844  󰡄 */
-	{ "xul"				, IC_XML			}, /* F05C0  󰗀 */
-	{ "xml"				, IC_XML			}, /* F05C0  󰗀 */
-	{ "opml"			, IC_XML			}, /* F05C0  󰗀 */
-	{ "xpi"				, IC_XPI			}, /*  EAE6   */
-	{ "zig"				, IC_ZIG			}, /*  E6A9   */
-	{ "mobi"			, IC_BOOK			}, /*  E28B   */
-	{ "epub"			, IC_BOOK			}, /*  E28B   */
-	{ "ebook"			, IC_BOOK			}, /*  E28B   */
-	{ "css"				, IC_CSS3			}, /*  E749   */
-	{ "dart"			, IC_DART			}, /*  E798   */
-	{ "patch"			, IC_DIFF			}, /*  F440   */
-	{ "diff"			, IC_DIFF			}, /*  F440   */
-	{ "woff2"			, IC_FONT			}, /*  F031   */
-	{ "woff"			, IC_FONT			}, /*  F031   */
-	{ "ttf"				, IC_FONT			}, /*  F031   */
-	{ "ttc"				, IC_FONT			}, /*  F031   */
-	{ "psf"				, IC_FONT			}, /*  F031   */
-	{ "otf"				, IC_FONT			}, /*  F031   */
-	{ "lff"				, IC_FONT			}, /*  F031   */
-	{ "font"			, IC_FONT			}, /*  F031   */
-	{ "fon"				, IC_FONT			}, /*  F031   */
-	{ "fnt"				, IC_FONT			}, /*  F031   */
-	{ "flf"				, IC_FONT			}, /*  F031   */
-	{ "flc"				, IC_FONT			}, /*  F031   */
-	{ "eot"				, IC_FONT			}, /*  F031   */
-	{ "bdf"				, IC_FONT			}, /*  F031   */
-	{ "xcf"				, IC_GIMP			}, /*  F338   */
-	{ "haml"			, IC_HAML			}, /*  E664   */
-	{ "nfo"				, IC_INFO			}, /*  F129   */
-	{ "info"			, IC_INFO			}, /*  F129   */
-	{ "webmanifest"		, IC_JSON			}, /*  E60B   */
-	{ "properties"		, IC_JSON			}, /*  E60B   */
-	{ "jsonc"			, IC_JSON			}, /*  E60B   */
-	{ "json5"			, IC_JSON			}, /*  E60B   */
-	{ "json"			, IC_JSON			}, /*  E60B   */
-	{ "avro"			, IC_JSON			}, /*  E60B   */
-	{ "less"			, IC_LESS			}, /*  E758   */
-	{ "lisp"			, IC_LISP			}, /* F0172  󰅲 */
-	{ "lock"			, IC_LOCK			}, /*  F023   */
-	{ "lck"				, IC_LOCK			}, /*  F023   */
-	{ "mk"				, IC_MAKE			}, /*  E673   */
-	{ "norg"			, IC_NORG			}, /*  E847   */
-	{ "opam"			, IC_OPAM			}, /* F0627  󰘧 */
-	{ "purs"			, IC_PURS			}, /*  E630   */
-	{ "scad"			, IC_SCAD			}, /*  F34E   */
-	{ "txt"				, IC_TEXT			}, /*  F15C   */
-	{ "rtf"				, IC_TEXT			}, /*  F15C   */
-	{ "rst"				, IC_TEXT			}, /*  F15C   */
-	{ "tmux"			, IC_TMUX			}, /*  EBC8   */
-	{ "toml"			, IC_TOML			}, /*  E6B2   */
-	{ "twig"			, IC_TWIG			}, /*  E61C   */
-	{ "vala"			, IC_VALA			}, /*  E8D1   */
-	{ "vsix"			, IC_VSIX			}, /* F0A1E  󰨞 */
-	{ "xaml"			, IC_XAML			}, /* F0673  󰙳 */
-	{ "yml"				, IC_YAML			}, /*  E6A8   */
-	{ "yaml"			, IC_YAML			}, /*  E6A8   */
-	{ "wv"				, IC_AUDIO			}, /*  F4AE   */
-	{ "wma"				, IC_AUDIO			}, /*  F4AE   */
-	{ "wav"				, IC_AUDIO			}, /*  F4AE   */
-	{ "swf"				, IC_AUDIO			}, /*  F4AE   */
-	{ "pcm"				, IC_AUDIO			}, /*  F4AE   */
-	{ "opus"			, IC_AUDIO			}, /*  F4AE   */
-	{ "ogg"				, IC_AUDIO			}, /*  F4AE   */
-	{ "mp3"				, IC_AUDIO			}, /*  F4AE   */
-	{ "mp2"				, IC_AUDIO			}, /*  F4AE   */
-	{ "mka"				, IC_AUDIO			}, /*  F4AE   */
-	{ "m4a"				, IC_AUDIO			}, /*  F4AE   */
-	{ "flac"			, IC_AUDIO			}, /*  F4AE   */
-	{ "ape"				, IC_AUDIO			}, /*  F4AE   */
-	{ "alac"			, IC_AUDIO			}, /*  F4AE   */
-	{ "aiff"			, IC_AUDIO			}, /*  F4AE   */
-	{ "aifc"			, IC_AUDIO			}, /*  F4AE   */
-	{ "aif"				, IC_AUDIO			}, /*  F4AE   */
-	{ "aac"				, IC_AUDIO			}, /*  F4AE   */
-	{ "blend"			, IC_BLEND			}, /* F00AB  󰂫 */
-	{ "cache"			, IC_CACHE			}, /*  F49B   */
-	{ "cmake"			, IC_CMAKE			}, /*  E794   */
-	{ "conda"			, IC_CONDA			}, /*  E715   */
-	{ "elc"				, IC_EMACS			}, /*  E632   */
-	{ "el"				, IC_EMACS			}, /*  E632   */
-	{ "nix"				, IC_FLAKE			}, /*  F313   */
-	{ "gcode"			, IC_GCODE			}, /* F0AF4  󰫴 */
-	{ "gform"			, IC_GFORM			}, /*  F298   */
-	{ "tscn"			, IC_GODOT			}, /*  E65F   */
-	{ "tres"			, IC_GODOT			}, /*  E65F   */
-	{ "godot"			, IC_GODOT			}, /*  E65F   */
-	{ "gd"				, IC_GODOT			}, /*  E65F   */
-	{ "gv"				, IC_GRAPH			}, /* F1049  󱁉 */
-	{ "dot"				, IC_GRAPH			}, /* F1049  󱁉 */
-	{ "xhtml"			, IC_HTML5			}, /*  F13B   */
-	{ "shtml"			, IC_HTML5			}, /*  F13B   */
-	{ "html"			, IC_HTML5			}, /*  F13B   */
-	{ "htm"				, IC_HTML5			}, /*  F13B   */
-	{ "xpm"				, IC_IMAGE			}, /*  F1C5   */
-	{ "webp"			, IC_IMAGE			}, /*  F1C5   */
-	{ "tiff"			, IC_IMAGE			}, /*  F1C5   */
-	{ "tif"				, IC_IMAGE			}, /*  F1C5   */
-	{ "raw"				, IC_IMAGE			}, /*  F1C5   */
-	{ "pxm"				, IC_IMAGE			}, /*  F1C5   */
-	{ "ppm"				, IC_IMAGE			}, /*  F1C5   */
-	{ "pnm"				, IC_IMAGE			}, /*  F1C5   */
-	{ "png"				, IC_IMAGE			}, /*  F1C5   */
-	{ "pgm"				, IC_IMAGE			}, /*  F1C5   */
-	{ "pbm"				, IC_IMAGE			}, /*  F1C5   */
-	{ "orf"				, IC_IMAGE			}, /*  F1C5   */
-	{ "nef"				, IC_IMAGE			}, /*  F1C5   */
-	{ "jxl"				, IC_IMAGE			}, /*  F1C5   */
-	{ "jpx"				, IC_IMAGE			}, /*  F1C5   */
-	{ "jpg"				, IC_IMAGE			}, /*  F1C5   */
-	{ "jpf"				, IC_IMAGE			}, /*  F1C5   */
-	{ "jpeg"			, IC_IMAGE			}, /*  F1C5   */
-	{ "jpe"				, IC_IMAGE			}, /*  F1C5   */
-	{ "jp2"				, IC_IMAGE			}, /*  F1C5   */
-	{ "jif"				, IC_IMAGE			}, /*  F1C5   */
-	{ "jfif"			, IC_IMAGE			}, /*  F1C5   */
-	{ "jfi"				, IC_IMAGE			}, /*  F1C5   */
-	{ "j2k"				, IC_IMAGE			}, /*  F1C5   */
-	{ "j2c"				, IC_IMAGE			}, /*  F1C5   */
-	{ "ico"				, IC_IMAGE			}, /*  F1C5   */
-	{ "heif"			, IC_IMAGE			}, /*  F1C5   */
-	{ "heic"			, IC_IMAGE			}, /*  F1C5   */
-	{ "gif"				, IC_IMAGE			}, /*  F1C5   */
-	{ "dvi"				, IC_IMAGE			}, /*  F1C5   */
-	{ "cr2"				, IC_IMAGE			}, /*  F1C5   */
-	{ "cbz"				, IC_IMAGE			}, /*  F1C5   */
-	{ "cbr"				, IC_IMAGE			}, /*  F1C5   */
-	{ "bmp"				, IC_IMAGE			}, /*  F1C5   */
-	{ "avif"			, IC_IMAGE			}, /*  F1C5   */
-	{ "arw"				, IC_IMAGE			}, /*  F1C5   */
-	{ "jwmrc"			, IC_JWMRC			}, /*  F35B   */
-	{ "kicad_wks"		, IC_KICAD			}, /*  F34C   */
-	{ "kicad_sym"		, IC_KICAD			}, /*  F34C   */
-	{ "kicad_sch"		, IC_KICAD			}, /*  F34C   */
-	{ "kicad_pro"		, IC_KICAD			}, /*  F34C   */
-	{ "kicad_prl"		, IC_KICAD			}, /*  F34C   */
-	{ "kicad_pcb"		, IC_KICAD			}, /*  F34C   */
-	{ "kicad_mod"		, IC_KICAD			}, /*  F34C   */
-	{ "kicad_dru"		, IC_KICAD			}, /*  F34C   */
-	{ "krz"				, IC_KRITA			}, /*  F33D   */
-	{ "kra"				, IC_KRITA			}, /*  F33D   */
-	{ "kpp"				, IC_KRITA			}, /*  F33D   */
-	{ "ninja"			, IC_NINJA			}, /* F0774  󰝴 */
-	{ "razor"			, IC_RAZOR			}, /*  F1FA   */
-	{ "cshtml"			, IC_RAZOR			}, /*  F1FA   */
-	{ "tsx"				, IC_REACT			}, /*  E7BA   */
-	{ "jsx"				, IC_REACT			}, /*  E7BA   */
-	{ "scala"			, IC_SCALA			}, /*  E737   */
-	{ "xlsx"			, IC_SHEET			}, /*  F1C3   */
-	{ "xlsm"			, IC_SHEET			}, /*  F1C3   */
-	{ "xls"				, IC_SHEET			}, /*  F1C3   */
-	{ "xlr"				, IC_SHEET			}, /*  F1C3   */
-	{ "tsv"				, IC_SHEET			}, /*  F1C3   */
-	{ "gsheet"			, IC_SHEET			}, /*  F1C3   */
-	{ "zsh-theme"		, IC_SHELL			}, /* F1183  󱆃 */
-	{ "pptx"			, IC_SLIDE			}, /*  F1C4   */
-	{ "ppt"				, IC_SLIDE			}, /*  F1C4   */
-	{ "ppsx"			, IC_SLIDE			}, /*  F1C4   */
-	{ "pps"				, IC_SLIDE			}, /*  F1C4   */
-	{ "gslides"			, IC_SLIDE			}, /*  F1C4   */
-	{ "xcplayground"	, IC_SWIFT			}, /*  E755   */
-	{ "swift"			, IC_SWIFT			}, /*  E755   */
-	{ "typ"				, IC_TYPST			}, /*  F37F   */
-	{ "unity3d"			, IC_UNITY			}, /*  E721   */
-	{ "unity"			, IC_UNITY			}, /*  E721   */
-	{ "o"				, IC_BINARY			}, /*  EAE8   */
-	{ "hi"				, IC_BINARY			}, /*  EAE8   */
-	{ "elf"				, IC_BINARY			}, /*  EAE8   */
-	{ "bin"				, IC_BINARY			}, /*  EAE8   */
-	{ "app"				, IC_BINARY			}, /*  EAE8   */
-	{ "coffee"			, IC_COFFEE			}, /*  F0F4   */
-	{ "tml"				, IC_CONFIG			}, /* F107B  󱁻 */
-	{ "ini"				, IC_CONFIG			}, /* F107B  󱁻 */
-	{ "config"			, IC_CONFIG			}, /* F107B  󱁻 */
-	{ "conf"			, IC_CONFIG			}, /* F107B  󱁻 */
-	{ "cfg"				, IC_CONFIG			}, /* F107B  󱁻 */
-	{ "dockerignore"	, IC_DOCKER			}, /*  E650   */
-	{ "dockerfile"		, IC_DOCKER			}, /*  E650   */
-	{ "drawio"			, IC_DRAWIO			}, /*  EBBA   */
-	{ "ebuild"			, IC_EBUILD			}, /*  F30D   */
-	{ "hrl"				, IC_ERLANG			}, /*  E7B1   */
-	{ "erl"				, IC_ERLANG			}, /*  E7B1   */
-	{ "gradle"			, IC_GRADLE			}, /*  E660   */
-	{ "m"				, IC_LANG_C			}, /*  E61E   */
-	{ "inl"				, IC_LANG_C			}, /*  E61E   */
-	{ "h"				, IC_LANG_C			}, /*  E61E   */
-	{ "c"				, IC_LANG_C			}, /*  E61E   */
-	{ "di"				, IC_LANG_D			}, /*  E7AF   */
-	{ "d"				, IC_LANG_D			}, /*  E7AF   */
-	{ "rds"				, IC_LANG_R			}, /*  E68A   */
-	{ "rdata"			, IC_LANG_R			}, /*  E68A   */
-	{ "r"				, IC_LANG_R			}, /*  E68A   */
-	{ "v"				, IC_LANG_V			}, /*  E6AC   */
-	{ "magnet"			, IC_MAGNET			}, /*  F076   */
-	{ "node"			, IC_NODEJS			}, /*  E718   */
-	{ "readme"			, IC_README			}, /* F00BA  󰂺 */
-	{ "sqlite3"			, IC_SQLITE			}, /*  E7C4   */
-	{ "sqlite"			, IC_SQLITE			}, /*  E7C4   */
-	{ "sl3"				, IC_SQLITE			}, /*  E7C4   */
-	{ "s3db"			, IC_SQLITE			}, /*  E7C4   */
-	{ "db3"				, IC_SQLITE			}, /*  E7C4   */
-	{ "svelte"			, IC_SVELTE			}, /*  E697   */
-	{ "xci"				, IC_SWITCH			}, /* F07E1  󰟡 */
-	{ "nsp"				, IC_SWITCH			}, /* F07E1  󰟡 */
-	{ "svg"				, IC_VECTOR			}, /* F0559  󰕙 */
-	{ "ps"				, IC_VECTOR			}, /* F0559  󰕙 */
-	{ "eps"				, IC_VECTOR			}, /* F0559  󰕙 */
-	{ "wmv"				, IC_VIDEOS			}, /*  F03D   */
-	{ "webm"			, IC_VIDEOS			}, /*  F03D   */
-	{ "vob"				, IC_VIDEOS			}, /*  F03D   */
-	{ "video"			, IC_VIDEOS			}, /*  F03D   */
-	{ "ogv"				, IC_VIDEOS			}, /*  F03D   */
-	{ "ogm"				, IC_VIDEOS			}, /*  F03D   */
-	{ "mpg"				, IC_VIDEOS			}, /*  F03D   */
-	{ "mpeg"			, IC_VIDEOS			}, /*  F03D   */
-	{ "mp4"				, IC_VIDEOS			}, /*  F03D   */
-	{ "mov"				, IC_VIDEOS			}, /*  F03D   */
-	{ "mkv"				, IC_VIDEOS			}, /*  F03D   */
-	{ "m4v"				, IC_VIDEOS			}, /*  F03D   */
-	{ "m2v"				, IC_VIDEOS			}, /*  F03D   */
-	{ "m2ts"			, IC_VIDEOS			}, /*  F03D   */
-	{ "heics"			, IC_VIDEOS			}, /*  F03D   */
-	{ "h264"			, IC_VIDEOS			}, /*  F03D   */
-	{ "flv"				, IC_VIDEOS			}, /*  F03D   */
-	{ "cast"			, IC_VIDEOS			}, /*  F03D   */
-	{ "avi"				, IC_VIDEOS			}, /*  F03D   */
-	{ "3gpp2"			, IC_VIDEOS			}, /*  F03D   */
-	{ "3gpp"			, IC_VIDEOS			}, /*  F03D   */
-	{ "3gp2"			, IC_VIDEOS			}, /*  F03D   */
-	{ "3gp"				, IC_VIDEOS			}, /*  F03D   */
-	{ "3g2"				, IC_VIDEOS			}, /*  F03D   */
-	{ "suo"				, IC_VSCODE			}, /*  E70C   */
-	{ "sln"				, IC_VSCODE			}, /*  E70C   */
-	{ "prjpcb"			, IC_EDA_PCB		}, /*  EABE   */
-	{ "pcbdoc"			, IC_EDA_PCB		}, /*  EABE   */
-	{ "lpp"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gts"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gtp"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gto"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gtl"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gml"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gm1"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gbs"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gbr"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gbp"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gbo"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "gbl"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "brd"				, IC_EDA_PCB		}, /*  EABE   */
-	{ "schdoc"			, IC_EDA_SCH		}, /* F0B45  󰭅 */
-	{ "sch"				, IC_EDA_SCH		}, /* F0B45  󰭅 */
-	{ "wrz"				, IC_FILE_3D		}, /* F01A7  󰆧 */
-	{ "wrl"				, IC_FILE_3D		}, /* F01A7  󰆧 */
-	{ "stl"				, IC_FILE_3D		}, /* F01A7  󰆧 */
-	{ "ply"				, IC_FILE_3D		}, /* F01A7  󰆧 */
-	{ "obj"				, IC_FILE_3D		}, /* F01A7  󰆧 */
-	{ "fbx"				, IC_FILE_3D		}, /* F01A7  󰆧 */
-	{ "3mf"				, IC_FILE_3D		}, /* F01A7  󰆧 */
-	{ "fctl"			, IC_FREECAD		}, /*  F336   */
-	{ "fctb"			, IC_FREECAD		}, /*  F336   */
-	{ "fcstd1"			, IC_FREECAD		}, /*  F336   */
-	{ "fcstd"			, IC_FREECAD		}, /*  F336   */
-	{ "fcscript"		, IC_FREECAD		}, /*  F336   */
-	{ "fcparam"			, IC_FREECAD		}, /*  F336   */
-	{ "fcmat"			, IC_FREECAD		}, /*  F336   */
-	{ "fcmacro"			, IC_FREECAD		}, /*  F336   */
-	{ "fcbak"			, IC_FREECAD		}, /*  F336   */
-	{ "graphql"			, IC_GRAPHQL		}, /*  E662   */
-	{ "gql"				, IC_GRAPHQL		}, /*  E662   */
-	{ "kdbx"			, IC_KEYPASS		}, /*  F23E   */
-	{ "kdb"				, IC_KEYPASS		}, /*  F23E   */
-	{ "go"				, IC_LANG_GO		}, /*  E65E   */
-	{ "lib"				, IC_LIBRARY		}, /*  EB9C   */
-	{ "lbr"				, IC_LIBRARY		}, /*  EB9C   */
-	{ "dll"				, IC_LIBRARY		}, /*  EB9C   */
-	{ "license"			, IC_LICENSE		}, /*  F02D   */
-	{ "service"			, IC_SERVICE		}, /*  EBA2   */
-	{ "sr"				, IC_SQ_WAVE		}, /* F147B  󱑻 */
-	{ "sal"				, IC_SQ_WAVE		}, /* F147B  󱑻 */
-	{ "sublime-theme"	, IC_SUBLIME		}, /*  E7AA   */
-	{ "sublime-snippet"	, IC_SUBLIME		}, /*  E7AA   */
-	{ "sublime-settings", IC_SUBLIME		}, /*  E7AA   */
-	{ "sublime-session"	, IC_SUBLIME		}, /*  E7AA   */
-	{ "sublime-project"	, IC_SUBLIME		}, /*  E7AA   */
-	{ "sublime-package"	, IC_SUBLIME		}, /*  E7AA   */
-	{ "sublime-options"	, IC_SUBLIME		}, /*  E7AA   */
-	{ "sublime-menu"	, IC_SUBLIME		}, /*  E7AA   */
-	{ "sublime-keymap"	, IC_SUBLIME		}, /*  E7AA   */
-	{ "sublime-build"	, IC_SUBLIME		}, /*  E7AA   */
-	{ "torrent"			, IC_TORRENT		}, /*  E275   */
-	{ "ifb"				, IC_CALENDAR		}, /*  EAB0   */
-	{ "ics"				, IC_CALENDAR		}, /*  EAB0   */
-	{ "icalendar"		, IC_CALENDAR		}, /*  EAB0   */
-	{ "ical"			, IC_CALENDAR		}, /*  EAB0   */
-	{ "sql"				, IC_DATABASE		}, /*  F1C0   */
-	{ "prql"			, IC_DATABASE		}, /*  F1C0   */
-	{ "odb"				, IC_DATABASE		}, /*  F1C0   */
-	{ "mdb"				, IC_DATABASE		}, /*  F1C0   */
-	{ "ldb"				, IC_DATABASE		}, /*  F1C0   */
-	{ "dump"			, IC_DATABASE		}, /*  F1C0   */
-	{ "dconf"			, IC_DATABASE		}, /*  F1C0   */
-	{ "db"				, IC_DATABASE		}, /*  F1C0   */
-	{ "gdoc"			, IC_DOCUMENT		}, /*  F1C2   */
-	{ "docx"			, IC_DOCUMENT		}, /*  F1C2   */
-	{ "docm"			, IC_DOCUMENT		}, /*  F1C2   */
-	{ "doc"				, IC_DOCUMENT		}, /*  F1C2   */
-	{ "djvu"			, IC_DOCUMENT		}, /*  F1C2   */
-	{ "djv"				, IC_DOCUMENT		}, /*  F1C2   */
-	{ "part"			, IC_DOWNLOAD		}, /* F01DA  󰇚 */
-	{ "fdmdownload"		, IC_DOWNLOAD		}, /* F01DA  󰇚 */
-	{ "download"		, IC_DOWNLOAD		}, /* F01DA  󰇚 */
-	{ "crdownload"		, IC_DOWNLOAD		}, /* F01DA  󰇚 */
-	{ "iml"				, IC_INTELLIJ		}, /*  E7B5   */
-	{ "kdenlivetitle"	, IC_KDENLIVE		}, /*  F33C   */
-	{ "kdenlive"		, IC_KDENLIVE		}, /*  F33C   */
-	{ "mm"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "hxx"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "hpp"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "hh"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "h++"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "cxx"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "cpp"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "cp"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "cc"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "c++"				, IC_LANG_CPP		}, /*  E61D   */
-	{ "vhdl"			, IC_LANG_HDL		}, /* F035B  󰍛 */
-	{ "svh"				, IC_LANG_HDL		}, /* F035B  󰍛 */
-	{ "sv"				, IC_LANG_HDL		}, /* F035B  󰍛 */
-	{ "luau"			, IC_LANG_LUA		}, /*  E620   */
-	{ "luac"			, IC_LANG_LUA		}, /*  E620   */
-	{ "lua"				, IC_LANG_LUA		}, /*  E620   */
-	{ "nims"			, IC_LANG_NIM		}, /*  E677   */
-	{ "nimble"			, IC_LANG_NIM		}, /*  E677   */
-	{ "nim"				, IC_LANG_NIM		}, /*  E677   */
-	{ "php"				, IC_LANG_PHP		}, /*  E73D   */
-	{ "phar"			, IC_LANG_PHP		}, /*  E73D   */
-	{ "tex"				, IC_LANG_TEX		}, /*  E69B   */
-	{ "sty"				, IC_LANG_TEX		}, /*  E69B   */
-	{ "ltx"				, IC_LANG_TEX		}, /*  E69B   */
-	{ "latex"			, IC_LANG_TEX		}, /*  E69B   */
-	{ "cls"				, IC_LANG_TEX		}, /*  E69B   */
-	{ "bst"				, IC_LANG_TEX		}, /*  E69B   */
-	{ "bib"				, IC_LANG_TEX		}, /*  E69B   */
-	{ "rmd"				, IC_MARKDOWN		}, /*  E68B   */
-	{ "rdoc"			, IC_MARKDOWN		}, /*  F48A   */
-	{ "mkd"				, IC_MARKDOWN		}, /*  F48A   */
-	{ "mdx"				, IC_MARKDOWN		}, /*  F48A   */
-	{ "md"				, IC_MARKDOWN		}, /*  F48A   */
-	{ "markdown"		, IC_MARKDOWN		}, /*  F48A   */
-	{ "jmd"				, IC_MARKDOWN		}, /*  F48A   */
-	{ "mustache"		, IC_MUSTACHE		}, /*  E60F   */
-	{ "hbs"				, IC_MUSTACHE		}, /*  E60F   */
-	{ "ipynb"			, IC_NOTEBOOK		}, /*  E678   */
-	{ "plist"			, IC_OS_APPLE		}, /*  F179   */
-	{ "localized"		, IC_OS_APPLE		}, /*  F179   */
-	{ "dylib"			, IC_OS_APPLE		}, /*  F179   */
-	{ "bundle"			, IC_OS_APPLE		}, /*  F179   */
-	{ "applescript"		, IC_OS_APPLE		}, /*  F179   */
-	{ "apple"			, IC_OS_APPLE		}, /*  F179   */
-	{ "so"				, IC_OS_LINUX		}, /*  F17C   */
-	{ "ko"				, IC_OS_LINUX		}, /*  F17C   */
-	{ "a"				, IC_OS_LINUX		}, /*  F17C   */
-	{ "pls"				, IC_PLAYLIST		}, /* F0CB9  󰲹 */
-	{ "m3u8"			, IC_PLAYLIST		}, /* F0CB9  󰲹 */
-	{ "m3u"				, IC_PLAYLIST		}, /* F0CB9  󰲹 */
-	{ "cue"				, IC_PLAYLIST		}, /* F0CB9  󰲹 */
-	{ "sub"				, IC_SUBTITLE		}, /* F0A16  󰨖 */
-	{ "ssa"				, IC_SUBTITLE		}, /* F0A16  󰨖 */
-	{ "srt"				, IC_SUBTITLE		}, /* F0A16  󰨖 */
-	{ "sbt"				, IC_SUBTITLE		}, /* F0A16  󰨖 */
-	{ "lrc"				, IC_SUBTITLE		}, /* F0A16  󰨖 */
-	{ "ass"				, IC_SUBTITLE		}, /* F0A16  󰨖 */
-	{ "cljc"			, IC_CLOJURE_1		}, /*  E768   */
-	{ "clj"				, IC_CLOJURE_1		}, /*  E768   */
-	{ "edn"				, IC_CLOJURE_2		}, /*  E76A   */
-	{ "cljs"			, IC_CLOJURE_2		}, /*  E76A   */
-	{ "war"				, IC_LANG_JAVA		}, /*  E256   */
-	{ "java"			, IC_LANG_JAVA		}, /*  E256   */
-	{ "jar"				, IC_LANG_JAVA		}, /*  E256   */
-	{ "jad"				, IC_LANG_JAVA		}, /*  E256   */
-	{ "class"			, IC_LANG_JAVA		}, /*  E256   */
-	{ "t"				, IC_LANG_PERL		}, /*  E67E   */
-	{ "pod"				, IC_LANG_PERL		}, /*  E67E   */
-	{ "pm"				, IC_LANG_PERL		}, /*  E67E   */
-	{ "plx"				, IC_LANG_PERL		}, /*  E67E   */
-	{ "pl"				, IC_LANG_PERL		}, /*  E67E   */
-	{ "ru"				, IC_LANG_RUBY		}, /*  E739   */
-	{ "rspec_status"	, IC_LANG_RUBY		}, /*  E739   */
-	{ "rspec_parallel"	, IC_LANG_RUBY		}, /*  E739   */
-	{ "rspec"			, IC_LANG_RUBY		}, /*  E739   */
-	{ "rb"				, IC_LANG_RUBY		}, /*  E739   */
-	{ "rakefile"		, IC_LANG_RUBY		}, /*  E739   */
-	{ "rake"			, IC_LANG_RUBY		}, /*  E739   */
-	{ "procfile"		, IC_LANG_RUBY		}, /*  E739   */
-	{ "guardfile"		, IC_LANG_RUBY		}, /*  E739   */
-	{ "gemspec"			, IC_LANG_RUBY		}, /*  E739   */
-	{ "gemfile"			, IC_LANG_RUBY		}, /*  E739   */
-	{ "gem"				, IC_LANG_RUBY		}, /*  E739   */
-	{ "rs"				, IC_LANG_RUST		}, /*  E68B   */
-	{ "rmeta"			, IC_LANG_RUST		}, /*  E68B   */
-	{ "rlib"			, IC_LANG_RUST		}, /*  E68B   */
-	{ "scss"			, IC_LANG_SASS		}, /*  E603   */
-	{ "sass"			, IC_LANG_SASS		}, /*  E603   */
-	{ "psd"				, IC_PHOTOSHOP		}, /*  E7B8   */
-	{ "psb"				, IC_PHOTOSHOP		}, /*  E7B8   */
-	{ "zsh"				, IC_SHELL_CMD		}, /*  F489   */
-	{ "shell"			, IC_SHELL_CMD		}, /*  F489   */
-	{ "sh"				, IC_SHELL_CMD		}, /*  F489   */
-	{ "nu"				, IC_SHELL_CMD		}, /*  F489   */
-	{ "ksh"				, IC_SHELL_CMD		}, /*  F489   */
-	{ "fish"			, IC_SHELL_CMD		}, /*  F489   */
-	{ "csh"				, IC_SHELL_CMD		}, /*  F489   */
-	{ "bats"			, IC_SHELL_CMD		}, /*  F489   */
-	{ "bash"			, IC_SHELL_CMD		}, /*  F489   */
-	{ "awk"				, IC_SHELL_CMD		}, /*  F489   */
-	{ "tfvars"			, IC_TERRAFORM		}, /* F1062  󱁢 */
-	{ "tfstate"			, IC_TERRAFORM		}, /* F1062  󱁢 */
-	{ "tf"				, IC_TERRAFORM		}, /* F1062  󱁢 */
-	{ "sfz"				, IC_TREB_CLEF		}, /* F0F70  󰽰 */
-	{ "sf2"				, IC_TREB_CLEF		}, /* F0F70  󰽰 */
-	{ "zst"				, IC_COMPRESSED		}, /*  F410   */
-	{ "zip"				, IC_COMPRESSED		}, /*  F410   */
-	{ "z"				, IC_COMPRESSED		}, /*  F410   */
-	{ "xz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "tzo"				, IC_COMPRESSED		}, /*  F410   */
-	{ "tz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "txz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "tlz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "tgz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "tbz2"			, IC_COMPRESSED		}, /*  F410   */
-	{ "tbz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "taz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "tar"				, IC_COMPRESSED		}, /*  F410   */
-	{ "rar"				, IC_COMPRESSED		}, /*  F410   */
-	{ "par"				, IC_COMPRESSED		}, /*  F410   */
-	{ "lzo"				, IC_COMPRESSED		}, /*  F410   */
-	{ "lzma"			, IC_COMPRESSED		}, /*  F410   */
-	{ "lzh"				, IC_COMPRESSED		}, /*  F410   */
-	{ "lz4"				, IC_COMPRESSED		}, /*  F410   */
-	{ "lz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "gz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "cpio"			, IC_COMPRESSED		}, /*  F410   */
-	{ "bz3"				, IC_COMPRESSED		}, /*  F410   */
-	{ "bz2"				, IC_COMPRESSED		}, /*  F410   */
-	{ "bz"				, IC_COMPRESSED		}, /*  F410   */
-	{ "br"				, IC_COMPRESSED		}, /*  F410   */
-	{ "arj"				, IC_COMPRESSED		}, /*  F410   */
-	{ "ar"				, IC_COMPRESSED		}, /*  F410   */
-	{ "7z"				, IC_COMPRESSED		}, /*  F410   */
-	{ "vmdk"			, IC_DISK_IMAGE		}, /*  E271   */
-	{ "vhd"				, IC_DISK_IMAGE		}, /*  E271   */
-	{ "vdi"				, IC_DISK_IMAGE		}, /*  E271   */
-	{ "tc"				, IC_DISK_IMAGE		}, /*  E271   */
-	{ "qcow2"			, IC_DISK_IMAGE		}, /*  E271   */
-	{ "qcow"			, IC_DISK_IMAGE		}, /*  E271   */
-	{ "iso"				, IC_DISK_IMAGE		}, /*  E271   */
-	{ "img"				, IC_DISK_IMAGE		}, /*  E271   */
-	{ "image"			, IC_DISK_IMAGE		}, /*  E271   */
-	{ "dmg"				, IC_DISK_IMAGE		}, /*  E271   */
-	{ "gleam"			, IC_LANG_GLEAM		}, /* F09A5  󰦥 */
-	{ "hc"				, IC_LANG_HOLYC		}, /* F00A2  󰂢 */
-	{ "mjs"				, IC_LANG_JSCPT		}, /*  E74E   */
-	{ "js"				, IC_LANG_JSCPT		}, /*  E74E   */
-	{ "cjs"				, IC_LANG_JSCPT		}, /*  E74E   */
-	{ "mly"				, IC_LANG_OCAML		}, /*  E67A   */
-	{ "mll"				, IC_LANG_OCAML		}, /*  E67A   */
-	{ "mli"				, IC_LANG_OCAML		}, /*  E67A   */
-	{ "ml"				, IC_LANG_OCAML		}, /*  E67A   */
-	{ "ts"				, IC_LANG_TSCPT		}, /*  E628   */
-	{ "mts"				, IC_LANG_TSCPT		}, /*  E628   */
-	{ "cts"				, IC_LANG_TSCPT		}, /*  E628   */
-	{ "apk"				, IC_OS_ANDROID		}, /*  E70E   */
-	{ "android"			, IC_OS_ANDROID		}, /*  E70E   */
-	{ "windows"			, IC_OS_WINDOWS		}, /*  F17A   */
-	{ "msi"				, IC_OS_WINDOWS		}, /*  F17A   */
-	{ "cmd"				, IC_OS_WINDOWS		}, /*  F17A   */
-	{ "cab"				, IC_OS_WINDOWS		}, /*  F17A   */
-	{ "psm1"			, IC_POWERSHELL		}, /*  EBC7   */
-	{ "psd1"			, IC_POWERSHELL		}, /*  EBC7   */
-	{ "ps1"				, IC_POWERSHELL		}, /*  EBC7   */
-	{ "pub"				, IC_PUBLIC_KEY		}, /* F0DD6  󰷖 */
-	{ "kbx"				, IC_SHIELD_KEY		}, /* F0BC4  󰯄 */
-	{ "desktop"			, IC_DESKTOP_EXT	}, /*  EBD1   */
-	{ "crt"				, IC_GIST_SECRET	}, /*  EAFA   */
-	{ "cert"			, IC_GIST_SECRET	}, /*  EAFA   */
-	{ "csx"				, IC_LANG_CSHARP	}, /* F031B  󰌛 */
-	{ "csproj"			, IC_LANG_CSHARP	}, /* F031B  󰌛 */
-	{ "cs"				, IC_LANG_CSHARP	}, /* F031B  󰌛 */
-	{ "leex"			, IC_LANG_ELIXIR	}, /*  E62D   */
-	{ "exs"				, IC_LANG_ELIXIR	}, /*  E62D   */
-	{ "ex"				, IC_LANG_ELIXIR	}, /*  E62D   */
-	{ "eex"				, IC_LANG_ELIXIR	}, /*  E62D   */
-	{ "fnl"				, IC_LANG_FENNEL	}, /*  E6AF   */
-	{ "fsx"				, IC_LANG_FSHARP	}, /*  E7A7   */
-	{ "fsscript"		, IC_LANG_FSHARP	}, /*  E7A7   */
-	{ "fsproj"			, IC_LANG_FSHARP	}, /*  E7A7   */
-	{ "fsi"				, IC_LANG_FSHARP	}, /*  E7A7   */
-	{ "fs"				, IC_LANG_FSHARP	}, /*  E7A7   */
-	{ "f#"				, IC_LANG_FSHARP	}, /*  E7A7   */
-	{ "gvy"				, IC_LANG_GROOVY	}, /*  E775   */
-	{ "groovy"			, IC_LANG_GROOVY	}, /*  E775   */
-	{ "kts"				, IC_LANG_KOTLIN	}, /*  E634   */
-	{ "kt"				, IC_LANG_KOTLIN	}, /*  E634   */
-	{ "whl"				, IC_LANG_PYTHON	}, /*  E606   */
-	{ "pyx"				, IC_LANG_PYTHON	}, /*  E606   */
-	{ "pyw"				, IC_LANG_PYTHON	}, /*  E606   */
-	{ "pyo"				, IC_LANG_PYTHON	}, /*  E606   */
-	{ "pyi"				, IC_LANG_PYTHON	}, /*  E606   */
-	{ "pyd"				, IC_LANG_PYTHON	}, /*  E606   */
-	{ "pyc"				, IC_LANG_PYTHON	}, /*  E606   */
-	{ "py"				, IC_LANG_PYTHON	}, /*  E606   */
-	{ "pxd"				, IC_LANG_PYTHON	}, /*  E606   */
-	{ "ss"				, IC_LANG_SCHEME	}, /*  E6B1   */
-	{ "sld"				, IC_LANG_SCHEME	}, /*  E6B1   */
-	{ "scm"				, IC_LANG_SCHEME	}, /*  E6B1   */
-	{ "rkt"				, IC_LANG_SCHEME	}, /*  E6B1   */
-	{ "stylus"			, IC_LANG_STYLUS	}, /*  E600   */
-	{ "styl"			, IC_LANG_STYLUS	}, /*  E600   */
-	{ "gpg"				, IC_SHIELD_LOCK	}, /* F099D  󰦝 */
-	{ "asc"				, IC_SHIELD_LOCK	}, /* F099D  󰦝 */
-	{ "age"				, IC_SHIELD_LOCK	}, /* F099D  󰦝 */
-	{ "signature"		, IC_SIGNED_FILE	}, /* F19C3  󱧃 */
-	{ "sig"				, IC_SIGNED_FILE	}, /* F19C3  󱧃 */
-	{ "qm"				, IC_TRANSLATION	}, /* F05CA  󰗊 */
-	{ "pot"				, IC_TRANSLATION	}, /* F05CA  󰗊 */
-	{ "po"				, IC_TRANSLATION	}, /* F05CA  󰗊 */
-	{ "mo"				, IC_TRANSLATION	}, /* F05CA  󰗊 */
-	{ "editorconfig"	, IC_EDITORCONFIG	}, /*  E652   */
-	{ "ino"				, IC_LANG_ARDUINO	}, /*  F34B   */
-	{ "for"				, IC_LANG_FORTRAN	}, /* F121A  󱈚 */
-	{ "f90"				, IC_LANG_FORTRAN	}, /* F121A  󱈚 */
-	{ "f"				, IC_LANG_FORTRAN	}, /* F121A  󱈚 */
-	{ "lhs"				, IC_LANG_HASKELL	}, /*  E777   */
-	{ "hs"				, IC_LANG_HASKELL	}, /*  E777   */
-	{ "slim"			, IC_LANG_RBRAILS	}, /*  E73B   */
-	{ "rubydoc"			, IC_LANG_RBRAILS	}, /*  E73B   */
-	{ "erb"				, IC_LANG_RBRAILS	}, /*  E73B   */
-	{ "sha512"			, IC_SHIELD_CHECK	}, /* F0565  󰕥 */
-	{ "sha384"			, IC_SHIELD_CHECK	}, /* F0565  󰕥 */
-	{ "sha256"			, IC_SHIELD_CHECK	}, /* F0565  󰕥 */
-	{ "sha224"			, IC_SHIELD_CHECK	}, /* F0565  󰕥 */
-	{ "sha1"			, IC_SHIELD_CHECK	}, /* F0565  󰕥 */
-	{ "md5"				, IC_SHIELD_CHECK	}, /* F0565  󰕥 */
-	{ "s"				, IC_LANG_ASSEMBLY	}, /*  E637   */
-	{ "asm"				, IC_LANG_ASSEMBLY	}, /*  E637   */
-	{ "exe"				, IC_OS_WINDOWS_CMD	}, /*  EBC4   */
-	{ "bat"				, IC_OS_WINDOWS_CMD	}, /*  EBC4   */
+	{ "ai"				, IC_AI				}, //  E7B4  
+	{ "cr"				, IC_CR				}, //  E62F  
+	{ "cu"				, IC_CU				}, //  E64B  
+	{ "jl"				, IC_JL				}, //  E624  
+	{ "pp"				, IC_PP				}, //  E631  
+	{ "qss"				, IC_QT				}, //  F375  
+	{ "qrc"				, IC_QT				}, //  F375  
+	{ "qml"				, IC_QT				}, //  F375  
+	{ "ui"				, IC_UI				}, //  F2D0  
+	{ "vi"				, IC_VI				}, //  E81E  
+	{ "acf"				, IC_ACF			}, //  F1B6  
+	{ "asp"				, IC_ASP			}, //  F121  
+	{ "x_t"				, IC_CAD			}, // F0EEB  󰻫
+	{ "x_b"				, IC_CAD			}, // F0EEB  󰻫
+	{ "stp"				, IC_CAD			}, // F0EEB  󰻫
+	{ "step"			, IC_CAD			}, // F0EEB  󰻫
+	{ "ste"				, IC_CAD			}, // F0EEB  󰻫
+	{ "slvs"			, IC_CAD			}, // F0EEB  󰻫
+	{ "sldprt"			, IC_CAD			}, // F0EEB  󰻫
+	{ "sldasm"			, IC_CAD			}, // F0EEB  󰻫
+	{ "skp"				, IC_CAD			}, // F0EEB  󰻫
+	{ "psm"				, IC_CAD			}, // F0EEB  󰻫
+	{ "ipt"				, IC_CAD			}, // F0EEB  󰻫
+	{ "igs"				, IC_CAD			}, // F0EEB  󰻫
+	{ "iges"			, IC_CAD			}, // F0EEB  󰻫
+	{ "ige"				, IC_CAD			}, // F0EEB  󰻫
+	{ "ifc"				, IC_CAD			}, // F0EEB  󰻫
+	{ "iam"				, IC_CAD			}, // F0EEB  󰻫
+	{ "f3z"				, IC_CAD			}, // F0EEB  󰻫
+	{ "f3d"				, IC_CAD			}, // F0EEB  󰻫
+	{ "dxf"				, IC_CAD			}, // F0EEB  󰻫
+	{ "dwg"				, IC_CAD			}, // F0EEB  󰻫
+	{ "catproduct"		, IC_CAD			}, // F0EEB  󰻫
+	{ "catpart"			, IC_CAD			}, // F0EEB  󰻫
+	{ "brep"			, IC_CAD			}, // F0EEB  󰻫
+	{ "3dm"				, IC_CAD			}, // F0EEB  󰻫
+	{ "123dx"			, IC_CAD			}, // F0EEB  󰻫
+	{ "com"				, IC_COM			}, //  E629  
+	{ "cow"				, IC_COW			}, // F019A  󰆚
+	{ "csv"				, IC_CSV			}, //  EEFC  
+	{ "deb"				, IC_DEB			}, //  E77D  
+	{ "ejs"				, IC_EJS			}, //  E618  
+	{ "elm"				, IC_ELM			}, //  E62C  
+	{ "eml"				, IC_EML			}, //  F003  
+	{ "env"				, IC_ENV			}, //  F462  
+	{ "z64"				, IC_GBA			}, // F1393  󱎓
+	{ "gba"				, IC_GBA			}, // F1393  󱎓
+	{ "git"				, IC_GIT			}, // F02A2  󰊢
+	{ "gresource"		, IC_GTK			}, //  F362  
+	{ "hex"				, IC_HEX			}, // F12A7  󱊧
+	{ "pfx"				, IC_KEY			}, //  EB11  
+	{ "pem"				, IC_KEY			}, //  EB11  
+	{ "p12"				, IC_KEY			}, //  EB11  
+	{ "key"				, IC_KEY			}, //  EB11  
+	{ "log"				, IC_LOG			}, //  F18D  
+	{ "mid"				, IC_MID			}, // F08F2  󰣲
+	{ "msf"				, IC_MSF			}, //  F370  
+	{ "odf"				, IC_ODF			}, //  F37B  
+	{ "odg"				, IC_ODG			}, //  F379  
+	{ "fodg"			, IC_ODG			}, //  F379  
+	{ "odp"				, IC_ODP			}, //  F37A  
+	{ "fodp"			, IC_ODP			}, //  F37A  
+	{ "ods"				, IC_ODS			}, //  F378  
+	{ "fods"			, IC_ODS			}, //  F378  
+	{ "odt"				, IC_ODT			}, //  F37C  
+	{ "fodt"			, IC_ODT			}, //  F37C  
+	{ "org"				, IC_ORG			}, //  E633  
+	{ "out"				, IC_OUT			}, //  EB2C  
+	{ "pdf"				, IC_PDF			}, //  F1C1  
+	{ "pkg"				, IC_PKG			}, //  EB29  
+	{ "rdb"				, IC_RDB			}, //  E76D  
+	{ "rpm"				, IC_RPM			}, //  E7BB  
+	{ "rss"				, IC_RSS			}, //  F09E  
+	{ "tcl"				, IC_TCL			}, // F06D3  󰛓
+	{ "tbc"				, IC_TCL			}, // F06D3  󰛓
+	{ "vhs"				, IC_VHS			}, // F0A1B  󰨛
+	{ "vim"				, IC_VIM			}, //  E7C5  
+	{ "vue"				, IC_VUE			}, // F0844  󰡄
+	{ "xul"				, IC_XML			}, // F05C0  󰗀
+	{ "xml"				, IC_XML			}, // F05C0  󰗀
+	{ "opml"			, IC_XML			}, // F05C0  󰗀
+	{ "xpi"				, IC_XPI			}, //  EAE6  
+	{ "zig"				, IC_ZIG			}, //  E6A9  
+	{ "mobi"			, IC_BOOK			}, //  E28B  
+	{ "epub"			, IC_BOOK			}, //  E28B  
+	{ "ebook"			, IC_BOOK			}, //  E28B  
+	{ "css"				, IC_CSS3			}, //  E749  
+	{ "dart"			, IC_DART			}, //  E798  
+	{ "patch"			, IC_DIFF			}, //  F440  
+	{ "diff"			, IC_DIFF			}, //  F440  
+	{ "woff2"			, IC_FONT			}, //  F031  
+	{ "woff"			, IC_FONT			}, //  F031  
+	{ "ttf"				, IC_FONT			}, //  F031  
+	{ "ttc"				, IC_FONT			}, //  F031  
+	{ "psf"				, IC_FONT			}, //  F031  
+	{ "otf"				, IC_FONT			}, //  F031  
+	{ "lff"				, IC_FONT			}, //  F031  
+	{ "font"			, IC_FONT			}, //  F031  
+	{ "fon"				, IC_FONT			}, //  F031  
+	{ "fnt"				, IC_FONT			}, //  F031  
+	{ "flf"				, IC_FONT			}, //  F031  
+	{ "flc"				, IC_FONT			}, //  F031  
+	{ "eot"				, IC_FONT			}, //  F031  
+	{ "bdf"				, IC_FONT			}, //  F031  
+	{ "xcf"				, IC_GIMP			}, //  F338  
+	{ "haml"			, IC_HAML			}, //  E664  
+	{ "nfo"				, IC_INFO			}, //  F129  
+	{ "info"			, IC_INFO			}, //  F129  
+	{ "webmanifest"		, IC_JSON			}, //  E60B  
+	{ "properties"		, IC_JSON			}, //  E60B  
+	{ "jsonc"			, IC_JSON			}, //  E60B  
+	{ "json5"			, IC_JSON			}, //  E60B  
+	{ "json"			, IC_JSON			}, //  E60B  
+	{ "avro"			, IC_JSON			}, //  E60B  
+	{ "less"			, IC_LESS			}, //  E758  
+	{ "lisp"			, IC_LISP			}, // F0172  󰅲
+	{ "lock"			, IC_LOCK			}, //  F023  
+	{ "lck"				, IC_LOCK			}, //  F023  
+	{ "mk"				, IC_MAKE			}, //  E673  
+	{ "norg"			, IC_NORG			}, //  E847  
+	{ "opam"			, IC_OPAM			}, // F0627  󰘧
+	{ "purs"			, IC_PURS			}, //  E630  
+	{ "scad"			, IC_SCAD			}, //  F34E  
+	{ "txt"				, IC_TEXT			}, //  F15C  
+	{ "rtf"				, IC_TEXT			}, //  F15C  
+	{ "rst"				, IC_TEXT			}, //  F15C  
+	{ "tmux"			, IC_TMUX			}, //  EBC8  
+	{ "toml"			, IC_TOML			}, //  E6B2  
+	{ "twig"			, IC_TWIG			}, //  E61C  
+	{ "vala"			, IC_VALA			}, //  E8D1  
+	{ "vsix"			, IC_VSIX			}, // F0A1E  󰨞
+	{ "xaml"			, IC_XAML			}, // F0673  󰙳
+	{ "yml"				, IC_YAML			}, //  E6A8  
+	{ "yaml"			, IC_YAML			}, //  E6A8  
+	{ "wv"				, IC_AUDIO			}, //  F4AE  
+	{ "wma"				, IC_AUDIO			}, //  F4AE  
+	{ "wav"				, IC_AUDIO			}, //  F4AE  
+	{ "swf"				, IC_AUDIO			}, //  F4AE  
+	{ "pcm"				, IC_AUDIO			}, //  F4AE  
+	{ "opus"			, IC_AUDIO			}, //  F4AE  
+	{ "ogg"				, IC_AUDIO			}, //  F4AE  
+	{ "mp3"				, IC_AUDIO			}, //  F4AE  
+	{ "mp2"				, IC_AUDIO			}, //  F4AE  
+	{ "mka"				, IC_AUDIO			}, //  F4AE  
+	{ "m4a"				, IC_AUDIO			}, //  F4AE  
+	{ "flac"			, IC_AUDIO			}, //  F4AE  
+	{ "ape"				, IC_AUDIO			}, //  F4AE  
+	{ "alac"			, IC_AUDIO			}, //  F4AE  
+	{ "aiff"			, IC_AUDIO			}, //  F4AE  
+	{ "aifc"			, IC_AUDIO			}, //  F4AE  
+	{ "aif"				, IC_AUDIO			}, //  F4AE  
+	{ "aac"				, IC_AUDIO			}, //  F4AE  
+	{ "blend"			, IC_BLEND			}, // F00AB  󰂫
+	{ "cache"			, IC_CACHE			}, //  F49B  
+	{ "cmake"			, IC_CMAKE			}, //  E794  
+	{ "conda"			, IC_CONDA			}, //  E715  
+	{ "elc"				, IC_EMACS			}, //  E632  
+	{ "el"				, IC_EMACS			}, //  E632  
+	{ "nix"				, IC_FLAKE			}, //  F313  
+	{ "gcode"			, IC_GCODE			}, // F0AF4  󰫴
+	{ "gform"			, IC_GFORM			}, //  F298  
+	{ "tscn"			, IC_GODOT			}, //  E65F  
+	{ "tres"			, IC_GODOT			}, //  E65F  
+	{ "godot"			, IC_GODOT			}, //  E65F  
+	{ "gd"				, IC_GODOT			}, //  E65F  
+	{ "gv"				, IC_GRAPH			}, // F1049  󱁉
+	{ "dot"				, IC_GRAPH			}, // F1049  󱁉
+	{ "xhtml"			, IC_HTML5			}, //  F13B  
+	{ "shtml"			, IC_HTML5			}, //  F13B  
+	{ "html"			, IC_HTML5			}, //  F13B  
+	{ "htm"				, IC_HTML5			}, //  F13B  
+	{ "xpm"				, IC_IMAGE			}, //  F1C5  
+	{ "webp"			, IC_IMAGE			}, //  F1C5  
+	{ "tiff"			, IC_IMAGE			}, //  F1C5  
+	{ "tif"				, IC_IMAGE			}, //  F1C5  
+	{ "raw"				, IC_IMAGE			}, //  F1C5  
+	{ "pxm"				, IC_IMAGE			}, //  F1C5  
+	{ "ppm"				, IC_IMAGE			}, //  F1C5  
+	{ "pnm"				, IC_IMAGE			}, //  F1C5  
+	{ "png"				, IC_IMAGE			}, //  F1C5  
+	{ "pgm"				, IC_IMAGE			}, //  F1C5  
+	{ "pbm"				, IC_IMAGE			}, //  F1C5  
+	{ "orf"				, IC_IMAGE			}, //  F1C5  
+	{ "nef"				, IC_IMAGE			}, //  F1C5  
+	{ "jxl"				, IC_IMAGE			}, //  F1C5  
+	{ "jpx"				, IC_IMAGE			}, //  F1C5  
+	{ "jpg"				, IC_IMAGE			}, //  F1C5  
+	{ "jpf"				, IC_IMAGE			}, //  F1C5  
+	{ "jpeg"			, IC_IMAGE			}, //  F1C5  
+	{ "jpe"				, IC_IMAGE			}, //  F1C5  
+	{ "jp2"				, IC_IMAGE			}, //  F1C5  
+	{ "jif"				, IC_IMAGE			}, //  F1C5  
+	{ "jfif"			, IC_IMAGE			}, //  F1C5  
+	{ "jfi"				, IC_IMAGE			}, //  F1C5  
+	{ "j2k"				, IC_IMAGE			}, //  F1C5  
+	{ "j2c"				, IC_IMAGE			}, //  F1C5  
+	{ "ico"				, IC_IMAGE			}, //  F1C5  
+	{ "heif"			, IC_IMAGE			}, //  F1C5  
+	{ "heic"			, IC_IMAGE			}, //  F1C5  
+	{ "gif"				, IC_IMAGE			}, //  F1C5  
+	{ "dvi"				, IC_IMAGE			}, //  F1C5  
+	{ "cr2"				, IC_IMAGE			}, //  F1C5  
+	{ "cbz"				, IC_IMAGE			}, //  F1C5  
+	{ "cbr"				, IC_IMAGE			}, //  F1C5  
+	{ "bmp"				, IC_IMAGE			}, //  F1C5  
+	{ "avif"			, IC_IMAGE			}, //  F1C5  
+	{ "arw"				, IC_IMAGE			}, //  F1C5  
+	{ "jwmrc"			, IC_JWMRC			}, //  F35B  
+	{ "kicad_wks"		, IC_KICAD			}, //  F34C  
+	{ "kicad_sym"		, IC_KICAD			}, //  F34C  
+	{ "kicad_sch"		, IC_KICAD			}, //  F34C  
+	{ "kicad_pro"		, IC_KICAD			}, //  F34C  
+	{ "kicad_prl"		, IC_KICAD			}, //  F34C  
+	{ "kicad_pcb"		, IC_KICAD			}, //  F34C  
+	{ "kicad_mod"		, IC_KICAD			}, //  F34C  
+	{ "kicad_dru"		, IC_KICAD			}, //  F34C  
+	{ "krz"				, IC_KRITA			}, //  F33D  
+	{ "kra"				, IC_KRITA			}, //  F33D  
+	{ "kpp"				, IC_KRITA			}, //  F33D  
+	{ "ninja"			, IC_NINJA			}, // F0774  󰝴
+	{ "razor"			, IC_RAZOR			}, //  F1FA  
+	{ "cshtml"			, IC_RAZOR			}, //  F1FA  
+	{ "tsx"				, IC_REACT			}, //  E7BA  
+	{ "jsx"				, IC_REACT			}, //  E7BA  
+	{ "scala"			, IC_SCALA			}, //  E737  
+	{ "xlsx"			, IC_SHEET			}, //  F1C3  
+	{ "xlsm"			, IC_SHEET			}, //  F1C3  
+	{ "xls"				, IC_SHEET			}, //  F1C3  
+	{ "xlr"				, IC_SHEET			}, //  F1C3  
+	{ "tsv"				, IC_SHEET			}, //  F1C3  
+	{ "gsheet"			, IC_SHEET			}, //  F1C3  
+	{ "zsh-theme"		, IC_SHELL			}, // F1183  󱆃
+	{ "pptx"			, IC_SLIDE			}, //  F1C4  
+	{ "ppt"				, IC_SLIDE			}, //  F1C4  
+	{ "ppsx"			, IC_SLIDE			}, //  F1C4  
+	{ "pps"				, IC_SLIDE			}, //  F1C4  
+	{ "gslides"			, IC_SLIDE			}, //  F1C4  
+	{ "xcplayground"	, IC_SWIFT			}, //  E755  
+	{ "swift"			, IC_SWIFT			}, //  E755  
+	{ "typ"				, IC_TYPST			}, //  F37F  
+	{ "unity3d"			, IC_UNITY			}, //  E721  
+	{ "unity"			, IC_UNITY			}, //  E721  
+	{ "o"				, IC_BINARY			}, //  EAE8  
+	{ "hi"				, IC_BINARY			}, //  EAE8  
+	{ "elf"				, IC_BINARY			}, //  EAE8  
+	{ "bin"				, IC_BINARY			}, //  EAE8  
+	{ "app"				, IC_BINARY			}, //  EAE8  
+	{ "coffee"			, IC_COFFEE			}, //  F0F4  
+	{ "tml"				, IC_CONFIG			}, // F107B  󱁻
+	{ "ini"				, IC_CONFIG			}, // F107B  󱁻
+	{ "config"			, IC_CONFIG			}, // F107B  󱁻
+	{ "conf"			, IC_CONFIG			}, // F107B  󱁻
+	{ "cfg"				, IC_CONFIG			}, // F107B  󱁻
+	{ "dockerignore"	, IC_DOCKER			}, //  E650  
+	{ "dockerfile"		, IC_DOCKER			}, //  E650  
+	{ "drawio"			, IC_DRAWIO			}, //  EBBA  
+	{ "ebuild"			, IC_EBUILD			}, //  F30D  
+	{ "hrl"				, IC_ERLANG			}, //  E7B1  
+	{ "erl"				, IC_ERLANG			}, //  E7B1  
+	{ "gradle"			, IC_GRADLE			}, //  E660  
+	{ "m"				, IC_LANG_C			}, //  E61E  
+	{ "inl"				, IC_LANG_C			}, //  E61E  
+	{ "h"				, IC_LANG_C			}, //  E61E  
+	{ "c"				, IC_LANG_C			}, //  E61E  
+	{ "di"				, IC_LANG_D			}, //  E7AF  
+	{ "d"				, IC_LANG_D			}, //  E7AF  
+	{ "rds"				, IC_LANG_R			}, //  E68A  
+	{ "rdata"			, IC_LANG_R			}, //  E68A  
+	{ "r"				, IC_LANG_R			}, //  E68A  
+	{ "v"				, IC_LANG_V			}, //  E6AC  
+	{ "magnet"			, IC_MAGNET			}, //  F076  
+	{ "node"			, IC_NODEJS			}, //  E718  
+	{ "readme"			, IC_README			}, // F00BA  󰂺
+	{ "sqlite3"			, IC_SQLITE			}, //  E7C4  
+	{ "sqlite"			, IC_SQLITE			}, //  E7C4  
+	{ "sl3"				, IC_SQLITE			}, //  E7C4  
+	{ "s3db"			, IC_SQLITE			}, //  E7C4  
+	{ "db3"				, IC_SQLITE			}, //  E7C4  
+	{ "svelte"			, IC_SVELTE			}, //  E697  
+	{ "xci"				, IC_SWITCH			}, // F07E1  󰟡
+	{ "nsp"				, IC_SWITCH			}, // F07E1  󰟡
+	{ "svg"				, IC_VECTOR			}, // F0559  󰕙
+	{ "ps"				, IC_VECTOR			}, // F0559  󰕙
+	{ "eps"				, IC_VECTOR			}, // F0559  󰕙
+	{ "wmv"				, IC_VIDEOS			}, //  F03D  
+	{ "webm"			, IC_VIDEOS			}, //  F03D  
+	{ "vob"				, IC_VIDEOS			}, //  F03D  
+	{ "video"			, IC_VIDEOS			}, //  F03D  
+	{ "ogv"				, IC_VIDEOS			}, //  F03D  
+	{ "ogm"				, IC_VIDEOS			}, //  F03D  
+	{ "mpg"				, IC_VIDEOS			}, //  F03D  
+	{ "mpeg"			, IC_VIDEOS			}, //  F03D  
+	{ "mp4"				, IC_VIDEOS			}, //  F03D  
+	{ "mov"				, IC_VIDEOS			}, //  F03D  
+	{ "mkv"				, IC_VIDEOS			}, //  F03D  
+	{ "m4v"				, IC_VIDEOS			}, //  F03D  
+	{ "m2v"				, IC_VIDEOS			}, //  F03D  
+	{ "m2ts"			, IC_VIDEOS			}, //  F03D  
+	{ "heics"			, IC_VIDEOS			}, //  F03D  
+	{ "h264"			, IC_VIDEOS			}, //  F03D  
+	{ "flv"				, IC_VIDEOS			}, //  F03D  
+	{ "cast"			, IC_VIDEOS			}, //  F03D  
+	{ "avi"				, IC_VIDEOS			}, //  F03D  
+	{ "3gpp2"			, IC_VIDEOS			}, //  F03D  
+	{ "3gpp"			, IC_VIDEOS			}, //  F03D  
+	{ "3gp2"			, IC_VIDEOS			}, //  F03D  
+	{ "3gp"				, IC_VIDEOS			}, //  F03D  
+	{ "3g2"				, IC_VIDEOS			}, //  F03D  
+	{ "suo"				, IC_VSCODE			}, //  E70C  
+	{ "sln"				, IC_VSCODE			}, //  E70C  
+	{ "prjpcb"			, IC_EDA_PCB		}, //  EABE  
+	{ "pcbdoc"			, IC_EDA_PCB		}, //  EABE  
+	{ "lpp"				, IC_EDA_PCB		}, //  EABE  
+	{ "gts"				, IC_EDA_PCB		}, //  EABE  
+	{ "gtp"				, IC_EDA_PCB		}, //  EABE  
+	{ "gto"				, IC_EDA_PCB		}, //  EABE  
+	{ "gtl"				, IC_EDA_PCB		}, //  EABE  
+	{ "gml"				, IC_EDA_PCB		}, //  EABE  
+	{ "gm1"				, IC_EDA_PCB		}, //  EABE  
+	{ "gbs"				, IC_EDA_PCB		}, //  EABE  
+	{ "gbr"				, IC_EDA_PCB		}, //  EABE  
+	{ "gbp"				, IC_EDA_PCB		}, //  EABE  
+	{ "gbo"				, IC_EDA_PCB		}, //  EABE  
+	{ "gbl"				, IC_EDA_PCB		}, //  EABE  
+	{ "brd"				, IC_EDA_PCB		}, //  EABE  
+	{ "schdoc"			, IC_EDA_SCH		}, // F0B45  󰭅
+	{ "sch"				, IC_EDA_SCH		}, // F0B45  󰭅
+	{ "wrz"				, IC_FILE_3D		}, // F01A7  󰆧
+	{ "wrl"				, IC_FILE_3D		}, // F01A7  󰆧
+	{ "stl"				, IC_FILE_3D		}, // F01A7  󰆧
+	{ "ply"				, IC_FILE_3D		}, // F01A7  󰆧
+	{ "obj"				, IC_FILE_3D		}, // F01A7  󰆧
+	{ "fbx"				, IC_FILE_3D		}, // F01A7  󰆧
+	{ "3mf"				, IC_FILE_3D		}, // F01A7  󰆧
+	{ "fctl"			, IC_FREECAD		}, //  F336  
+	{ "fctb"			, IC_FREECAD		}, //  F336  
+	{ "fcstd1"			, IC_FREECAD		}, //  F336  
+	{ "fcstd"			, IC_FREECAD		}, //  F336  
+	{ "fcscript"		, IC_FREECAD		}, //  F336  
+	{ "fcparam"			, IC_FREECAD		}, //  F336  
+	{ "fcmat"			, IC_FREECAD		}, //  F336  
+	{ "fcmacro"			, IC_FREECAD		}, //  F336  
+	{ "fcbak"			, IC_FREECAD		}, //  F336  
+	{ "graphql"			, IC_GRAPHQL		}, //  E662  
+	{ "gql"				, IC_GRAPHQL		}, //  E662  
+	{ "kdbx"			, IC_KEYPASS		}, //  F23E  
+	{ "kdb"				, IC_KEYPASS		}, //  F23E  
+	{ "go"				, IC_LANG_GO		}, //  E65E  
+	{ "lib"				, IC_LIBRARY		}, //  EB9C  
+	{ "lbr"				, IC_LIBRARY		}, //  EB9C  
+	{ "dll"				, IC_LIBRARY		}, //  EB9C  
+	{ "license"			, IC_LICENSE		}, //  F02D  
+	{ "service"			, IC_SERVICE		}, //  EBA2  
+	{ "sr"				, IC_SQ_WAVE		}, // F147B  󱑻
+	{ "sal"				, IC_SQ_WAVE		}, // F147B  󱑻
+	{ "sublime-theme"	, IC_SUBLIME		}, //  E7AA  
+	{ "sublime-snippet"	, IC_SUBLIME		}, //  E7AA  
+	{ "sublime-settings", IC_SUBLIME		}, //  E7AA  
+	{ "sublime-session"	, IC_SUBLIME		}, //  E7AA  
+	{ "sublime-project"	, IC_SUBLIME		}, //  E7AA  
+	{ "sublime-package"	, IC_SUBLIME		}, //  E7AA  
+	{ "sublime-options"	, IC_SUBLIME		}, //  E7AA  
+	{ "sublime-menu"	, IC_SUBLIME		}, //  E7AA  
+	{ "sublime-keymap"	, IC_SUBLIME		}, //  E7AA  
+	{ "sublime-build"	, IC_SUBLIME		}, //  E7AA  
+	{ "torrent"			, IC_TORRENT		}, //  E275  
+	{ "ifb"				, IC_CALENDAR		}, //  EAB0  
+	{ "ics"				, IC_CALENDAR		}, //  EAB0  
+	{ "icalendar"		, IC_CALENDAR		}, //  EAB0  
+	{ "ical"			, IC_CALENDAR		}, //  EAB0  
+	{ "sql"				, IC_DATABASE		}, //  F1C0  
+	{ "prql"			, IC_DATABASE		}, //  F1C0  
+	{ "odb"				, IC_DATABASE		}, //  F1C0  
+	{ "mdb"				, IC_DATABASE		}, //  F1C0  
+	{ "ldb"				, IC_DATABASE		}, //  F1C0  
+	{ "dump"			, IC_DATABASE		}, //  F1C0  
+	{ "dconf"			, IC_DATABASE		}, //  F1C0  
+	{ "db"				, IC_DATABASE		}, //  F1C0  
+	{ "gdoc"			, IC_DOCUMENT		}, //  F1C2  
+	{ "docx"			, IC_DOCUMENT		}, //  F1C2  
+	{ "docm"			, IC_DOCUMENT		}, //  F1C2  
+	{ "doc"				, IC_DOCUMENT		}, //  F1C2  
+	{ "djvu"			, IC_DOCUMENT		}, //  F1C2  
+	{ "djv"				, IC_DOCUMENT		}, //  F1C2  
+	{ "part"			, IC_DOWNLOAD		}, // F01DA  󰇚
+	{ "fdmdownload"		, IC_DOWNLOAD		}, // F01DA  󰇚
+	{ "download"		, IC_DOWNLOAD		}, // F01DA  󰇚
+	{ "crdownload"		, IC_DOWNLOAD		}, // F01DA  󰇚
+	{ "iml"				, IC_INTELLIJ		}, //  E7B5  
+	{ "kdenlivetitle"	, IC_KDENLIVE		}, //  F33C  
+	{ "kdenlive"		, IC_KDENLIVE		}, //  F33C  
+	{ "mm"				, IC_LANG_CPP		}, //  E61D  
+	{ "hxx"				, IC_LANG_CPP		}, //  E61D  
+	{ "hpp"				, IC_LANG_CPP		}, //  E61D  
+	{ "hh"				, IC_LANG_CPP		}, //  E61D  
+	{ "h++"				, IC_LANG_CPP		}, //  E61D  
+	{ "cxx"				, IC_LANG_CPP		}, //  E61D  
+	{ "cpp"				, IC_LANG_CPP		}, //  E61D  
+	{ "cp"				, IC_LANG_CPP		}, //  E61D  
+	{ "cc"				, IC_LANG_CPP		}, //  E61D  
+	{ "c++"				, IC_LANG_CPP		}, //  E61D  
+	{ "vhdl"			, IC_LANG_HDL		}, // F035B  󰍛
+	{ "svh"				, IC_LANG_HDL		}, // F035B  󰍛
+	{ "sv"				, IC_LANG_HDL		}, // F035B  󰍛
+	{ "luau"			, IC_LANG_LUA		}, //  E620  
+	{ "luac"			, IC_LANG_LUA		}, //  E620  
+	{ "lua"				, IC_LANG_LUA		}, //  E620  
+	{ "nims"			, IC_LANG_NIM		}, //  E677  
+	{ "nimble"			, IC_LANG_NIM		}, //  E677  
+	{ "nim"				, IC_LANG_NIM		}, //  E677  
+	{ "php"				, IC_LANG_PHP		}, //  E73D  
+	{ "phar"			, IC_LANG_PHP		}, //  E73D  
+	{ "tex"				, IC_LANG_TEX		}, //  E69B  
+	{ "sty"				, IC_LANG_TEX		}, //  E69B  
+	{ "ltx"				, IC_LANG_TEX		}, //  E69B  
+	{ "latex"			, IC_LANG_TEX		}, //  E69B  
+	{ "cls"				, IC_LANG_TEX		}, //  E69B  
+	{ "bst"				, IC_LANG_TEX		}, //  E69B  
+	{ "bib"				, IC_LANG_TEX		}, //  E69B  
+	{ "rmd"				, IC_MARKDOWN		}, //  E68B  
+	{ "rdoc"			, IC_MARKDOWN		}, //  F48A  
+	{ "mkd"				, IC_MARKDOWN		}, //  F48A  
+	{ "mdx"				, IC_MARKDOWN		}, //  F48A  
+	{ "md"				, IC_MARKDOWN		}, //  F48A  
+	{ "markdown"		, IC_MARKDOWN		}, //  F48A  
+	{ "jmd"				, IC_MARKDOWN		}, //  F48A  
+	{ "mustache"		, IC_MUSTACHE		}, //  E60F  
+	{ "hbs"				, IC_MUSTACHE		}, //  E60F  
+	{ "ipynb"			, IC_NOTEBOOK		}, //  E678  
+	{ "plist"			, IC_OS_APPLE		}, //  F179  
+	{ "localized"		, IC_OS_APPLE		}, //  F179  
+	{ "dylib"			, IC_OS_APPLE		}, //  F179  
+	{ "bundle"			, IC_OS_APPLE		}, //  F179  
+	{ "applescript"		, IC_OS_APPLE		}, //  F179  
+	{ "apple"			, IC_OS_APPLE		}, //  F179  
+	{ "so"				, IC_OS_LINUX		}, //  F17C  
+	{ "ko"				, IC_OS_LINUX		}, //  F17C  
+	{ "a"				, IC_OS_LINUX		}, //  F17C  
+	{ "pls"				, IC_PLAYLIST		}, // F0CB9  󰲹
+	{ "m3u8"			, IC_PLAYLIST		}, // F0CB9  󰲹
+	{ "m3u"				, IC_PLAYLIST		}, // F0CB9  󰲹
+	{ "cue"				, IC_PLAYLIST		}, // F0CB9  󰲹
+	{ "sub"				, IC_SUBTITLE		}, // F0A16  󰨖
+	{ "ssa"				, IC_SUBTITLE		}, // F0A16  󰨖
+	{ "srt"				, IC_SUBTITLE		}, // F0A16  󰨖
+	{ "sbt"				, IC_SUBTITLE		}, // F0A16  󰨖
+	{ "lrc"				, IC_SUBTITLE		}, // F0A16  󰨖
+	{ "ass"				, IC_SUBTITLE		}, // F0A16  󰨖
+	{ "cljc"			, IC_CLOJURE_1		}, //  E768  
+	{ "clj"				, IC_CLOJURE_1		}, //  E768  
+	{ "edn"				, IC_CLOJURE_2		}, //  E76A  
+	{ "cljs"			, IC_CLOJURE_2		}, //  E76A  
+	{ "war"				, IC_LANG_JAVA		}, //  E256  
+	{ "java"			, IC_LANG_JAVA		}, //  E256  
+	{ "jar"				, IC_LANG_JAVA		}, //  E256  
+	{ "jad"				, IC_LANG_JAVA		}, //  E256  
+	{ "class"			, IC_LANG_JAVA		}, //  E256  
+	{ "t"				, IC_LANG_PERL		}, //  E67E  
+	{ "pod"				, IC_LANG_PERL		}, //  E67E  
+	{ "pm"				, IC_LANG_PERL		}, //  E67E  
+	{ "plx"				, IC_LANG_PERL		}, //  E67E  
+	{ "pl"				, IC_LANG_PERL		}, //  E67E  
+	{ "ru"				, IC_LANG_RUBY		}, //  E739  
+	{ "rspec_status"	, IC_LANG_RUBY		}, //  E739  
+	{ "rspec_parallel"	, IC_LANG_RUBY		}, //  E739  
+	{ "rspec"			, IC_LANG_RUBY		}, //  E739  
+	{ "rb"				, IC_LANG_RUBY		}, //  E739  
+	{ "rakefile"		, IC_LANG_RUBY		}, //  E739  
+	{ "rake"			, IC_LANG_RUBY		}, //  E739  
+	{ "procfile"		, IC_LANG_RUBY		}, //  E739  
+	{ "guardfile"		, IC_LANG_RUBY		}, //  E739  
+	{ "gemspec"			, IC_LANG_RUBY		}, //  E739  
+	{ "gemfile"			, IC_LANG_RUBY		}, //  E739  
+	{ "gem"				, IC_LANG_RUBY		}, //  E739  
+	{ "rs"				, IC_LANG_RUST		}, //  E68B  
+	{ "rmeta"			, IC_LANG_RUST		}, //  E68B  
+	{ "rlib"			, IC_LANG_RUST		}, //  E68B  
+	{ "scss"			, IC_LANG_SASS		}, //  E603  
+	{ "sass"			, IC_LANG_SASS		}, //  E603  
+	{ "psd"				, IC_PHOTOSHOP		}, //  E7B8  
+	{ "psb"				, IC_PHOTOSHOP		}, //  E7B8  
+	{ "zsh"				, IC_SHELL_CMD		}, //  F489  
+	{ "shell"			, IC_SHELL_CMD		}, //  F489  
+	{ "sh"				, IC_SHELL_CMD		}, //  F489  
+	{ "nu"				, IC_SHELL_CMD		}, //  F489  
+	{ "ksh"				, IC_SHELL_CMD		}, //  F489  
+	{ "fish"			, IC_SHELL_CMD		}, //  F489  
+	{ "csh"				, IC_SHELL_CMD		}, //  F489  
+	{ "bats"			, IC_SHELL_CMD		}, //  F489  
+	{ "bash"			, IC_SHELL_CMD		}, //  F489  
+	{ "awk"				, IC_SHELL_CMD		}, //  F489  
+	{ "tfvars"			, IC_TERRAFORM		}, // F1062  󱁢
+	{ "tfstate"			, IC_TERRAFORM		}, // F1062  󱁢
+	{ "tf"				, IC_TERRAFORM		}, // F1062  󱁢
+	{ "sfz"				, IC_TREB_CLEF		}, // F0F70  󰽰
+	{ "sf2"				, IC_TREB_CLEF		}, // F0F70  󰽰
+	{ "zst"				, IC_COMPRESSED		}, //  F410  
+	{ "zip"				, IC_COMPRESSED		}, //  F410  
+	{ "z"				, IC_COMPRESSED		}, //  F410  
+	{ "xz"				, IC_COMPRESSED		}, //  F410  
+	{ "tzo"				, IC_COMPRESSED		}, //  F410  
+	{ "tz"				, IC_COMPRESSED		}, //  F410  
+	{ "txz"				, IC_COMPRESSED		}, //  F410  
+	{ "tlz"				, IC_COMPRESSED		}, //  F410  
+	{ "tgz"				, IC_COMPRESSED		}, //  F410  
+	{ "tbz2"			, IC_COMPRESSED		}, //  F410  
+	{ "tbz"				, IC_COMPRESSED		}, //  F410  
+	{ "taz"				, IC_COMPRESSED		}, //  F410  
+	{ "tar"				, IC_COMPRESSED		}, //  F410  
+	{ "rar"				, IC_COMPRESSED		}, //  F410  
+	{ "par"				, IC_COMPRESSED		}, //  F410  
+	{ "lzo"				, IC_COMPRESSED		}, //  F410  
+	{ "lzma"			, IC_COMPRESSED		}, //  F410  
+	{ "lzh"				, IC_COMPRESSED		}, //  F410  
+	{ "lz4"				, IC_COMPRESSED		}, //  F410  
+	{ "lz"				, IC_COMPRESSED		}, //  F410  
+	{ "gz"				, IC_COMPRESSED		}, //  F410  
+	{ "cpio"			, IC_COMPRESSED		}, //  F410  
+	{ "bz3"				, IC_COMPRESSED		}, //  F410  
+	{ "bz2"				, IC_COMPRESSED		}, //  F410  
+	{ "bz"				, IC_COMPRESSED		}, //  F410  
+	{ "br"				, IC_COMPRESSED		}, //  F410  
+	{ "arj"				, IC_COMPRESSED		}, //  F410  
+	{ "ar"				, IC_COMPRESSED		}, //  F410  
+	{ "7z"				, IC_COMPRESSED		}, //  F410  
+	{ "vmdk"			, IC_DISK_IMAGE		}, //  E271  
+	{ "vhd"				, IC_DISK_IMAGE		}, //  E271  
+	{ "vdi"				, IC_DISK_IMAGE		}, //  E271  
+	{ "tc"				, IC_DISK_IMAGE		}, //  E271  
+	{ "qcow2"			, IC_DISK_IMAGE		}, //  E271  
+	{ "qcow"			, IC_DISK_IMAGE		}, //  E271  
+	{ "iso"				, IC_DISK_IMAGE		}, //  E271  
+	{ "img"				, IC_DISK_IMAGE		}, //  E271  
+	{ "image"			, IC_DISK_IMAGE		}, //  E271  
+	{ "dmg"				, IC_DISK_IMAGE		}, //  E271  
+	{ "gleam"			, IC_LANG_GLEAM		}, // F09A5  󰦥
+	{ "hc"				, IC_LANG_HOLYC		}, // F00A2  󰂢
+	{ "mjs"				, IC_LANG_JSCPT		}, //  E74E  
+	{ "js"				, IC_LANG_JSCPT		}, //  E74E  
+	{ "cjs"				, IC_LANG_JSCPT		}, //  E74E  
+	{ "mly"				, IC_LANG_OCAML		}, //  E67A  
+	{ "mll"				, IC_LANG_OCAML		}, //  E67A  
+	{ "mli"				, IC_LANG_OCAML		}, //  E67A  
+	{ "ml"				, IC_LANG_OCAML		}, //  E67A  
+	{ "ts"				, IC_LANG_TSCPT		}, //  E628  
+	{ "mts"				, IC_LANG_TSCPT		}, //  E628  
+	{ "cts"				, IC_LANG_TSCPT		}, //  E628  
+	{ "apk"				, IC_OS_ANDROID		}, //  E70E  
+	{ "android"			, IC_OS_ANDROID		}, //  E70E  
+	{ "windows"			, IC_OS_WINDOWS		}, //  F17A  
+	{ "msi"				, IC_OS_WINDOWS		}, //  F17A  
+	{ "cmd"				, IC_OS_WINDOWS		}, //  F17A  
+	{ "cab"				, IC_OS_WINDOWS		}, //  F17A  
+	{ "psm1"			, IC_POWERSHELL		}, //  EBC7  
+	{ "psd1"			, IC_POWERSHELL		}, //  EBC7  
+	{ "ps1"				, IC_POWERSHELL		}, //  EBC7  
+	{ "pub"				, IC_PUBLIC_KEY		}, // F0DD6  󰷖
+	{ "kbx"				, IC_SHIELD_KEY		}, // F0BC4  󰯄
+	{ "desktop"			, IC_DESKTOP_EXT	}, //  EBD1  
+	{ "crt"				, IC_GIST_SECRET	}, //  EAFA  
+	{ "cert"			, IC_GIST_SECRET	}, //  EAFA  
+	{ "csx"				, IC_LANG_CSHARP	}, // F031B  󰌛
+	{ "csproj"			, IC_LANG_CSHARP	}, // F031B  󰌛
+	{ "cs"				, IC_LANG_CSHARP	}, // F031B  󰌛
+	{ "leex"			, IC_LANG_ELIXIR	}, //  E62D  
+	{ "exs"				, IC_LANG_ELIXIR	}, //  E62D  
+	{ "ex"				, IC_LANG_ELIXIR	}, //  E62D  
+	{ "eex"				, IC_LANG_ELIXIR	}, //  E62D  
+	{ "fnl"				, IC_LANG_FENNEL	}, //  E6AF  
+	{ "fsx"				, IC_LANG_FSHARP	}, //  E7A7  
+	{ "fsscript"		, IC_LANG_FSHARP	}, //  E7A7  
+	{ "fsproj"			, IC_LANG_FSHARP	}, //  E7A7  
+	{ "fsi"				, IC_LANG_FSHARP	}, //  E7A7  
+	{ "fs"				, IC_LANG_FSHARP	}, //  E7A7  
+	{ "f#"				, IC_LANG_FSHARP	}, //  E7A7  
+	{ "gvy"				, IC_LANG_GROOVY	}, //  E775  
+	{ "groovy"			, IC_LANG_GROOVY	}, //  E775  
+	{ "kts"				, IC_LANG_KOTLIN	}, //  E634  
+	{ "kt"				, IC_LANG_KOTLIN	}, //  E634  
+	{ "whl"				, IC_LANG_PYTHON	}, //  E606  
+	{ "pyx"				, IC_LANG_PYTHON	}, //  E606  
+	{ "pyw"				, IC_LANG_PYTHON	}, //  E606  
+	{ "pyo"				, IC_LANG_PYTHON	}, //  E606  
+	{ "pyi"				, IC_LANG_PYTHON	}, //  E606  
+	{ "pyd"				, IC_LANG_PYTHON	}, //  E606  
+	{ "pyc"				, IC_LANG_PYTHON	}, //  E606  
+	{ "py"				, IC_LANG_PYTHON	}, //  E606  
+	{ "pxd"				, IC_LANG_PYTHON	}, //  E606  
+	{ "ss"				, IC_LANG_SCHEME	}, //  E6B1  
+	{ "sld"				, IC_LANG_SCHEME	}, //  E6B1  
+	{ "scm"				, IC_LANG_SCHEME	}, //  E6B1  
+	{ "rkt"				, IC_LANG_SCHEME	}, //  E6B1  
+	{ "stylus"			, IC_LANG_STYLUS	}, //  E600  
+	{ "styl"			, IC_LANG_STYLUS	}, //  E600  
+	{ "gpg"				, IC_SHIELD_LOCK	}, // F099D  󰦝
+	{ "asc"				, IC_SHIELD_LOCK	}, // F099D  󰦝
+	{ "age"				, IC_SHIELD_LOCK	}, // F099D  󰦝
+	{ "signature"		, IC_SIGNED_FILE	}, // F19C3  󱧃
+	{ "sig"				, IC_SIGNED_FILE	}, // F19C3  󱧃
+	{ "qm"				, IC_TRANSLATION	}, // F05CA  󰗊
+	{ "pot"				, IC_TRANSLATION	}, // F05CA  󰗊
+	{ "po"				, IC_TRANSLATION	}, // F05CA  󰗊
+	{ "mo"				, IC_TRANSLATION	}, // F05CA  󰗊
+	{ "editorconfig"	, IC_EDITORCONFIG	}, //  E652  
+	{ "ino"				, IC_LANG_ARDUINO	}, //  F34B  
+	{ "for"				, IC_LANG_FORTRAN	}, // F121A  󱈚
+	{ "f90"				, IC_LANG_FORTRAN	}, // F121A  󱈚
+	{ "f"				, IC_LANG_FORTRAN	}, // F121A  󱈚
+	{ "lhs"				, IC_LANG_HASKELL	}, //  E777  
+	{ "hs"				, IC_LANG_HASKELL	}, //  E777  
+	{ "slim"			, IC_LANG_RBRAILS	}, //  E73B  
+	{ "rubydoc"			, IC_LANG_RBRAILS	}, //  E73B  
+	{ "erb"				, IC_LANG_RBRAILS	}, //  E73B  
+	{ "sha512"			, IC_SHIELD_CHECK	}, // F0565  󰕥
+	{ "sha384"			, IC_SHIELD_CHECK	}, // F0565  󰕥
+	{ "sha256"			, IC_SHIELD_CHECK	}, // F0565  󰕥
+	{ "sha224"			, IC_SHIELD_CHECK	}, // F0565  󰕥
+	{ "sha1"			, IC_SHIELD_CHECK	}, // F0565  󰕥
+	{ "md5"				, IC_SHIELD_CHECK	}, // F0565  󰕥
+	{ "s"				, IC_LANG_ASSEMBLY	}, //  E637  
+	{ "asm"				, IC_LANG_ASSEMBLY	}, //  E637  
+	{ "exe"				, IC_OS_WINDOWS_CMD	}, //  EBC4  
+	{ "bat"				, IC_OS_WINDOWS_CMD	}, //  EBC4  
+	END_OF_ICONS
 };
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

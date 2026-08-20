@@ -23,17 +23,23 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-icon_t getIcon(const char *filename);
+icon_t getIcon(const char *filename, const bool is_dir);
 void printIcon(const icon_t icon, const FileColour file_col);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 typedef struct {
-	char *match;
+	char *pattern;
 	wchar_t icon;
 } Icon;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define END_OF_ICONS (Icon){ .pattern = (char *)NULL, .icon = (icon_t)0 }
+
+extern const icon_t DEFAULT_FILE_ICON;
+extern const icon_t UNKNOWN_FILE_ICON;
+extern const icon_t DEFAULT_DIR_ICON;
 
 /// An array containing the basenames of directories, and their associated icons.
 /// This array should contain all the directories that have custom icons.
