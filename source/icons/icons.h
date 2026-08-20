@@ -35,7 +35,9 @@ typedef struct {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define END_OF_ICONS (Icon){ .pattern = (char *)NULL, .icon = (icon_t)0 }
+#define NO_PATTERN	 ((char *)NULL)
+#define NO_ICON		 ((icon_t)L'\0')
+#define END_OF_ICONS ((Icon){ .pattern = NO_PATTERN, .icon = NO_ICON })
 
 extern const icon_t DEFAULT_FILE_ICON;
 extern const icon_t UNKNOWN_FILE_ICON;
