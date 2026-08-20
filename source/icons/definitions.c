@@ -279,14 +279,14 @@
 /* —— Default Icons ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 const icon_t DEFAULT_FILE_ICON = IC_FILE;
-const icon_t UNKNOWN_FILE_ICON = IC_FILE_UNKNOWN;
+const icon_t UNKNOWN_EXT_ICON  = IC_FILE_UNKNOWN;
 const icon_t DEFAULT_DIR_ICON  = IC_FOLDER;
 
 /* —— Directory Icons —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// An array containing the basenames of directories, and their associated icons.
 /// This array should contain all the directories that have custom icons.
-const Icon DIR_ICONS[] = {
+const Icon DIRNAME_ICONS[] = {
 	{ ".config"			, IC_FOLDER_CONFIG	}, //  E5FC  
 	{ ".exercism"		, IC_EXERCISM		}, //  EBE5  
 	{ ".git"			, IC_FOLDER_GIT		}, //  E5FB  
@@ -611,7 +611,7 @@ const Icon FILENAME_ICONS[] = {
 /* —— Extension Icons —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// Array of lowercase file extensions and their icons.
-const Icon EXT_ICONS[] = {
+const Icon FILE_EXT_ICONS[] = {
 	{ "ai"				, IC_AI				}, //  E7B4  
 	{ "cr"				, IC_CR				}, //  E62F  
 	{ "cu"				, IC_CU				}, //  E64B  

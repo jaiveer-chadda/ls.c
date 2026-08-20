@@ -40,16 +40,16 @@ typedef struct {
 #define END_OF_ICONS ((Icon){ .pattern = NO_PATTERN, .icon = NO_ICON })
 
 extern const icon_t DEFAULT_FILE_ICON;
-extern const icon_t UNKNOWN_FILE_ICON;
+extern const icon_t UNKNOWN_EXT_ICON;
 extern const icon_t DEFAULT_DIR_ICON;
 
 /// An array containing the basenames of directories, and their associated icons.
 /// This array should contain all the directories that have custom icons.
-extern const Icon DIR_ICONS[];
+extern const Icon DIRNAME_ICONS[];
 /// Array containing full filenames & their icons.
 extern const Icon FILENAME_ICONS[];
 /// Array of lowercase file extensions and their icons.
-extern const Icon EXT_ICONS[];
+extern const Icon FILE_EXT_ICONS[];
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
