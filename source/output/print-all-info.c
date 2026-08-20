@@ -102,7 +102,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		PRINT_FIELD(flags)	; ff; PRINT_FLAG_STR()		; ff; 
 		PRINT_TIME (time)	; ff; PRINT_TIME(time_str)	; ff; 
 
-		if (do_icon()) printIcon(file.icon);
+		if (do_icon()) printIcon(file.icon, file.file_col);
 
 		// print the file's name and its suffix (if enabled)
 		printName(file.name, &file.file_col, &file.do_link_hl, &file.flags, &file.suffix);

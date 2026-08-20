@@ -48,17 +48,16 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	pFile->gid		= pInfo->st_gid;
 	pFile->time		= pInfo->st_mtimespec.tv_sec;
 
-	// work out whether ths file is a mount point or not
-	pFile->is_mount = isMountPoint(pInfo->st_dev, path);
-
 	// parse the raw stat information into human-readable display formats
-	if (do_suffix  ()) pFile->suffix = getTypeSuffix(pInfo->st_mode);
-	if (do_flag_str()) parseFlags(pFile->flag_str, pInfo->st_flags);
-	if (do_size_str())	parseSize(pFile->size_str, &pFile->size_unit, &pFile->size, pInfo->st_rdev);
-	if (do_usr_name())	  getUser(pFile->usr_name, pInfo->st_uid);
-	if (do_grp_name())	 getGroup(pFile->grp_name, pInfo->st_gid);
-	if (do_time_str())	parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &pFile->time_col);
-	if (do_icon	   ()) 	 getIcon(&pFile->icon	 , pFile->name);
+	if (DO_MOUNT_DEV()) pFile->is_mount	= isMountPoint(pInfo->st_dev, path);
+	if (do_icon		())	pFile->icon		= getIcon(pFile->name);
+	if (do_suffix  	())	pFile->suffix	= getTypeSuffix(pInfo->st_mode);
+
+	if (do_flag_str	()) parseFlags(pFile->flag_str, pInfo->st_flags);
+	if (do_size_str	())	 parseSize(pFile->size_str, &pFile->size_unit, &pFile->size, pInfo->st_rdev);
+	if (do_usr_name	())	   getUser(pFile->usr_name, pInfo->st_uid);
+	if (do_grp_name	())	  getGroup(pFile->grp_name, pInfo->st_gid);
+	if (do_time_str	())	 parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &pFile->time_col);
 
 	if (do_mode_str()) {
 		getMode(pFile->mode_str, pInfo->st_mode);	// find the basic mode string ("drwxr-xr-x")

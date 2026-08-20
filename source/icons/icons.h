@@ -23,8 +23,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void getIcon(icon_t *icon, const char *filename);
-void printIcon(const icon_t icon);
+icon_t getIcon(const char *filename);
+void printIcon(const icon_t icon, const FileColour file_col);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
