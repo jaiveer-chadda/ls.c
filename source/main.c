@@ -45,15 +45,15 @@ int main(const int argc, const char *argv[]) {
 
 	/* —— Find Target Directories ———————————————————————————————————————————————————————————————— */
 
-	// TODO: make this dynamic
 	/// The raw string paths inputted by the user.
-	char *input_paths[MAX_INPUTS];
+	char *input_paths[input_count];
 
 	bool do_free_path_0 = false;
 
 	// If there weren't any directory names passed, then default to as if the user had passed `.`
 	if (argc == files_start) {
 		// Since "." isn't stored anywhere, we have to alloc some memory for it
+		//	This memory is freed in `processDirectory()`
 		input_paths[0] = emalloc(sizeof(char *));
 		do_free_path_0 = true; // & then remember to free it
 
@@ -72,7 +72,7 @@ int main(const int argc, const char *argv[]) {
 
 	// Get a `DIR` pointer for each path passed in to the function
 	// (`DIR` being a "structure describing an open directory")
-	DIR *input_dirs[MAX_INPUTS]; // TODO: make this a dynamic array, rather than just having a fixed size
+	DIR *input_dirs[input_count];
 
 	for (int i = 0; i < input_count; i++) {
 		input_dirs[i] = opendir(input_paths[i]);
