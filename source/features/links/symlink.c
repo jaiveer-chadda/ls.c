@@ -1,13 +1,12 @@
 /// @file features/links/symlink.c
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "utils/malloc.h"
 #include "model/stat-model.h"
 #include "features/path/path.h"
-#include "features/mode/mode.h"
 
 #include "debugging/debugging.h"
 
@@ -16,9 +15,19 @@
 link_t getLink(const path_t link_path) {
 	path_t target_path = "";
 
-	// TODO: handle this
 	const ssize_t target_path_len = readlink(link_path, target_path, sizeof(path_t));
-	target_path[target_path_len != -1 ? target_path_len : 0] = '\0';
+	const int readlink_errno = errno;
+
+	#ifndef DEBUG_MODE
+	(void)readlink_errno; // `readlink_errno` will be unused when not in debug mode
+	#endif
+
+	if (target_path_len == -1) {
+		debug(WARNING, "%s", strerror(readlink_errno));
+		target_path[0] = '\0';
+	} else {
+		target_path[target_path_len] = '\0';
+	}
 
 	/* ————————————————————————————————————————————————————— */
 
