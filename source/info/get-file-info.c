@@ -121,6 +121,39 @@ static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline bool checkForAppleAlias(FileInfo *pFile, const char *path) {
+	bool stat_did_fail = true;
+	path_t target_path = {0};
+
+	/// Indicates whether or not an Apple alias points to a valid file or not.
+	///	 Its value is always false if this file isn't an Apple alias.
+	bool is_valid_alias = false;
+
+	/// Indicates whether a file is an Apple alias or not.
+	const bool is_apple_alias = resolveAppleAlias(target_path, &is_valid_alias, path);
+
+	if (!is_apple_alias) {
+		pFile->ln_suf = NOT_LINK;
+		return true;
+	}
+
+	pFile->link_to = emalloc(sizeof(path_t));
+
+	// if its a valid  alias, get its info from the filepath we just found, as normal
+	// if it isn't - mark it as such, and move on
+	if (!is_valid_alias) {
+		pFile->ln_suf = INVALID_LINK;
+	} else {
+		stat_did_fail = getTargetInfo(pFile, target_path);
+	}
+	// finally, abbreviate the path, so it can be displayed nicely
+	abbrPath(pFile->link_to, target_path);
+
+	return stat_did_fail;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 // [[ called by `getAllFileInfo()` ]]
 static inline void getFileInfo(
 	const struct dirent *entry,
@@ -145,39 +178,13 @@ static inline void getFileInfo(
 	const bool lstat_did_fail = lstat(path, &info) == -1;
 	bool stat_did_fail = true;
 
-	// TODO: collapse this deep nesting (somehow)
-
 	// If the file's a symlink, get the information of its target
 	if (S_ISLNK(info.st_mode)) {
 		stat_did_fail = getTargetInfo(&file, path);
 
 	// If it's not a symlink, check if its an Apple alias instead
 	} else if (S_ISREG(info.st_mode) && info.st_size > 0) {
-		path_t target_path = {0};
-
-		/// Indicates whether or not an Apple alias points to a valid file or not.
-		///	 Its value is always false if this file isn't an Apple alias.
-		bool is_valid_alias = false;
-
-		/// Indicates whether a file is an Apple alias or not.
-		const bool is_apple_alias = resolveAppleAlias(target_path, &is_valid_alias, path);
-
-		if (is_apple_alias) {
-
-			file.link_to = emalloc(sizeof(path_t));
-
-			// if its a valid  alias, get its info from the filepath we just found, as normal
-			// if it isn't - mark it as such, and move on
-			if (!is_valid_alias) file.ln_suf = INVALID_LINK;
-			else stat_did_fail = getTargetInfo(&file, target_path);
-
-			// finally, abbreviate the path, so it can be displayed nicely
-			abbrPath(file.link_to, target_path);
-
-		} else {
-			file.ln_suf = NOT_LINK;
-		}
-
+		stat_did_fail = checkForAppleAlias(&file, path);
 	} else { // If it isn't a link, then keep the `lstat` info, and mark the file as such
 		file.ln_suf = NOT_LINK;
 	}

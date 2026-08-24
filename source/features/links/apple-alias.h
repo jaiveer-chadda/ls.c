@@ -6,6 +6,5 @@
 #include "model/stat-model.h"
 
 bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t file_path);
-link_t getPrintableAppleAlias(const path_t target_path);
 
 #endif /* !APPLE_ALIAS_INITIALISED */
