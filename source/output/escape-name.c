@@ -1,6 +1,7 @@
 /// @file output/escape-name.c
 
 #include <stdio.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -89,7 +90,7 @@ static bool doesSetBackground(const char *colour) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_escape) {
-	// TODO: add some assertations here (e.g. orig_name != NULL)
+	assert(orig_name != NULL);
 
 	const char *raw_name = GET_NAME(orig_name); // orig_name;
 	/// Whether `colour_escape` is an escape that sets the background colour of the text when used.

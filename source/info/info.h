@@ -10,7 +10,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void getAllFileInfo(
-	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *directory, const char *dotdir_path
+	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, const DIR *dir_obj, const char *dotdir_path
 );
 
 /* ———————————————————————————————————————————————————— */

@@ -212,12 +212,12 @@ static inline void getFileInfo(
  *
  * @param  dirs[out] @param  dir_count[out]
  * @param files[out] @param file_count[out]
- * @param dir_obj[in,mod] (isn't modified, only closed) TODO: fix this
+ * @param dir_obj[in]
  * @param dotdir_path[in]
  */
 void getAllFileInfo(
-	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, DIR *dir_obj, const char *dotdir_path)
-{
+	FileInfo dirs[], FileInfo files[], int *dir_count, int *file_count, const DIR *dir_obj, const char *dotdir_path
+) {
 	*dir_count	= 0, /// How many directories have been read & processed.
 	*file_count	= 0; /// How many non-directory files have been read & processed.
 
@@ -230,16 +230,13 @@ void getAllFileInfo(
 
 	struct dirent *entry;
 	// now process the rest of the directory
-	while ((entry = readdir(dir_obj)) != NULL && *dir_count + *file_count <= MAX_FILES_IN_DIR) {
+	while ((entry = readdir((DIR *)dir_obj)) != NULL && *dir_count + *file_count <= MAX_FILES_IN_DIR) {
 		// don't process the `..` directory, and don't re-process `.`
 		if (DO_IGNORE_FILE(entry)) continue;
 
 		// from the file entry, get the required information, and store it in the `dirs` or `files` arrays
 		getFileInfo(entry, dirs, files, dir_count, file_count, dotdir_path);
 	}
-
-	// the directory info isn't needed anymore - it can be closed
-	closedir(dir_obj);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

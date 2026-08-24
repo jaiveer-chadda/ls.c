@@ -42,6 +42,9 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const boo
 		dir, path
 	);
 
+	// the directory info isn't needed anymore - it can be closed
+	closedir(dir);
+
 	// If we need to free `path[0]`, and this input is `path[0]`, then free it
 	//	Memory was allocated in `main()`
 	if (do_free_path_0 && is_first) free(path);
