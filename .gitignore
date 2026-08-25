@@ -7,6 +7,7 @@ out/
 archive/
 _test_*
 *.tmp*
+_*
 
 resources/icons/icons.rs
 resources/POSIX/ls.html

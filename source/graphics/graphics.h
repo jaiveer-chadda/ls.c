@@ -17,8 +17,8 @@
 #define CSI		"\033["	// \e[
 #define END		"m"		// m
 
-#define CSIR	CSI ";"	// \e[;	— Reset all ANSI highlighting before printing the subsequent escape sequence.
-#define RESET	CSI END	// \e[m	— Reset all ANSI highlighting.
+#define RESET	CSI END	/// \e[m /** Reset all ANSI highlighting. */
+#define CSIR	CSI ";"	/// \e[; /** Reset all ANSI highlighting before printing the subsequent escape sequence. */
 
 #define NO_COLOUR ""
 

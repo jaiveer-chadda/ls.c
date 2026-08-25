@@ -6,8 +6,9 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // ReSharper disable once CppUnusedIncludeDirective
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <inttypes.h>
 #include <sys/stat.h>
 
 #include "consts.h"
@@ -15,7 +16,7 @@
 /* ——————————————————————————————————————————————————— */
 
 typedef char*link_t;
-typedef char suff_t;
+typedef char suff_t; /** Can be one of: `/`, `@`, `*`, `=`, `|`, `%` */
 typedef char unit_t;
 typedef char name_t[MAX_NAME_LEN];
 typedef char path_t[MAX_PATH_LEN];
