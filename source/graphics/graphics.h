@@ -29,6 +29,7 @@
 
 #define	UNDER	"4"	// \e[4m
 #define	DIM		"2"	// \e[2m
+#define	NODIM	"22"// \e[22m
 
 /* —— tput screen controls —————————————————————————————————————————————————— */
 
@@ -100,6 +101,11 @@
 /* —— Links ————————————————————————————————————————————————————————————————— */
 
 #define SYMLINK_ARROW			" -> "
+#define APPLE_ARROW				" —a→ "
+#define EACCES_ARROW			" —?→ "
+
+#define EACCES_MSG_NO_COLOUR	"[permission denied]"
+#define EACCES_MSG_COLOUR		ANSI(DIM ";31") "[" ANSI(NODIM) "permission denied" ANSI(DIM) "]" RESET
 
 #define	  VALID_ARROW_COLOUR	PUNCT			// \e[90m
 #define INVALID_ARROW_COLOUR	"31"			// \e[31m

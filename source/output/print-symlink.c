@@ -16,9 +16,24 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define GET_ARROW_COLOUR() (is_valid_path ? ANSI(VALID_ARROW_COLOUR) : ANSI(INVALID_ARROW_COLOUR))
+#define GET_ARROW() (is_apple ? APPLE_ARROW : SYMLINK_ARROW)
+#define IF_COLOUR(yes, no) (DO_COLOUR() ? (yes) : (no))
+
 // ReSharper disable once CppParameterMayBeConst
-void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour link_col) {
+void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour link_col, const bool is_apple) {
 	const bool is_valid_path = suffix != INVALID_LINK && suffix != INV_APPLE_LINK;
+
+	/* ————————————————————————————————————————————————————— */
+
+	// if `p_target_path` is NULL, then it was never allocated in the first place, so doesn't need to be freed
+	if (p_target_path == NULL) {
+		printf("%s%s%s" "%s",
+			IF_COLOUR(GET_ARROW_COLOUR(), ""), EACCES_ARROW, IF_COLOUR(RESET, ""),
+			IF_COLOUR(EACCES_MSG_COLOUR, EACCES_MSG_NO_COLOUR)
+		);
+		return;
+	}
 
 	/* ————————————————————————————————————————————————————— */
 
@@ -28,11 +43,13 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 		escapeName(escd_path, p_target_path, NO_COLOUR);
 		free(p_target_path);
 
-		printf("%s%s", SYMLINK_ARROW, escd_path);
+		printf("%s%s", GET_ARROW(), escd_path);
 
 		PRINT_SUFFIX();
 		return;
 	}
+
+	/* ————————————————————————————————————————————————————— */
 
 	if (!is_valid_path) {
 		path_t escd_path;
@@ -41,7 +58,7 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 		free(p_target_path);
 
 		printf("%s%s" "%s%s" "%s",
-			ANSI(INVALID_ARROW_COLOUR), SYMLINK_ARROW,
+			ANSI(INVALID_ARROW_COLOUR), GET_ARROW(),
 			ANSI(INVALID_LINK_COLOUR ), escd_path,
 			RESET
 		);
@@ -72,7 +89,7 @@ void printSymlink(link_t p_target_path, const suff_t suffix, const FileColour li
 	escapeName(escd_basename, p_basename, GET_TARGET_COLOUR());
 
 	printf("%s%s%s" "%s%s" "%s%s%s%s" "%s",
-		ANSI(VALID_ARROW_COLOUR), SYMLINK_ARROW, RESET,
+		ANSI(VALID_ARROW_COLOUR), GET_ARROW(), RESET,
 
 		// print the dirname (path to the file's parent dir)
 		contains_slash ? ANSI(LINK_PATH_COLOUR) : NO_COLOUR, escd_dirname,

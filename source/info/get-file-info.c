@@ -131,6 +131,7 @@ static inline bool checkForAppleAlias(FileInfo *pFile, const char *path) {
 
 	/// Indicates whether a file is an Apple alias or not.
 	const bool is_apple_alias = resolveAppleAlias(target_path, &is_valid_alias, path);
+	pFile->is_ln_apple = is_apple_alias;
 
 	if (!is_apple_alias) {
 		pFile->ln_suf = NOT_LINK;
