@@ -67,6 +67,23 @@ int main(const int argc, const char *argv[]) {
 		}
 	}
 
+	for (int i = 0; i < input_count; i++) {
+		printf("%d: %s\n", i, input_paths[i]);
+
+		struct stat file_stat;
+		stat(input_paths[i], &file_stat);
+
+		if (S_ISDIR(file_stat.st_mode)) {
+
+		}
+	}
+
+	exit(0);
+	
+	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 	/// Whether the user inputted at least one valid input into the function.
 	bool has_any_valid_input = false;
 
@@ -99,7 +116,7 @@ int main(const int argc, const char *argv[]) {
 	/* —— Process All Directories ———————————————————————————————————————————————————————————————— */
 
 	for (int i = 0; i < input_count; i++) {
-		// Don't print invalid directories
+		// Don't process invalid directories
 		if (input_dirs[i] == NULL) continue;
 
 		// Do the processing & print the details for each directory inputted
@@ -108,6 +125,8 @@ int main(const int argc, const char *argv[]) {
 		// Print a newline between each directory listing (after each dir except the last)
 		if (i != input_count - 1) putchar('\n');
 	}
+
+	// if (do_free_path_0) free(input_paths[0]);
 
 	return EXIT_SUCCESS;
 }
