@@ -14,6 +14,7 @@ typedef struct {
 	bool		is_valid	; // bool				-	 1
 
 	bool		do_link_hl	; // bool				-	 1
+	bool		is_ln_apple	; // bool				-	 1
 	bool		has_xattr	; // bool				-	 1
 	bool		is_mount	; // bool				-	 1
 	bool		has_acl		; // bool				-	 1

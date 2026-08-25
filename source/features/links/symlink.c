@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h> // errno_t
 
 #include "utils/malloc.h"
 #include "model/stat-model.h"
@@ -16,15 +17,15 @@ link_t getLink(const path_t link_path) {
 	path_t target_path = "";
 
 	const ssize_t target_path_len = readlink(link_path, target_path, sizeof(path_t));
-	const int readlink_errno = errno;
-
-	#ifndef DEBUG_MODE
-	(void)readlink_errno; // `readlink_errno` will be unused when not in debug mode
-	#endif
+	const errno_t readlink_errno = errno;
 
 	if (target_path_len == -1) {
-		debug(WARNING, "%s", strerror(readlink_errno));
-		target_path[0] = '\0';
+		debug(WARNING, "%s: %s", link_path, strerror(readlink_errno));
+
+		switch (readlink_errno) {
+			case EACCES	: return NULL;
+			default		: target_path[0] = '\0';
+		}
 	} else {
 		target_path[target_path_len] = '\0';
 	}

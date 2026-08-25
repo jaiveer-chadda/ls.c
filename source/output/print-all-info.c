@@ -109,7 +109,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		if (do_suffix() && file.suffix != '\0') { putchar(file.suffix); ff; }
 
 		// next, if the file's a symlink, print the pointed-to path
-		if (DO_SYMLINK()) { printSymlink(file.link_to, file.ln_suf, file.link_col); ff; }
+		if (DO_SYMLINK()) { printSymlink(file.link_to, file.ln_suf, file.link_col, file.is_ln_apple); ff; }
 
 		// then, if the file's a mount point, print some information about the mount
 		if (DO_MOUNT_DEV() && file.is_mount) { printMountDevice(file.name); ff; }
