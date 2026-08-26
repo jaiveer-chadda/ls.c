@@ -18,22 +18,15 @@
 #define bg_ANSI_CODE 4
 
 #define SIMPLIFY_ANSI(fgbg) do {																	\
-	if		(col.fgbg == prev.fgbg) { /* do nothing - don't add anything to the output */ }			\
-	else if	(col.fgbg <=  7) sprintf(fgbg##_str, "%d%hhu"	 , fgbg##_ANSI_CODE		, col.fgbg);	\
+	if		(col.fgbg <=  7) sprintf(fgbg##_str, "%d%hhu"	 , fgbg##_ANSI_CODE		, col.fgbg);	\
 	else if (col.fgbg <= 15) sprintf(fgbg##_str, "%d%hhu"	 , fgbg##_ANSI_CODE + 6	, col.fgbg - 8);\
 	else					 sprintf(fgbg##_str, "%d8;5;%hhu", fgbg##_ANSI_CODE		, col.fgbg);	\
 } while (0)
-
-/* —————————————————————————————————————————————————————————————————— */
-
-#define test_1 ((Colour){ .style = G_BOLD | G_UNDER | G_NO_RESET, .fg = 125, .bg = G_BLUE })
-#define test_2 ((Colour){ .style = G_DIM  | G_UNDER				, .fg = 125, .bg = G_RED })
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static const style_t G_STYLES[] = { G_BOLD, G_DIM, G_ITALIC, G_UNDER, G_BLINK, G_INVERT, G_INVIS, G_STRIKE, G_DUNDER };
 static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
-static Colour prev = /* IS_DARK_MODE ? */ DARK_MODE_INIT /* : LIGHT_MODE_INIT */;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -57,7 +50,7 @@ static inline char *stylelookup(uint16_t style) {
 int colprint(const Colour col) {
 	// I'm making the assumption that if someone wants a black foreground, black background, and no style,
 	//	then they want the colour to be reset.
-	if (col.style + col.fg + col.bg == 0) { prev = col; return 0; }
+	if (col.style + col.fg + col.bg == 0) return 0;
 
 	/* —————————————————————————————————————————————————————————————————— */
 
@@ -67,11 +60,9 @@ int colprint(const Colour col) {
 	/* —————————————————————————————————————————————————————————————————— */
 
 	// this check is technically redundant, but it saves having to do a check for each of the styles
-	if (col.style != prev.style) {
-		for (int i = 0; i < GSTYLES_LEN; i++) {
-			if (col.style & G_STYLES[i] && !(prev.style & G_STYLES[i])) {
-				strcat(style, stylelookup(G_STYLES[i]));
-			}
+	for (int i = 0; i < GSTYLES_LEN; i++) {
+		if (col.style & G_STYLES[i]) {
+			strcat(style, stylelookup(G_STYLES[i]));
 		}
 	}
 
@@ -87,16 +78,20 @@ int colprint(const Colour col) {
 
 	/* —————————————————————————————————————————————————————————————————— */
 
-	prev = col;
 	return 0;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define test_1 ((Colour){ .style = G_BOLD | G_UNDER | G_NO_RESET, .fg = 125, .bg = G_BLUE })
+#define test_2 ((Colour){ .style = G_DIM  | G_UNDER				, .fg = 125, .bg = G_RED })
+#define test_3 ((Colour){ .style = G_NONE, .fg = 125, .bg = G_RED })
+
 int main(const int argc, const char* argv[]) {
 	colprint(test_1); putchar('\n');
 	colprint(test_2); putchar('\n');
+	colprint(test_3); putchar('\n');
 
 	return 0;
 }
