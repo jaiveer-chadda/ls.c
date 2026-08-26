@@ -11,7 +11,7 @@
 typedef uint16_t style_t; /** A bit record holding all styles that should be applied to some text. */
 
 #define G_NONE		((style_t)0x0000) /**   0 - Don't set any styles. */
-#define G_NO_RESET	((style_t)0x0001) /**   1 - Don't reset styles/colours before printing. */
+#define G_RESET		((style_t)0x0001) /**   1 - Reset all styles/colours before printing. */
 #define G_BOLD		((style_t)0x0002) /**   2 - Bolden text					(eqv. to `\e[1m`). */
 #define G_DIM		((style_t)0x0004) /**   4 - Dim text						(eqv. to `\e[2m`). */
 #define G_ITALIC	((style_t)0x0008) /**   8 - Italicise text				(eqv. to `\e[3m`). */
@@ -25,9 +25,12 @@ typedef uint16_t style_t; /** A bit record holding all styles that should be app
 /* —— Basic Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// A value in `[0, 255]`, representing an 8-bit ANSI colour code. I.e., `(colour_t)ID` = `\e[38;5;{ID}m`.
-typedef uint8_t colour_t;
+typedef int16_t colour_t;
 
-#define G_BLK	((colour_t)0)	// \e[30m /** Black		*/
+#define G_NO_FG	((colour_t)0)	/** Leave the foreground colour as the terminal's default. */
+#define G_NO_BG	((colour_t)0)	/** Leave the background colour as the terminal's default. */
+
+#define G_BLK	((colour_t)-1)	// \e[30m /** Black		*/
 #define G_RED	((colour_t)1)	// \e[31m /** Red		*/
 #define G_GRN	((colour_t)2)	// \e[32m /** Green		*/
 #define G_YEL	((colour_t)3)	// \e[33m /** Yellow	*/

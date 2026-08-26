@@ -8,9 +8,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define COLOUR_NONE		((Colour){0})
-#define DARK_MODE_INIT	((Colour){ .style = G_NONE, .fg = G_WHITE, .bg = G_BLACK })
-#define LIGHT_MODE_INIT	((Colour){ .style = G_NONE, .fg = G_WHITE, .bg = G_BLACK })
+#define RESET_ALL	((Colour){ .style = G_NONE, .fg = G_NO_FG, .bg = G_NO_BG })
 
 /* —————————————————————————————————————————————————————————————————— */
 
@@ -18,9 +16,10 @@
 #define bg_ANSI_CODE 4
 
 #define SIMPLIFY_ANSI(fgbg) do {																	\
-	if		(col.fgbg <=  7) sprintf(fgbg##_str, "%d%hhu"	 , fgbg##_ANSI_CODE		, col.fgbg);	\
-	else if (col.fgbg <= 15) sprintf(fgbg##_str, "%d%hhu"	 , fgbg##_ANSI_CODE + 6	, col.fgbg - 8);\
-	else					 sprintf(fgbg##_str, "%d8;5;%hhu", fgbg##_ANSI_CODE		, col.fgbg);	\
+	if		(col.fgbg == -1) sprintf(fgbg##_str, "%d0"		, fgbg##_ANSI_CODE				  );	\
+	else if	(col.fgbg <=  7) sprintf(fgbg##_str, "%d%hd"	, fgbg##_ANSI_CODE		, col.fgbg);	\
+	else if (col.fgbg <= 15) sprintf(fgbg##_str, "%d%hd"	, fgbg##_ANSI_CODE + 6	, col.fgbg - 8);\
+	else					 sprintf(fgbg##_str, "%d8;5;%hd", fgbg##_ANSI_CODE		, col.fgbg);	\
 } while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -48,13 +47,8 @@ static inline char *stylelookup(uint16_t style) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 int colprint(const Colour col) {
-	// I'm making the assumption that if someone wants a black foreground, black background, and no style,
-	//	then they want the colour to be reset.
-	if (col.style + col.fg + col.bg == 0) return 0;
 
-	/* —————————————————————————————————————————————————————————————————— */
-
-	const bool do_reset = !(col.style & G_NO_RESET);
+	const bool do_reset = col.style & G_RESET;
 	char style[256] = "", fg_str[256] = "", bg_str[256] = "";
 
 	/* —————————————————————————————————————————————————————————————————— */
@@ -68,13 +62,14 @@ int colprint(const Colour col) {
 
 	/* —————————————————————————————————————————————————————————————————— */
 
-	SIMPLIFY_ANSI(fg);
-	SIMPLIFY_ANSI(bg);
+	if (col.fg != G_NO_FG) SIMPLIFY_ANSI(fg);
+	if (col.bg != G_NO_BG) SIMPLIFY_ANSI(bg);
 
 	/* —————————————————————————————————————————————————————————————————— */
 
-	printf("\\e[" "%s" "%s%s;%sm" "%s", do_reset ? ";" : "", style, fg_str, bg_str, "\n");
-	printf("\33[" "%s" "%s%s;%sm" "%s", do_reset ? ";" : "", style, fg_str, bg_str, "[lorem ipsum dolor]\33[m\n");
+	printf("\33[" "%s" "%s%s%s%sm"	  	, do_reset ? ";" : "", style, fg_str, strlen(fg_str) > 0 ? ";" : "", bg_str);
+	printf("\\e[" "%s" "%s%s%s%sm" "%s"	, do_reset ? ";" : "", style, fg_str, strlen(fg_str) > 0 ? ";" : "", bg_str, "\n");
+	printf("\33[" "%s" "%s%s%s%sm" "%s"	, do_reset ? ";" : "", style, fg_str, strlen(fg_str) > 0 ? ";" : "", bg_str, "[lorem ipsum dolor]\n");
 
 	/* —————————————————————————————————————————————————————————————————— */
 
@@ -84,14 +79,15 @@ int colprint(const Colour col) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define test_1 ((Colour){ .style = G_BOLD | G_UNDER | G_NO_RESET, .fg = 125, .bg = G_BLUE })
-#define test_2 ((Colour){ .style = G_DIM  | G_UNDER				, .fg = 125, .bg = G_RED })
-#define test_3 ((Colour){ .style = G_NONE, .fg = 125, .bg = G_RED })
+#define test_1 ((Colour){ .style = G_BOLD | G_UNDER	, .fg = 125, .bg = G_BLU})
+#define test_2 ((Colour){ .style = G_DIM  | G_UNDER	, .fg =  20, .bg = G_RED})
+#define test_3 ((Colour){ .style = G_NONE			, .fg = 218, .bg = G_BLK})
 
 int main(const int argc, const char* argv[]) {
-	colprint(test_1); putchar('\n');
-	colprint(test_2); putchar('\n');
-	colprint(test_3); putchar('\n');
+	colprint(test_1)	; putchar('\n');
+	colprint(test_2)	; putchar('\n');
+	colprint(test_3)	; putchar('\n');
+	colprint(RESET_ALL)	; putchar('\n');
 
 	return 0;
 }
