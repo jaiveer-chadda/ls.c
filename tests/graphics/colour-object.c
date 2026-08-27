@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "graphics/colour-object.h"
 
-#define COLPRINT(...) colprint((Colour){ __VA_ARGS__ });
+#define COLPRINT(...) colprint((Colour){ __VA_ARGS__ })
 
 #define test_x ((Colour){ .style = G_ALL			, .fg = 999, .bg = G_BLU})
 #define test_y ((Colour){ .fg = -10})
@@ -21,12 +21,15 @@
 #define test_5 ((Colour){ .style = G_BOLD | G_ITALIC })
 #define test_6 ((Colour){ .style = G_BOLD | G_UNDER })
 
+#define LINE "————————————————————————————————————————————————"
+
 int main(const int argc, const char* argv[]) {
 	#ifdef DEBUG_MODE
 		puts("———————————————————————— DEBUG ————————————————————————");
 	#else
 		putchar('\n');
 	#endif
+	puts(LINE LINE LINE "\n");
 
 	// colprint(test_1);
 	// colprint(test_2);
@@ -75,8 +78,12 @@ int main(const int argc, const char* argv[]) {
 	#define dunder	G_DUNDER
 	#define all		G_ALL
 
-	COLPRINT(bold, red, lblue)
-	COLPRINT(bold, red)
+	COLPRINT(dunder | strike, red, lblue)	; puts(LINE LINE LINE "\n");
+	COLPRINT(		  strike, red)			; puts(LINE LINE LINE "\n");
+
+	COLPRINT();
+	COLPRINT(dunder);
+	// COLPRINT(		  strike, red)
 
 	// COLPRINT(reset)
 	
