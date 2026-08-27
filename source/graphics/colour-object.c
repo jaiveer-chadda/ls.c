@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdbool.h>
@@ -20,7 +21,7 @@
  *	- This would be: `"1;2;3;4;5;7;8;9;22;\0"`. */
 #define STYLE_BUFSIZE 20
 /**	The maximum number of characters needed to represent an 8-bit ANSI colour code, including a null terminator.
- *	- This would be: `"38;5;123\0"`. */
+ *	- This would be: `"38;5;255\0"`. */
 #define FGBG_BUFSIZE  9
 
 #define fg_ANSI_CODE 3
@@ -64,6 +65,22 @@
 	else						SET_FGBG(fgbg, "%d8;5;%hd"	,  0,  0); \
 } while (0)
 
+/* —————————————————————————————————————————————————————————————————— */
+
+#define PRINT_OOR_WARNING(elem)								\
+	fprintf(stderr,											\
+		"Warning: `Colour::"#elem"` is out of range: %hd.\n"\
+		"Valid range is: %d >= "#elem" >= %d.\n"			\
+		"`"#elem"` has been adjusted for printing:\n"		\
+		"   abs(%hd) %% %d = %hd\n",						\
+		\
+		(input_col.elem),									\
+		COLOUR_T_MIN, COLOUR_T_MAX,							\
+		(input_col.elem), COLOUR_T_MAX, (col.elem)			\
+	)
+
+/* —————————————————————————————————————————————————————————————————— */
+
 #define HAS_STYLE(col_obj) ((col_obj).style & G_STYLES[i])
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -94,7 +111,23 @@ static inline int stylelookup(style_t style) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-int colprint(const Colour col) {
+int colprint(const Colour input_col) {
+	/// The working copy of the inputted colour object, which we can manipulate if needed.
+	Colour col = input_col;
+
+	/* —————————————————————————————————————————————————————————————————— */
+
+	if (col.fg < COLOUR_T_MIN || col.fg > COLOUR_T_MAX) {
+		col.fg = abs(col.fg) % COLOUR_T_MAX;
+		PRINT_OOR_WARNING(fg);
+	}
+
+	if (col.bg < COLOUR_T_MIN || col.bg > COLOUR_T_MAX) {
+		col.bg = abs(col.bg) % COLOUR_T_MAX;
+		PRINT_OOR_WARNING(bg);
+	}
+
+	/* —————————————————————————————————————————————————————————————————— */
 
 	const bool do_reset = col.style & G_RESET;
 
@@ -165,6 +198,11 @@ int colprint(const Colour col) {
 
 #define test_x ((Colour){ .style = G_ALL			, .fg = 999, .bg = G_BLU})
 
+#define test_y ((Colour){ .fg = -10})
+#define test_z ((Colour){ .fg = 999})
+#define test_a ((Colour){ .bg = -498})
+#define test_b ((Colour){ .bg = 3728})
+
 #define test_1 ((Colour){ .style = G_BOLD | G_UNDER	, .fg = 125, .bg = G_BLU})
 #define test_2 ((Colour){ .style = G_DIM  | G_UNDER	, .fg =  20, .bg = G_RED})
 #define test_3 ((Colour){ .style = G_NONE			, .fg = 218, .bg = G_BLK})
@@ -180,18 +218,24 @@ int main(const int argc, const char* argv[]) {
 		putchar('\n');
 	#endif
 
-	colprint(test_1)	; putchar('\n');
-	colprint(test_2)	; putchar('\n');
-	colprint(test_3)	; putchar('\n');
-	colprint(test_2)	; putchar('\n');
-	colprint(test_4)	; putchar('\n');
+	// colprint(test_1)	; putchar('\n');
+	// colprint(test_2)	; putchar('\n');
+	// colprint(test_3)	; putchar('\n');
+	// colprint(test_2)	; putchar('\n');
+	// colprint(test_4)	; putchar('\n');
 
-	colprint(RESET_ALL)	; putchar('\n');
+	// colprint(RESET_ALL)	; putchar('\n');
+	// colprint(test_x)	; putchar('\n');
 
-	colprint(test_x)	; putchar('\n');
+	// colprint(test_5)	; putchar('\n');
+	// colprint(test_6)	; putchar('\n');
 
-	colprint(test_5)	; putchar('\n');
-	colprint(test_6)	; putchar('\n');
+	colprint(test_z)	; putchar('\n');
+	colprint(test_y)	; putchar('\n');
+	colprint(test_y)	; putchar('\n');
+
+	colprint(test_a)	; putchar('\n');
+	colprint(test_b)	; putchar('\n');
 
 	return 0;
 }
