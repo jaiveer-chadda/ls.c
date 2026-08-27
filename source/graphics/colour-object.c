@@ -17,9 +17,11 @@
 #endif
 
 /**	The number of characters needed to represent every style, including a trailing semicolon and null terminator.
- *	- This would be:`"1;2;3;4;5;7;8;9;22;\0"` */
+ *	- This would be: `"1;2;3;4;5;7;8;9;22;\0"`. */
 #define STYLE_BUFSIZE 20
-#define FGBG_BUFSIZE  10
+/**	The maximum number of characters needed to represent an 8-bit ANSI colour code, including a null terminator.
+ *	- This would be: `"38;5;123\0"`. */
+#define FGBG_BUFSIZE  9
 
 #define fg_ANSI_CODE 3
 #define bg_ANSI_CODE 4
@@ -137,9 +139,9 @@ int colprint(const Colour col) {
 
 	// if there isn't any foreground or background, then remove the trailing semicolon from `style`
 	//	- this is to prevent the out put being something like `\e[1;4;m`
-	if (fg_len == 0 && bg_len == 0 && style[st_len - 1] == ';') {
-		style[st_len - 1] = '\0';
-	}
+	if (fg_len == 0 && bg_len == 0 &&
+		st_len != 0 && style[st_len - 1] == ';'
+	) style[st_len - 1] = '\0';
 
 	/* —————————————————————————————————————————————————————————————————— */
 
@@ -151,7 +153,7 @@ int colprint(const Colour col) {
 
 	printf(CSI "%s" "%s%s" "%s" "%s" END, reset_sc, style, fg, foreg_sc, bg);
 	printf("\\e[""%s""%s%s%s%s" END "%s", reset_sc, style, fg, foreg_sc, bg, "\n");
-	printf(CSI	 "%s""%s%s%s%s" END "%s", reset_sc, style, fg, foreg_sc, bg, "[lorem ipsum dolor]\n");
+	puts("[lorem ipsum dolor]");
 
 	/* —————————————————————————————————————————————————————————————————— */
 
@@ -160,6 +162,8 @@ int colprint(const Colour col) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define test_x ((Colour){ .style = G_ALL			, .fg = 999, .bg = G_BLU})
 
 #define test_1 ((Colour){ .style = G_BOLD | G_UNDER	, .fg = 125, .bg = G_BLU})
 #define test_2 ((Colour){ .style = G_DIM  | G_UNDER	, .fg =  20, .bg = G_RED})
@@ -176,13 +180,15 @@ int main(const int argc, const char* argv[]) {
 		putchar('\n');
 	#endif
 
-	// colprint(test_1)	; putchar('\n');
-	// colprint(test_2)	; putchar('\n');
-	// colprint(test_3)	; putchar('\n');
-	// colprint(test_2)	; putchar('\n');
-	// colprint(test_4)	; putchar('\n');
+	colprint(test_1)	; putchar('\n');
+	colprint(test_2)	; putchar('\n');
+	colprint(test_3)	; putchar('\n');
+	colprint(test_2)	; putchar('\n');
+	colprint(test_4)	; putchar('\n');
 
 	colprint(RESET_ALL)	; putchar('\n');
+
+	colprint(test_x)	; putchar('\n');
 
 	colprint(test_5)	; putchar('\n');
 	colprint(test_6)	; putchar('\n');
