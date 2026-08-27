@@ -10,6 +10,7 @@
 // I only need 10 bits, but this is the smallest I can get it to
 typedef uint16_t style_t; /** A bit record holding all styles that should be applied to some text. */
 
+#define G_ALL		((style_t)0x03FF) /**   0 - Don't set any new styles. */
 #define G_NONE		((style_t)0x0000) /**   0 - Don't set any new styles. */
 #define G_RESET		((style_t)0x0001) /**   1 - Reset all styles/colours before printing. */
 #define G_BOLD		((style_t)0x0002) /**   2 - Bolden text					(equivalent to `\e[1m`). */
