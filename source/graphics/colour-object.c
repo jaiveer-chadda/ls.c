@@ -16,7 +16,9 @@
 #	define END "m"
 #endif
 
-#define STYLE_BUFSIZE 21
+/**	The number of characters needed to represent every style, including a trailing semicolon and null terminator.
+ *	- This would be: `1;2;3;4;5;7;8;9;22;` */
+#define STYLE_BUFSIZE 20
 #define FGBG_BUFSIZE  10
 
 #define fg_ANSI_CODE 3
@@ -47,12 +49,17 @@
 #	define SNPRINTF(str, size, ...) snprintf(str, size, __VA_ARGS__)
 #endif
 
+/* —————————————————————————————————————————————————————————————————— */
+
+#define SET_FGBG(fgbg, fmt, adj_code, adj_col) \
+	(fgbg##_len) = SNPRINTF((fgbg), FGBG_BUFSIZE, (fmt), (fgbg##_ANSI_CODE) + (adj_code), (col.fgbg) + (adj_col))
+
 #define SIMPLIFY_ANSI(fgbg) do { /* `fgbg` will be either `fg` or `bg` */ \
-	if		(col.fgbg ==  0 || col.fgbg == prev.fgbg) { /* do nothing - keep this colour the same */ } \
-	else if	(col.fgbg == -1) fgbg##_len = SNPRINTF(fgbg, FGBG_BUFSIZE, "%d0"		, fgbg##_ANSI_CODE						); \
-	else if	(col.fgbg <=  7) fgbg##_len = SNPRINTF(fgbg, FGBG_BUFSIZE, "%d%hd"		, fgbg##_ANSI_CODE		, col.fgbg		); \
-	else if (col.fgbg <= 15) fgbg##_len = SNPRINTF(fgbg, FGBG_BUFSIZE, "%d%hd"		, fgbg##_ANSI_CODE + 6	, col.fgbg - 8	); \
-	else					 fgbg##_len = SNPRINTF(fgbg, FGBG_BUFSIZE, "%d8;5;%hd"	, fgbg##_ANSI_CODE		, col.fgbg		); \
+	if		((col.fgbg) ==  0 || (col.fgbg) == (prev.fgbg)) { /* do nothing - keep this colour the same */ } \
+	else if	((col.fgbg) == -1)	SET_FGBG(fgbg, "%d0"		,  0,  0); \
+	else if	((col.fgbg) <=  7)	SET_FGBG(fgbg, "%d%hd"		,  0,  0); \
+	else if ((col.fgbg) <= 15)	SET_FGBG(fgbg, "%d%hd"		, +6, -8); \
+	else						SET_FGBG(fgbg, "%d8;5;%hd"	,  0,  0); \
 } while (0)
 
 #define HAS_STYLE(col_obj) ((col_obj).style & G_STYLES[i])
@@ -67,8 +74,6 @@ static Colour prev = RESET_ALL;
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline int stylelookup(style_t style) {
-	#pragma clang diagnostic push
-	#pragma clang diagnostic ignored "-Wimplicit-fallthrough"
 	switch (style) {
 		case G_BOLD		: return  1;
 		case G_DIM		: return  2;
@@ -79,15 +84,15 @@ static inline int stylelookup(style_t style) {
 		case G_INVIS	: return  8;
 		case G_STRIKE	: return  9;
 		case G_DUNDER	: return 22;
-		case G_RESET	: /* fallthrough */ ;
-		default			: return  0;
+		default:
+			debug(WARNING, "Invalid style in `Colour` object: '%#x'", style);
+			return 6; // The esc seq `\e[6m` does nothing, ∴ this is harmless & has no side effects.
 	}
-	#pragma clang diagnostic pop
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void colprint(const Colour col) {
+int colprint(const Colour col) {
 
 	const bool do_reset = col.style & G_RESET;
 
@@ -98,7 +103,7 @@ void colprint(const Colour col) {
 		!do_reset // unless we're resetting things
 	) {
 		puts("•\n[lorem ipsum dolor]");
-		return;
+		return 0;
 	}
 
 	/* —————————————————————————————————————————————————————————————————— */
@@ -123,8 +128,7 @@ void colprint(const Colour col) {
 	}
 
 	// remove the trailing semicolon
-	//	- this is to prevent the output being something like `\e[4;m`,
-	//		if there aren't any fg or bg colours to set
+	//	- this is to prevent the output being something like `\e[4;m` when there aren't any colours to set
 	if (style[st_len - 1] == ';') {
 		style[st_len - 1] = '\0';
 	}
@@ -139,6 +143,8 @@ void colprint(const Colour col) {
 
 	/* —————————————————————————————————————————————————————————————————— */
 
+	prev = col;
+
 	const char *style_sc = st_len > 0 ? ";" : "";
 	const char *foreg_sc = fg_len > 0 ? ";" : "";
 	const char *reset_sc = do_reset	  ? ";" : "";
@@ -149,7 +155,7 @@ void colprint(const Colour col) {
 
 	/* —————————————————————————————————————————————————————————————————— */
 
-	prev = col;
+	return -1;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
