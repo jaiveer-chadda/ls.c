@@ -197,8 +197,12 @@ int colprint(const Colour input_col) {
 	const char *reset_sc = do_reset	  ? ";" : "";
 
 	printf(CSI "%s" "%s%s" "%s" "%s" END, reset_sc, style, fg, foreg_sc, bg);
-	printf("\\e[""%s""%s%s%s%s" END "%s", reset_sc, style, fg, foreg_sc, bg, "\n");
-	puts("[lorem ipsum dolor]");
+	fflush(stdout);
+
+	printf("\\e[""%s""%s%s%s%s" END "\n", reset_sc, style, fg, foreg_sc, bg);
+	printf("\\e[ (%s) (%s) (%s%s)" "(%s" END ")\n", reset_sc, style, fg, foreg_sc, bg);
+
+	puts("[lorem ipsum dolor]\n");
 
 	/* —————————————————————————————————————————————————————————————————— */
 
