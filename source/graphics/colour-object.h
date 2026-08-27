@@ -86,7 +86,7 @@ typedef struct {
 
 #define RESET_ALL ((Colour){ .style = G_NONE, .fg = G_NO_FG, .bg = G_NO_BG }) /** Equivalent to `((Colour){0})`. */
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Function Declarations ———————————————————————————————————————————————————————————————————————————————————————— */
 
 int colprint(const Colour input_col);
 
