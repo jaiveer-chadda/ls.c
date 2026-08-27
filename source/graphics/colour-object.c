@@ -7,68 +7,25 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "debugging/debugging.h"
+#include "colour-defs.h"
 #include "colour-object.h"
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+#include "debugging/debugging.h"
 
-#define ANSI_OFF_MOD	(+20) /** The modifier that turns (most) ANSI on-codes into off-codes. */
-#define ANSI_REG_BRT_MOD (+6) /** The modifier that turns ANSI colour codes from regular to bright. */
+/* ── ── Static Variables ── ────────────────────────────────────────────────────────────────────────────────——————— */
 
-#define ANSI_fg_CODE	3 /** The number which regular colour fg codes begin with. E.g. `\e[35m` or `\e[38;5;255m`. */
-#define ANSI_bg_CODE	4 /** The number which regular colour fg codes begin with. E.g. `\e[44m` or `\e[48;5;128m`. */
+static const style_t G_STYLES[] = { G_BOLD, G_DIM, G_ITALIC, G_UNDER, G_BLINK, G_INVERT, G_INVIS, G_STRIKE, G_DUNDER };
+static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
 
-#define ANSI_BLACK		0
-#define ANSI_FGBG_OFF	9
-#define ANSI_8BIT_SEQ	"8;5;"
+static Colour active = RESET_ALL;
 
-#define ANSI_BOLD		1
-#define ANSI_DIM		2
-#define ANSI_ITALIC		3
-#define ANSI_UNDER		4
-#define ANSI_BLINK		5
-#define ANSI_NOTHING	6
-#define ANSI_INVERT		7
-#define ANSI_INVIS		8
-#define ANSI_STRIKE		9
-#define ANSI_DUNDER		21
-
-#define ANSI_NO_BOLD	ANSI_OFF_MOD + ANSI_BOLD
-#define ANSI_NO_DIM		ANSI_NO_BOLD
-#define ANSI_NO_ITALIC	ANSI_OFF_MOD + ANSI_ITALIC
-#define ANSI_NO_UNDER	ANSI_OFF_MOD + ANSI_UNDER
-#define ANSI_NO_BLINK	ANSI_OFF_MOD + ANSI_BLINK
-#define ANSI_NO_INVERT	ANSI_OFF_MOD + ANSI_INVERT
-#define ANSI_NO_INVIS	ANSI_OFF_MOD + ANSI_INVIS
-#define ANSI_NO_STRIKE	ANSI_OFF_MOD + ANSI_STRIKE
-#define ANSI_NO_DUNDER	ANSI_NO_UNDER
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#ifndef CSI
-#	define CSI "\033["
-#	define END "m"
-#endif
-
-/**	The number of characters needed to represent every style's reset sequence (usually longer),
- * including a trailing semicolon and null terminator.
- *	- This would be: `"22;23;24;25;27;28;29;\0"`. */
-#define STYLE_BUFSIZE 22
-
-/**	The maximum number of characters needed to represent an 8-bit ANSI colour code, including a null terminator.
- *	- This would be: `"38;5;255\0"`. */
-#define FGBG_BUFSIZE  9
-
-#define ON	true
-#define OFF	false
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── `d_snprintf()` ── ───────────────────────────────────────────────────────────────────────────────────────── */
 
 #ifdef DEBUG_MODE
 #	define SNPRINTF(str, size, ...) d_snprintf(str, size, __VA_ARGS__)
 
 	/// @brief A version of `snprintf` with bounds-checking, and which prints debugging messages.
-	int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...) {
+	static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...) {
 		va_list va_args;
 		va_start(va_args, format);
 
@@ -87,78 +44,10 @@
 #	define SNPRINTF(str, size, ...) snprintf(str, size, __VA_ARGS__)
 #endif
 
-/* —————————————————————————————————————————————————————————————————— */
+/* ── ── `stylelookup()` ── ──────────────────────────────────────────────────────────────────────────────────────── */
 
-#define SET_FGBG(fgbg, is_8bit, mode, ansi_col) \
-	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%hd" : "%d%hd"), (mode), (ansi_col))
-
-#define SIMPLIFY_ANSI(fgbg) do {				\
-	const colour_t col	=  (colour.fgbg);		\
-	const int code		=  (ANSI_##fgbg##_CODE);\
-	int *const len		= &(fgbg##_len);		\
-	\
-	if		(col == G_NO_FGBG && (active.fgbg) == G_NO_FGBG) *len = 0; /* don't change the fg/bg colour */		\
-	else if	(col == G_NO_FGBG)	*len = SET_FGBG(fgbg, false, code					, ANSI_FGBG_OFF			);	\
-	else if	(col == G_BLACK	 )	*len = SET_FGBG(fgbg, false, code					, ANSI_BLACK			);	\
-	else if	(col <= G_REG_END)	*len = SET_FGBG(fgbg, false, code					, col					);	\
-	else if	(col <= G_BRT_END)	*len = SET_FGBG(fgbg, false, code + ANSI_REG_BRT_MOD, col - G_REG_BRT_DIFF	);	\
-	else						*len = SET_FGBG(fgbg, true , code					, col					);	\
-	\
-	has_##fgbg = (*len > 0);			\
-	if (has_##fgbg) active.fgbg = col;	\
-} while (0)
-
-/* —————————————————————————————————————————————————————————————————— */
-
-#define FGBG_OOR_WARNING(fgbg)								\
-	fprintf(stderr,											\
-		"Warning: `Colour::"#fgbg"` is out of range: %hd.\n"\
-		"Valid range is: %d <= "#fgbg" <= %d.\n"			\
-		"`"#fgbg"` has been locally set as follows:\n"		\
-		"   abs(%hd) %% %d = %hd\n",						\
-		(input_col.fgbg),									\
-		COLOUR_T_MIN, COLOUR_T_MAX,							\
-		(input_col.fgbg), COLOUR_T_MAX, (colour.fgbg)		\
-	)
-
-#define STYLE_OOR_WARNING()									\
-	fprintf(stderr,											\
-		"Warning: `Colour::style` is out of range: %#hx.\n"	\
-		"Valid range is: 0x0 <= style <= %#hx.\n"			\
-		"`style` has been locally set to 0x0.\n",			\
-		(input_col.style), STYLE_T_MAX						\
-	)
-
-#define FGBG_BOUNDS_CHECK(fgbg) do {								\
-	if (colour.fgbg < COLOUR_T_MIN || colour.fgbg > COLOUR_T_MAX) {	\
-		colour.fgbg = abs(colour.fgbg) % COLOUR_T_MAX;				\
-		FGBG_OOR_WARNING(fgbg);										\
-	}																\
-} while(0)
-
-#define STYLE_BOUNDS_CHECK() do {		\
-	if (colour.style > STYLE_T_MAX) {	\
-		colour.style = G_NONE;			\
-		STYLE_OOR_WARNING();			\
-	}									\
-} while(0)
-
-/* —————————————————————————————————————————————————————————————————— */
-
-#define HAS_STYLE(col_obj) ((col_obj).style & style_i)
-
-#define APPEND_TO_STYLE(num) \
-	st_len += SNPRINTF(style + st_len, STYLE_BUFSIZE - st_len, "%d;", num)
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-static const style_t G_STYLES[] = { G_BOLD, G_DIM, G_ITALIC, G_UNDER, G_BLINK, G_INVERT, G_INVIS, G_STRIKE, G_DUNDER };
-static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
-
-static Colour active = RESET_ALL;
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+#define ON	true
+#define OFF	false
 
 static inline int stylelookup(const style_t style, const bool turn_style) {
 	if (turn_style == OFF) {
@@ -190,19 +79,20 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── `colprint()` ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 int colprint(const Colour input_col) {
 	/// A working copy of the inputted colour object, which we can manipulate if needed.
 	Colour colour = input_col;
 
-	/* —————————————————————————————————————————————————————————————————— */
+	/* ── Bounds Checking ─────────────────────────────────────────────── */
 
 	STYLE_BOUNDS_CHECK();
 
 	FGBG_BOUNDS_CHECK(fg);
 	FGBG_BOUNDS_CHECK(bg);
 
-	/* —————————————————————————————————————————————————————————————————— */
+	/* ── Check for Identical Colour ──────────────────────────────────── */
 
 	const bool do_reset = colour.style & G_RESET;
 
@@ -217,11 +107,11 @@ int colprint(const Colour input_col) {
 		return 0;
 	}
 
-	/* —————————————————————————————————————————————————————————————————— */
+	/* ── Set Up Strings ──────────────────────────────────────────────── */
 
 	char style[STYLE_BUFSIZE] = "", fg[FGBG_BUFSIZE] = "", bg[FGBG_BUFSIZE] = "";
 
-	/* —————————————————————————————————————————————————————————————————— */
+	/* ── Process Colour::style ───────────────────────────────────────── */
 
 	/// Current strlen of the `style` variable.
 	int st_len = 0;
@@ -249,7 +139,7 @@ int colprint(const Colour input_col) {
 		}
 	}
 
-	/* —————————————————————————————————————————————————————————————————— */
+	/* ── Process Colour::fg/bg ───────────────────────────────────────── */
 
 	int fg_len, bg_len;
 	bool has_fg, has_bg;
@@ -257,7 +147,7 @@ int colprint(const Colour input_col) {
 	SIMPLIFY_ANSI(fg);
 	SIMPLIFY_ANSI(bg);
 
-	/* —————————————————————————————————————————————————————————————————— */
+	/* ── Clean Up Semicolons ─────────────────────────────────────────── */
 
 	if (!(has_fg || has_bg) 		// if there isn't any foreground or background,
 		&& st_len > 0				// and there is at least one style code,
@@ -265,10 +155,10 @@ int colprint(const Colour input_col) {
 	) style[st_len - 1] = '\0';		//		and delete the semicolon if it exists.
 	// this is to prevent the output being something like `\e[1;4;m`
 
-	/* —————————————————————————————————————————————————————————————————— */
-
 	const char* reset_sc = do_reset			? ";" : "";
 	const char* foreg_sc = has_fg && has_bg ? ";" : "";
+	
+	/* ── Print & Return ──────────────────────────────────────────────── */
 
 	/*return*/ printf(CSI "%s" "%s%s" "%s" "%s" END, reset_sc, style, fg, foreg_sc, bg);
 	fflush(stdout);
@@ -281,9 +171,8 @@ int colprint(const Colour input_col) {
 
 	puts("[lorem ipsum dolor]\n");
 
-	/* —————————————————————————————————————————————————————————————————— */
-
 	return -1;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ─────────────────────────────────────────────── ── eof ── ─────────────────────────────────────────────────────── */
