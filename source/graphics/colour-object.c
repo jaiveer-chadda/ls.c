@@ -13,6 +13,11 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#ifndef CSI
+#	define CSI "\033["
+#	define END "m"
+#endif
+
 #define STYLE_BUFSIZE 21
 #define FGBG_BUFSIZE  10
 
@@ -26,19 +31,30 @@
 		const int snprintf_retc = snprintf(str, size, __VA_ARGS__); \
 		const int snprintf_errno = errno; \
 		if (snprintf_retc >= size || snprintf_retc == -1) \
-			debug(ERROR, "colprint(): `char style[]`: %s", strerror(snprintf_errno)); \
+			debug(ERROR, "snprintf(): `char " #str "[]`: %s", strerror(snprintf_errno)); \
 	} while (0)
+
+#	define STRLCAT(dst, src, dstsize) do { \
+		const int strlcat_retc = strlcat(dst, src, dstsize); \
+		const int strlcat_errno = errno; \
+		if (strlcat_retc >= dstsize || strlcat_retc == -1) \
+			debug(ERROR, "strlcat(): `char style[]`: %s", strerror(strlcat_errno)); \
+	} while (0)
+
 #else
 #	define SNPRINTF(str, size, ...) snprintf(str, size, __VA_ARGS__)
+#	define STRLCAT(dst, src, dstsize) strlcat(dst, src, dstsize)
 #endif
 
-#define SIMPLIFY_ANSI(fgbg) do { \
+#define SIMPLIFY_ANSI(fgbg) do { /* `fgbg` will be either `fg` or `bg` */ \
 	if		(col.fgbg == prev.fgbg || col.fgbg == 0) { /* do nothing - keep this colour the same */ } \
 	else if	(col.fgbg == -1) SNPRINTF(fgbg, FGBG_BUFSIZE, "%d0"		 , fgbg##_ANSI_CODE						); \
 	else if	(col.fgbg <=  7) SNPRINTF(fgbg, FGBG_BUFSIZE, "%d%hd"	 , fgbg##_ANSI_CODE		, col.fgbg		); \
 	else if (col.fgbg <= 15) SNPRINTF(fgbg, FGBG_BUFSIZE, "%d%hd"	 , fgbg##_ANSI_CODE + 6	, col.fgbg - 8	); \
 	else					 SNPRINTF(fgbg, FGBG_BUFSIZE, "%d8;5;%hd", fgbg##_ANSI_CODE		, col.fgbg		); \
 } while (0)
+
+#define HAS_STYLE(col_obj) ((col_obj).style & G_STYLES[i])
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -76,7 +92,10 @@ void colprint(const Colour col) {
 	if (col.style == prev.style &&
 		col.fg	  == prev.fg	&&
 		col.bg	  == prev.bg
-	) return;
+	) {
+		puts("•\n[lorem ipsum dolor]");
+		return;
+	}
 
 	/* —————————————————————————————————————————————————————————————————— */
 
@@ -88,20 +107,12 @@ void colprint(const Colour col) {
 
 	// if the current style is identical to the previous style, then nothing has to be printed
 	//	this check is technically redundant, but it saves having to do a check for each of the styles
-	if (col.style != prev.style) {
+	if (col.style != prev.style || do_reset) {
 		// iterate through each style, and check if the style is included in `col.style`
 		for (int i = 0; i < GSTYLES_LEN; i++) {
-			if (col.style & G_STYLES[i] && !(prev.style & G_STYLES[i])) {
-				#ifdef DEBUG_MODE
-					const int strlcat_retc = strlcat(style, stylelookup(G_STYLES[i]), STYLE_BUFSIZE);
-					const int strlcat_errno = errno;
-
-					if (strlcat_retc >= STYLE_BUFSIZE || strlcat_retc == -1) {
-						debug(ERROR, "colprint(): `char style[]`: %s", strerror(strlcat_errno));
-					}
-				#else
-					strlcat(style, stylelookup(G_STYLES[i]), STYLE_BUFSIZE);
-				#endif
+			// however, don't print the style if the previous colour had the same style, unless we're resetting
+			if (HAS_STYLE(col) && (!HAS_STYLE(prev) || do_reset)) {
+				STRLCAT(style, stylelookup(G_STYLES[i]), STYLE_BUFSIZE);
 			}
 		}
 	}
@@ -116,9 +127,9 @@ void colprint(const Colour col) {
 	const char *fg_sc	 = (strlen(fg) > 0)	? ";" : "";
 	const char *reset_sc = do_reset			? ";" : "";
 
-	printf("\33[" "%s" "%s%s%s%sm"	  	, reset_sc, style, fg, fg_sc, bg);
-	printf("\\e[" "%s" "%s%s%s%sm" "%s"	, reset_sc, style, fg, fg_sc, bg, "\n");
-	printf("\33[" "%s" "%s%s%s%sm" "%s"	, reset_sc, style, fg, fg_sc, bg, "[lorem ipsum dolor]\n");
+	printf(CSI "%s" "%s%s" "%s" "%s" END, reset_sc, style, fg, fg_sc, bg);
+	printf("\\e[""%s""%s%s%s%s" END "%s", reset_sc, style, fg, fg_sc, bg, "\n");
+	printf(CSI	 "%s""%s%s%s%s" END "%s", reset_sc, style, fg, fg_sc, bg, "[lorem ipsum dolor]\n");
 
 	/* —————————————————————————————————————————————————————————————————— */
 

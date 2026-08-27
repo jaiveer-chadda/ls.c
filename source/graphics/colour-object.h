@@ -71,7 +71,7 @@ typedef struct {
 	colour_t fg, bg;
 } Colour;
 
-#define RESET_ALL ((Colour){0})
+#define RESET_ALL ((Colour){ .style = G_NONE, .fg = G_NO_FG, .bg = G_NO_BG }) /** Equivalent to `((Colour){0})`. */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
