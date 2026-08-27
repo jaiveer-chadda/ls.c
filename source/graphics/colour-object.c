@@ -7,11 +7,23 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "colour-object.h"
 #include "debugging/debugging.h"
+#include "colour-object.h"
 
-#define NOBOLD	22
-#define NOUNDER	24
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define G_ANSI_BOLD			1
+#define G_ANSI_DIM			2
+#define G_ANSI_ITALIC		3
+#define G_ANSI_UNDER		4
+#define G_ANSI_BLINK		5
+#define G_ANSI_INVERT		7
+#define G_ANSI_INVIS		8
+#define G_ANSI_STRIKE		9
+#define G_ANSI_DUNDER		21
+
+#define G_ANSI_NO_BOLD		22
+#define G_ANSI_NO_UNDER		24
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -29,6 +41,9 @@
 
 #define fg_ANSI_CODE 3
 #define bg_ANSI_CODE 4
+
+#define ON	true
+#define OFF	false
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -101,8 +116,7 @@
 #define APPEND_TO_STYLE(num) \
 	st_len += SNPRINTF(style + st_len, STYLE_BUFSIZE - st_len, "%d;", num)
 
-#define SC_IF(condition) ((condition) ? ";" : "")
-
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static const style_t G_STYLES[] = { G_BOLD, G_DIM, G_ITALIC, G_UNDER, G_BLINK, G_INVERT, G_INVIS, G_STRIKE, G_DUNDER };
@@ -112,17 +126,29 @@ static Colour active = RESET_ALL;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline int stylelookup(const style_t style) {
+static inline int stylelookup(const style_t style, const bool turn_style) {
+	if (turn_style == OFF) {
+		// bold and double underline don't conform to the normal escape
+		//	sequences that turn styles off, so they need special exceptions
+		int seq;
+		switch (style) {
+			case G_DUNDER:	return G_ANSI_NO_UNDER;	 // on = `\e[21m`, off = `\e[24m`
+			case G_BOLD:	return G_ANSI_NO_BOLD;		 // on = `\e[1m` , off = `\e[22m`
+			default: return stylelookup(style, ON) + 20; // on = `\e[Xm` , off = `\e[2Xm`
+			// recurse into this function, and add 20 to its normal output
+		}
+	}
+
 	switch (style) {
-		case G_BOLD		: return  1;
-		case G_DIM		: return  2;
-		case G_ITALIC	: return  3;
-		case G_UNDER	: return  4;
-		case G_BLINK	: return  5;
-		case G_INVERT	: return  7;
-		case G_INVIS	: return  8;
-		case G_STRIKE	: return  9;
-		case G_DUNDER	: return 21;
+		case G_BOLD		: return G_ANSI_BOLD	;
+		case G_DIM		: return G_ANSI_DIM		;
+		case G_ITALIC	: return G_ANSI_ITALIC	;
+		case G_UNDER	: return G_ANSI_UNDER	;
+		case G_BLINK	: return G_ANSI_BLINK	;
+		case G_INVERT	: return G_ANSI_INVERT	;
+		case G_INVIS	: return G_ANSI_INVIS	;
+		case G_STRIKE	: return G_ANSI_STRIKE	;
+		case G_DUNDER	: return G_ANSI_DUNDER	;
 		default:
 			debug(WARNING, "Invalid style in `Colour` object: '%#x'", style);
 			return 6; // the esc seq `\e[6m` does nothing, ∴ this number is harmless & has no side effects.
@@ -188,22 +214,13 @@ int colprint(const Colour input_col) {
 			if (HAS_STYLE(colour)) {
 				if (!HAS_STYLE(active) || do_reset) {
 					active.style |= style_i; // turn the style on
-					APPEND_TO_STYLE(stylelookup(style_i));
+					APPEND_TO_STYLE(stylelookup(style_i, ON));
 				}
 
 			} else if (HAS_STYLE(active)) {
+				// TODO: check for the collision between resetting BOLD and DIM
 				active.style &= ~style_i; // turn the style off
-
-				// bold and double underline don't conform to the normal escape
-				//	sequences that turn styles off, so they need special exceptions
-				int seq;
-				switch (style_i) {
-					case G_DUNDER: seq = NOUNDER; break;			// on = `\e[21m`, off = `\e[24m`
-					case G_BOLD	 : seq = NOBOLD ; break;			// on = `\e[1m` , off = `\e[22m`
-					default		 : seq = stylelookup(style_i) + 20;	// on = `\e[Xm` , off = `\e[2Xm`
-				}
-
-				APPEND_TO_STYLE(seq);
+				APPEND_TO_STYLE(stylelookup(style_i, OFF));
 			}
 		}
 	}
