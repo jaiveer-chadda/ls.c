@@ -33,9 +33,12 @@ typedef int16_t colour_t;
 #define COLOUR_T_MIN ((colour_t)-1)			/**  -1 */
 #define COLOUR_T_MAX ((colour_t)UINT8_MAX)	/** 255 */
 
-#define G_NO_FG	((colour_t)0)	/** Don't change the foreground colour. */
-#define G_NO_BG	((colour_t)0)	/** Don't change the background colour. */
+#define G_NO_FGBG ((colour_t)0)
 
+#define G_NO_FG	G_NO_FGBG /** Don't change the foreground colour. */
+#define G_NO_BG	G_NO_FGBG /** Don't change the background colour. */
+
+#define G_REG_START
 #define G_BLK	((colour_t)-1)	// \e[30m /** Black		*/
 #define G_RED	((colour_t)1)	// \e[31m /** Red		*/
 #define G_GRN	((colour_t)2)	// \e[32m /** Green		*/
@@ -53,6 +56,10 @@ typedef int16_t colour_t;
 #define G_BMAG	((colour_t)13)	// \e[95m /** Bright Magenta */
 #define G_BCYN	((colour_t)14)	// \e[96m /** Bright Cyan	 */
 #define G_BWHT	((colour_t)15)	// \e[97m /** Bright White	 */
+
+#define G_REG_END		G_WHT	/** The last regular colour before the bright colours begin. */
+#define G_BRT_END		G_BWHT	/** The last bright colour before the 8-bit colours begin. */
+#define G_REG_BRT_DIFF (G_BRT_END - G_REG_END) /** The difference between equivalent regular and bright colours. */
 
 #define G_BLACK			G_BLK
 #define G_GREEN			G_GRN

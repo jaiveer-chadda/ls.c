@@ -12,18 +12,36 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define G_ANSI_BOLD			1
-#define G_ANSI_DIM			2
-#define G_ANSI_ITALIC		3
-#define G_ANSI_UNDER		4
-#define G_ANSI_BLINK		5
-#define G_ANSI_INVERT		7
-#define G_ANSI_INVIS		8
-#define G_ANSI_STRIKE		9
-#define G_ANSI_DUNDER		21
+#define ANSI_OFF_MOD	(+20) /** The modifier that turns (most) ANSI on-codes into off-codes. */
+#define ANSI_REG_BRT_MOD (+6) /** The modifier that turns ANSI colour codes from regular to bright. */
 
-#define G_ANSI_NO_BOLD		22
-#define G_ANSI_NO_UNDER		24
+#define ANSI_fg_CODE	3 /** The number which regular colour fg codes begin with. E.g. `\e[35m` or `\e[38;5;255m`. */
+#define ANSI_bg_CODE	4 /** The number which regular colour fg codes begin with. E.g. `\e[44m` or `\e[48;5;128m`. */
+
+#define ANSI_BLACK		0
+#define ANSI_FGBG_OFF	9
+#define ANSI_8BIT_SEQ	"8;5;"
+
+#define ANSI_BOLD		1
+#define ANSI_DIM		2
+#define ANSI_ITALIC		3
+#define ANSI_UNDER		4
+#define ANSI_BLINK		5
+#define ANSI_NOTHING	6
+#define ANSI_INVERT		7
+#define ANSI_INVIS		8
+#define ANSI_STRIKE		9
+#define ANSI_DUNDER		21
+
+#define ANSI_NO_BOLD	ANSI_OFF_MOD + ANSI_BOLD
+#define ANSI_NO_DIM		ANSI_NO_BOLD
+#define ANSI_NO_ITALIC	ANSI_OFF_MOD + ANSI_ITALIC
+#define ANSI_NO_UNDER	ANSI_OFF_MOD + ANSI_UNDER
+#define ANSI_NO_BLINK	ANSI_OFF_MOD + ANSI_BLINK
+#define ANSI_NO_INVERT	ANSI_OFF_MOD + ANSI_INVERT
+#define ANSI_NO_INVIS	ANSI_OFF_MOD + ANSI_INVIS
+#define ANSI_NO_STRIKE	ANSI_OFF_MOD + ANSI_STRIKE
+#define ANSI_NO_DUNDER	ANSI_NO_UNDER
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -32,15 +50,14 @@
 #	define END "m"
 #endif
 
-/**	The number of characters needed to represent every style, including a trailing semicolon and null terminator.
- *	- This would be: `"1;2;3;4;5;7;8;9;22;\0"`. */
-#define STYLE_BUFSIZE 20
+/**	The number of characters needed to represent every style's reset sequence (usually longer),
+ * including a trailing semicolon and null terminator.
+ *	- This would be: `"22;23;24;25;27;28;29;\0"`. */
+#define STYLE_BUFSIZE 22
+
 /**	The maximum number of characters needed to represent an 8-bit ANSI colour code, including a null terminator.
  *	- This would be: `"38;5;255\0"`. */
 #define FGBG_BUFSIZE  9
-
-#define fg_ANSI_CODE 3
-#define bg_ANSI_CODE 4
 
 #define ON	true
 #define OFF	false
@@ -50,7 +67,7 @@
 #ifdef DEBUG_MODE
 #	define SNPRINTF(str, size, ...) d_snprintf(str, size, __VA_ARGS__)
 
-	/// @brief A version of snprintf with bounds-checking and which prints debugging messages.
+	/// @brief A version of `snprintf` with bounds-checking, and which prints debugging messages.
 	int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...) {
 		va_list va_args;
 		va_start(va_args, format);
@@ -60,7 +77,7 @@
 		va_end(va_args);
 
 		if (f_retcode >= size || f_retcode == -1) {
-			debug(WARNING, "snprintf(): `char str[]`: %s",
+			debug(WARNING, "snprintf(): `char *str`: %s",
 				(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
 			);
 		}
@@ -72,17 +89,20 @@
 
 /* —————————————————————————————————————————————————————————————————— */
 
+#define SET_FGBG(fgbg, is_8bit, mode, ansi_col) \
+	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%hd" : "%d%hd"), (mode), (ansi_col))
+
 #define SIMPLIFY_ANSI(fgbg) do {				\
 	const colour_t col	=  (colour.fgbg);		\
-	const int code		=  (fgbg##_ANSI_CODE);	\
+	const int code		=  (ANSI_##fgbg##_CODE);\
 	int *const len		= &(fgbg##_len);		\
 	\
-	if		(col ==  0 && (active.fgbg) == 0) *len = 0; /* don't change the fg/bg colour */		\
-	else if	(col ==  0)	*len = SNPRINTF(fgbg, FGBG_BUFSIZE,		 "%d9",	code			 	);	\
-	else if	(col == -1)	*len = SNPRINTF(fgbg, FGBG_BUFSIZE,		 "%d0",	code			 	);	\
-	else if	(col <=  7)	*len = SNPRINTF(fgbg, FGBG_BUFSIZE,	   "%d%hd",	code	, col	 	);	\
-	else if	(col <= 15)	*len = SNPRINTF(fgbg, FGBG_BUFSIZE,	   "%d%hd",	code + 6, col -	8	);	\
-	else				*len = SNPRINTF(fgbg, FGBG_BUFSIZE,"%d8;5;%hd",	code	, col	 	);	\
+	if		(col == G_NO_FGBG && (active.fgbg) == G_NO_FGBG) *len = 0; /* don't change the fg/bg colour */		\
+	else if	(col == G_NO_FGBG)	*len = SET_FGBG(fgbg, false, code					, ANSI_FGBG_OFF			);	\
+	else if	(col == G_BLACK	 )	*len = SET_FGBG(fgbg, false, code					, ANSI_BLACK			);	\
+	else if	(col <= G_REG_END)	*len = SET_FGBG(fgbg, false, code					, col					);	\
+	else if	(col <= G_BRT_END)	*len = SET_FGBG(fgbg, false, code + ANSI_REG_BRT_MOD, col - G_REG_BRT_DIFF	);	\
+	else						*len = SET_FGBG(fgbg, true , code					, col					);	\
 	\
 	has_##fgbg = (*len > 0);			\
 	if (has_##fgbg) active.fgbg = col;	\
@@ -109,6 +129,20 @@
 		(input_col.style), STYLE_T_MAX						\
 	)
 
+#define FGBG_BOUNDS_CHECK(fgbg) do {								\
+	if (colour.fgbg < COLOUR_T_MIN || colour.fgbg > COLOUR_T_MAX) {	\
+		colour.fgbg = abs(colour.fgbg) % COLOUR_T_MAX;				\
+		FGBG_OOR_WARNING(fgbg);										\
+	}																\
+} while(0)
+
+#define STYLE_BOUNDS_CHECK() do {		\
+	if (colour.style > STYLE_T_MAX) {	\
+		colour.style = G_NONE;			\
+		STYLE_OOR_WARNING();			\
+	}									\
+} while(0)
+
 /* —————————————————————————————————————————————————————————————————— */
 
 #define HAS_STYLE(col_obj) ((col_obj).style & style_i)
@@ -132,26 +166,26 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 		//	sequences that turn styles off, so they need special exceptions
 		int seq;
 		switch (style) {
-			case G_DUNDER:	return G_ANSI_NO_UNDER;	 // on = `\e[21m`, off = `\e[24m`
-			case G_BOLD:	return G_ANSI_NO_BOLD;		 // on = `\e[1m` , off = `\e[22m`
-			default: return stylelookup(style, ON) + 20; // on = `\e[Xm` , off = `\e[2Xm`
-			// recurse into this function, and add 20 to its normal output
+			case G_DUNDER:	return ANSI_NO_UNDER;	// on = `\e[21m`, off = `\e[24m`
+			case G_BOLD:	return ANSI_NO_BOLD;	// on = `\e[1m` , off = `\e[22m`
+			default: // recurse into this function, and add 20 to its normal output
+				return stylelookup(style, ON) + ANSI_OFF_MOD; // on = `\e[Xm` , off = `\e[2Xm`
 		}
 	}
 
 	switch (style) {
-		case G_BOLD		: return G_ANSI_BOLD	;
-		case G_DIM		: return G_ANSI_DIM		;
-		case G_ITALIC	: return G_ANSI_ITALIC	;
-		case G_UNDER	: return G_ANSI_UNDER	;
-		case G_BLINK	: return G_ANSI_BLINK	;
-		case G_INVERT	: return G_ANSI_INVERT	;
-		case G_INVIS	: return G_ANSI_INVIS	;
-		case G_STRIKE	: return G_ANSI_STRIKE	;
-		case G_DUNDER	: return G_ANSI_DUNDER	;
+		case G_BOLD		: return ANSI_BOLD	;
+		case G_DIM		: return ANSI_DIM	;
+		case G_ITALIC	: return ANSI_ITALIC;
+		case G_UNDER	: return ANSI_UNDER	;
+		case G_BLINK	: return ANSI_BLINK	;
+		case G_INVERT	: return ANSI_INVERT;
+		case G_INVIS	: return ANSI_INVIS	;
+		case G_STRIKE	: return ANSI_STRIKE;
+		case G_DUNDER	: return ANSI_DUNDER;
 		default:
-			debug(WARNING, "Invalid style in `Colour` object: '%#x'", style);
-			return 6; // the esc seq `\e[6m` does nothing, ∴ this number is harmless & has no side effects.
+			debug(WARNING, "Invalid `Colour::style` value: '%#x'", style);
+			return ANSI_NOTHING; // the esc seq `\e[6m` does nothing, ∴ this code is harmless to print
 	}
 }
 
@@ -163,20 +197,10 @@ int colprint(const Colour input_col) {
 
 	/* —————————————————————————————————————————————————————————————————— */
 
-	if (colour.style > STYLE_T_MAX) {
-		colour.style = G_NONE;
-		STYLE_OOR_WARNING();
-	}
+	STYLE_BOUNDS_CHECK();
 
-	if (colour.fg < COLOUR_T_MIN || colour.fg > COLOUR_T_MAX) {
-		colour.fg = abs(colour.fg) % COLOUR_T_MAX;
-		FGBG_OOR_WARNING(fg);
-	}
-
-	if (colour.bg < COLOUR_T_MIN || colour.bg > COLOUR_T_MAX) {
-		colour.bg = abs(colour.bg) % COLOUR_T_MAX;
-		FGBG_OOR_WARNING(bg);
-	}
+	FGBG_BOUNDS_CHECK(fg);
+	FGBG_BOUNDS_CHECK(bg);
 
 	/* —————————————————————————————————————————————————————————————————— */
 
@@ -246,7 +270,7 @@ int colprint(const Colour input_col) {
 	const char* reset_sc = do_reset			? ";" : "";
 	const char* foreg_sc = has_fg && has_bg ? ";" : "";
 
-	printf(CSI "%s" "%s%s" "%s" "%s" END, reset_sc, style, fg, foreg_sc, bg);
+	/*return*/ printf(CSI "%s" "%s%s" "%s" "%s" END, reset_sc, style, fg, foreg_sc, bg);
 	fflush(stdout);
 
 	printf("st=%#hx, fg=%hd, bg=%hd\n", colour.style, colour.fg, colour.bg);
