@@ -10,23 +10,26 @@
 // I only need 10 bits, but this is the smallest I can get it to
 typedef uint16_t style_t; /** A bit record holding all styles that should be applied to some text. */
 
-#define G_ALL		((style_t)0x03FF) /**   0 - Don't set any new styles. */
-#define G_NONE		((style_t)0x0000) /**   0 - Don't set any new styles. */
-#define G_RESET		((style_t)0x0001) /**   1 - Reset all styles/colours before printing. */
-#define G_BOLD		((style_t)0x0002) /**   2 - Bolden text					(equivalent to `\e[1m`). */
-#define G_DIM		((style_t)0x0004) /**   4 - Dim text					(equivalent to `\e[2m`). */
-#define G_ITALIC	((style_t)0x0008) /**   8 - Italicise text				(equivalent to `\e[3m`). */
-#define G_UNDER		((style_t)0x0010) /**  16 - Underline text				(equivalent to `\e[4m`). */
-#define G_BLINK		((style_t)0x0020) /**  32 - Make text blink				(equivalent to `\e[5m`). */
-#define G_INVERT	((style_t)0x0040) /**  64 - Invert fg & bg colours		(equivalent to `\e[7m`). */
-#define G_INVIS		((style_t)0x0080) /** 128 - Make text invisible			(equivalent to `\e[8m`). */
-#define G_STRIKE	((style_t)0x0100) /** 256 - Give text a strikethrough	(equivalent to `\e[9m`). */
-#define G_DUNDER	((style_t)0x0200) /** 512 - Double-underline text		(equivalent to `\e[22m`).*/
+#define G_NONE		((style_t)0x0000) /**	 0 - Don't set any new styles. */
+#define G_RESET		((style_t)0x0001) /**	 1 - Reset graphics before printing. Also resets colours.*/
+#define G_BOLD		((style_t)0x0002) /**	 2 - Bolden text				(equivalent to `\e[1m`). */
+#define G_DIM		((style_t)0x0004) /**	 4 - Dim text					(equivalent to `\e[2m`). */
+#define G_ITALIC	((style_t)0x0008) /**	 8 - Italicise text				(equivalent to `\e[3m`). */
+#define G_UNDER		((style_t)0x0010) /**	16 - Underline text				(equivalent to `\e[4m`). */
+#define G_BLINK		((style_t)0x0020) /**	32 - Make text blink			(equivalent to `\e[5m`). */
+#define G_INVERT	((style_t)0x0040) /**	64 - Invert fg & bg colours		(equivalent to `\e[7m`). */
+#define G_INVIS		((style_t)0x0080) /**  128 - Make text invisible		(equivalent to `\e[8m`). */
+#define G_STRIKE	((style_t)0x0100) /**  256 - Give text a strikethrough	(equivalent to `\e[9m`). */
+#define G_DUNDER	((style_t)0x0200) /**  512 - Double-underline text		(equivalent to `\e[22m`).*/
+#define G_ALL		((style_t)0x03FF) /** 1023 - Set all styles (only really useful for debugging).  */
 
 /* —— Basic Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// A value in `[-1, 255]`, representing an 8-bit ANSI colour code. I.e., `(colour_t)ID` = `\e[38;5;{ID}m`.
 typedef int16_t colour_t;
+
+#define COLOUR_T_MIN ((colour_t)-1)
+#define COLOUR_T_MAX ((colour_t)UINT8_MAX)
 
 #define G_NO_FG	((colour_t)0)	/** Don't change the foreground colour. */
 #define G_NO_BG	((colour_t)0)	/** Don't change the background colour. */
