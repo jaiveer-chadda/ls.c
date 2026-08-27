@@ -99,8 +99,8 @@ int colprint(const Colour input_col) {
 	// if everything is exactly the same as the last time we printed, then don't do anything
 	//	except for when we're resetting
 	if (colour.style == active.style &&
-		colour.fg	  == active.fg	&&
-		colour.bg	  == active.bg	&&
+		colour.fg	 == active.fg	 &&
+		colour.bg	 == active.bg	 &&
 		!do_reset
 	) {
 		puts("•\n[lorem ipsum dolor]");

@@ -22,7 +22,7 @@ typedef uint16_t style_t; /** A bit record holding all styles that should be app
 #define G_INVERT	((style_t)0x0040) /**	64 - Invert fg & bg colours		(equivalent to `\e[7m`). */
 #define G_INVIS		((style_t)0x0080) /**  128 - Make text invisible		(equivalent to `\e[8m`). */
 #define G_STRIKE	((style_t)0x0100) /**  256 - Give text a strikethrough	(equivalent to `\e[9m`). */
-#define G_DUNDER	((style_t)0x0200) /**  512 - Double-underline text		(equivalent to `\e[22m`).*/
+#define G_DUNDER	((style_t)0x0200) /**  512 - Double-underline text		(equivalent to `\e[21m`).*/
 #define G_ALL		((style_t)0x03FF) /** 1023 - Set all styles (only really useful for debugging).  */
 
 /* —— Basic Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
