@@ -17,7 +17,7 @@
 #endif
 
 /**	The number of characters needed to represent every style, including a trailing semicolon and null terminator.
- *	- This would be: `1;2;3;4;5;7;8;9;22;` */
+ *	- This would be:`"1;2;3;4;5;7;8;9;22;\0"` */
 #define STYLE_BUFSIZE 20
 #define FGBG_BUFSIZE  10
 
@@ -55,8 +55,8 @@
 	(fgbg##_len) = SNPRINTF((fgbg), FGBG_BUFSIZE, (fmt), (fgbg##_ANSI_CODE) + (adj_code), (col.fgbg) + (adj_col))
 
 #define SIMPLIFY_ANSI(fgbg) do { /* `fgbg` will be either `fg` or `bg` */ \
-	if		((col.fgbg) ==  0 || (col.fgbg) == (prev.fgbg)) { /* do nothing - keep this colour the same */ } \
-	else if	((col.fgbg) == -1)	SET_FGBG(fgbg, "%d0"		,  0,  0); \
+	if		((col.fgbg) ==  0 || (col.fgbg) == (prev.fgbg)) fgbg##_len = 0; /* do nothing - don't change the colour */ \
+	else if	((col.fgbg) == -1)	SET_FGBG(fgbg, "%d%hd"		,  0, +1); \
 	else if	((col.fgbg) <=  7)	SET_FGBG(fgbg, "%d%hd"		,  0,  0); \
 	else if ((col.fgbg) <= 15)	SET_FGBG(fgbg, "%d%hd"		, +6, -8); \
 	else						SET_FGBG(fgbg, "%d8;5;%hd"	,  0,  0); \
@@ -86,7 +86,7 @@ static inline int stylelookup(style_t style) {
 		case G_DUNDER	: return 22;
 		default:
 			debug(WARNING, "Invalid style in `Colour` object: '%#x'", style);
-			return 6; // The esc seq `\e[6m` does nothing, ∴ this is harmless & has no side effects.
+			return 6; // the esc seq `\e[6m` does nothing, ∴ this number is harmless & has no side effects.
 	}
 }
 
@@ -97,10 +97,11 @@ int colprint(const Colour col) {
 	const bool do_reset = col.style & G_RESET;
 
 	// if everything is exactly the same as the last time we printed, then don't do anything
+	//	except for when we're resetting
 	if (col.style == prev.style &&
 		col.fg	  == prev.fg	&&
 		col.bg	  == prev.bg	&&
-		!do_reset // unless we're resetting things
+		!do_reset
 	) {
 		puts("•\n[lorem ipsum dolor]");
 		return 0;
@@ -127,23 +128,22 @@ int colprint(const Colour col) {
 		}
 	}
 
-	// remove the trailing semicolon
-	//	- this is to prevent the output being something like `\e[4;m` when there aren't any colours to set
-	if (style[st_len - 1] == ';') {
+	/* —————————————————————————————————————————————————————————————————— */
+
+	int fg_len, bg_len;
+
+	SIMPLIFY_ANSI(fg);
+	SIMPLIFY_ANSI(bg);
+
+	// if there isn't any foreground or background, then remove the trailing semicolon from `style`
+	//	- this is to prevent the out put being something like `\e[1;4;m`
+	if (fg_len == 0 && bg_len == 0 && style[st_len - 1] == ';') {
 		style[st_len - 1] = '\0';
 	}
 
 	/* —————————————————————————————————————————————————————————————————— */
 
-	int fg_len, bg_len;
-	(void) bg_len;
-
-	SIMPLIFY_ANSI(fg);
-	SIMPLIFY_ANSI(bg);
-
-	/* —————————————————————————————————————————————————————————————————— */
-
-	prev = col;
+	prev = col; // set the (now) previous colour to be the colour we just parsed
 
 	const char *style_sc = st_len > 0 ? ";" : "";
 	const char *foreg_sc = fg_len > 0 ? ";" : "";
@@ -170,6 +170,12 @@ int colprint(const Colour col) {
 #define test_6 ((Colour){ .style = G_BOLD | G_UNDER })
 
 int main(const int argc, const char* argv[]) {
+	#ifdef DEBUG_MODE
+		puts("———————————————————————— DEBUG ————————————————————————");
+	#else
+		putchar('\n');
+	#endif
+
 	// colprint(test_1)	; putchar('\n');
 	// colprint(test_2)	; putchar('\n');
 	// colprint(test_3)	; putchar('\n');
