@@ -10,25 +10,25 @@
 // I only need 10 bits, but this is the smallest I can get it to
 typedef uint16_t style_t; /** A bit record holding all styles that should be applied to some text. */
 
-#define G_NONE		((style_t)0x0000) /**   0 - Don't set any styles. */
+#define G_NONE		((style_t)0x0000) /**   0 - Don't set any new styles. */
 #define G_RESET		((style_t)0x0001) /**   1 - Reset all styles/colours before printing. */
-#define G_BOLD		((style_t)0x0002) /**   2 - Bolden text					(eqv. to `\e[1m`). */
-#define G_DIM		((style_t)0x0004) /**   4 - Dim text						(eqv. to `\e[2m`). */
-#define G_ITALIC	((style_t)0x0008) /**   8 - Italicise text				(eqv. to `\e[3m`). */
-#define G_UNDER		((style_t)0x0010) /**  16 - Underline text				(eqv. to `\e[4m`). */
-#define G_BLINK		((style_t)0x0020) /**  32 - Make text blink				(eqv. to `\e[5m`). */
-#define G_INVERT	((style_t)0x0040) /**  64 - Invert fg & bg colours		(eqv. to `\e[7m`). */
-#define G_INVIS		((style_t)0x0080) /** 128 - Make text invisible			(eqv. to `\e[8m`). */
-#define G_STRIKE	((style_t)0x0100) /** 256 - Give text a strikethrough	(eqv. to `\e[9m`). */
-#define G_DUNDER	((style_t)0x0200) /** 512 - Double-underline text		(eqv. to `\e[22m`).*/
+#define G_BOLD		((style_t)0x0002) /**   2 - Bolden text					(equivalent to `\e[1m`). */
+#define G_DIM		((style_t)0x0004) /**   4 - Dim text					(equivalent to `\e[2m`). */
+#define G_ITALIC	((style_t)0x0008) /**   8 - Italicise text				(equivalent to `\e[3m`). */
+#define G_UNDER		((style_t)0x0010) /**  16 - Underline text				(equivalent to `\e[4m`). */
+#define G_BLINK		((style_t)0x0020) /**  32 - Make text blink				(equivalent to `\e[5m`). */
+#define G_INVERT	((style_t)0x0040) /**  64 - Invert fg & bg colours		(equivalent to `\e[7m`). */
+#define G_INVIS		((style_t)0x0080) /** 128 - Make text invisible			(equivalent to `\e[8m`). */
+#define G_STRIKE	((style_t)0x0100) /** 256 - Give text a strikethrough	(equivalent to `\e[9m`). */
+#define G_DUNDER	((style_t)0x0200) /** 512 - Double-underline text		(equivalent to `\e[22m`).*/
 
 /* —— Basic Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/// A value in `[0, 255]`, representing an 8-bit ANSI colour code. I.e., `(colour_t)ID` = `\e[38;5;{ID}m`.
+/// A value in `[-1, 255]`, representing an 8-bit ANSI colour code. I.e., `(colour_t)ID` = `\e[38;5;{ID}m`.
 typedef int16_t colour_t;
 
-#define G_NO_FG	((colour_t)0)	/** Leave the foreground colour as the terminal's default. */
-#define G_NO_BG	((colour_t)0)	/** Leave the background colour as the terminal's default. */
+#define G_NO_FG	((colour_t)0)	/** Don't change the foreground colour. */
+#define G_NO_BG	((colour_t)0)	/** Don't change the background colour. */
 
 #define G_BLK	((colour_t)-1)	// \e[30m /** Black		*/
 #define G_RED	((colour_t)1)	// \e[31m /** Red		*/
@@ -70,6 +70,8 @@ typedef struct {
 	style_t style;
 	colour_t fg, bg;
 } Colour;
+
+#define RESET_ALL ((Colour){0})
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
