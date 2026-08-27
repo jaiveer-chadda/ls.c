@@ -33,16 +33,16 @@
 #define ANSI_STRIKE		9
 #define ANSI_DUNDER		21
 
-#define ANSI_NO_BOLD	ANSI_OFF_MOD + ANSI_BOLD
-#define ANSI_NO_DIM		ANSI_NO_BOLD
-#define ANSI_NO_ITALIC	ANSI_OFF_MOD + ANSI_ITALIC
-#define ANSI_NO_UNDER	ANSI_OFF_MOD + ANSI_UNDER
-#define ANSI_NO_BLINK	ANSI_OFF_MOD + ANSI_BLINK
-#define ANSI_NO_INVERT	ANSI_OFF_MOD + ANSI_INVERT
-#define ANSI_NO_INVIS	ANSI_OFF_MOD + ANSI_INVIS
-#define ANSI_NO_STRIKE	ANSI_OFF_MOD + ANSI_STRIKE
-#define ANSI_NO_DUNDER	ANSI_NO_UNDER
+#define ANSI_NO_DIM		(ANSI_OFF_MOD + ANSI_DIM)		/** 22 */
+#define ANSI_NO_BOLD	 ANSI_NO_DIM					/** 22 */
+#define ANSI_NO_ITALIC	(ANSI_OFF_MOD + ANSI_ITALIC	)	/** 23 */
+#define ANSI_NO_UNDER	(ANSI_OFF_MOD + ANSI_UNDER	)	/** 24 */
+#define ANSI_NO_BLINK	(ANSI_OFF_MOD + ANSI_BLINK	)	/** 25 */
+#define ANSI_NO_INVERT	(ANSI_OFF_MOD + ANSI_INVERT	)	/** 27 */
+#define ANSI_NO_INVIS	(ANSI_OFF_MOD + ANSI_INVIS	)	/** 28 */
+#define ANSI_NO_STRIKE	(ANSI_OFF_MOD + ANSI_STRIKE	)	/** 29 */
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Buffer Sizes ————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /**	The number of characters needed to represent every style's reset sequence (usually longer),

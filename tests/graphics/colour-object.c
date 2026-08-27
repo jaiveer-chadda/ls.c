@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include "graphics/colour-object.h"
 
-#define COLPRINT(...) colprint((Colour){ __VA_ARGS__ })
+#define LINE "————————————————————————————————————————————————"
+
+#define COLPRINT(...) do { colprint((Colour){ __VA_ARGS__ }); puts(LINE LINE LINE "\n"); } while(0)
 
 #define test_x ((Colour){ .style = G_ALL			, .fg = 999, .bg = G_BLU})
 #define test_y ((Colour){ .fg = -10})
@@ -20,8 +22,6 @@
 //
 #define test_5 ((Colour){ .style = G_BOLD | G_ITALIC })
 #define test_6 ((Colour){ .style = G_BOLD | G_UNDER })
-
-#define LINE "————————————————————————————————————————————————"
 
 int main(const int argc, const char* argv[]) {
 	#ifdef DEBUG_MODE
@@ -78,11 +78,17 @@ int main(const int argc, const char* argv[]) {
 	#define dunder	G_DUNDER
 	#define all		G_ALL
 
-	COLPRINT(dunder | strike, red, lblue)	; puts(LINE LINE LINE "\n");
-	COLPRINT(		  strike, red)			; puts(LINE LINE LINE "\n");
+	// COLPRINT(dunder | strike, red, lblue);
+	// COLPRINT(		  strike, red);
+
+	// COLPRINT();
+	// COLPRINT(dunder);
+
 
 	COLPRINT();
-	COLPRINT(dunder);
+	COLPRINT(bold | dim);
+	COLPRINT(dim);
+
 	// COLPRINT(		  strike, red)
 
 	// COLPRINT(reset)
