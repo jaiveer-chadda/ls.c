@@ -56,7 +56,7 @@ typedef int16_t colour_t;
 
 #define G_BLACK			G_BLK
 #define G_GREEN			G_GRN
-#define G_YELLLOW		G_YEL
+#define G_YELLOW		G_YEL
 #define G_BLUE			G_BLU
 #define G_MAGENTA		G_MAG
 #define G_CYAN			G_CYN
@@ -64,7 +64,7 @@ typedef int16_t colour_t;
 #define G_BRT_BLACK		G_BBLK /** Bright Black		*/
 #define G_BRT_RED		G_BRED /** Bright Red		*/
 #define G_BRT_GREEN		G_BGRN /** Bright Green		*/
-#define G_BRT_YELLLOW	G_BYEL /** Bright Yellow	*/
+#define G_BRT_YELLOW	G_BYEL /** Bright Yellow	*/
 #define G_BRT_BLUE		G_BBLU /** Bright Blue		*/
 #define G_BRT_MAGENTA	G_BMAG /** Bright Magenta	*/
 #define G_BRT_CYAN		G_BCYN /** Bright Cyan		*/
