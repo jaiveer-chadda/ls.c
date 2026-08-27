@@ -42,7 +42,7 @@
 		va_end(va_args);
 
 		if (f_retcode >= size || f_retcode == -1) {
-			debug(ERROR, "snprintf(): `char str[]`: %s",
+			debug(WARNING, "snprintf(): `char str[]`: %s",
 				(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
 			);
 		}
@@ -67,16 +67,23 @@
 
 /* —————————————————————————————————————————————————————————————————— */
 
-#define PRINT_OOR_WARNING(elem)								\
+#define FGBG_OOR_WARNING(fgbg)								\
 	fprintf(stderr,											\
-		"Warning: `Colour::"#elem"` is out of range: %hd.\n"\
-		"Valid range is: %d >= "#elem" >= %d.\n"			\
-		"`"#elem"` has been adjusted for printing:\n"		\
+		"Warning: `Colour::"#fgbg"` is out of range: %hd.\n"\
+		"Valid range is: %d <= "#fgbg" <= %d.\n"			\
+		"`"#fgbg"` has been locally set as follows:\n"		\
 		"   abs(%hd) %% %d = %hd\n",						\
-		\
-		(input_col.elem),									\
+		(input_col.fgbg),									\
 		COLOUR_T_MIN, COLOUR_T_MAX,							\
-		(input_col.elem), COLOUR_T_MAX, (col.elem)			\
+		(input_col.fgbg), COLOUR_T_MAX, (col.fgbg)			\
+	)
+
+#define STYLE_OOR_WARNING()									\
+	fprintf(stderr,											\
+		"Warning: `Colour::style` is out of range: %#hx.\n"	\
+		"Valid range is: 0x0 <= style <= %#hx.\n"			\
+		"`style` has been locally set to 0x0.\n",			\
+		(input_col.style), STYLE_T_MAX						\
 	)
 
 /* —————————————————————————————————————————————————————————————————— */
@@ -117,14 +124,19 @@ int colprint(const Colour input_col) {
 
 	/* —————————————————————————————————————————————————————————————————— */
 
+	if (col.style > STYLE_T_MAX) {
+		col.style = G_NONE;
+		STYLE_OOR_WARNING();
+	}
+
 	if (col.fg < COLOUR_T_MIN || col.fg > COLOUR_T_MAX) {
 		col.fg = abs(col.fg) % COLOUR_T_MAX;
-		PRINT_OOR_WARNING(fg);
+		FGBG_OOR_WARNING(fg);
 	}
 
 	if (col.bg < COLOUR_T_MIN || col.bg > COLOUR_T_MAX) {
 		col.bg = abs(col.bg) % COLOUR_T_MAX;
-		PRINT_OOR_WARNING(bg);
+		FGBG_OOR_WARNING(bg);
 	}
 
 	/* —————————————————————————————————————————————————————————————————— */
@@ -197,11 +209,12 @@ int colprint(const Colour input_col) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define test_x ((Colour){ .style = G_ALL			, .fg = 999, .bg = G_BLU})
-
 #define test_y ((Colour){ .fg = -10})
 #define test_z ((Colour){ .fg = 999})
+
 #define test_a ((Colour){ .bg = -498})
 #define test_b ((Colour){ .bg = 3728})
+#define test_c ((Colour){ .style = G_ALL + 1 })
 
 #define test_1 ((Colour){ .style = G_BOLD | G_UNDER	, .fg = 125, .bg = G_BLU})
 #define test_2 ((Colour){ .style = G_DIM  | G_UNDER	, .fg =  20, .bg = G_RED})
@@ -236,6 +249,9 @@ int main(const int argc, const char* argv[]) {
 
 	colprint(test_a)	; putchar('\n');
 	colprint(test_b)	; putchar('\n');
+
+	colprint(RESET_ALL)	; putchar('\n');
+	colprint(test_c)	; putchar('\n');
 
 	return 0;
 }
