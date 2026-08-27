@@ -10,6 +10,8 @@
 // I only need 10 bits, but this is the smallest I can get it to
 typedef uint16_t style_t; /** A bit record holding all styles that should be applied to some text. */
 
+#define STYLE_T_MAX ((style_t)((1 << 10) - 1)) /** 1023 == 0x03FF */
+
 #define G_NONE		((style_t)0x0000) /**	 0 - Don't set any new styles. */
 #define G_RESET		((style_t)0x0001) /**	 1 - Reset graphics before printing. Also resets colours.*/
 #define G_BOLD		((style_t)0x0002) /**	 2 - Bolden text				(equivalent to `\e[1m`). */
@@ -28,8 +30,8 @@ typedef uint16_t style_t; /** A bit record holding all styles that should be app
 /// A value in `[-1, 255]`, representing an 8-bit ANSI colour code. I.e., `(colour_t)ID` = `\e[38;5;{ID}m`.
 typedef int16_t colour_t;
 
-#define COLOUR_T_MIN ((colour_t)-1)
-#define COLOUR_T_MAX ((colour_t)UINT8_MAX)
+#define COLOUR_T_MIN ((colour_t)-1)			/**  -1 */
+#define COLOUR_T_MAX ((colour_t)UINT8_MAX)	/** 255 */
 
 #define G_NO_FG	((colour_t)0)	/** Don't change the foreground colour. */
 #define G_NO_BG	((colour_t)0)	/** Don't change the background colour. */
