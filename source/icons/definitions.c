@@ -192,6 +192,7 @@
 #define IC_LOG				L''
 #define IC_LXDE				L''
 #define IC_LXQT				L''
+#define IC_MACOS_ICON_R		L'' // — JV
 #define IC_MAGNET			L''
 #define IC_MAIL				L'󰇰'
 #define IC_MAKE				L''
@@ -525,6 +526,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".eslintrc.yaml"				, IC_ESLINT				}, // 
 	{ ".eslintrc.yml"				, IC_ESLINT				}, // 
 	{ ".fennelrc"					, IC_LANG_FENNEL		}, // 
+	{ ".file"						, IC_FILE_UNKNOWN		}, // 󰡯
 	{ ".gcloudignore"				, IC_GOOGLE_CLOUD		}, // 󱇶
 	{ ".git-blame-ignore-revs"		, IC_GIT				}, // 󰊢
 	{ ".gitattributes"				, IC_GIT				}, // 󰊢
@@ -573,7 +575,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".tcshrc"						, IC_SHELL				}, // 󱆃
 	{ ".viminfo"					, IC_VIM				}, // 
 	{ ".vimrc"						, IC_VIM				}, // 
-	{ ".VolumeIcon.icns"			, IC_IMAGE				}, // •  — JV
+	{ ".volumeicon.icns"			, IC_IMAGE				}, //   — JV
 	{ ".xauthority"					, IC_XORG				}, // 
 	{ ".xinitrc"					, IC_XORG				}, // 
 	{ ".xresources"					, IC_XORG				}, // 
@@ -671,6 +673,7 @@ const Icon FILENAME_ICONS[] = {
 	{ "hyprpaper.conf"				, IC_HYPRLAND			}, // 
 	{ "i3blocks.conf"				, IC_I3					}, // 
 	{ "i3status.conf"				, IC_I3					}, // 
+	{ "icon\r"						, IC_MACOS_ICON_R		}, //   — JV
 	{ "id_dsa"						, IC_PRIVATE_KEY		}, // 󰌆
 	{ "id_ecdsa"					, IC_PRIVATE_KEY		}, // 󰌆
 	{ "id_ecdsa_sk"					, IC_PRIVATE_KEY		}, // 󰌆
