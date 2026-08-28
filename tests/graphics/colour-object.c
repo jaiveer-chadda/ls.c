@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "graphics/colour-object.h"
 
-#define LINE "————————————————————————————————————————————————"
+#define LINE "—————————————————————————————————————————————"
 #define PLINE() puts(LINE LINE LINE)
 
 #define COLPRINT(...) do { colprint((Colour){ __VA_ARGS__ }); PLINE(); } while(0)
