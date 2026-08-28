@@ -113,7 +113,7 @@ bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t 
 	const CFIndex target_path_len = CFStringGetMaximumSizeOfFileSystemRepresentation(alias_string);
 
 	// check if the target path was too long to fit in the buffer
-	if (target_path_len <= sizeof(path_t))
+	if (target_path_len <= (CFIndex)sizeof(path_t))
 		goto return_1; // if that wasn't the issue, then just clean up and return
 
 	// allocate enough memory for the path
@@ -126,17 +126,27 @@ bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t 
 	// if it succeeded, firstly check whether the file it points to is a valid file
 	*is_valid_alias = FILE_EXISTS(temp_t_path);
 
+	// then convert the C-string into a CF string
+	const CFStringRef cf_t_path = CFStringCreateWithCString(
+		/* alloc	*/ DEFAULT_ALLOCATOR,
+		/* cStr		*/ temp_t_path,
+		/* encoding	*/ (CFStringEncoding)kCFStringEncodingUTF8
+	);
+
+	if (cf_t_path == NULL)
+		goto return_3;
+
 	// now that we know whether the file exists or not, 
 	//	truncate the path string so it'll fit in into `path_t`
 	const CFStringRef trunc_t_path = CFStringCreateWithSubstring(
 		/* alloc	*/ DEFAULT_ALLOCATOR,
-		/* str		*/ temp_t_path,
+		/* str		*/ cf_t_path,
 		/* range	*/ (CFRange){ .location = 0, .length = (CFIndex)sizeof(path_t) }
 	);
 
 	// make sure that nothing went wrong with the truncation
 	if (trunc_t_path == NULL)
-		goto return_3;
+		goto return_4;
 
 	// finally, if everything worked out, re-assign the truncated path to the target buffer
 	(void)CFStringGetFileSystemRepresentation(
@@ -147,8 +157,10 @@ bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t 
 	
 	/* ——————————————————————————————————————————————————————————— */
 
-	return_3:
+	return_4:
 		CFRelease(trunc_t_path);
+	return_3:
+		CFRelease(cf_t_path);
 	return_2:
 		free(temp_t_path);
 	return_1:
