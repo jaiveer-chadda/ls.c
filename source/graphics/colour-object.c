@@ -94,14 +94,10 @@ int colprint(const Colour input_col) {
 
 	/* ── Check Identical Colours ─────────────────────────────────────── */
 
-	const bool do_reset = colour.style & G_RESET;
-
 	// if everything is exactly the same as the last time we printed, then don't do anything
-	//	except for when we're resetting
 	if (colour.style == active.style &&
 		colour.fg	 == active.fg	 &&
-		colour.bg	 == active.bg	 &&
-		!do_reset
+		colour.bg	 == active.bg
 	) {
 		puts("\n•\n[lorem ipsum dolor]\n");
 		return 0;
@@ -138,7 +134,7 @@ int colprint(const Colour input_col) {
 
 	// if the current style is identical to the previous style, then nothing has to be printed
 	//	this check is technically redundant, but it saves having to do a check for each of the styles
-	if (colour.style != active.style || do_reset) {
+	if (colour.style != active.style) {
 		style_t style_i;
 		// iterate through each style, and check if the style is included in `colour.style`
 		for (int i = 0; i < GSTYLES_LEN; i++) {
@@ -146,7 +142,7 @@ int colprint(const Colour input_col) {
 
 			// but only print the style if the previous style differs, or we're resetting
 			if (colour.style & style_i) {
-				if (!(active.style & style_i) || do_reset) {
+				if (!(active.style & style_i)) {
 					active.ADD_STYLE(style_i); // turn the style on
 					APPEND_TO_STYLE(stylelookup(style_i, ON));
 				}
@@ -192,18 +188,17 @@ int colprint(const Colour input_col) {
 	) style[st_len - 1] = '\0';		//		and delete the semicolon if it exists.
 	// this is to prevent the output being something like `\e[1;4;m`
 
-	const char* reset_sc = do_reset			? ";" : "";
 	const char* foreg_sc = has_fg && has_bg ? ";" : "";
 
 	/* ── Print & Return ──────────────────────────────────────────────── */
 
-	/*return*/ printf(CSI "%s" "%s%s" "%s" "%s" END, reset_sc, style, fg, foreg_sc, bg);
+	/*return*/ printf(CSI "%s" "%s%s" "%s" "%s" END, style, fg, foreg_sc, bg);
 	putchar('\n');
 
 	// printf("st=%#hx, fg=%hd, bg=%hd\n", colour.style, colour.fg, colour.bg);
 	// printf("\\e[ (%1s) (%9s) (%8s%1s) (%8sm)\n",
 	// 	/**/reset_sc/**/, /**/style/**/, /**/fg, foreg_sc/**/, /**/bg/**/);
-	printf("\\e[""%s%s%s%s%sm\n", reset_sc, style, fg, foreg_sc, bg);
+	printf("\\e[""%s%s%s%s%sm\n", style, fg, foreg_sc, bg);
 
 	puts("[lorem ipsum dolor]\n");
 
