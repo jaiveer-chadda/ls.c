@@ -5,6 +5,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "apple-alias.h"
+#include "utils/malloc.h"
+
 #include "debugging/debugging.h"
 
 #define FILE_EXISTS(path) (access((path), F_OK) == 0)
@@ -100,52 +102,58 @@ bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t 
 		// finally, check whether the target file actually exists
 		*is_valid_alias = FILE_EXISTS(target_buffer);
 		// whether it does or it doesn't, clean up and return success
-		CFRelease(alias_string);
-		return FILE_IS_APPLE_ALIAS;
+		goto return_1;
 	}
 
 	/* ——————————————————————————————————————————————————————————— */
-	// if we weren't able to convert the CF string into a C-string, we should try and figure out why.
 
 	// one reason `CFStringGetFileSystemRepresentation` can fail, is because the provided buffer is
 	//	too small to hold the string that's supposed to be assigned to it
 	// ∴ find out how long the target length is, to see if that's the reason for failure
 	const CFIndex target_path_len = CFStringGetMaximumSizeOfFileSystemRepresentation(alias_string);
 
-	// if the target path was too long to fit in the buffer
-	if (target_path_len > sizeof(path_t)) {
-		// allocate enough memory for the path
-		char *temp_t_path = malloc((size_t)(target_path_len + 1)); // +1 for the nullbyte
+	// check if the target path was too long to fit in the buffer
+	if (target_path_len <= sizeof(path_t))
+		goto return_1; // if that wasn't the issue, then just clean up and return
 
-		// try assigning the path again, now with the larger buffer
-		if (CFStringGetFileSystemRepresentation(alias_string, temp_t_path, target_path_len)) {
-			// if it succeeded, firstly check whether the file it points to is a valid file
-			*is_valid_alias = FILE_EXISTS(temp_t_path);
+	// allocate enough memory for the path
+	char *temp_t_path = emalloc((size_t)(target_path_len + 1)); // +1 for the nullbyte
 
-			// now that we know whether the file exists or not, 
-			//	truncate the path string so it'll fit in into `path_t`
-			const CFStringRef trunc_t_path = CFStringCreateWithSubstring(
-				/* alloc	*/ DEFAULT_ALLOCATOR,
-				/* str		*/ temp_t_path,
-				/* range	*/ (CFRange){ .location = 0, .length = (CFIndex)sizeof(path_t) }
-			);
+	// try assigning the path again, now with the larger buffer
+	if (!CFStringGetFileSystemRepresentation(alias_string, temp_t_path, target_path_len))
+		goto return_2;
 
-			if (trunc_t_path != NULL) {
-				(void)CFStringGetFileSystemRepresentation(
-					/* string	 */ trunc_t_path,
-					/* buffer	 */ target_buffer,
-					/* maxBufLen */ (CFIndex)sizeof(path_t)
-				);
-				CFRelease(trunc_t_path);
-			}
-		}
-		free(temp_t_path);
-	}
+	// if it succeeded, firstly check whether the file it points to is a valid file
+	*is_valid_alias = FILE_EXISTS(temp_t_path);
 
+	// now that we know whether the file exists or not, 
+	//	truncate the path string so it'll fit in into `path_t`
+	const CFStringRef trunc_t_path = CFStringCreateWithSubstring(
+		/* alloc	*/ DEFAULT_ALLOCATOR,
+		/* str		*/ temp_t_path,
+		/* range	*/ (CFRange){ .location = 0, .length = (CFIndex)sizeof(path_t) }
+	);
+
+	// make sure that nothing went wrong with the truncation
+	if (trunc_t_path == NULL)
+		goto return_3;
+
+	// finally, if everything worked out, re-assign the truncated path to the target buffer
+	(void)CFStringGetFileSystemRepresentation(
+		/* string	 */ trunc_t_path,
+		/* buffer	 */ target_buffer,
+		/* maxBufLen */ (CFIndex)sizeof(path_t)
+	);
+	
 	/* ——————————————————————————————————————————————————————————— */
 
-	CFRelease(alias_string);
-	return FILE_IS_APPLE_ALIAS;
+	return_3:
+		CFRelease(trunc_t_path);
+	return_2:
+		free(temp_t_path);
+	return_1:
+		CFRelease(alias_string);
+		return FILE_IS_APPLE_ALIAS;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
