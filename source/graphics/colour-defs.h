@@ -56,7 +56,8 @@
 
 /* —— Style Handling ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define HAS_STYLE(col_obj) ((col_obj).style & style_i)
+#define ADD_STYLE(st) style |=  (st) /** Add   `st`to	the style attribute. */
+#define REM_STYLE(st) style &= ~(st) /** Remove`st`from the style attribute. */
 
 #define APPEND_TO_STYLE(num) \
 	st_len += SNPRINTF(style + st_len, STYLE_BUFSIZE - st_len, "%d;", num)
@@ -66,7 +67,7 @@
 #define SET_FGBG(fgbg, is_8bit, mode, ansi_col) \
 	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%hd" : "%d%hd"), (mode), (ansi_col))
 
-#define SIMPLIFY_ANSI(fgbg) do {				\
+#define SIMPLIFY_FGBG(fgbg) do {				\
 	const colour_t col	=  (colour.fgbg);		\
 	const int code		=  (ANSI_##fgbg##_CODE);\
 	int *const len		= &(fgbg##_len);		\

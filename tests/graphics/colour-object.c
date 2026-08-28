@@ -4,8 +4,9 @@
 #include "graphics/colour-object.h"
 
 #define LINE "————————————————————————————————————————————————"
+#define PLINE() puts(LINE LINE LINE)
 
-#define COLPRINT(...) do { colprint((Colour){ __VA_ARGS__ }); puts(LINE LINE LINE "\n"); } while(0)
+#define COLPRINT(...) do { colprint((Colour){ __VA_ARGS__ }); PLINE(); } while(0)
 
 #define test_x ((Colour){ .style = G_ALL			, .fg = 999, .bg = G_BLU})
 #define test_y ((Colour){ .fg = -10})
@@ -29,7 +30,7 @@ int main(const int argc, const char* argv[]) {
 	#else
 		putchar('\n');
 	#endif
-	puts(LINE LINE LINE "\n");
+	PLINE();
 
 	// colprint(test_1);
 	// colprint(test_2);
@@ -85,14 +86,16 @@ int main(const int argc, const char* argv[]) {
 	// COLPRINT(dunder);
 
 
+	// COLPRINT();
+	// COLPRINT(bold | dim);
+	// COLPRINT(dim);
+
+
 	COLPRINT();
-	COLPRINT(bold | dim);
-	COLPRINT(dim);
 
-	// COLPRINT(		  strike, red)
-
-	// COLPRINT(reset)
-	
+	COLPRINT(under | dunder);
+	COLPRINT(dunder);
+	COLPRINT(under);
 
 	return 0;
 }

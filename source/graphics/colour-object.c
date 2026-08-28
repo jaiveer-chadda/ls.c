@@ -74,7 +74,7 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 		case G_DUNDER	: return ANSI_DUNDER;
 		default:
 			debug(WARNING, "Invalid `Colour::style` value: '%#x'", style);
-			return ANSI_NOTHING; // the esc seq `\e[6m` does nothing, ∴ this code is harmless to print
+			return ANSI_NOTHING; // the esc seq `\e[6m` does nothing, and is harmless to print
 	}
 }
 
@@ -103,7 +103,7 @@ int colprint(const Colour input_col) {
 		colour.bg	 == active.bg	 &&
 		!do_reset
 	) {
-		puts("•\n[lorem ipsum dolor]");
+		puts("\n•\n[lorem ipsum dolor]\n");
 		return 0;
 	}
 
@@ -116,6 +116,17 @@ int colprint(const Colour input_col) {
 	/// Current strlen of the `style` variable.
 	int st_len = 0;
 
+	const bool has_under  = colour.style & G_UNDER ;
+	const bool has_dunder = colour.style & G_DUNDER;
+
+	// UNDER/DUNDER will always overwrite each other,
+	//	so there's no point resetting one just to replace it with the other
+	if (has_under ) active.REM_STYLE(G_DUNDER);
+	if (has_dunder) active.REM_STYLE(G_UNDER );
+
+	// additionally, having both is also redundant, so, since DUNDER takes priority, remove UNDER from `colour`
+	if (has_under && has_dunder) colour.REM_STYLE(G_UNDER);
+
 	// if the current style is identical to the previous style, then nothing has to be printed
 	//	this check is technically redundant, but it saves having to do a check for each of the styles
 	if (colour.style != active.style || do_reset) {
@@ -124,17 +135,22 @@ int colprint(const Colour input_col) {
 		for (int i = 0; i < GSTYLES_LEN; i++) {
 			style_i = G_STYLES[i];
 
-			// however, only print the style if the previous style differs, or we're resetting
-			if (HAS_STYLE(colour)) {
-				if (!HAS_STYLE(active) || do_reset) {
-					active.style |= style_i; // turn the style on
+			// but only print the style if the previous style differs, or we're resetting
+			if (colour.style & style_i) {
+				if (!(active.style & style_i) || do_reset) {
+					active.ADD_STYLE(style_i); // turn the style on
 					APPEND_TO_STYLE(stylelookup(style_i, ON));
 				}
 
-			} else if (HAS_STYLE(active)) {
-				// TODO: check for the collision between resetting BOLD and DIM
-				active.style &= ~style_i; // turn the style off
+			// however, if the style isn't set in `colour`, but is active, then we need to turn it off
+			} else if (active.style & style_i) {
+				active.REM_STYLE(style_i); // turn the style off
 				APPEND_TO_STYLE(stylelookup(style_i, OFF));
+
+				// since the codes to reset bold & dim are identical,
+				//	we need to re-apply the other when we reset the other
+				if (style_i == G_BOLD && active.style & G_DIM ) APPEND_TO_STYLE(ANSI_DIM );
+				if (style_i == G_DIM  && active.style & G_BOLD) APPEND_TO_STYLE(ANSI_BOLD);
 			}
 		}
 	}
@@ -144,8 +160,8 @@ int colprint(const Colour input_col) {
 	int fg_len, bg_len;
 	bool has_fg, has_bg;
 
-	SIMPLIFY_ANSI(fg);
-	SIMPLIFY_ANSI(bg);
+	SIMPLIFY_FGBG(fg);
+	SIMPLIFY_FGBG(bg);
 
 	/* ── Clean Up Semicolons ─────────────────────────────────────────── */
 
@@ -161,13 +177,12 @@ int colprint(const Colour input_col) {
 	/* ── Print & Return ──────────────────────────────────────────────── */
 
 	/*return*/ printf(CSI "%s" "%s%s" "%s" "%s" END, reset_sc, style, fg, foreg_sc, bg);
-	fflush(stdout);
+	putchar('\n');
 
-	printf("st=%#hx, fg=%hd, bg=%hd\n", colour.style, colour.fg, colour.bg);
-	puts("        |  style  | |   fg    | |   bg    |");
-	printf("\\e[ (%1s) (%9s) (%8s%1s) (%8sm)\n",
-		/**/reset_sc/**/, /**/style/**/, /**/fg, foreg_sc/**/, /**/bg/**/);
-	printf("\\e[""%s""%s%s%s%s" END "\n", reset_sc, style, fg, foreg_sc, bg);
+	// printf("st=%#hx, fg=%hd, bg=%hd\n", colour.style, colour.fg, colour.bg);
+	// printf("\\e[ (%1s) (%9s) (%8s%1s) (%8sm)\n",
+	// 	/**/reset_sc/**/, /**/style/**/, /**/fg, foreg_sc/**/, /**/bg/**/);
+	printf("\\e[""%s%s%s%s%sm\n", reset_sc, style, fg, foreg_sc, bg);
 
 	puts("[lorem ipsum dolor]\n");
 
