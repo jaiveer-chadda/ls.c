@@ -3,6 +3,8 @@
 #ifndef COLOUR_DEFS_H
 #define COLOUR_DEFS_H
 
+#include "colour-object.h"
+
 /* —— ANSI Constants ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #ifndef CSI
@@ -69,19 +71,20 @@
 	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%hd" : "%d%hd"), (mode), (ansi_col))
 
 #define SIMPLIFY_FGBG(fgbg) do {				\
+	colour_t *const act	= &(active.fgbg);		\
 	const colour_t col	=  (colour.fgbg);		\
 	const int code		=  (ANSI_##fgbg##_CODE);\
 	int *const len		= &(fgbg##_len);		\
 	\
-	if		(col == G_NO_FGBG && (active.fgbg) == G_NO_FGBG) *len = 0; /* don't change the fg/bg colour */		\
+	if		(col == *act || (col == G_NO_FGBG && (*act == G_NO_FGBG || do_add))) *len = 0;	\
 	else if	(col == G_NO_FGBG)	*len = SET_FGBG(fgbg, false, code					, ANSI_FGBG_OFF			);	\
 	else if	(col == G_BLACK	 )	*len = SET_FGBG(fgbg, false, code					, ANSI_BLACK			);	\
 	else if	(col <= G_REG_END)	*len = SET_FGBG(fgbg, false, code					, col					);	\
 	else if	(col <= G_BRT_END)	*len = SET_FGBG(fgbg, false, code + ANSI_REG_BRT_MOD, col - G_REG_BRT_DIFF	);	\
 	else						*len = SET_FGBG(fgbg, true , code					, col					);	\
 	\
-	has_##fgbg = (*len > 0);			\
-	if (has_##fgbg) active.fgbg = col;	\
+	has_##fgbg = (*len > 0);	\
+	if (has_##fgbg) *act = col;	\
 } while (0)
 
 /* —— Bounds Checks ———————————————————————————————————————————————————————————————————————————————————————————————— */
