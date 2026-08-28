@@ -1,4 +1,4 @@
-/// @file graphics/colour-defs.h
+/// @file graphics/colour/colour-defs.h
 
 #ifndef COLOUR_DEFS_H
 #define COLOUR_DEFS_H

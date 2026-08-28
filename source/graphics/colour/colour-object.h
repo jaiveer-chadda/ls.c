@@ -1,4 +1,4 @@
-/// @file graphics/colour-object.h
+/// @file graphics/colour/colour-object.h
 
 #ifndef COLOUR_OBJECTS_INITIALIASED
 #define COLOUR_OBJECTS_INITIALIASED
