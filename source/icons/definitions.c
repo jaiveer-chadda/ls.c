@@ -319,8 +319,8 @@
 #define IC_VOLUME			L'󰥠' // — JV
 #define IC_VPN				L'󰲝' // — JV
 #define IC_VSC_SHARED		L'' // — JV
-#define IC_VSCODE			L''
-#define IC_VSIX				L'󰨞'
+#define IC_VSCODE			L'󰨞' // — JV
+#define IC_VSIX				L'' // — JV
 #define IC_VUE				L'󰡄'
 #define IC_WEB				L'󰖟' // — JV
 #define IC_WEBPACK			L'󰜫'
@@ -365,7 +365,7 @@ const Icon DIRNAME_ICONS[] = {
 	{ ".trash"			, IC_TRASH			}, // 
 	{ ".vol"			, IC_VOLUME 		}, // 󰥠  – JV
 	{ ".vscode-shared"	, IC_VSC_SHARED 	}, //   – JV
-	{ ".vscode"			, IC_VSCODE 		}, //   – JV
+	{ ".vscode"			, IC_VSCODE 		}, // 󰨞  – JV
 	{ "anaconda"		, IC_CONDA 			}, //   – JV
 	{ "applescript"		, IC_OS_APPLE 		}, //   – JV
 	{ "applications"	, IC_APPLICATIONS	}, //   – JV
@@ -484,8 +484,8 @@ const Icon DIRNAME_ICONS[] = {
 	{ "videos"			, IC_VIDEOS			}, // 
 	{ "vim"				, IC_VIM 			}, //   – JV
 	{ "volumes"			, IC_VOLUME 		}, // 󰥠  – JV
-	{ "vs_code"			, IC_VSCODE 		}, //   – JV
-	{ "vscode-custom"	, IC_VSCODE 		}, //   – JV
+	{ "vs_code"			, IC_VSCODE 		}, // 󰨞  – JV
+	{ "vscode-custom"	, IC_VSCODE 		}, // 󰨞  – JV
 	{ "web"				, IC_WEB 			}, // 󰖟  – JV
 	{ "x_automation"	, IC_ROBOT 			}, // 󰚩  – JV
 	{ "xbps.d"			, IC_FOLDER_CONFIG	}, // 
@@ -1290,7 +1290,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "sldasm"			, IC_CAD			}, // 󰻫
 	{ "sldprt"			, IC_CAD			}, // 󰻫
 	{ "slim"			, IC_LANG_RBRAILS	}, // 
-	{ "sln"				, IC_VSCODE			}, // 
+	{ "sln"				, IC_VSCODE			}, // 󰨞
 	{ "slvs"			, IC_CAD			}, // 󰻫
 	{ "so"				, IC_OS_LINUX		}, // 
 	{ "sql"				, IC_DATABASE		}, // 
@@ -1318,7 +1318,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "sublime-settings", IC_SUBLIME		}, // 
 	{ "sublime-snippet"	, IC_SUBLIME		}, // 
 	{ "sublime-theme"	, IC_SUBLIME		}, // 
-	{ "suo"				, IC_VSCODE			}, // 
+	{ "suo"				, IC_VSCODE			}, // 󰨞
 	{ "sv"				, IC_LANG_HDL		}, // 󰍛
 	{ "svelte"			, IC_SVELTE			}, // 
 	{ "svg"				, IC_VECTOR			}, // 󰕙
@@ -1372,7 +1372,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "vim"				, IC_VIM			}, // 
 	{ "vmdk"			, IC_DISK_IMAGE		}, // 
 	{ "vob"				, IC_VIDEOS			}, // 
-	{ "vsix"			, IC_VSIX			}, // 󰨞
+	{ "vsix"			, IC_VSIX			}, // 
 	{ "vue"				, IC_VUE			}, // 󰡄
 	{ "war"				, IC_LANG_JAVA		}, // 
 	{ "wav"				, IC_AUDIO			}, // 
