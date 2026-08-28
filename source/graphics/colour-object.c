@@ -110,11 +110,9 @@ int colprint(const Colour input_col) {
 	/* ── Set Up Strings ──────────────────────────────────────────────── */
 
 	char style[STYLE_BUFSIZE] = "", fg[FGBG_BUFSIZE] = "", bg[FGBG_BUFSIZE] = "";
+	int st_len = 0; /** Current strlen of the `style` variable. */
 
 	/* ── Process Colour::style ───────────────────────────────────────── */
-
-	/// Current strlen of the `style` variable.
-	int st_len = 0;
 
 	const bool has_under  = colour.style & G_UNDER ;
 	const bool has_dunder = colour.style & G_DUNDER;
@@ -126,6 +124,17 @@ int colprint(const Colour input_col) {
 
 	// additionally, having both is also redundant, so, since DUNDER takes priority, remove UNDER from `colour`
 	if (has_under && has_dunder) colour.REM_STYLE(G_UNDER);
+
+	/* ———————————————————————————————————————————————— */
+
+	// if we're gonna remove BOLD and DIM from `active`, then pretend that `active`
+	//	doesn't have one of them in the first place.
+	//	- this way we won't have to reset both of them, which causes extra chars to be printed
+	if (!(colour.style & G_BOLD) && (active.style & G_BOLD) && 
+		!(colour.style & G_DIM ) && (active.style & G_DIM )
+	) active.REM_STYLE(G_BOLD);
+
+	/* ———————————————————————————————————————————————— */
 
 	// if the current style is identical to the previous style, then nothing has to be printed
 	//	this check is technically redundant, but it saves having to do a check for each of the styles
