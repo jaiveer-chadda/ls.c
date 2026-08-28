@@ -85,17 +85,23 @@ int main(const int argc, const char* argv[]) {
 	// COLPRINT();
 	// COLPRINT(dunder);
 
-
 	// COLPRINT();
 	// COLPRINT(bold | dim);
-	// COLPRINT(dim);
-
+	// COLPRINT();
 
 	COLPRINT();
+	COLPRINT(bold | dim, red);
+	COLPRINT(0, red);
 
-	COLPRINT(under | dunder);
-	COLPRINT(dunder);
-	COLPRINT(under);
+	// COLPRINT();
+	// COLPRINT(bold | dim | under | dunder | italic, red, black);
+	// COLPRINT();
+
+	// // good example of when it would just be better to reset & start again
+	// COLPRINT();
+	// COLPRINT(bold | dim | under | dunder | italic, red);
+	// COLPRINT(.fg = red);
+
 
 	return 0;
 }

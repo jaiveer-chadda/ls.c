@@ -33,7 +33,7 @@ static Colour active = RESET_ALL;
 		const int f_errno = errno;
 		va_end(va_args);
 
-		if (f_retcode >= size || f_retcode == -1) {
+		if (f_retcode >= size || f_retcode == EOF) {
 			debug(WARNING, "snprintf(): `char *str`: %s",
 				(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
 			);
@@ -92,7 +92,7 @@ int colprint(const Colour input_col) {
 	FGBG_BOUNDS_CHECK(fg);
 	FGBG_BOUNDS_CHECK(bg);
 
-	/* ── Check for Identical Colour ──────────────────────────────────── */
+	/* ── Check Identical Colours ─────────────────────────────────────── */
 
 	const bool do_reset = colour.style & G_RESET;
 
@@ -163,6 +163,18 @@ int colprint(const Colour input_col) {
 	SIMPLIFY_FGBG(fg);
 	SIMPLIFY_FGBG(bg);
 
+	/* ── Check for Reset All ─────────────────────────────────────────── */
+
+	// if everything is set to 0, then there's no point individually
+	//	resetting everything, so we can just print `\e[m` instead.
+	if (active.style + active.fg + active.bg == 0) {
+		/* return printf("%s", CSI END); */
+
+		// TODO: these two lines should be deleted once I'm done debugging
+		style[0] = '\0', fg[0] = '\0', bg[0] = '\0';
+		st_len = 0, has_fg = false, has_bg = false;
+	}
+
 	/* ── Clean Up Semicolons ─────────────────────────────────────────── */
 
 	if (!(has_fg || has_bg) 		// if there isn't any foreground or background,
@@ -173,7 +185,7 @@ int colprint(const Colour input_col) {
 
 	const char* reset_sc = do_reset			? ";" : "";
 	const char* foreg_sc = has_fg && has_bg ? ";" : "";
-	
+
 	/* ── Print & Return ──────────────────────────────────────────────── */
 
 	/*return*/ printf(CSI "%s" "%s%s" "%s" "%s" END, reset_sc, style, fg, foreg_sc, bg);
