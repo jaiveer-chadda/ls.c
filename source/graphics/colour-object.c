@@ -110,25 +110,25 @@ int colprint(const Colour input_col) {
 
 	/* ── Process Colour::style ───────────────────────────────────────── */
 
-	const bool has_under  = colour.style & G_UNDER ;
-	const bool has_dunder = colour.style & G_DUNDER;
+	const bool has_under  = colour.has_style(G_UNDER );
+	const bool has_dunder = colour.has_style(G_DUNDER);
 
 	// UNDER/DUNDER will always overwrite each other,
 	//	so there's no point resetting one just to replace it with the other
-	if (has_under ) active.REM_STYLE(G_DUNDER);
-	if (has_dunder) active.REM_STYLE(G_UNDER );
+	if (has_under ) active.rem_style(G_DUNDER);
+	if (has_dunder) active.rem_style(G_UNDER );
 
 	// additionally, having both is also redundant, so, since DUNDER takes priority, remove UNDER from `colour`
-	if (has_under && has_dunder) colour.REM_STYLE(G_UNDER);
+	if (has_under && has_dunder) colour.rem_style(G_UNDER);
 
 	/* ———————————————————————————————————————————————— */
 
 	// if we're gonna remove BOLD and DIM from `active`, then pretend that `active`
 	//	doesn't have one of them in the first place.
 	//	- this way we won't have to reset both of them, which causes extra chars to be printed
-	if (!(colour.style & G_BOLD) && (active.style & G_BOLD) && 
-		!(colour.style & G_DIM ) && (active.style & G_DIM )
-	) active.REM_STYLE(G_BOLD);
+	if (!(colour.has_style(G_BOLD)) && (active.has_style(G_BOLD)) && 
+		!(colour.has_style(G_DIM) ) && (active.has_style(G_DIM) )
+	) active.rem_style(G_BOLD);
 
 	/* ———————————————————————————————————————————————— */
 
@@ -141,21 +141,21 @@ int colprint(const Colour input_col) {
 			style_i = G_STYLES[i];
 
 			// but only print the style if the previous style differs, or we're resetting
-			if (colour.style & style_i) {
-				if (!(active.style & style_i)) {
-					active.ADD_STYLE(style_i); // turn the style on
+			if (colour.has_style(style_i)) {
+				if (!(active.has_style(style_i))) {
+					active.add_style(style_i); // turn the style on
 					APPEND_TO_STYLE(stylelookup(style_i, ON));
 				}
 
 			// however, if the style isn't set in `colour`, but is active, then we need to turn it off
-			} else if (active.style & style_i) {
-				active.REM_STYLE(style_i); // turn the style off
+			} else if (active.has_style(style_i)) {
+				active.rem_style(style_i); // turn the style off
 				APPEND_TO_STYLE(stylelookup(style_i, OFF));
 
 				// since the codes to reset bold & dim are identical,
 				//	we need to re-apply the other when we reset the other
-				if (style_i == G_BOLD && active.style & G_DIM ) APPEND_TO_STYLE(ANSI_DIM );
-				if (style_i == G_DIM  && active.style & G_BOLD) APPEND_TO_STYLE(ANSI_BOLD);
+				if (style_i == G_BOLD && active.has_style(G_DIM) ) APPEND_TO_STYLE(ANSI_DIM );
+				if (style_i == G_DIM  && active.has_style(G_BOLD)) APPEND_TO_STYLE(ANSI_BOLD);
 			}
 		}
 	}
@@ -192,13 +192,13 @@ int colprint(const Colour input_col) {
 
 	/* ── Print & Return ──────────────────────────────────────────────── */
 
-	/*return*/ printf(CSI "%s" "%s%s" "%s" "%s" END, style, fg, foreg_sc, bg);
+	/*return*/ printf(CSI /*"%s"*/ "%s%s" "%s" "%s" END, style, fg, foreg_sc, bg);
 	putchar('\n');
 
 	// printf("st=%#hx, fg=%hd, bg=%hd\n", colour.style, colour.fg, colour.bg);
 	// printf("\\e[ (%1s) (%9s) (%8s%1s) (%8sm)\n",
 	// 	/**/reset_sc/**/, /**/style/**/, /**/fg, foreg_sc/**/, /**/bg/**/);
-	printf("\\e[""%s%s%s%s%sm\n", style, fg, foreg_sc, bg);
+	printf("\\e[""%s%s%s%sm\n", style, fg, foreg_sc, bg);
 
 	puts("[lorem ipsum dolor]\n");
 
