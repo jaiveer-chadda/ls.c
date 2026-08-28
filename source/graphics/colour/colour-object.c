@@ -97,10 +97,7 @@ int colprint(const Colour input_col) {
 	if (colour.style == active.style &&
 		colour.fg	 == active.fg	 &&
 		colour.bg	 == active.bg
-	) {
-		puts("\n•\n[lorem ipsum dolor]\n");
-		return 0;
-	}
+	) return 0;
 
 	/* ── Set Up Strings ──────────────────────────────────────────────── */
 
@@ -181,9 +178,6 @@ int colprint(const Colour input_col) {
 	// if everything is set to 0, then there's no point individually
 	//	resetting everything, so we can just print `\e[m` instead.
 	if (active.style + active.fg + active.bg == 0) {
-		printf("%s", CSI END); /*temp*/
-		puts("\n(\\e["END")\n[lorem ipsum dolor]"); /*temp*/
-
 		return printf("%s", CSI END);
 	}
 
@@ -192,7 +186,6 @@ int colprint(const Colour input_col) {
 	// if we're adding to the colours/styles, but there's nothing to add,
 	//	then don't print anything, and just return 0
 	if (do_add && !(has_st || has_fg || has_bg)) {
-		puts("\n-\n[lorem ipsum dolor]\n");
 		return 0;
 	}
 
@@ -208,11 +201,7 @@ int colprint(const Colour input_col) {
 
 	/* ── Print & Return ──────────────────────────────────────────────── */
 
-	printf(CSI "%s%s" "%s" "%s" END	, style, fg, foreg_sc, bg); // we're going to return this
-	printf("\n\\e[""%s%s%s%sm\n"	, style, fg, foreg_sc, bg);
-	puts("[lorem ipsum dolor]\n");
-
-	return -1;
+	return printf(CSI "%s%s" "%s" "%s" END, style, fg, foreg_sc, bg);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
