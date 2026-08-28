@@ -133,10 +133,14 @@ static inline bool checkForAppleAlias(FileInfo *pFile, const char *path) {
 	const bool is_apple_alias = resolveAppleAlias(target_path, &is_valid_alias, path);
 	pFile->is_ln_apple = is_apple_alias;
 
+	/* ——————————————————————————————————————————————————————————— */
+
 	if (!is_apple_alias) {
 		pFile->ln_suf = NOT_LINK;
 		return true;
 	}
+
+	/* ——————————————————————————————————————————————————————————— */
 
 	pFile->link_to = emalloc(sizeof(path_t));
 
@@ -147,6 +151,9 @@ static inline bool checkForAppleAlias(FileInfo *pFile, const char *path) {
 	} else {
 		stat_did_fail = getTargetInfo(pFile, target_path);
 	}
+
+	/* ——————————————————————————————————————————————————————————— */
+
 	// finally, abbreviate the path, so it can be displayed nicely
 	abbrPath(pFile->link_to, target_path);
 
@@ -184,7 +191,11 @@ static inline void getFileInfo(
 		stat_did_fail = getTargetInfo(&file, path);
 
 	// If it's not a symlink, check if its an Apple alias instead
-	} else if (S_ISREG(info.st_mode) && info.st_size > 0) {
+	} else if (						// but only check:
+		S_ISREG(info.st_mode)	&&		// regular files
+		info.st_size > 0		&&		// which have some content
+		!(info.st_flags & SF_DATALESS)	// and which aren't dataless
+	) {
 		stat_did_fail = checkForAppleAlias(&file, path);
 	} else { // If it isn't a link, then keep the `lstat` info, and mark the file as such
 		file.ln_suf = NOT_LINK;
