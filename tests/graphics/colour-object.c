@@ -67,7 +67,7 @@ int main(const int argc, const char* argv[]) {
 	#define lwhite	G_BWHT
 	//
 	#define none	G_NONE
-	#define reset	G_RESET
+	#define add		G_ADD
 	#define bold	G_BOLD
 	#define dim		G_DIM
 	#define italic	G_ITALIC
@@ -87,11 +87,12 @@ int main(const int argc, const char* argv[]) {
 
 	// COLPRINT();
 	// COLPRINT(bold | dim);
-	// COLPRINT();
 
 	COLPRINT();
 	COLPRINT(bold | dim, red);
-	COLPRINT(0, red);
+	COLPRINT(add | bold, 0, black);
+	COLPRINT(bold | dim | under | dunder | italic, 0, 18);
+	COLPRINT(0, red, 18);
 
 	// COLPRINT();
 	// COLPRINT(bold | dim | under | dunder | italic, red, black);

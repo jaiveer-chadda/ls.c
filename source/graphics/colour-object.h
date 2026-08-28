@@ -13,7 +13,7 @@ typedef uint16_t style_t; /** A bit record holding all styles that should be app
 #define STYLE_T_MAX ((style_t)((1 << 10) - 1)) /** 1023 == 0x03FF */
 
 #define G_NONE		((style_t)0x0000) /**	 0 - Don't set any styles. */
-#define G_ADD		((style_t)0x0001) /**	 1 - Don't any current styles. */
+#define G_ADD		((style_t)0x0001) /**	 1 - Don't remove any current styles. */
 #define G_BOLD		((style_t)0x0002) /**	 2 - Bolden text				(equivalent to `\e[1m`). */
 #define G_DIM		((style_t)0x0004) /**	 4 - Dim text					(equivalent to `\e[2m`). */
 #define G_ITALIC	((style_t)0x0008) /**	 8 - Italicise text				(equivalent to `\e[3m`). */

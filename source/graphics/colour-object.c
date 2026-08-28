@@ -123,32 +123,41 @@ int colprint(const Colour input_col) {
 
 	/* ———————————————————————————————————————————————— */
 
+	const bool do_add = colour.has_style(G_ADD);
+
 	// if we're gonna remove BOLD and DIM from `active`, then pretend that `active`
 	//	doesn't have one of them in the first place.
 	//	- this way we won't have to reset both of them, which causes extra chars to be printed
-	if (!(colour.has_style(G_BOLD)) && (active.has_style(G_BOLD)) && 
+	if (!do_add && // (when we're adding, we won't be removing anything, so this check is unnecessary)
+		!(colour.has_style(G_BOLD)) && (active.has_style(G_BOLD)) && 
 		!(colour.has_style(G_DIM) ) && (active.has_style(G_DIM) )
 	) active.rem_style(G_BOLD);
 
 	/* ———————————————————————————————————————————————— */
 
+	bool has_st = false;
+
 	// if the current style is identical to the previous style, then nothing has to be printed
 	//	this check is technically redundant, but it saves having to do a check for each of the styles
 	if (colour.style != active.style) {
 		style_t style_i;
+		bool col_has_st, act_has_st;
+
 		// iterate through each style, and check if the style is included in `colour.style`
 		for (int i = 0; i < GSTYLES_LEN; i++) {
 			style_i = G_STYLES[i];
+			col_has_st = colour.has_style(style_i);
+			act_has_st = active.has_style(style_i);
 
-			// but only print the style if the previous style differs, or we're resetting
-			if (colour.has_style(style_i)) {
-				if (!(active.has_style(style_i))) {
-					active.add_style(style_i); // turn the style on
-					APPEND_TO_STYLE(stylelookup(style_i, ON));
-				}
+			// but only print the style if the previous style differs
+			if (col_has_st && !act_has_st) {
+				has_st = true;
+				active.add_style(style_i); // turn the style on
+				APPEND_TO_STYLE(stylelookup(style_i, ON));
 
 			// however, if the style isn't set in `colour`, but is active, then we need to turn it off
-			} else if (active.has_style(style_i)) {
+			} else if (!col_has_st && act_has_st && !do_add) { // that is, unless we're just adding
+				has_st = true;
 				active.rem_style(style_i); // turn the style off
 				APPEND_TO_STYLE(stylelookup(style_i, OFF));
 
@@ -168,22 +177,30 @@ int colprint(const Colour input_col) {
 	SIMPLIFY_FGBG(fg);
 	SIMPLIFY_FGBG(bg);
 
-	/* ── Check for Reset All ─────────────────────────────────────────── */
+	/* ── Check for Resetting ─────────────────────────────────────────── */
 
 	// if everything is set to 0, then there's no point individually
 	//	resetting everything, so we can just print `\e[m` instead.
 	if (active.style + active.fg + active.bg == 0) {
-		/* return printf("%s", CSI END); */
+		printf("%s", CSI END); /*temp*/
+		puts("\n(\\e["END")\n[lorem ipsum dolor]"); /*temp*/
 
-		// TODO: these two lines should be deleted once I'm done debugging
-		style[0] = '\0', fg[0] = '\0', bg[0] = '\0';
-		st_len = 0, has_fg = false, has_bg = false;
+		return printf("%s", CSI END);
+	}
+
+	/* ── Check for Nothing-ness ──────────────────────────────────────── */
+
+	// if we're adding to the colours/styles, but there's nothing to add,
+	//	then don't print anything, and just return 0
+	if (do_add && !(has_st || has_fg || has_bg)) {
+		puts("\n-\n[lorem ipsum dolor]\n");
+		return 0;
 	}
 
 	/* ── Clean Up Semicolons ─────────────────────────────────────────── */
 
 	if (!(has_fg || has_bg) 		// if there isn't any foreground or background,
-		&& st_len > 0				// and there is at least one style code,
+		&& has_st					// and there is at least one style code,
 		&& style[st_len - 1] == ';' //   then check if the last char is a semicolon,
 	) style[st_len - 1] = '\0';		//		and delete the semicolon if it exists.
 	// this is to prevent the output being something like `\e[1;4;m`
@@ -192,14 +209,8 @@ int colprint(const Colour input_col) {
 
 	/* ── Print & Return ──────────────────────────────────────────────── */
 
-	/*return*/ printf(CSI /*"%s"*/ "%s%s" "%s" "%s" END, style, fg, foreg_sc, bg);
-	putchar('\n');
-
-	// printf("st=%#hx, fg=%hd, bg=%hd\n", colour.style, colour.fg, colour.bg);
-	// printf("\\e[ (%1s) (%9s) (%8s%1s) (%8sm)\n",
-	// 	/**/reset_sc/**/, /**/style/**/, /**/fg, foreg_sc/**/, /**/bg/**/);
-	printf("\\e[""%s%s%s%sm\n", style, fg, foreg_sc, bg);
-
+	printf(CSI "%s%s" "%s" "%s" END	, style, fg, foreg_sc, bg); // we're going to return this
+	printf("\n\\e[""%s%s%s%sm\n"	, style, fg, foreg_sc, bg);
 	puts("[lorem ipsum dolor]\n");
 
 	return -1;
