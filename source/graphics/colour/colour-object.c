@@ -1,4 +1,4 @@
-/// @file graphics/colour-object.c
+/// @file graphics/colour/colour-object.c
 
 #include <stdio.h>
 #include <errno.h>
@@ -33,7 +33,7 @@ static Colour active = RESET_ALL;
 		const int f_errno = errno;
 		va_end(va_args);
 
-		if (f_retcode >= size || f_retcode == EOF) {
+		if ((size_t)f_retcode >= size || f_retcode == EOF) {
 			debug(WARNING, "snprintf(): `char *str`: %s",
 				(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
 			);
@@ -53,7 +53,6 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 	if (turn_style == OFF) {
 		// bold and double underline don't conform to the normal escape
 		//	sequences that turn styles off, so they need special exceptions
-		int seq;
 		switch (style) {
 			case G_DUNDER:	return ANSI_NO_UNDER;	// on = `\e[21m`, off = `\e[24m`
 			case G_BOLD:	return ANSI_NO_BOLD;	// on = `\e[1m` , off = `\e[22m`
@@ -144,7 +143,7 @@ int colprint(const Colour input_col) {
 		bool col_has_st, act_has_st;
 
 		// iterate through each style, and check if the style is included in `colour.style`
-		for (int i = 0; i < GSTYLES_LEN; i++) {
+		for (size_t i = 0; i < GSTYLES_LEN; i++) {
 			style_i = G_STYLES[i];
 			col_has_st = colour.has_style(style_i);
 			act_has_st = active.has_style(style_i);

@@ -1,7 +1,7 @@
-/// @file tests/graphics/colour-object.c
+/// @file tests/graphics/colour/colour-object.c
 
 #include <stdio.h>
-#include "graphics/colour-object.h"
+#include "graphics/colour/colour-object.h"
 
 #define LINE "—————————————————————————————————————————————"
 #define PLINE() puts(LINE LINE LINE)
