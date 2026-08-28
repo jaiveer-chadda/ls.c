@@ -17,12 +17,18 @@ typedef uint16_t style_t; /** A bit record holding all styles that should be app
 #define G_BOLD		((style_t)0x0002) /**	 2 - Bolden text				(equivalent to `\e[1m`). */
 #define G_DIM		((style_t)0x0004) /**	 4 - Dim text					(equivalent to `\e[2m`). */
 #define G_ITALIC	((style_t)0x0008) /**	 8 - Italicise text				(equivalent to `\e[3m`). */
-#define G_UNDER		((style_t)0x0010) /**	16 - Underline text				(equivalent to `\e[4m`). */
+
+/**											16 - Underline text				(equivalent to `\e[4m`).
+ *													Mutually exclusive with `G_DUNDER`. `G_DUNDER` takes priority. */
+#define G_UNDER		((style_t)0x0010)
 #define G_BLINK		((style_t)0x0020) /**	32 - Make text blink			(equivalent to `\e[5m`). */
 #define G_INVERT	((style_t)0x0040) /**	64 - Invert fg & bg colours		(equivalent to `\e[7m`). */
 #define G_INVIS		((style_t)0x0080) /**  128 - Make text invisible		(equivalent to `\e[8m`). */
 #define G_STRIKE	((style_t)0x0100) /**  256 - Give text a strikethrough	(equivalent to `\e[9m`). */
-#define G_DUNDER	((style_t)0x0200) /**  512 - Double-underline text		(equivalent to `\e[21m`).*/
+
+/** 									   512 - Double-underline text		(equivalent to `\e[21m`).
+ *													Mutually exclusive with `G_UNDER`. `G_DUNDER` takes priority. */
+#define G_DUNDER	((style_t)0x0200)
 #define G_ALL		((style_t)0x03FF) /** 1023 - Set all styles (only really useful for debugging).  */
 
 /* —— Basic Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
