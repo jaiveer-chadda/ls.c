@@ -53,15 +53,16 @@ void* ecalloc(size_t count, size_t size) {
 }
 
 void* erealloc(void *ptr, size_t size) {
-	void *r_ptr = realloc(ptr, size);
+	// `reallocf` frees the original pointer if it fails
+	void *r_ptr = reallocf(ptr, size);
 	return exitIfNull(r_ptr, errno);
 }
 
 /* ———————————————————————————————————————————————————————— */
 
 void efree(void *ptr) {
-	free_count++;
 	free(ptr);
+	free_count++;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

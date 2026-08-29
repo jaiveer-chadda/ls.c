@@ -20,6 +20,12 @@
 
 #include "debugging/debugging.h"
 
+/// How many children to allocate memory for, when we don't know how many children there are going to be.
+#define INIT_CHILD_COUNT 2
+
+/// Approximately multiplies a number by 1.5
+#define MULT_BY_1_5(var) ((var) += (var) == 1 ? 1 : (var) >> 1)
+
 #define printError(errno_) \
 	fprintf(stderr, "%s: %s: %s\n", argv0, path, strerror(errno_))
 
@@ -41,7 +47,7 @@ int main(const int argc, char *argv[]) {
 	if(!strends(locale, "UTF-8")) debug(WARNING, "Non-UTF-8 locale - locale is '%s'", locale);
 
 	argv0 = getArgv0(argc, argv);
-		
+
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
 
 	// parse the user's inputted options, and find where the options end (& where the files start)
@@ -137,11 +143,18 @@ int main(const int argc, char *argv[]) {
 
 		// if we can't open the directory, note that there aren't any children, and move on
 		if (p_dir == NULL) {
+			// set the number of children to -1, so we know the difference between having 0 children,
+			//	and not being able to open the directory
 			p_fsobj->f->child_count = -1;
 
 			printError(errno);
 			continue;
 		}
+
+		// allocate some memory for an arbitrary number of children, with the intention that
+		//	we'll realloc if we need more memory later
+		int32_t child_alloc_count = INIT_CHILD_COUNT;
+		FileStat *children = ecalloc(child_alloc_count, sizeof(FileStat));
 
 		/* ———————————————————————————————————————————————————————————— */
 
@@ -150,14 +163,13 @@ int main(const int argc, char *argv[]) {
 		while (( p_child = readdir(p_dir) ) != NULL) {
 			// if this child has the name ".", then it's not a child, but the dir itself
 			if (strcmp(p_child->d_name, DOTDIR) == 0) {
-				// get the few bits of information that we care about from the `dirent` object
+				// get the few pieces of information that we care about from the `dirent` object
 				// note: we're not keeping `d_name` or `d_namlen`, since these would just
-				//	return "." and 1, respectively, which isn't much help to us
+				//	return "." and 1 respectively, which isn't much help to us
 				p_fsobj->type = p_child->d_type;
 				p_fsobj->inum = p_child->d_ino;
 
-				// continue - the rest of the information we need is in `p_fsobj->s`
-				continue;
+				continue; // continue - the rest of the information we need is already in `p_fsobj->s`
 			}
 
 			// with the output structure I'm building, I don't think it makes sense to show `..`
@@ -165,7 +177,27 @@ int main(const int argc, char *argv[]) {
 			if (strcmp(p_child->d_name, "..") == 0) continue;
 			// note: when I add the `-a` and `-A` options later, this is where I'll add a check for them
 
-			p_fsobj->f->child_count++;
+			/* ———————————————————————————————————————————————————————————— */
+
+			// keep track of the number of children in the dir
+			if (++p_fsobj->f->child_count > child_alloc_count) {
+                const int32_t old_alloc_count = child_alloc_count; // save the old capacity before multiplying
+
+				// if the number of children (after we increment it) is more than we have space for,
+				//	then increase the number of children we have space for, by a factor of 1.5.
+				// 1.5 is the optimal multiplier to make sure we don't over-allocate memory, but also so that
+				//	we aren't constantly allocating it either
+				MULT_BY_1_5(child_alloc_count);
+
+				// re-allocate the memory. note that `[e]realloc` will free the original pointer and hard exit if it
+				//	fails, so we don't have to worry about memory leaks by overwriting the original pointer
+				children = erealloc(children, sizeof(FileStat) * child_alloc_count);
+
+				// zero out the new memory that we were just allocated
+				//	this isn't strictly necessary, but it could prove rly useful for debugging
+				//	(I might remove it later if I don't think it's needed)
+				memset(children + old_alloc_count, 0, sizeof(FileStat) * (child_alloc_count - old_alloc_count));
+			}
 
 			printf("\t%s/%s\n", dirpath, p_child->d_name);
 		}
