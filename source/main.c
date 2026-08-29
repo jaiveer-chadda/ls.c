@@ -92,11 +92,8 @@ int main(const int argc, char *argv[]) {
 
 		// since we successfully got the `stat` information, we can start building the `FileStat` object
 
-		// allocate memory for this file's `FileStat` object
-		FileStat *p_fsobj = emalloc(sizeof(FileStat));
-
-		// then zero the memory
-		*p_fsobj = (FileStat){0};
+		// allocate memory for this file's `FileStat` object, and zero the memory
+		FileStat *p_fsobj = ecalloc(1, sizeof(FileStat));
 		// and add its pointer to the input array
 		fs_input_arr[i] = p_fsobj;
 

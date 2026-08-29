@@ -32,7 +32,6 @@ void e__checkMemLeak(void) {
 /* ———————————————————————————————————————————————————————— */
 
 static inline void* exitIfNull(void *ptr, const int errno_) {
-	alloc_count++;
 	if (ptr != NULL) return ptr;
 
 	print_error("%s: %s", argv0, strerror(errno_));
@@ -43,11 +42,13 @@ static inline void* exitIfNull(void *ptr, const int errno_) {
 
 void* emalloc(size_t size) {
 	void *r_ptr = malloc(size);
+	alloc_count++;
 	return exitIfNull(r_ptr, errno);
 }
 
 void* ecalloc(size_t count, size_t size) {
 	void *r_ptr = calloc(count, size);
+	alloc_count++;
 	return exitIfNull(r_ptr, errno);
 }
 
