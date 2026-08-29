@@ -9,6 +9,7 @@
 
 #include "info/info.h"
 #include "utils/string.h"
+#include "output/output.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
 
@@ -73,10 +74,18 @@ icon_t getIcon(const char *filename, const bool is_dir) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printIcon(const icon_t icon, const FileColour file_col) {
-	if (printf(
-			"%s%s%s" "%lc" "%s",
-			IF_COLOUR(CSI), file_colour_esc[file_col], IF_COLOUR(END), icon, IF_COLOUR(RESET)
-		) < 0
+	if (!DO_COLOUR()) {
+		if (printf("%lc", icon) != EOF) fputs(strerror(errno), stderr);
+		return;
+	}
+
+	// FIXME: this is an impoerfect solution, but it's fine for now
+	const char *const colour_str = file_colour_esc[file_col];
+	const bool sets_bg = doesSetBackground(colour_str);
+
+	if (printf("%s%s%s%s" "%lc" "%s",
+			CSI, colour_str, sets_bg ? ";7" : "", END, icon, RESET
+		) != EOF
 	) fputs(strerror(errno), stderr);
 }
 

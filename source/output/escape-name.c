@@ -74,7 +74,7 @@ static bool escapeCharacter(char *esc_seq, const char orig_char) {
  * 						but with the leading `[`
  * @return true if `colour` will set the background colour, false otherwise.
  */
-static bool doesSetBackground(const char *colour) {
+bool doesSetBackground(const char *colour) {
 	const int start_at = colour[0] == ';' ? 1 : 0;
 	const int len = (int)strlen(colour);
 

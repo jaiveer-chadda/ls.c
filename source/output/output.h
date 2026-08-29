@@ -5,6 +5,8 @@
 
 #include "model/stat-model.h"
 
+bool doesSetBackground(const char *colour);
+
 void  printHeader(void);
 void printFlagStr(const flag_t	 *flags																);
 void  printFields(const FileInfo *all_files	, const int		*count									);
