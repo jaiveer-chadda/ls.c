@@ -13,15 +13,23 @@
 #include "options/options.h"
 #include "graphics/graphics.h"
 
-#include "debugging/debugging.h"
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define REACHED_END_OF_ICONS(icn) ( \
 	((icn.pattern) == NO_PATTERN) && \
 	((icn.icon)	== NO_ICON))
 
-#define IF_COLOUR(print) DO_COLOUR() ? print : ""
+#ifdef DEBUG_MODE
+#	include "debugging/debugging.h"
+#	define PRINTF_ERROR(...) do {											\
+		if (printf(__VA_ARGS__) == EOF) {									\
+			const int printf_errno = errno;									\
+			debug(ERROR, "printIcon: printf: %s", strerror(printf_errno));	\
+		}																	\
+	} while (0)
+#else
+#	define PRINTF_ERROR(...) printf(__VA_ARGS__)
+#endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -75,7 +83,7 @@ icon_t getIcon(const char *filename, const bool is_dir) {
 
 void printIcon(const icon_t icon, const FileColour file_col) {
 	if (!DO_COLOUR()) {
-		if (printf("%lc", icon) != EOF) fputs(strerror(errno), stderr);
+		PRINTF_ERROR("%lc", icon);
 		return;
 	}
 
@@ -83,10 +91,9 @@ void printIcon(const icon_t icon, const FileColour file_col) {
 	const char *const colour_str = file_colour_esc[file_col];
 	const bool sets_bg = doesSetBackground(colour_str);
 
-	if (printf("%s%s%s%s" "%lc" "%s",
-			CSI, colour_str, sets_bg ? ";7" : "", END, icon, RESET
-		) != EOF
-	) fputs(strerror(errno), stderr);
+	PRINTF_ERROR("%s%s%s%s" "%lc" "%s",
+		CSI, colour_str, sets_bg ? ";7" : "", END, icon, RESET
+	);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
