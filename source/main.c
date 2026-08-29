@@ -18,8 +18,9 @@
 
 #include "debugging/debugging.h"
 
-/// [TEMP] The maximum number of directories that can be passed to the function.
-#define MAX_INPUTS 128
+static inline const char *getArgv0(const int argc, char *argv[]);
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 path_t G_DOTDIR_PATH;
 const char *argv0;
@@ -32,10 +33,8 @@ int main(const int argc, const char *argv[]) {
 	const char *locale = setlocale(LC_ALL, "");
 	if(!strends(locale, "UTF-8")) debug(WARNING, "Non-UTF-8 locale - locale is '%s'", locale);
 
-	argv0 = argc >= 1 && argv[0] != NULL && strlen(argv[0]) > 0
-		? argv[0]
-		: PROGRAM_NAME;
-
+	argv0 = getArgv0(argc, argv);
+		
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
 
 	// Parse the user's inputted options, and find where the options end (& where the files start)
@@ -130,3 +129,20 @@ int main(const int argc, const char *argv[]) {
 
 	return EXIT_SUCCESS;
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline const char *getArgv0(const int argc, char *restrict argv[]) {
+	if ((argc < 1) || (argv[0] == NULL) || (argv[0][0] == '\0')) {
+		return PROGRAM_NAME;
+	}
+
+	const char *basename = strrchr(argv[0], '/');
+	if (basename != NULL) {
+		return basename + 1;
+	}
+
+	return argv[0];
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
