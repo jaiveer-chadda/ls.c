@@ -30,8 +30,8 @@ void processDirectory(char *path, DIR *dir, const bool do_free_path_0, const boo
 	/* —— Get File Info from `stat` —————————————————————————————————————————————————————————————— */
 
 	FileInfo
-		*dirs  = emalloc(MAX_FILES_IN_DIR * sizeof(FileInfo)),
-		*files = emalloc(MAX_FILES_IN_DIR * sizeof(FileInfo));
+		*dirs  = emalloc(MAX_CHILDREN * sizeof(FileInfo)),
+		*files = emalloc(MAX_CHILDREN * sizeof(FileInfo));
 
 	int dir_count, file_count;
 

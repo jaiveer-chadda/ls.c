@@ -29,18 +29,15 @@ typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
  *
  * This is done in order to limit the about of memory allocated for each file, especially when we can't access the
  *	information that would fill that memory.
- *
- * Additionally, the first element of the struct is `struct stat* s`. This allows `FileStat` to be passed to any
- *	function which takes `stat` as an input, and for the `s` element to be populated as if it was a standalone struct.
  */
 struct FileStat {
 	struct stat*	s	; // 8 /** Pointer to the struct returned when this file was `stat`ted. */
-	FileStatFields* f	; // 128 /** Fields which can only be derived if the file was successfully `stat`ted. */
+	FileStatFields* f	; // ? /** Fields which can only be derived if the file was successfully `stat`ted. */
 
 	// the following are all fields which can be derived from `struct dirent`, and don't come from `struct stat`.
 	char*		name	; // 8 /** The name of this file, as it will be displayed. */
-	uint16_t	name_len; // 2 (dirent.d_namlen) /** The length of the string pointed to by the `name` field. */
-	uint8_t		type	; // 1 (dirent.d_type) /** The raw type & permissions of the file. */
+	int16_t		name_len; // 2 (dirent.d_namlen) /** The length of the string pointed to by the `name` field. */
+	uint8_t		type	; // 1 (dirent.d_type) /** The raw type of the file. */
 	uint64_t	inum	; // 8 (dirent.d_ino / (stat.st_ino)
 };
 
@@ -74,6 +71,7 @@ struct FileStatFields {
 
 	char*		flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
 	FileStat*	children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
+	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
 
 	TimeInfo*	times[TIME_COUNT]; // 32
 };

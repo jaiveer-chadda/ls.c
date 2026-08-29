@@ -14,7 +14,7 @@
 /// The maximum length a filename can be on Darwin (macOS/some BSD) machines.
 #define MAX_NAME_LEN MAXNAMLEN
 
-/// The maximum length a path can be on Darwin (macOS/some BSD) machines.
+/// The maximum length a path can be on Darwin (macOS/some BSD) machines (1024 b).
 #define MAX_PATH_LEN __DARWIN_MAXPATHLEN
 
 /// The maximum number of possible user and superuser flags on macOS.
@@ -23,10 +23,9 @@
 #define MAX_FLAG_LEN 11
 
 /**
- * An arbitrary upper bound on how many files we're going to accept.
- * The actual maximum number of files is `1 << 31`, which is ~ 2.1 billion.
+ * The maximum number of files that APFS will allow in a single folder
  */
-#define MAX_FILES_IN_DIR (1 << 12)
+#define MAX_CHILDREN INT32_MAX
 
 /// The length of the mode when written in octal.
 #define OCT_MODE_LEN 6
