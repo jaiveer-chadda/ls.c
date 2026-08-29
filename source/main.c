@@ -37,7 +37,7 @@ int main(const int argc, char *argv[]) {
 
 	// set the locale to the system default (it'll check the env vars)
 	//	(this is to ensure that multibyte characters can be printed as file icons)
-	const char *locale = setlocale(LC_ALL, "");
+	const char *const locale = setlocale(LC_ALL, "");
 	if(!strends(locale, "UTF-8")) debug(WARNING, "Non-UTF-8 locale - locale is '%s'", locale);
 
 	argv0 = getArgv0(argc, argv);
@@ -68,15 +68,17 @@ int main(const int argc, char *argv[]) {
 	FileStat *fs_input_arr[file_count];
 
 	for (int i = 0; i < file_count; i++) {
-		const char *path = file_paths[i];
+		char *path = file_paths[i];
 		struct stat file_stat = {0};
 
 		printf("%d: %s\n", i, path);
 
 		/* ———————————————————————————————————————————————————————————— */
 
-		// firstly, try to `stat` the input path
-		if (stat(path, &file_stat) == -1) {
+		// firstly, try to run `lstat` on the input path
+		//	the reason we're `stat`ting the file upfront is because we absolutely _need_ to know
+		//	whether its a directory or not, so we might as well store the stat information if we have it
+		if (lstat(path, &file_stat) == -1) {
 			// if it fails, print an error and move onto the next file
 			const int stat_errno = errno;
 			if (stat_errno == ENOENT) { /* handle */ }
@@ -95,14 +97,14 @@ int main(const int argc, char *argv[]) {
 		// since we successfully got the `stat` information, we can start building the `FileStat` object
 
 		// allocate memory for this file's `FileStat` object, and zero the memory
-		FileStat *p_fsobj = ecalloc(1, sizeof(FileStat));
+		FileStat *const p_fsobj = ecalloc(1, sizeof(FileStat));
 		// and add its pointer to the input array
 		fs_input_arr[i] = p_fsobj;
 
 		/* ———————————————————————————————————————————————————————————— */
 
 		// allocate memory for the `stat` object that will be pointed to by `FileStat::s`
-		struct stat *p_stat = emalloc(sizeof(struct stat));
+		struct stat *const p_stat = emalloc(sizeof(struct stat));
 
 		// copy `file_stat` from the stack into the newly-allocated heap memory,
 		//	and then assign the pointer to that heap memory to `FileStat::s`
@@ -113,27 +115,59 @@ int main(const int argc, char *argv[]) {
 
 		/* ———————————————————————————————————————————————————————————— */
 
+		// since `path` comes from `file_paths`, which comes from `argv`, the memory containing `p_fsobj->name`
+		//	doesn't need to be allocated, since pointers to `argv` exist through the lifetime of the program
+		p_fsobj->name = path;
+		// we don't know the name's length, so set it to -1 for now, and we can calculate it later if need be
+		p_fsobj->name_len = -1;
+
+		/* ———————————————————————————————————————————————————————————— */
+
 		// if the input was a file (i.e. not a dir), then there's nothing else to do at this stage
 		if (!S_ISDIR(file_stat.st_mode) || DIRS_AS_FILES()) continue;
 
 		/* ———————————————————————————————————————————————————————————— */
 		// if the input was a directory, however, we need to find its children
 
-		// changing the name of the variable to ease legibility
-		const char* dirpath = path;
+		char *const dirpath = path; // (changing the name of the variable to ease legibility)
 
 		// firstly, open the directory and get a pointer to a `DIR` object
 		//	note: we can't get any info from `DIR`, it's use is to be passed into other functions
 		DIR *p_dir = opendir(dirpath);
 
+		// if we can't open the directory, note that there aren't any children, and move on
 		if (p_dir == NULL) {
+			p_fsobj->f->child_count = -1;
+
 			printError(errno);
 			continue;
 		}
 
-		struct dirent *p_child;
-		while ((p_child = readdir(p_dir)) != NULL) {
-			printf("\t%s\n", p_child->d_name);
+		/* ———————————————————————————————————————————————————————————— */
+
+		// iterate through the directory until you run out of children (or there's an error)
+		const struct dirent *p_child;
+		while (( p_child = readdir(p_dir) ) != NULL) {
+			// if this child has the name ".", then it's not a child, but the dir itself
+			if (strcmp(p_child->d_name, DOTDIR) == 0) {
+				// get the few bits of information that we care about from the `dirent` object
+				// note: we're not keeping `d_name` or `d_namlen`, since these would just
+				//	return "." and 1, respectively, which isn't much help to us
+				p_fsobj->type = p_child->d_type;
+				p_fsobj->inum = p_child->d_ino;
+
+				// continue - the rest of the information we need is in `p_fsobj->s`
+				continue;
+			}
+
+			// with the output structure I'm building, I don't think it makes sense to show `..`
+			//	if I want to add an option to keep it later, I can just add it to this condition
+			if (strcmp(p_child->d_name, "..") == 0) continue;
+			// note: when I add the `-a` and `-A` options later, this is where I'll add a check for them
+
+			p_fsobj->f->child_count++;
+
+			printf("\t%s/%s\n", dirpath, p_child->d_name);
 		}
 
 		closedir(p_dir);
