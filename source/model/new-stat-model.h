@@ -6,34 +6,52 @@
 #include "types.h"
 #include "graphics/graphics.h"
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+#define arrayof(type) type*
 
-extern path_t G_DOTDIR_PATH;
-extern const char *argv0;
+/* —— FileStat (main) —————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
+/**
+ * @struct FileStat
+ * @brief The primary information about a file.
+ *
+ * Contains the most essential information about a file, all of which is taken from the file's `dirent` struct.
+ *
+ * Also contains pointers to two other structs: `stat`, and `FileStatFields`.
+ *
+ * The `stat` pointer points to the struct which was returned after the `stat`/`lstat` syscall was run on this file.
+ * In cases where we are able to get `dirent` information for the file, but not `stat` info (usually due to lack of
+ *	permission), then both `stat* s` and `FileStatFields* f` will be set to `NULL`.
+ *
+ * This is done in order to limit the about of memory allocated for each file, especially when we can't access the
+ *	information that would fill that memory.
+ *
+ * Additionally, the first element of the struct is `struct stat* s`. This allows `FileStat` to be passed to any
+ *	function which takes `stat` as an input, and for the `s` element to be populated as if it was a standalone struct.
+ */
 typedef struct {
-	// ————————————— custom fields ——————————————————————
-	struct FileStatFields* f; // 128 /** Fields which can only be derived if the file was successfully `stat`ted. */
+	struct stat*	s	; // 8 /** Pointer to the struct returned when this file was `stat`ted. */
+	FileStatFields* f	; // 128 /** Fields which can only be derived if the file was successfully `stat`ted. */
 
-	// ————————————— `struct stat*` —————————————————————
-	struct stat* s			; // 8 /** Pointer to the struct returned when this file was `stat`ted. */
-
-	// ————————————— from `struct dirent` ———————————————
-	// these are all fields which can be derived from `struct dirent`, and don't come from `struct stat`.
-	char*		name		; // 8 /** The name of this file, as it will be displayed. */
-	uint16_t	name_len	; // 2 (dirent.d_namlen) /** The length of the string pointed to by the `name` field. */
-	uint8_t		type		; // 1 (dirent.d_type) /** The raw type & permissions of the file. */
-	uint64_t	inum		; // 8 (dirent.d_ino / (stat.st_ino)
+	// the following are all fields which can be derived from `struct dirent`, and don't come from `struct stat`.
+	char*		name	; // 8 /** The name of this file, as it will be displayed. */
+	uint16_t	name_len; // 2 (dirent.d_namlen) /** The length of the string pointed to by the `name` field. */
+	uint8_t		type	; // 1 (dirent.d_type) /** The raw type & permissions of the file. */
+	uint64_t	inum	; // 8 (dirent.d_ino / (stat.st_ino)
 } FileStat;
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
 typedef struct { TimeColour colour; timestr time_str;		} TimeInfo;
 typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
 
-struct FileStatFields {
+/**
+ * @struct FileStatFields
+ * @brief Detailed information about a file, sourced from the `stat`/`lstat` syscalls.
+ *
+ * Contains more detailed information about a file than can be read from a `dirent` or `stat` object. All the info
+ *	stored in this struct is calculated and assigned manually at runtime, by parsers implemented in this project.
+ */
+typedef struct {
 	// TODO: amalgamate `do_link_hl` into `file_col`
 	bool		do_link_hl	; // 1 /** Whether this file is a hardlink, and should be highlghted as such. */
 	bool		is_mount	; // 1 /** Whether this file is a mount point or not. */
@@ -56,16 +74,30 @@ struct FileStatFields {
 	FileStat*	children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
 
 	TimeInfo* times[TIME_COUNT]; // 32
-};
+} FileStatFields;
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— TargetInfo ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/**
+ * @struct TargetInfo
+ * @brief Basic information about the target of a symlink.
+ *
+ * Contains just enough information to display a symlink/alias's target after the arrow.
+ *	- E.g. `source_link -> /path/to/target_path`
+ *
+ * The target is being stored as a seperate struct, so that the memory for this information doesn't have to be
+ *	allocated for every single file, and will only be allocated when the source file is a link of some sort.
+ *
+ * @var TargetInfo::path	 The contents of the link - needed to print the basic arrow & path.
+ * @var TargetInfo::colour	 The colour with which the file (i.e. the file's basename) should be printed.
+ * @var TargetInfo::suffix	 The file suffix which should be printed after the filename (e.g. `/`, `*`, `=`, etc.).
+ * @var TargetInfo::is_apple Whether the source of this link is a symbolic link, or an Apple alias file.
+ */
 typedef struct {
-	char*		path		; // 8 /** The absolute path to the target file. */
-
-	FileColour	colour		; // 4 /** The colour that the file should be displayed in. */
-	bool		is_apple	; // 1 /** Whether the link that pointed to this target was an apple alias (or a symlink). */
-	char		suffix		; // 1 /** The symbol to be shown after the target's name. */
+	char*		path	; // 8 /** The contents of the link (usually the absolute path to the target file). */
+	FileColour	colour	; // 4 /** The colour that the file should be displayed in. */
+	char		suffix	; // 1 /** The symbol to be shown after the target's name. */
+	bool		is_apple; // 1 /** Whether the link that pointed to this target was an apple alias (or a symlink). */
 } TargetInfo;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
