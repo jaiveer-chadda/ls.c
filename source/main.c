@@ -20,6 +20,9 @@
 
 #include "debugging/debugging.h"
 
+#define printError(errno_) \
+	fprintf(stderr, "%s: %s: %s\n", argv0, path, strerror(errno_))
+
 static inline const char *getArgv0(const int argc, char *restrict argv[]);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -66,7 +69,7 @@ int main(const int argc, char *argv[]) {
 
 	for (int i = 0; i < file_count; i++) {
 		const char *path = file_paths[i];
-		struct stat file_stat;
+		struct stat file_stat = {0};
 
 		printf("%d: %s\n", i, path);
 
@@ -78,7 +81,7 @@ int main(const int argc, char *argv[]) {
 			const int stat_errno = errno;
 			if (stat_errno == ENOENT) { /* handle */ }
 
-			fprintf(stderr, "%s: %s: %s\n", argv0, path, strerror(stat_errno));
+			printError(stat_errno);
 
 			// set the pointer to this input to NULL, so we know not to process it later
 			fs_input_arr[i] = NULL;
@@ -89,7 +92,6 @@ int main(const int argc, char *argv[]) {
 		any_valid_input = true;
 
 		/* ———————————————————————————————————————————————————————————— */
-
 		// since we successfully got the `stat` information, we can start building the `FileStat` object
 
 		// allocate memory for this file's `FileStat` object, and zero the memory
@@ -106,16 +108,50 @@ int main(const int argc, char *argv[]) {
 		//	and then assign the pointer to that heap memory to `FileStat::s`
 		p_fsobj->s = memcpy(p_stat, &file_stat, sizeof(struct stat));
 
+		// finally, allocate memory for the `FileStatFields` object, and assign its pointer to the FileStat object
+		p_fsobj->f = ecalloc(1, sizeof(FileStatFields));
+
 		/* ———————————————————————————————————————————————————————————— */
 
-		if (S_ISDIR(file_stat.st_mode)) {}
+		// if the input was a file (i.e. not a dir), then there's nothing else to do at this stage
+		if (!S_ISDIR(file_stat.st_mode) || DIRS_AS_FILES()) continue;
+
+		/* ———————————————————————————————————————————————————————————— */
+		// if the input was a directory, however, we need to find its children
+
+		// changing the name of the variable to ease legibility
+		const char* dirpath = path;
+
+		// firstly, open the directory and get a pointer to a `DIR` object
+		//	note: we can't get any info from `DIR`, it's use is to be passed into other functions
+		DIR *p_dir = opendir(dirpath);
+
+		if (p_dir == NULL) {
+			printError(errno);
+			continue;
+		}
+
+		struct dirent *p_child;
+		while ((p_child = readdir(p_dir)) != NULL) {
+			printf("\t%s\n", p_child->d_name);
+		}
+
+		closedir(p_dir);
 	}
 
-	checkMemLeak();
+	/* ———————————————————————————————————————————————————————————— */
 
 	// if none of the inputted directories were valid, exit with failure
 	if (!any_valid_input) return EXIT_FAILURE;
 
+	/* ——————————————————————————————————————————————————————————————————————————————————————————— */
+
+	for (int i = 0; i < file_count; i++) {
+		FileStat *fsobj = fs_input_arr[i];
+		if (fsobj != NULL) efree(fsobj);
+	}
+
+	// checkMemLeak();
 	return EXIT_SUCCESS;
 }
 
