@@ -6,11 +6,12 @@
 #include "types.h"
 #include "graphics/graphics.h"
 
-#define arrayof(type) type*
-
 typedef struct FileStat			FileStat;
 typedef struct TargetInfo		TargetInfo;
 typedef struct FileStatFields	FileStatFields;
+
+typedef struct { TimeColour colour; timestr time_str;		} TimeInfo;
+typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
 
 /* —— FileStat (main) —————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -45,9 +46,6 @@ struct FileStat {
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
-typedef struct { TimeColour colour; timestr time_str;		} TimeInfo;
-typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
-
 /**
  * @struct FileStatFields
  * @brief Detailed information about a file, sourced from the `stat`/`lstat` syscalls.
@@ -57,7 +55,7 @@ typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
  */
 struct FileStatFields {
 	// TODO: amalgamate `do_link_hl` into `file_col`
-	bool		do_link_hl	; // 1 /** Whether this file is a hardlink, and should be highlghted as such. */
+	bool		do_link_hl	; // 1 /** Whether this file is a hardlink, and should be highlighted as such. */
 	bool		is_mount	; // 1 /** Whether this file is a mount point or not. */
 	bool		has_xattr	; // 1 /** Whether this file has extended attributes. */
 	bool		has_acl		; // 1 /** Whether this file has an access control list. */
@@ -77,7 +75,7 @@ struct FileStatFields {
 	char*		flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
 	FileStat*	children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
 
-	TimeInfo* times[TIME_COUNT]; // 32
+	TimeInfo*	times[TIME_COUNT]; // 32
 };
 
 /* —— TargetInfo ——————————————————————————————————————————————————————————————————————————————————————————————————— */
