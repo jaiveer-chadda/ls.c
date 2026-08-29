@@ -114,6 +114,8 @@ int main(const int argc, char *argv[]) {
 		if (S_ISDIR(file_stat.st_mode)) {}
 	}
 
+	checkMemLeak();
+
 	// if none of the inputted directories were valid, exit with failure
 	if (!any_valid_input) return EXIT_FAILURE;
 

@@ -6,27 +6,61 @@
 
 #include "malloc.h"
 #include "model/stat-model.h"
+#include "debugging/debugging.h"
+
+#ifdef DEBUG_MODE
+#	define print_error(...) debug(ERROR, __VA_ARGS__)
+#else
+#	define print_error(...) fprintf(stderr, __VA_ARGS__)
+#endif
+
+static size_t alloc_count = 0;
+static size_t free_count  = 0;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// this is probably the closest I'm going to get to currying in C
+void e__checkMemLeak(void) {
+	if (free_count >  alloc_count) debug(FATAL, "huh?");
+	if (free_count == alloc_count) return;
 
-#define DEFINE_ALLOC_FUNC(funcname, ...) do {				\
-	void *r_ptr = funcname(__VA_ARGS__);					\
-	const int errno_ = errno;								\
-	\
-	if (r_ptr == NULL) {									\
-		fprintf(stderr, "%s: %s", argv0, strerror(errno_));	\
-		exit(EXIT_FAILURE);									\
-	}														\
-	\
-	return r_ptr;											\
-} while (0)
+	debug(WARNING,
+		"likely memory leak - times alloced = %zu, times freed = %zu (%lc = %zu)",
+		alloc_count, free_count, L'Δ', alloc_count - free_count
+	);
+}
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ———————————————————————————————————————————————————————— */
 
-void*  emalloc(size_t size				 )	{ DEFINE_ALLOC_FUNC(malloc, size		); }
-void*  ecalloc(size_t count	, size_t size)	{ DEFINE_ALLOC_FUNC(calloc, count, size	); }
-void* erealloc(void  *ptr	, size_t size)	{ DEFINE_ALLOC_FUNC(realloc, ptr, size	); }
+static inline void* exitIfNull(void *ptr, const int errno_) {
+	alloc_count++;
+	if (ptr != NULL) return ptr;
+
+	print_error("%s: %s", argv0, strerror(errno_));
+	exit(EXIT_FAILURE);
+}
+
+/* ———————————————————————————————————————————————————————— */
+
+void* emalloc(size_t size) {
+	void *r_ptr = malloc(size);
+	return exitIfNull(r_ptr, errno);
+}
+
+void* ecalloc(size_t count, size_t size) {
+	void *r_ptr = calloc(count, size);
+	return exitIfNull(r_ptr, errno);
+}
+
+void* erealloc(void *ptr, size_t size) {
+	void *r_ptr = realloc(ptr, size);
+	return exitIfNull(r_ptr, errno);
+}
+
+/* ———————————————————————————————————————————————————————— */
+
+void efree(void *ptr) {
+	free_count++;
+	free(ptr);
+}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
