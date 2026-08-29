@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "model/global.h"
+#include "model/new-stat-model.h"
 #include "main/process-dir.h"
 
 #include "utils/malloc.h"
@@ -18,14 +20,16 @@
 
 #include "debugging/debugging.h"
 
-static inline const char *getArgv0(const int argc, char *argv[]);
+static inline const char *getArgv0(const int argc, char *restrict argv[]);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 path_t G_DOTDIR_PATH;
 const char *argv0;
 
-int main(const int argc, const char *argv[]) {
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+int main(const int argc, char *argv[]) {
 	initDebugging(argv);
 
 	// Set the locale to the system default (it'll check the env vars)
@@ -39,93 +43,84 @@ int main(const int argc, const char *argv[]) {
 
 	// Parse the user's inputted options, and find where the options end (& where the files start)
 	//	e.g. if the program is run as `lk --clear --sort name ~/.config/options`, then `files_start` will be 4
-	const int files_start = setOptions(argc, argv);
-	const int input_count = (argc == files_start) ? 1 : (argc - files_start);
+	const int opt_count = setOptions(argc, (const char**)argv);
 
-	/* —— Find Target Directories ———————————————————————————————————————————————————————————————— */
+	/* —— Determine Input Paths —————————————————————————————————————————————————————————————————— */
+
+	/// How many filepaths were entered after the options ended.
+	/// If there were no path entered, then assume there was just one path (`.`).
+	const int file_count = opt_count < argc ? argc - opt_count : 1;
 
 	/// The raw string paths inputted by the user.
-	char *input_paths[input_count];
+	char **file_paths = argv + opt_count;
+	// If there were no paths entered, then assume the user inputted the path `.`
+	if (opt_count >= argc) file_paths[0] = DOTDIR;
 
-	bool do_free_path_0 = false;
+	/* —— Find Target Files/Dirs ————————————————————————————————————————————————————————————————— */
 
-	// If there weren't any directory names passed, then default to as if the user had passed `.`
-	if (argc == files_start) {
-		// Since "." isn't stored anywhere, we have to alloc some memory for it
-		//	This memory is freed in `processDirectory()`
-		input_paths[0] = emalloc(sizeof(char *));
-		do_free_path_0 = true; // & then remember to free it
-
-		// Copy the string "." into input_paths[0]
-		strcpy(input_paths[0], DOTDIR);
-
-	} else {
-		// Copy each of the arguments' addresses into `input_paths`
-		for (int i = 0; i < input_count; i++) {
-			input_paths[i] = (char *)argv[files_start + i];
-		}
-	}
-
-	for (int i = 0; i < input_count; i++) {
-		printf("%d: %s\n", i, input_paths[i]);
+	for (int i = 0; i < file_count; i++) {
+		const char *path = file_paths[i];
+		printf("%d: %s\n", i, path);
 
 		struct stat file_stat;
-		stat(input_paths[i], &file_stat);
+		stat(path, &file_stat);
 
-		if (S_ISDIR(file_stat.st_mode)) {
+		if (stat(path, &file_stat) == -1) {
+			const int stat_errno = errno;
+			if (stat_errno == ENOENT) { /* handle */ };
 
+			fprintf(stderr, "%s: %s: %s\n", argv0, path, strerror(stat_errno));
+			continue;
 		}
+
+		if (S_ISDIR(file_stat.st_mode)) {}
 	}
 
-	exit(0);
-	
-	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-	/// Whether the user inputted at least one valid input into the function.
-	bool has_any_valid_input = false;
-
-	// Get a `DIR` pointer for each path passed in to the function
-	// (`DIR` being a "structure describing an open directory")
-	DIR *input_dirs[input_count];
-
-	for (int i = 0; i < input_count; i++) {
-		input_dirs[i] = opendir(input_paths[i]);
-		const int opendir_errno = errno;
-
-		// If we couldn't open the directory (usually cos it doesn't exist or
-		//	we don't have permissions for it), print an error
-		if (input_dirs[i] == NULL) {
-			fprintf(stderr, "%s: %s: %s\n", argv0, input_paths[i], strerror(opendir_errno));
-		} else {
-			// If at least one inputted directory is valid, then make sure we continue
-			has_any_valid_input = true;
-		}
-	}
-
-	// If none the inputted directories are valid, exit with failure
-	if (!has_any_valid_input) return EXIT_FAILURE;
-
-	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
-
-	// Find the current time and make it available globally
-	initTime();
-
-	/* —— Process All Directories ———————————————————————————————————————————————————————————————— */
-
-	for (int i = 0; i < input_count; i++) {
-		// Don't process invalid directories
-		if (input_dirs[i] == NULL) continue;
-
-		// Do the processing & print the details for each directory inputted
-		processDirectory(input_paths[i], input_dirs[i], do_free_path_0, i == 0);
-
-		// Print a newline between each directory listing (after each dir except the last)
-		if (i != input_count - 1) putchar('\n');
-	}
-
-	// if (do_free_path_0) free(input_paths[0]);
+	// /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+	// /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+	// /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+	//
+	// /// Whether the user inputted at least one valid input into the function.
+	// bool has_any_valid_input = false;
+	//
+	// // Get a `DIR` pointer for each path passed in to the function
+	// // (`DIR` being a "structure describing an open directory")
+	// DIR *input_dirs[input_count];
+	//
+	// for (int i = 0; i < input_count; i++) {
+	// 	input_dirs[i] = opendir(input_paths[i]);
+	// 	const int opendir_errno = errno;
+	//
+	// 	// If we couldn't open the directory (usually cos it doesn't exist or
+	// 	//	we don't have permissions for it), print an error
+	// 	if (input_dirs[i] == NULL) {
+	// 		fprintf(stderr, "%s: %s: %s\n", argv0, input_paths[i], strerror(opendir_errno));
+	// 	} else {
+	// 		// If at least one inputted directory is valid, then make sure we continue
+	// 		has_any_valid_input = true;
+	// 	}
+	// }
+	//
+	// // If none the inputted directories are valid, exit with failure
+	// if (!has_any_valid_input) return EXIT_FAILURE;
+	//
+	// /* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
+	//
+	// // Find the current time and make it available globally
+	// initTime();
+	//
+	// /* —— Process All Directories ———————————————————————————————————————————————————————————————— */
+	//
+	// for (int i = 0; i < input_count; i++) {
+	// 	// Don't process invalid directories
+	// 	if (input_dirs[i] == NULL) continue;
+	//
+	// 	// Do the processing & print the details for each directory inputted
+	// 	processDirectory(input_paths[i], input_dirs[i], do_free_path_0, i == 0);
+	//
+	// 	// Print a newline between each directory listing (after each dir except the last)
+	// 	if (i != input_count - 1) putchar('\n');
+	// }
 
 	return EXIT_SUCCESS;
 }

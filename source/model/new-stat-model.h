@@ -8,6 +8,10 @@
 
 #define arrayof(type) type*
 
+typedef struct FileStat			FileStat;
+typedef struct TargetInfo		TargetInfo;
+typedef struct FileStatFields	FileStatFields;
+
 /* —— FileStat (main) —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /**
@@ -28,7 +32,7 @@
  * Additionally, the first element of the struct is `struct stat* s`. This allows `FileStat` to be passed to any
  *	function which takes `stat` as an input, and for the `s` element to be populated as if it was a standalone struct.
  */
-typedef struct {
+struct FileStat {
 	struct stat*	s	; // 8 /** Pointer to the struct returned when this file was `stat`ted. */
 	FileStatFields* f	; // 128 /** Fields which can only be derived if the file was successfully `stat`ted. */
 
@@ -37,7 +41,7 @@ typedef struct {
 	uint16_t	name_len; // 2 (dirent.d_namlen) /** The length of the string pointed to by the `name` field. */
 	uint8_t		type	; // 1 (dirent.d_type) /** The raw type & permissions of the file. */
 	uint64_t	inum	; // 8 (dirent.d_ino / (stat.st_ino)
-} FileStat;
+};
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -51,7 +55,7 @@ typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
  * Contains more detailed information about a file than can be read from a `dirent` or `stat` object. All the info
  *	stored in this struct is calculated and assigned manually at runtime, by parsers implemented in this project.
  */
-typedef struct {
+struct FileStatFields {
 	// TODO: amalgamate `do_link_hl` into `file_col`
 	bool		do_link_hl	; // 1 /** Whether this file is a hardlink, and should be highlghted as such. */
 	bool		is_mount	; // 1 /** Whether this file is a mount point or not. */
@@ -74,7 +78,7 @@ typedef struct {
 	FileStat*	children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
 
 	TimeInfo* times[TIME_COUNT]; // 32
-} FileStatFields;
+};
 
 /* —— TargetInfo ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -93,12 +97,12 @@ typedef struct {
  * @var TargetInfo::suffix	 The file suffix which should be printed after the filename (e.g. `/`, `*`, `=`, etc.).
  * @var TargetInfo::is_apple Whether the source of this link is a symbolic link, or an Apple alias file.
  */
-typedef struct {
+struct TargetInfo {
 	char*		path	; // 8 /** The contents of the link (usually the absolute path to the target file). */
 	FileColour	colour	; // 4 /** The colour that the file should be displayed in. */
 	char		suffix	; // 1 /** The symbol to be shown after the target's name. */
 	bool		is_apple; // 1 /** Whether the link that pointed to this target was an apple alias (or a symlink). */
-} TargetInfo;
+};
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
