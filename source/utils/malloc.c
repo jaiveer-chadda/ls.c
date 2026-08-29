@@ -2,19 +2,31 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <string.h> // strerror()
+#include <string.h>
 
 #include "malloc.h"
-#include "model/stat-model.h" // argv0
+#include "model/stat-model.h"
 
-void* emalloc(size_t obj_size) {
-	void *ptr = malloc(obj_size);
-	const int malloc_errno = errno;
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-	if (ptr == NULL) {
-		fprintf(stderr, "%s: %s", argv0, strerror(malloc_errno));
-		exit(EXIT_FAILURE);
-	}
+// this is probably the closest I'm going to get to currying in C
 
-	return ptr;
-}
+#define DEFINE_ALLOC_FUNC(funcname, ...) do {				\
+	void *r_ptr = funcname(__VA_ARGS__);					\
+	const int errno_ = errno;								\
+	\
+	if (r_ptr == NULL) {									\
+		fprintf(stderr, "%s: %s", argv0, strerror(errno_));	\
+		exit(EXIT_FAILURE);									\
+	}														\
+	\
+	return r_ptr;											\
+} while (0)
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void*  emalloc(size_t size				 )	{ DEFINE_ALLOC_FUNC(malloc, size		); }
+void*  ecalloc(size_t count	, size_t size)	{ DEFINE_ALLOC_FUNC(calloc, count, size	); }
+void* erealloc(void  *ptr	, size_t size)	{ DEFINE_ALLOC_FUNC(realloc, ptr, size	); }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
