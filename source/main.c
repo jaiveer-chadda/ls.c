@@ -234,7 +234,7 @@ int main(const int argc, char *argv[]) {
 			}
 
 			// allocate the memory for the child's `stat` struct
-			struct stat *ps_child = emalloc(sizeof(struct stat));
+			pfs_child->s = emalloc(sizeof(struct stat));
 
 			// create a buffer to hold the path needed to pass to `stat`
 			path_t child_path = "";
@@ -245,17 +245,17 @@ int main(const int argc, char *argv[]) {
 			memcpy(child_path + 1 + dirpath_len, pfs_child->name, pfs_child->name_len + 1); // +1 for '\0' this time
 
 			// run `lstat` on the path
-			if (lstat(child_path, ps_child) == -1) {
+			if (lstat(child_path, pfs_child->s) == -1) {
 				// if it fails, print an error
+				debug(WARNING, "failed to `stat`: %s", child_path);
 				printError(pfs_child->name, strerror(errno));
 
-				// then free the memory we allocated for the file's `stat` object
-				efree(ps_child);
+				// free the memory we allocated for the file's `stat` object
+				efree(pfs_child->s);
 				// then set the pointer to it to NULL, so we know not to process it later
-				ps_child = NULL;
+				pfs_child->s = NULL;
 
-				debug(WARNING, "failed to process: %s", child_path);
-				// then move on to the next child
+				// and move on to the next child
 				continue;
 			}
 
@@ -273,6 +273,16 @@ int main(const int argc, char *argv[]) {
 	/* ——————————————————————————————————————————————————————————————————————————————————————————— */
 
 	for (int i = 0; i < file_count; i++) {
+		/* Memory Allocated
+		 * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+		 *	- `FileStat *fs_input_arr[]` - one for each input that was successfully statted (set to NULL on failure)
+		 *		- `struct stat    *FileStat::s` - same conditions as above
+		 *		- `FileStatFields *FileStat::f` - same conditions as above
+		 *			- `FileStat (*FileStatFields::children)[]` - allocated if input is a directory
+		 *				- `char        *FileStat::name` - allocated unconditionally for every child created
+		 *				- `struct stat *FileStat::s` - allocated if child was statted successfully (NULL otherwise)
+		 */
+
 		FileStat *fsobj = fs_input_arr[i];
 		if (fsobj != NULL) efree(fsobj);
 	}
