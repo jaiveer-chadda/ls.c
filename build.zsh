@@ -84,11 +84,8 @@ function -- () {
 
   # ———————————————————————————————————————————————————— #
 
-  # find where the `libmagic` library is stored, to be passed to the linker
-  local -r _lmagic_prefix="$( brew --prefix libmagic )"
-  local -ra LIBPATHS=( "$_lmagic_prefix/lib" )
-  local -ra INCLUDES=( "$_lmagic_prefix/include" "$_proj_root/source" )
-  local -ra   LDLIBS=( magic )
+  local -ra LIBPATHS=( ) LDLIBS=( )
+  local -ra INCLUDES=( "$_proj_root/source" )
 
   local -ra FRAMEWORKS=( CoreFoundation )
 
