@@ -26,8 +26,8 @@
 /// Approximately multiplies a number by 1.5
 #define MULT_BY_1_5(var) ((var) += (var) == 1 ? 1 : (var) >> 1)
 
-#define printError(errno_) \
-	fprintf(stderr, "%s: %s: %s\n", argv0, path, strerror(errno_))
+#define printError(path_, errno_) \
+	fprintf(stderr, "%s: %s: %s\n", argv0, path_, strerror(errno_))
 
 static inline const char *getArgv0(const int argc, char *restrict argv[]);
 
@@ -89,7 +89,7 @@ int main(const int argc, char *argv[]) {
 			const int stat_errno = errno;
 			if (stat_errno == ENOENT) { /* handle */ }
 
-			printError(stat_errno);
+			printError(path, stat_errno);
 
 			// set the pointer to this input to NULL, so we know not to process it later
 			fs_input_arr[i] = NULL;
@@ -147,7 +147,7 @@ int main(const int argc, char *argv[]) {
 			//	and not being able to open the directory
 			p_fsobj->f->child_count = -1;
 
-			printError(errno);
+			printError(path, errno);
 			continue;
 		}
 
@@ -199,6 +199,8 @@ int main(const int argc, char *argv[]) {
 				memset(children + old_alloc_count, 0, sizeof(FileStat) * (child_alloc_count - old_alloc_count));
 			}
 
+			/* ———————————————————————————————————————————————————————————— */
+
 			// find the position where the child's `FileStat` object will start
 			FileStat *pfs_child = children + p_fsobj->f->child_count;
 
@@ -217,6 +219,30 @@ int main(const int argc, char *argv[]) {
 			// copy the name from `dirent` to `FileStat`
 			//	we're using `memcpy` and not `strcpy` since we already know how long the string is
 			memcpy(pfs_child->name, pd_child->d_name, pd_child->d_namlen + 1);
+
+			/* ———————————————————————————————————————————————————————————— */
+
+			// allocate the memory for the child's `stat` struct
+			struct stat *ps_child = emalloc(sizeof(struct stat));
+
+			// create a buffer to hold the full path to the child
+			path_t child_path = "";
+			snprintf(child_path, sizeof(path_t), "%s/%s", dirpath, pfs_child->name);
+
+			// run `lstat` on the path
+			if (lstat(child_path, ps_child) == -1) {
+				// if it fails, print an error
+				printError(pfs_child->name, errno);
+
+				// then free the memory we allocated for the file's `stat` object
+				free(ps_child);
+				// then set the pointer to it to NULL, so we know not to process it later
+				ps_child = NULL;
+
+				debug(WARNING, "failed to process: %s", child_path);
+				// then move on to the next child
+				continue;
+			}
 
 			printf("\t%s/%s\n", dirpath, pfs_child->name);
 		}
