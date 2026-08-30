@@ -7,6 +7,7 @@
 #include "options/options.h"
 #include "graphics/graphics.h"
 
+#include "malloc.h"
 #include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -43,7 +44,7 @@ static void getValueColour(char *value_colour, const char *unit) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
-	char minor_size[strlen(size_str) + 1];
+	char *minor_size = emalloc(strlen(size_str) + 1);
 	int i = 0;
 
 	// copy everything in `size_str` to `majmin_str` until the first comma
@@ -67,6 +68,8 @@ static inline void getMajMinString(char *majmin_str, const sizestr size_str) {
 		IF_COLOUR(ANSI(PUNCT) "," ANSI(MIN_COL), ","),
 		size_str + i + 1
 	);
+
+	efree(minor_size);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

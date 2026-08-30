@@ -57,10 +57,12 @@ int main(const int argc, char *argv[]) {
 
 	/* —— For Each Input File ———————————————————————————————————————————————————————————————————— */
 
+	// unfortunately, this has to be allocated on the heap, since wah wah, variable-size arrays are bad
+	//	boo hoo, and I want to be a good programmer, so I don't use them. bollocks >:(
 	/// An array of pointers to FileStat objects, each representing the inputted files/dirs.
-	FileStat *fs_input_arr[file_count];
+	FileStat **fs_input_arr = ecalloc(file_count, sizeof(FileStat*));
 
-	// iterate through each input, get a pointer to the input's `FileStat` object, and add it to the array
+	// iterate through each input, and get a pointer to the input's `FileStat` object to add to the array
 	for (int i = 0; i < file_count; i++) {
 		printf("%s\n", file_paths[i]);
 		fs_input_arr[i] = processInput(file_paths[i]);
@@ -82,6 +84,8 @@ int main(const int argc, char *argv[]) {
 		FileStat *fsobj = fs_input_arr[i];
 		if (fsobj != NULL) efree(fsobj);
 	}
+
+	efree(fs_input_arr);
 
 	/* —— Return ————————————————————————————————————————————————————————————————————————————————— */
 

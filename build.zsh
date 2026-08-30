@@ -53,7 +53,7 @@ function -- () {
   # ———————————————————————————————————————————————————— #
 
   # all `-W...` warnings to enable
-  local -a WARNINGS=( all extra pedantic )
+  local -a WARNINGS=( all extra pedantic vla )
 
   # all `-W-no-...` warnings to disable
   local -ra NO_WARN=(
