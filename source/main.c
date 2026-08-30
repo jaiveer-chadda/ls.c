@@ -20,6 +20,8 @@
 
 #include "debugging/debugging.h"
 
+/* ── ── Definitions ── ──────────────────────────────────────────────────────────────────────────────────────────── */
+
 /// How many children to allocate memory for, when we don't know how many children there are going to be.
 #define INIT_CHILD_COUNT 2
 
@@ -29,14 +31,14 @@
 #define printError(path_, errmsg) \
 	fprintf(stderr, "%s: %s: %s\n", argv0, path_, errmsg)
 
-static inline const char *getArgv0(const int argc, char *restrict argv[]);
+/* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+static inline const char *getArgv0(const int argc, char *restrict argv[]);
 
 path_t G_DOTDIR_PATH;
 const char *argv0;
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── main() ── ───────────────────────────────────────────────────────────────────────────────────────────────── */
 
 int main(const int argc, char *argv[]) {
 	initDebugging(argv);
@@ -65,7 +67,7 @@ int main(const int argc, char *argv[]) {
 	// if there were no paths entered, then assume the user inputted the path `.`
 	if (opt_count >= argc) file_paths[0] = DOTDIR;
 
-	/* —— Find Target Files/Dirs ————————————————————————————————————————————————————————————————— */
+	/* —— For Each Input File ———————————————————————————————————————————————————————————————————— */
 
 	/// Whether the user inputted at least one valid input into the function.
 	bool any_valid_input = false;
@@ -79,7 +81,7 @@ int main(const int argc, char *argv[]) {
 
 		printf("%d: %s\n", i, path);
 
-		/* ———————————————————————————————————————————————————————————— */
+		/* —— – `stat` input file ——————————————————————————————————————— */
 
 		// firstly, try to run `lstat` on the input path
 		//	the reason we're `stat`ting the file upfront is because we absolutely _need_ to know
@@ -99,7 +101,7 @@ int main(const int argc, char *argv[]) {
 		// file was `stat`ted successfully - note down that we've had at least 1 valid input
 		any_valid_input = true;
 
-		/* ———————————————————————————————————————————————————————————— */
+		/* —— – alloc FileStat for Input ———————————————————————————————— */
 		// since we successfully got the `stat` information, we can start building the `FileStat` object
 
 		// allocate memory for this file's `FileStat` object, and zero the memory
@@ -107,7 +109,7 @@ int main(const int argc, char *argv[]) {
 		// and add its pointer to the input array
 		fs_input_arr[i] = p_fsobj;
 
-		/* ———————————————————————————————————————————————————————————— */
+		/* —— – alloc stat & FSF ———————————————————————————————————————— */
 
 		// allocate memory for the `stat` object that will be pointed to by `FileStat::s`
 		struct stat *const p_stat = emalloc(sizeof(struct stat));
@@ -119,7 +121,7 @@ int main(const int argc, char *argv[]) {
 		// finally, allocate memory for the `FileStatFields` object, and assign its pointer to the FileStat object
 		p_fsobj->f = ecalloc(1, sizeof(FileStatFields));
 
-		/* ———————————————————————————————————————————————————————————— */
+		/* —— – assign name & len ——————————————————————————————————————— */
 
 		// since `path` comes from `file_paths`, which comes from `argv`, the memory containing `p_fsobj->name`
 		//	doesn't need to be allocated, since pointers to `argv` exist through the lifetime of the program
@@ -127,12 +129,12 @@ int main(const int argc, char *argv[]) {
 		// we don't know the name's length, so set it to -1 for now, and we can calculate it later if need be
 		p_fsobj->name_len = -1;
 
-		/* ———————————————————————————————————————————————————————————— */
+		/* —— – check if input is dir ——————————————————————————————————— */
 
 		// if the input was a file (i.e. not a dir), then there's nothing else to do at this stage
 		if (!S_ISDIR(file_stat.st_mode) || DIRS_AS_FILES()) continue;
 
-		/* ———————————————————————————————————————————————————————————— */
+		/* —— – Setup for Input Dirs ——————————————————————————————————————————————————————————————————— */
 		// if the input was a directory, however, we need to find its children
 
 		char *const dirpath = path; // (changing the name of the variable to ease legibility)
@@ -161,7 +163,7 @@ int main(const int argc, char *argv[]) {
 		int32_t child_alloc_count = INIT_CHILD_COUNT;
 		FileStat *children = ecalloc(child_alloc_count, sizeof(FileStat));
 
-		/* ———————————————————————————————————————————————————————————— */
+		/* —— – For Each Child in Dir ——————————————————————————————————— */
 
 		// iterate through the directory until you run out of children (or there's an error)
 		const struct dirent *pd_child;
@@ -182,7 +184,7 @@ int main(const int argc, char *argv[]) {
 			if (strcmp(pd_child->d_name, "..") == 0) continue;
 			// note: when I add the `-a` and `-A` options later, this is where I'll add a check for them
 
-			/* ———————————————————————————————————————————————————————————— */
+			/* —— –– alloc mem for children —————————————————————————————————— */
 
 			// keep track of the number of children in the dir
 			if (p_fsobj->f->child_count >= child_alloc_count) {
@@ -204,7 +206,7 @@ int main(const int argc, char *argv[]) {
 				memset(children + old_alloc_count, 0, sizeof(FileStat) * (child_alloc_count - old_alloc_count));
 			}
 
-			/* ———————————————————————————————————————————————————————————— */
+			/* —— –– basic child info (dirent) ——————————————————————————————— */
 
 			// find the position where the child's `FileStat` object will start
 			FileStat *pfs_child = children + p_fsobj->f->child_count;
@@ -225,7 +227,7 @@ int main(const int argc, char *argv[]) {
 			//	we're using `memcpy` and not `strcpy` since we already know how long the string is
 			memcpy(pfs_child->name, pd_child->d_name, pd_child->d_namlen + 1);
 
-			/* ———————————————————————————————————————————————————————————— */
+			/* —— –– get path to child ——————————————————————————————————————— */
 
 			// make sure that the resultant child path won't be too long once we create it
 			if ((size_t)(dirpath_len + 1 + pfs_child->name_len) >= sizeof(path_t)) {
@@ -244,6 +246,8 @@ int main(const int argc, char *argv[]) {
 			child_path[dirpath_len] = '/'; // add the path separator
 			memcpy(child_path + 1 + dirpath_len, pfs_child->name, pfs_child->name_len + 1); // +1 for '\0' this time
 
+			/* —— –– `stat` child file ——————————————————————————————————————— */
+
 			// run `lstat` on the path
 			if (lstat(child_path, pfs_child->s) == -1) {
 				// if it fails, print an error
@@ -259,18 +263,20 @@ int main(const int argc, char *argv[]) {
 				continue;
 			}
 
+			/* ———————————————————————————————————————————————————————————— */
+
 			printf("\t%s/%s\n", dirpath, pfs_child->name);
 		}
 
 		closedir(p_dir);
 	}
 
-	/* ———————————————————————————————————————————————————————————— */
+	/* —— Setup Before Printing ——————————————————————————————————— */
 
 	// if none of the inputted directories were valid, exit with failure
 	if (!any_valid_input) return EXIT_FAILURE;
 
-	/* ——————————————————————————————————————————————————————————————————————————————————————————— */
+	/* —— Free Alloc-ed Memory ——————————————————————————————————————————————————————————————————— */
 
 	for (int i = 0; i < file_count; i++) {
 		/* Memory Allocated
@@ -287,11 +293,13 @@ int main(const int argc, char *argv[]) {
 		if (fsobj != NULL) efree(fsobj);
 	}
 
+	/* —— Return ————————————————————————————————————————————————————————————————————————————————— */
+
 	// checkMemLeak();
 	return EXIT_SUCCESS;
 }
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── Helper Functions ── ─────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline const char *getArgv0(const int argc, char *restrict argv[]) {
 	if ((argc < 1) || (argv[0] == NULL) || (argv[0][0] == '\0')) return PROGRAM_NAME;
