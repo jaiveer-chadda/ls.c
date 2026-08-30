@@ -36,7 +36,7 @@ struct FileStat {
 
 	// the following are all fields which can be derived from `struct dirent`, and don't come from `struct stat`.
 	char*		name	; // 8 /** The name of this file, as it will be displayed. */
-	int16_t		name_len; // 2 (dirent.d_namlen) /** The length of the string pointed to by the `name` field. */
+	int16_t		name_len; // 2 (dirent.d_namlen) /** Length of the string pointed to by the `name` field (exc. `\0`) */
 	uint8_t		type	; // 1 (dirent.d_type) /** The raw type of the file. */
 	uint64_t	inum	; // 8 (dirent.d_ino / (stat.st_ino)
 };

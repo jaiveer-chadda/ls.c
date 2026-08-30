@@ -26,8 +26,8 @@
 /// Approximately multiplies a number by 1.5
 #define MULT_BY_1_5(var) ((var) += (var) == 1 ? 1 : (var) >> 1)
 
-#define printError(path_, errno_) \
-	fprintf(stderr, "%s: %s: %s\n", argv0, path_, strerror(errno_))
+#define printError(path_, errmsg) \
+	fprintf(stderr, "%s: %s: %s\n", argv0, path_, errmsg)
 
 static inline const char *getArgv0(const int argc, char *restrict argv[]);
 
@@ -89,7 +89,7 @@ int main(const int argc, char *argv[]) {
 			const int stat_errno = errno;
 			if (stat_errno == ENOENT) { /* handle */ }
 
-			printError(path, stat_errno);
+			printError(path, strerror(stat_errno));
 
 			// set the pointer to this input to NULL, so we know not to process it later
 			fs_input_arr[i] = NULL;
@@ -147,9 +147,14 @@ int main(const int argc, char *argv[]) {
 			//	and not being able to open the directory
 			p_fsobj->f->child_count = -1;
 
-			printError(path, errno);
+			printError(path, strerror(errno));
 			continue;
 		}
+
+		// bite the bullet and use `strlen` to calculate the dir's length now,
+		//	bc we're going to need it to get the path to the children in a moment
+		const int16_t dirpath_len = (int16_t)strlen(dirpath);
+		p_fsobj->name_len = dirpath_len;
 
 		// allocate some memory for an arbitrary number of children, with the intention that
 		//	we'll realloc if we need more memory later
@@ -222,20 +227,30 @@ int main(const int argc, char *argv[]) {
 
 			/* ———————————————————————————————————————————————————————————— */
 
+			// make sure that the resultant child path won't be too long once we create it
+			if ((size_t)(dirpath_len + 1 + pfs_child->name_len) >= sizeof(path_t)) {
+				printError(pfs_child->name, "path name too long");
+				continue;
+			}
+
 			// allocate the memory for the child's `stat` struct
 			struct stat *ps_child = emalloc(sizeof(struct stat));
 
-			// create a buffer to hold the full path to the child
+			// create a buffer to hold the path needed to pass to `stat`
 			path_t child_path = "";
-			snprintf(child_path, sizeof(path_t), "%s/%s", dirpath, pfs_child->name);
+
+			// build the full path to the child from its component parts
+			memcpy(child_path, dirpath, dirpath_len); // no need to include the nullbyte, so no +1
+			child_path[dirpath_len] = '/'; // add the path separator
+			memcpy(child_path + 1 + dirpath_len, pfs_child->name, pfs_child->name_len + 1); // +1 for '\0' this time
 
 			// run `lstat` on the path
 			if (lstat(child_path, ps_child) == -1) {
 				// if it fails, print an error
-				printError(pfs_child->name, errno);
+				printError(pfs_child->name, strerror(errno));
 
 				// then free the memory we allocated for the file's `stat` object
-				free(ps_child);
+				efree(ps_child);
 				// then set the pointer to it to NULL, so we know not to process it later
 				ps_child = NULL;
 
