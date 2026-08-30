@@ -3,6 +3,8 @@
 #ifndef NEW_STAT_MODEL_INITIALISED
 #define NEW_STAT_MODEL_INITIALISED
 
+#include <sys/stat.h>
+
 #include "types.h"
 #include "graphics/graphics.h"
 

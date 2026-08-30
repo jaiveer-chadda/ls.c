@@ -5,13 +5,17 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// ReSharper disable once CppUnusedIncludeDirective
-#include <stdbool.h>
 #include <stddef.h>
 #include <inttypes.h>
 #include <sys/stat.h>
 
 #include "consts.h"
+
+#ifndef bool
+#	define bool	_Bool
+#	define true	1
+#	define false 0
+#endif
 
 /* ——————————————————————————————————————————————————— */
 
@@ -31,6 +35,7 @@ typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; // +1 for the comma tha
 
 /* ——————————————————————————————————————————————————— */
 
+/// @brief The fields by which outputs can be sorted by the `--sort` flag.
 typedef enum {
 	SB_DEFAULT,
 	SB_NONE,

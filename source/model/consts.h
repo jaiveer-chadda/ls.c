@@ -3,11 +3,13 @@
 #ifndef CONSTS_INITIALIASED
 #define CONSTS_INITIALIASED
 
+// Includes all the `MAX...LEN` constants, but also the `DIR` struct
 #include <dirent.h>
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
 #define PROGRAM_NAME "lk"
+#define DOTDIR "."
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
@@ -50,4 +52,5 @@
 #define MAX_TIME_LEN (1 << 5)
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
+
 #endif /* !CONSTS_INITIALIASED */

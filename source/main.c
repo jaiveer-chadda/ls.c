@@ -9,9 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "main/process-dir.h"
+
 #include "model/global.h"
 #include "model/new-stat-model.h"
-#include "main/process-dir.h"
 
 #include "utils/malloc.h"
 #include "utils/string.h"
