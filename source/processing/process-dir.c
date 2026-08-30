@@ -1,4 +1,4 @@
-/// @file main/process-dir.c
+/// @file processing/process-dir.c
 
 #include <stdio.h>
 #include <stdlib.h>

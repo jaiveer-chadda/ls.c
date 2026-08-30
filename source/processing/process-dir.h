@@ -1,4 +1,4 @@
-/// @file main/process-dir.h
+/// @file processing/process-dir.h
 
 #ifndef PROCESS_FILES_INITIALIASED
 #define PROCESS_FILES_INITIALIASED

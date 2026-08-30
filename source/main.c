@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "main/process-dir.h"
+#include "processing/process-dir.h"
 
 #include "model/global.h"
 #include "model/new-stat-model.h"
