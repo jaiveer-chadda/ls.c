@@ -159,31 +159,31 @@ int main(const int argc, char *argv[]) {
 		/* ———————————————————————————————————————————————————————————— */
 
 		// iterate through the directory until you run out of children (or there's an error)
-		const struct dirent *p_child;
-		while (( p_child = readdir(p_dir) ) != NULL) {
+		const struct dirent *pd_child;
+		while (( pd_child = readdir(p_dir) ) != NULL) {
 			// if this child has the name ".", then it's not a child, but the dir itself
-			if (strcmp(p_child->d_name, DOTDIR) == 0) {
+			if (strcmp(pd_child->d_name, DOTDIR) == 0) {
 				// get the few pieces of information that we care about from the `dirent` object
 				// note: we're not keeping `d_name` or `d_namlen`, since these would just
 				//	return "." and 1 respectively, which isn't much help to us
-				p_fsobj->type = p_child->d_type;
-				p_fsobj->inum = p_child->d_ino;
+				p_fsobj->type = pd_child->d_type;
+				p_fsobj->inum = pd_child->d_ino;
 
 				continue; // continue - the rest of the information we need is already in `p_fsobj->s`
 			}
 
 			// with the output structure I'm building, I don't think it makes sense to show `..`
 			//	if I want to add an option to keep it later, I can just add it to this condition
-			if (strcmp(p_child->d_name, "..") == 0) continue;
+			if (strcmp(pd_child->d_name, "..") == 0) continue;
 			// note: when I add the `-a` and `-A` options later, this is where I'll add a check for them
 
 			/* ———————————————————————————————————————————————————————————— */
 
 			// keep track of the number of children in the dir
-			if (++p_fsobj->f->child_count > child_alloc_count) {
+			if (p_fsobj->f->child_count >= child_alloc_count) {
                 const int32_t old_alloc_count = child_alloc_count; // save the old capacity before multiplying
 
-				// if the number of children (after we increment it) is more than we have space for,
+				// if the number of children (before we increment it) is more than we have space for,
 				//	then increase the number of children we have space for, by a factor of 1.5.
 				// 1.5 is the optimal multiplier to make sure we don't over-allocate memory, but also so that
 				//	we aren't constantly allocating it either
@@ -199,7 +199,26 @@ int main(const int argc, char *argv[]) {
 				memset(children + old_alloc_count, 0, sizeof(FileStat) * (child_alloc_count - old_alloc_count));
 			}
 
-			printf("\t%s/%s\n", dirpath, p_child->d_name);
+			// find the position where the child's `FileStat` object will start
+			FileStat *pfs_child = children + p_fsobj->f->child_count;
+
+			// only increment the child count now that we've used it as an index to calculate where the child should be
+			p_fsobj->f->child_count++;
+
+			// copy the info from `dirent` over to the child's `FileStat` object
+			*pfs_child = (FileStat){
+				// allocate memory for the name, since the `dirent` memory won't last forever
+				.name		= emalloc(pd_child->d_namlen + 1), // +1 for the nullbyte
+				.name_len	= pd_child->d_namlen,
+				.type		= pd_child->d_type,
+				.inum		= pd_child->d_ino,
+			};
+
+			// copy the name from `dirent` to `FileStat`
+			//	we're using `memcpy` and not `strcpy` since we already know how long the string is
+			memcpy(pfs_child->name, pd_child->d_name, pd_child->d_namlen + 1);
+
+			printf("\t%s/%s\n", dirpath, pfs_child->name);
 		}
 
 		closedir(p_dir);
