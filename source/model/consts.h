@@ -13,6 +13,11 @@
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
+/// How many children of a directory to allocate memory for, before we know how many children there are going to be.
+#define INIT_CHILD_COUNT 2
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 /// The maximum length a filename can be on Darwin (macOS/some BSD) machines.
 #define MAX_NAME_LEN MAXNAMLEN
 
