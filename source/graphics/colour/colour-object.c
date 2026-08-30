@@ -10,7 +10,7 @@
 #include "colour-defs.h"
 #include "colour-object.h"
 
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 /* ── ── Static Variables ── ────────────────────────────────────────────────────────────────────────────────——————— */
 

@@ -9,17 +9,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "processing/process-dir.h"
-
 #include "model/global.h"
 #include "model/new-stat-model.h"
 
+#include "processing/process-dir.h"
+
 #include "utils/malloc.h"
-#include "utils/string.h"
+#include "utils/strings.h"
 #include "options/options.h"
 #include "features/time/time.h"
 
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 /* ── ── Definitions ── ──────────────────────────────────────────────────────────────────────────────────────────── */
 

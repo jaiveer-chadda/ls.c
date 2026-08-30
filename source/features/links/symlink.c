@@ -9,7 +9,7 @@
 #include "model/stat-model.h"
 #include "features/path/path.h"
 
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

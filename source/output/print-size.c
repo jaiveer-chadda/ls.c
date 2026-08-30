@@ -7,7 +7,7 @@
 #include "options/options.h"
 #include "graphics/graphics.h"
 
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

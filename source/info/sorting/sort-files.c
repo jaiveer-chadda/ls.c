@@ -6,10 +6,10 @@
 
 #include "sort.h"
 #include "info/info.h"
-#include "utils/string.h"
+#include "utils/strings.h"
 #include "options/options.h"
 #include "features/mode/mode.h"
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 /// The multiplier which will be applied to a sort if the `--reverse-sort` option is enabled.
 static int REVERSE;

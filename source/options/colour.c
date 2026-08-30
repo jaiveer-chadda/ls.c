@@ -4,7 +4,7 @@
 #include <stdlib.h> // getenv()
 #include <unistd.h> // isatty()
 
-#include "utils/string.h" // strends()
+#include "utils/strings.h" // strends()
 
 #define IS_VALID_VAR(pchar) \
 	((pchar) != NULL &&		\

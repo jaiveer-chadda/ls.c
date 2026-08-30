@@ -8,7 +8,7 @@
 #include "icons.h"
 
 #include "info/info.h"
-#include "utils/string.h"
+#include "utils/strings.h"
 #include "output/output.h"
 #include "options/options.h"
 #include "graphics/graphics.h"

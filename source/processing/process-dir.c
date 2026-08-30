@@ -14,7 +14,7 @@
 
 #include "features/path/path.h"
 
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 // `is_first` will be unused when compiled in debug mode
 #ifdef DEBUG_MODE

@@ -7,7 +7,7 @@
 #include "form/formatting.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
-#include "debugging/debugging.h"
+#include "debugging.h"
 #include "features/mount/mount-point.h"
 
 #include "output.h"

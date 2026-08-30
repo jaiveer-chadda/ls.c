@@ -6,7 +6,7 @@
 
 #include "malloc.h"
 #include "model/stat-model.h"
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 #ifdef DEBUG_MODE
 #	define print_error(...) debug(ERROR, __VA_ARGS__)

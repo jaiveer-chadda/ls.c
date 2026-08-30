@@ -1,7 +1,7 @@
-/// @file utils/string.c
+/// @file utils/strings.c
 
 #include <stddef.h>
-#include "string.h"
+#include "strings.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

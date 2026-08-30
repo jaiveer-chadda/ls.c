@@ -22,7 +22,7 @@
 #include "features/mount/mount-point.h"
 #include "features/links/apple-alias.h"
 
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

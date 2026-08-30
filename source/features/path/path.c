@@ -9,7 +9,7 @@
 #include "path.h"
 #include "info/info.h"
 
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

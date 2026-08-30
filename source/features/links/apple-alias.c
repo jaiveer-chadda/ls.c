@@ -7,7 +7,7 @@
 #include "apple-alias.h"
 #include "utils/malloc.h"
 
-#include "debugging/debugging.h"
+#include "debugging.h"
 
 #define FILE_EXISTS(path) (access((path), F_OK) == 0)
 

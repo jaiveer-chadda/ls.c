@@ -1,4 +1,4 @@
-/// @file utils/string.h
+/// @file utils/strings.h
 
 #ifndef STRING_INITIALISED
 #define STRING_INITIALISED
