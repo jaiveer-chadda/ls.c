@@ -19,6 +19,12 @@
 
 /* ——————————————————————————————————————————————————— */
 
+typedef struct FileStat			FileStat;
+typedef struct TargetInfo		TargetInfo;
+typedef struct FileStatFields	FileStatFields;
+
+/* ——————————————————————————————————————————————————— */
+
 typedef char*link_t;
 typedef char suff_t; /** Can be one of: `/`, `@`, `*`, `=`, `|`, `%` */
 typedef char unit_t;

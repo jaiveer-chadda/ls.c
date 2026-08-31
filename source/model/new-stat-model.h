@@ -8,10 +8,6 @@
 #include "types.h"
 #include "graphics/graphics.h"
 
-typedef struct FileStat			FileStat;
-typedef struct TargetInfo		TargetInfo;
-typedef struct FileStatFields	FileStatFields;
-
 typedef struct { TimeColour colour; timestr time_str;		} TimeInfo;
 typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
 
@@ -38,9 +34,9 @@ struct FileStat {
 
 	// the following are all fields which can be derived from `struct dirent`, and don't come from `struct stat`.
 	char*		name	; // 8 /** The name of this file, as it will be displayed. */
-	int16_t		name_len; // 2 (dirent.d_namlen) /** Length of the string pointed to by the `name` field (exc. `\0`) */
-	uint8_t		type	; // 1 (dirent.d_type) /** The raw type of the file. */
-	uint64_t	inum	; // 8 (dirent.d_ino / (stat.st_ino)
+	int16_t		name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
+	mode_t		type	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
+	uint64_t	inum	; // 8 /** The inode number for this file. */
 };
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */

@@ -35,7 +35,9 @@ function -- () {
   # ————————————————————————————————————————————————————————————————————————— #
 
   local -a DEFINITIONS
-  if [[ "$mode" == debug ]] DEFINITIONS+=( DEBUG_MODE )
+  if   [[ "$mode" == 'debug' ]] { DEFINITIONS+=( DEBUG_MODE ); } \
+  elif [[ "$mode" == 'prod'  ]] { DEFINITIONS+=( NDEBUG     ); }
+  # `NDEBUG` turns off assertion checking
 
   # ————————————————————————————————————————————————————————————————————————— #
 

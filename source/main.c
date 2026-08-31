@@ -20,10 +20,15 @@
 #include "parsing/parse-file.h"
 #include "processing/process-input.h"
 
-// for testing/debugging
-#define printfields(f, ind) \
-	printf("%9llu %06o%4hu%7lldb"ind"  %s\n", \
-		(f)->inum, (f)->s->st_mode, (f)->s->st_nlink, (f)->s->st_size, (f)->name \
+// // for testing/debugging
+// #define printfields(f, ind) \
+// 	printf("%9llu %06o%4hu%7lldb"ind"  %s\n", \
+// 		(f)->inum, (f)->type, (f)->s->st_nlink, (f)->s->st_size, (f)->name \
+// 	)
+
+#define printfields(fs, ind)				\
+	printf("%9llu %06o"ind"  %s\n",			\
+		(fs)->inum, (fs)->type, (fs)->name	\
 	)
 
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
@@ -94,6 +99,8 @@ int main(const int argc, char *argv[]) {
 		if (inputs[i] == NULL) continue;
 
 		printfields(inputs[i], "");
+
+		if(inputs[i]->f == NULL) continue;
 
 		switch (inputs[i]->f->child_count) {
 			case  0: printf("\t[ no children ]\n"); break;
