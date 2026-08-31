@@ -62,19 +62,24 @@ int main(const int argc, char *argv[]) {
 	//	boo hoo, and I want to be a good programmer, so I don't use them. bollocks >:(
 	/// An array of pointers to FileStat objects, each representing the inputted files/dirs.
 	FileStat **pfs_input_arr = ecalloc(file_count, sizeof(FileStat*));
+	FileStat  *pfs_input;
 
 	// iterate through each input, and get a pointer to the input's `FileStat` object to add to the array
 	for (int i = 0; i < file_count; i++) {
 		printf("%s\n", file_paths[i]);
+		pfs_input = pfs_input_arr[i];
 
 		// firstly, process the input - i.e. extract the raw info that we can get from various syscalls
-		pfs_input_arr[i] = processInput(file_paths[i]);
+		pfs_input = processInput(file_paths[i]);
+
+		// make sure we were actually able to get anything from `processInput()`
+		if (pfs_input == NULL) continue;
 
 		// then parse the file - i.e. go through and convert things from raw data into displayable output
-		parseFile(pfs_input_arr[i]);
+		parseFile(pfs_input);
 	}
 
-	/* —— Free Alloc-ed Memory ——————————————————————————————————————————————————————————————————— */
+	/* —— Cleanup ———————————————————————————————————————————————————————————————————————————————— */
 
 	for (int i = 0; i < file_count; i++) {
 		/* Memory Allocated

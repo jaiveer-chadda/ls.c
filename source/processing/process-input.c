@@ -68,16 +68,20 @@ static inline void processChild(
 	if (lstat(child_path, pFS_child->s) == -1) {
 		// if it fails, print an error
 		debug(WARNING, "failed to `stat`: %s", child_path);
-		printError(pFS_child->name, strerror(errno));
+		printError(child_path, strerror(errno));
 
 		// free the memory we allocated for the file's `stat` object
 		efree(pFS_child->s);
-		// then set the pointer to it to NULL, so we know not to process it later
+		// then set the pointer to all its remaining elements to NULL, so we know not to process it later
 		pFS_child->s = NULL;
+		pFS_child->f = NULL;
 
 		// and move on to the next child
 		return;
 	}
+
+	// finally, if all of that succeeded, allocate some zeroed memory for the child's FSF object
+	pFS_child->f = ecalloc(1, sizeof(FileStatFields));
 
 	printf("\t%s/%s\n", dirpath, pFS_child->name);
 }
@@ -89,16 +93,18 @@ static inline FileStat *processDir(char *const dirpath, FileStat *pfilestat_dir)
 	//	note: we can't get any info from `DIR`, it's use is to be passed into other functions
 	DIR *p_dir = opendir(dirpath);
 
-	// if we can't open the directory, note that there aren't any children, and move on
-	if (p_dir == NULL) {
+	if (p_dir == NULL) { // if we can't open the directory...
 		// set the number of children to -1, so we know the difference between having 0 children,
-		//	and not being able to open the directory
+		//	and not being able to search for children
 		pfilestat_dir->f->child_count = -1;
 
 		printError(dirpath, strerror(errno));
 
-		// and make sure to close the dir - memory leaks!!
+		// make sure to close the dir - memory leaks!!
 		closedir(p_dir);
+
+		// even though we didn't get any of the dir's contents, this shouldn't be too bad for the base directory itself
+		//	since we `stat`ted it back when we were treating it like any other file, but the children will be an issue
 		return pfilestat_dir;
 	}
 
@@ -189,7 +195,7 @@ FileStat *processInput(char *path) {
 
 		printError(path, strerror(stat_errno));
 
-		// set the pointer to this input to NULL, so we know not to process it later
+		// set the pointer to this input to NULL, so we know not to process/print it later
 		return NULL;
 	}
 
@@ -222,8 +228,10 @@ FileStat *processInput(char *path) {
 
 	/* —— Check if Input is Dir ——————————————————————————————————— */
 
-	// if the input was a file (i.e. not a dir), then there's nothing else to do at this stage
-	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES()) return pfilestat;
+	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
+	//	then there's nothing else to do at this stage - send it off for parsing
+	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES())
+		return pfilestat;
 
 	// if the input was a directory, however, we need to find & process its children
 	return processDir(path, pfilestat);
