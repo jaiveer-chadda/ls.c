@@ -1,19 +1,24 @@
 /// @file features/ugid/ugid.c
 
-#include <string.h>
 #include <pwd.h>
 #include <grp.h>
+#include <string.h>
 
-void getUser(char *usr_str, const uid_t uid) {
+#include "malloc.h"
+#include "model/types.h"
+
+char *getUser(const uid_t uid) {
 	const struct passwd *pw = getpwuid(uid);
-	if (pw == NULL) { strcpy(usr_str, "-"); return; }
+	if (pw == NULL) return (char*)NULL;
 
-	strcpy(usr_str, pw->pw_name);
+	const size_t strsize = strlen(pw->pw_name) + 1;
+	return memcpy(malloc(strsize), pw->pw_name, strsize);
 }
 
-void getGroup(char *grp_str, const gid_t gid) {
+char *getGroup(const gid_t gid) {
 	const struct group *grp = getgrgid(gid);
-	if (grp == NULL) { strcpy(grp_str, "-"); return; }
+	if (grp == NULL) return (char*)NULL;
 
-	strcpy(grp_str, grp->gr_name);
+	const size_t strsize = strlen(grp->gr_name) + 1;
+	return memcpy(emalloc(strsize), grp->gr_name, strsize);
 }

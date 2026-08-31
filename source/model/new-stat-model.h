@@ -63,8 +63,8 @@ struct FileStatFields {
 
 	char		size_str[10]; // 10 /** A string repr of the filesize. */
 	char		mode_str[11]; // 11 /** A string repr of the file's mode (type & permissions). */
-	char		usr_name[32]; // 32 /** The name of the file's owner. */
-	char		grp_name[32]; // 32 /** The name of the file's group. */
+	char*		usr_name	; // 8 /** The name of the file's owner. */
+	char*		grp_name	; // 8 /** The name of the file's group. */
 
 	char*		flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
 	FileStat*	children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
