@@ -202,25 +202,23 @@ FileStat *processInput(char *path) {
 	// and add its pointer to the input array
 	FileStat *const pfilestat = ecalloc(1, sizeof(FileStat));
 
-	/* —— alloc stat & FSF ———————————————————————————————————————— */
+	/* —— assign basic info to input —————————————————————————————— */
 
-	// allocate memory for the `stat` object that will be pointed to by `FileStat::s`
-	struct stat *const p_stat = emalloc(sizeof(struct stat));
+	*pfilestat = (FileStat){
+		// since `path` comes from `file_paths`, which comes from `argv`, the memory containing `pfilestat->name`
+		//	doesn't need to be allocated, since pointers to `argv` exist through the lifetime of the program
+		.name = path,
+		// we don't know the name's length, so set it to -1 for now, and we can calculate it later if needed
+		.name_len = -1,
 
-	// copy `statobj` from the stack into the newly-allocated heap memory,
-	//	and then assign the pointer to that heap memory to `FileStat::s`
-	pfilestat->s = memcpy(p_stat, &statobj, sizeof(struct stat));
+		// allocate memory for the `stat` object that will be pointed to by `FileStat::s`
+		.s = emalloc(sizeof(struct stat)),
+		// finally, allocate memory for the `FileStatFields` object, and assign its pointer to the FileStat object
+		.f = ecalloc(1, sizeof(FileStatFields)),
+	};
 
-	// finally, allocate memory for the `FileStatFields` object, and assign its pointer to the FileStat object
-	pfilestat->f = ecalloc(1, sizeof(FileStatFields));
-
-	/* —— assign name & len ——————————————————————————————————————— */
-
-	// since `path` comes from `file_paths`, which comes from `argv`, the memory containing `pfilestat->name`
-	//	doesn't need to be allocated, since pointers to `argv` exist through the lifetime of the program
-	pfilestat->name = path;
-	// we don't know the name's length, so set it to -1 for now, and we can calculate it later if need be
-	pfilestat->name_len = -1;
+	// copy `statobj` from the stack into the newly-allocated heap memory at `FileStat::s pfilestat->s`
+	memcpy(pfilestat->s, &statobj, sizeof(struct stat));
 
 	/* —— Check if Input is Dir ——————————————————————————————————— */
 
@@ -228,7 +226,7 @@ FileStat *processInput(char *path) {
 	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES()) return pfilestat;
 
 	// if the input was a directory, however, we need to find & process its children
-	return processDir(path, pfilestat);;
+	return processDir(path, pfilestat);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
