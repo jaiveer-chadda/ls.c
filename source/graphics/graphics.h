@@ -288,6 +288,7 @@
 
 #define UNIT_MAJ_MIN	','
 #define UNIT_ZERO		'-'
+#define UNIT_ERROR		'x'
 
 #define UNIT_BYTE		'\0'
 #define UNIT_KILO		'k'

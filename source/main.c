@@ -26,20 +26,22 @@
 // 		(f)->inum, (f)->type, (f)->s->st_nlink, (f)->s->st_size, (f)->name \
 // 	)
 
+#define check_no_null(field) (full ? ((field) != NULL ? (field) : "-") : "?")
+
 static inline void printfields(FileStat *fs, const char *indent) {
 	const bool full = fs->f != NULL;
-	const char *const flagstr = full ? (fs->f->flag_str != NULL ? fs->f->flag_str : "-") : "?";
 
 	printf(
-		"%8x " "%06o " "%-14s%-8s"
+		"%8x " "%06o " "%6s " "%-14s%-8s"
 		"%-12s"
 		"%s  %lc %s\33[34m%c\33[m\n",
 
 		(unsigned)fs->inum,
 		fs->mode,
+		check_no_null(fs->f->size_str),
 		full ? fs->f->usr_name : "?",
 		full ? fs->f->grp_name : "?",
-		flagstr,
+		check_no_null(fs->f->flag_str),
 
 		indent,
 		fs->icon,

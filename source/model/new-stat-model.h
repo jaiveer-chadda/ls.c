@@ -61,12 +61,12 @@ struct FileStatFields {
 	FileColour	file_col	; // 4
 	TargetInfo*	target		; // 16 /** Information about the target of a link, if one exists. */
 
-	char		size_str[10]; // 10 /** A string repr of the filesize. */
 	char		mode_str[11]; // 11 /** A string repr of the file's mode (type & permissions). */
+	char*		size_str	; // 8 /** A string repr of the filesize. */
+	char*		flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
 	char*		usr_name	; // 8 /** The name of the file's owner. */
 	char*		grp_name	; // 8 /** The name of the file's group. */
 
-	char*		flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
 	FileStat*	children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
 	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
 
