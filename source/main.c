@@ -17,6 +17,7 @@
 
 #include "options/options.h"
 #include "features/time/time.h"
+#include "parsing/parse-file.h"
 #include "processing/process-input.h"
 
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
@@ -55,7 +56,7 @@ int main(const int argc, char *argv[]) {
 	// if there were no paths entered, then assume the user inputted the path `.`
 	if (opt_count >= argc) file_paths[0] = DOTDIR;
 
-	/* —— Process Each Input ————————————————————————————————————————————————————————————————————— */
+	/* —— Process & Parse Inputs ————————————————————————————————————————————————————————————————— */
 
 	// unfortunately, this has to be allocated on the heap, since wah wah, variable-size arrays are bad
 	//	boo hoo, and I want to be a good programmer, so I don't use them. bollocks >:(
@@ -65,7 +66,12 @@ int main(const int argc, char *argv[]) {
 	// iterate through each input, and get a pointer to the input's `FileStat` object to add to the array
 	for (int i = 0; i < file_count; i++) {
 		printf("%s\n", file_paths[i]);
+
+		// firstly, process the input - i.e. extract the raw info that we can get from various syscalls
 		pfs_input_arr[i] = processInput(file_paths[i]);
+
+		// then parse the file - i.e. go through and convert things from raw data into displayable output
+		parseFile(pfs_input_arr[i]);
 	}
 
 	/* —— Free Alloc-ed Memory ——————————————————————————————————————————————————————————————————— */
@@ -80,7 +86,6 @@ int main(const int argc, char *argv[]) {
 		 *				- `char        *FileStat::name` - allocated unconditionally for every child created
 		 *				- `struct stat *FileStat::s` - allocated if child was statted successfully (NULL otherwise)
 		 */
-
 		FileStat *fsobj = pfs_input_arr[i];
 		if (fsobj != NULL) efree(fsobj);
 	}
