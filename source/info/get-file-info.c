@@ -53,7 +53,7 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	if (do_suffix  	())	pFile->suffix	= getTypeSuffix(pInfo->st_mode);
 	if (do_icon		())	pFile->icon		= getIcon(pFile->name, IS_REALPATH_DIR(pInfo->st_mode, pFile->ln_suf));
 
-	if (do_flag_str	()) parseFlags(pFile->flag_str, pInfo->st_flags);
+	// if (do_flag_str	()) parseFlags(pFile->flag_str, pInfo->st_flags);
 	if (do_size_str	())	 parseSize(pFile->size_str, &pFile->size_unit, &pFile->size, pInfo->st_rdev);
 	if (do_usr_name	())	   getUser(pFile->usr_name, pInfo->st_uid);
 	if (do_grp_name	())	  getGroup(pFile->grp_name, pInfo->st_gid);

@@ -2,6 +2,7 @@
 
 #include <assert.h>
 
+#include "malloc.h"
 #include "debugging.h"
 #include "parse-file.h"
 
@@ -10,6 +11,10 @@
 
 #include "icons/icons.h"
 #include "features/mode/mode.h"
+#include "features/size/size.h"
+#include "features/time/time.h"
+#include "features/ugid/ugid.h"
+#include "features/flags/flags.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
@@ -94,7 +99,12 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
+	if (do_flag_str()) pfsf->flag_str = parseFlags(pstat->st_flags);
+	if (do_usr_name())	getUser(pfsf->usr_name, pstat->st_uid);
+	if (do_grp_name()) getGroup(pfsf->grp_name, pstat->st_gid);
 
+	// if (do_size_str()) parseSize(pfsf->size_str, &pfsf->size_unit, pstat->st_size, pstat->st_rdev);
+	// if (do_time_str()) parseTime(pfile->time_str, pstat->st_mtimespec.tv_sec, pfsf->time_col);
 
 	/* ————————————————————————————————————————————————————————— */
 

@@ -31,7 +31,7 @@ void printFlagStr(const flag_t *flags) {
 			strcpy(flag_name, GET_FLAG_NAME(ALL_FLAGS[i]));
 
 			if (!is_first_flag) {
-				printf("%s%s%s", ANSI(PUNCT), FLAG_SEP_STR, RESET);
+				printf("%s%s%s", ANSI(PUNCT), "," /* FLAG_SEP_STR */, RESET);
 				chars_printed++;
 			}
 			is_first_flag = false;

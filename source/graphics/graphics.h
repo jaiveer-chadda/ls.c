@@ -173,7 +173,7 @@
 /* —— Flags ————————————————————————————————————————————————————————————————— */
 
 #define NO_FLAG_STR				"-"			/// The string to display if the file doesn't have any flags.
-#define FLAG_SEP_STR			","			/// The string to display between a file's flags.
+#define FLAG_SEP_CHR			','			/// The character to display between a file's flags.
 
 #define FL_U_NODUMP				"92"		// \e[92m
 #define FL_U_IMMUTABLE			"94"		// \e[94m

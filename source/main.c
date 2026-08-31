@@ -27,8 +27,24 @@
 // 	)
 
 static inline void printfields(FileStat *fs, const char *indent) {
-	printf("%9llu %06o%s  %lc %s\33[34m%c\33[m\n",
-		fs->inum, fs->mode, indent, fs->icon, fs->name, fs->suffix
+	const bool full = fs->f != NULL;
+	const char *const flagstr = full ? (fs->f->flag_str != NULL ? fs->f->flag_str : "-") : "?";
+
+	printf(
+		"%8x " "%06o " "%-14s%-8s"
+		"%-12s"
+		"%s  %lc %s\33[34m%c\33[m\n",
+
+		(unsigned)fs->inum,
+		fs->mode,
+		full ? fs->f->usr_name : "?",
+		full ? fs->f->grp_name : "?",
+		flagstr,
+
+		indent,
+		fs->icon,
+		fs->name,
+		fs->suffix
 	);
 }
 
@@ -108,7 +124,7 @@ int main(const int argc, char *argv[]) {
 			case -1: printf("\t[ unable to find children ]\n"); break;
 			default:
 				for (int j = 0; j < inputs[i]->f->child_count; j++) {
-					printfields(inputs[i]->f->children + j, "\t");
+					printfields(inputs[i]->f->children + j, "    ");
 				}
 		}
 	}

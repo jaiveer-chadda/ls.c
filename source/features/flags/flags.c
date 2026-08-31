@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "malloc.h"
+#include "debugging.h"
+
 #include "flags.h"
 #include "model/stat-model.h"
 
@@ -26,22 +29,32 @@ const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-inline void parseFlags(flagstr flag_string, const flag_t raw_flags) {
-	if (raw_flags == 0) {
-		strcpy(flag_string, NO_FLAG_STR);
-		return;
-	}
+inline char *parseFlags(const flag_t raw_flags) {
+	if (raw_flags == 0) return (char*)NULL;
 
+	flagstr flag_str = {0};
 	bool is_first_flag = true;
 
+	uint8_t str_len = 0U;
+	size_t flag_len;
+	flagset flag;
+
 	for (int i = 0; i < MAX_FLAG_NUM; i++) {
-		if (raw_flags & ALL_FLAGS[i].mask) {
-			if (!is_first_flag) strcat(flag_string, FLAG_SEP_STR);
+		flag = ALL_FLAGS[i];
+
+		if (raw_flags & flag.mask) {
+			if (!is_first_flag) flag_str[str_len++] = FLAG_SEP_CHR;
 			is_first_flag = false;
 
-			strcat(flag_string, GET_FLAG_NAME(ALL_FLAGS[i]));
+			flag_len = strlen(GET_FLAG_NAME(flag));
+			memcpy(&flag_str[str_len], GET_FLAG_NAME(flag), flag_len);
+
+			str_len += flag_len;
 		}
 	}
+
+	flag_str[str_len++] = '\0';
+	return memcpy(emalloc(str_len), flag_str, str_len);
 }
 
 // spell:ignoreRegExp /, "\w+"/g
