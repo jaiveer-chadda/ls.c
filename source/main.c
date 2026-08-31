@@ -28,7 +28,7 @@
 
 #define printfields(fs, ind)				\
 	printf("%9llu %06o"ind"  %s\n",			\
-		(fs)->inum, (fs)->type, (fs)->name	\
+		(fs)->inum, (fs)->mode, (fs)->name	\
 	)
 
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */

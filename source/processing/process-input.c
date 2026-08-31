@@ -35,7 +35,7 @@ static inline void processChild(
 		// allocate memory for the name, since the `dirent` memory won't last forever
 		.name		= emalloc(pdirent_child->d_namlen + 1), // +1 for the nullbyte
 		.name_len	= pdirent_child->d_namlen,
-		.type		= DTTOIF(pdirent_child->d_type), // converting to the correct format
+		.mode		= DTTOIF(pdirent_child->d_type), // converting to the correct format
 		.inum		= pdirent_child->d_ino,
 	};
 
@@ -134,7 +134,7 @@ static inline FileStat *processDir(char *const dirpath, FileStat *pfilestat_dir)
 			// get the few pieces of information that we care about from the `dirent` object
 			// note: we're not keeping `d_name` or `d_namlen`, since these would just
 			//	return "." and 1 respectively, which isn't much help to us
-			pfilestat_dir->type = DTTOIF(pdirent_child->d_type);
+			pfilestat_dir->mode = DTTOIF(pdirent_child->d_type);
 			pfilestat_dir->inum = pdirent_child->d_ino;
 
 			continue; // continue - the rest of the information we need is already in `pfilestat_dir->s`
