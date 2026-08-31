@@ -2,8 +2,13 @@
 
 #include <assert.h>
 
+#include "debugging.h"
 #include "parse-file.h"
+
 #include "model/types.h"
+#include "options/options.h"
+
+#include "features/mode/mode.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
@@ -57,14 +62,14 @@
  * @fn parseFile
  * @brief Convert the information in `FileStat` from raw data into formatted, displayable output.
  *
- * @param pfilest[in/out] A pointer to a `FileStat` object, where the information for a given file is stored.
+ * @param pfile[in/out] A pointer to a `FileStat` object, where the information for a given file is stored.
  */
-void parseFile(FileStat *const pfilest) {
+void parseFile(FileStat *const pfile) {
 	// all NULL `FileStat`s should have been filtered out by now
-	assert(pfilest != NULL);
+	assert(pfile != NULL);
 
-	const struct stat *const pstat = pfilest->s;
-	FileStatFields *const pfsf = pfilest->f;
+	const struct stat *const pstat = pfile->s;
+	FileStatFields *const pfsf = pfile->f;
 
 	// there should never be a case in which the stat object has been initiliased, and the FSF object hasn't, &vv
 	//	i.e. either both should be initiliased, or neither should
@@ -72,9 +77,26 @@ void parseFile(FileStat *const pfilest) {
 
 	// if the processing step was able to get the `dirent` object of the file, but wasn't able to `stat` it,
 	//	then we don't have any more information to get from the file, so just return
-	if ((pstat == NULL) /* && (pfsf == NULL) */) return;
+	const bool is_incomplete = (pstat == NULL) /* && (pfsf == NULL) */;
 
-	pfilest->mode = pstat->st_mode;
+	if (!is_incomplete) {
+		// `FileStat::mode` is the one field where the field holds both the `dirent` and `stat` info
+		pfile->mode = pstat->st_mode;
+	}
+
+	if (do_suffix()) pfile->suffix = getTypeSuffix(pfile->mode);
+
+	if (is_incomplete) {
+		debug(WARNING, "no more info for %s", pfile->name);
+		return;
+	}
+
+	// recursively call this function for all children in a directory
+	if (pfsf->child_count > 0) {
+		for (int i = 0; i < pfsf->child_count; i++) {
+			parseFile(&pfsf->children[i]);
+		}
+	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

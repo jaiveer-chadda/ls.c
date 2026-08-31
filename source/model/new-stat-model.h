@@ -37,6 +37,7 @@ struct FileStat {
 	int16_t		name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
 	uint64_t	inum	; // 8 /** The inode number for this file. */
+	char		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
 };
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -56,8 +57,6 @@ struct FileStatFields {
 	bool		has_acl		; // 1 /** Whether this file has an access control list. */
 
 	char		size_unit	; // 1 /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
-	char		suffix		; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
-
 	wchar_t		icon		; // 4 /** The icon to be shown before a filename. */
 	FileColour	file_col	; // 4
 	TargetInfo*	target		; // 16 /** Information about the target of a link, if one exists. */

@@ -26,10 +26,11 @@
 // 		(f)->inum, (f)->type, (f)->s->st_nlink, (f)->s->st_size, (f)->name \
 // 	)
 
-#define printfields(fs, ind)				\
-	printf("%9llu %06o"ind"  %s\n",			\
-		(fs)->inum, (fs)->mode, (fs)->name	\
-	)
+static inline void printfields(FileStat *fs, const char *indent) {
+	printf("%9llu %06o%s  %s\33[34m%c\33[m\n",
+		fs->inum, fs->mode, indent, fs->name, fs->suffix
+	);
+}
 
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
