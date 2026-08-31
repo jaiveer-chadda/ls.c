@@ -20,6 +20,12 @@
 #include "parsing/parse-file.h"
 #include "processing/process-input.h"
 
+// for testing/debugging
+#define printfields(f, ind) \
+	printf("%9llu %06o%4hu%7lldb"ind"  %s\n", \
+		(f)->inum, (f)->s->st_mode, (f)->s->st_nlink, (f)->s->st_size, (f)->name \
+	)
+
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline const char *getArgv0(const int argc, char *restrict argv[]);
@@ -58,25 +64,45 @@ int main(const int argc, char *argv[]) {
 
 	/* —— Process & Parse Inputs ————————————————————————————————————————————————————————————————— */
 
+	bool any_valid_input = false;
+
 	// unfortunately, this has to be allocated on the heap, since wah wah, variable-size arrays are bad
 	//	boo hoo, and I want to be a good programmer, so I don't use them. bollocks >:(
 	/// An array of pointers to FileStat objects, each representing the inputted files/dirs.
-	FileStat **pfs_input_arr = ecalloc(file_count, sizeof(FileStat*));
-	FileStat  *pfs_input;
+	FileStat **inputs = ecalloc(file_count, sizeof(FileStat*));
 
 	// iterate through each input, and get a pointer to the input's `FileStat` object to add to the array
 	for (int i = 0; i < file_count; i++) {
-		printf("%s\n", file_paths[i]);
-		pfs_input = pfs_input_arr[i];
-
 		// firstly, process the input - i.e. extract the raw info that we can get from various syscalls
-		pfs_input = processInput(file_paths[i]);
+		inputs[i] = processInput(file_paths[i]);
 
 		// make sure we were actually able to get anything from `processInput()`
-		if (pfs_input == NULL) continue;
+		if (inputs[i] == NULL) continue;
+		any_valid_input = true;
 
 		// then parse the file - i.e. go through and convert things from raw data into displayable output
-		parseFile(pfs_input);
+		parseFile(inputs[i]);
+	}
+
+	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
+
+	// if none of the inputs were valid, don't bother with even trying to print them - just return failure
+	if (!any_valid_input) return EXIT_FAILURE;
+
+	for (int i = 0; i < file_count; i++) {
+		// if an input's FileStat pointer points to `NULL`, we weren't able to be `stat` it in the first place
+		if (inputs[i] == NULL) continue;
+
+		printfields(inputs[i], "");
+
+		switch (inputs[i]->f->child_count) {
+			case  0: printf("\t[ no children ]\n"); break;
+			case -1: printf("\t[ unable to find children ]\n"); break;
+			default:
+				for (int j = 0; j < inputs[i]->f->child_count; j++) {
+					printfields(inputs[i]->f->children + j, "\t");
+				}
+		}
 	}
 
 	/* —— Cleanup ———————————————————————————————————————————————————————————————————————————————— */
@@ -84,18 +110,18 @@ int main(const int argc, char *argv[]) {
 	for (int i = 0; i < file_count; i++) {
 		/* Memory Allocated
 		 * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-		 *	- `FileStat *pfs_input_arr[]` - one for each input that was successfully statted (set to NULL on failure)
+		 *	- `FileStat *inputs[]` - one for each input that was successfully statted (set to NULL on failure)
 		 *		- `struct stat    *FileStat::s` - same conditions as above
 		 *		- `FileStatFields *FileStat::f` - same conditions as above
 		 *			- `FileStat (*FileStatFields::children)[]` - allocated if input is a directory
 		 *				- `char        *FileStat::name` - allocated unconditionally for every child created
 		 *				- `struct stat *FileStat::s` - allocated if child was statted successfully (NULL otherwise)
 		 */
-		FileStat *fsobj = pfs_input_arr[i];
+		FileStat *fsobj = inputs[i];
 		if (fsobj != NULL) efree(fsobj);
 	}
 
-	efree(pfs_input_arr);
+	efree(inputs);
 
 	/* —— Return ————————————————————————————————————————————————————————————————————————————————— */
 

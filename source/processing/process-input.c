@@ -18,7 +18,7 @@
 	((var) += (var) == 1 ? 1 : (var) >> 1)
 
 #define printError(path_, errmsg) \
-	fprintf(stderr, "%s: %s: %s\n", argv0, path_, errmsg)
+	fprintf(stderr, "\33[31m%s: %s: %s\33[m\n", argv0, path_, errmsg)
 
 /* ── ── processChild ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
@@ -82,8 +82,6 @@ static inline void processChild(
 
 	// finally, if all of that succeeded, allocate some zeroed memory for the child's FSF object
 	pFS_child->f = ecalloc(1, sizeof(FileStatFields));
-
-	printf("\t%s/%s\n", dirpath, pFS_child->name);
 }
 
 /* ── ── processDir ── ───────────────────────────────────────────────────────────────────────────────────────────── */
@@ -116,7 +114,9 @@ static inline FileStat *processDir(char *const dirpath, FileStat *pfilestat_dir)
 	// allocate some memory for an arbitrary number of children, with the intention that
 	//	we'll realloc if we need more memory later
 	int32_t child_alloc_count = INIT_CHILD_COUNT;
-	FileStat *children = ecalloc(child_alloc_count, sizeof(FileStat));
+
+	pfilestat_dir->f->children = ecalloc(child_alloc_count, sizeof(FileStat));
+	FileStat **children = &pfilestat_dir->f->children;
 
 	/* —— For Each Child in Dir ——————————————————————————————————— */
 
@@ -157,16 +157,16 @@ static inline FileStat *processDir(char *const dirpath, FileStat *pfilestat_dir)
 
 			// re-allocate the memory. note that `[e]realloc` will free the original pointer and hard exit if it
 			//	fails, so we don't have to worry about memory leaks by overwriting the original pointer
-			children = erealloc(children, sizeof(FileStat) * child_alloc_count);
+			*children = erealloc(*children, sizeof(FileStat) * child_alloc_count);
 
 			// zero out the new memory that we were just allocated
 			//	this isn't strictly necessary, but it could prove rly useful for debugging
 			//	(I might remove it later if I don't think it's needed)
-			memset(children + old_alloc_count, 0, sizeof(FileStat) * (child_alloc_count - old_alloc_count));
+			memset(*children + old_alloc_count, 0, sizeof(FileStat) * (child_alloc_count - old_alloc_count));
 		}
 
 		// find the position where the child's `FileStat` object will start
-		FileStat *pFS_child = children + pfilestat_dir->f->child_count;
+		FileStat *pFS_child = *children + pfilestat_dir->f->child_count;
 
 		// only increment the child count now that we've used it as an index to calculate where the child should be
 		pfilestat_dir->f->child_count++;
