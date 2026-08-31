@@ -27,8 +27,8 @@
 // 	)
 
 static inline void printfields(FileStat *fs, const char *indent) {
-	printf("%9llu %06o%s  %s\33[34m%c\33[m\n",
-		fs->inum, fs->mode, indent, fs->name, fs->suffix
+	printf("%9llu %06o%s  %lc %s\33[34m%c\33[m\n",
+		fs->inum, fs->mode, indent, fs->icon, fs->name, fs->suffix
 	);
 }
 

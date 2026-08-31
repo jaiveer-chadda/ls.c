@@ -8,6 +8,7 @@
 #include "model/types.h"
 #include "options/options.h"
 
+#include "icons/icons.h"
 #include "features/mode/mode.h"
 
 #pragma clang diagnostic push
@@ -79,17 +80,23 @@ void parseFile(FileStat *const pfile) {
 	//	then we don't have any more information to get from the file, so just return
 	const bool is_incomplete = (pstat == NULL) /* && (pfsf == NULL) */;
 
+	/* ————————————————————————————————————————————————————————— */
+
 	if (!is_incomplete) {
 		// `FileStat::mode` is the one field where the field holds both the `dirent` and `stat` info
 		pfile->mode = pstat->st_mode;
 	}
 
 	if (do_suffix()) pfile->suffix = getTypeSuffix(pfile->mode);
+	if (do_icon()) pfile->icon = getIcon(pfile->name, S_ISDIR(pfile->mode));
 
-	if (is_incomplete) {
-		debug(WARNING, "no more info for %s", pfile->name);
-		return;
-	}
+	if (is_incomplete) return;
+
+	/* ————————————————————————————————————————————————————————— */
+
+
+
+	/* ————————————————————————————————————————————————————————— */
 
 	// recursively call this function for all children in a directory
 	if (pfsf->child_count > 0) {
