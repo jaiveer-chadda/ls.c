@@ -5,6 +5,6 @@
 
 #include "model/new-stat-model.h"
 
-FileStat *parseFile(FileStat *const pfile);
+void parseFile(FileStat *const pfile);
 
 #endif /* !PARSE_FILE_H */
