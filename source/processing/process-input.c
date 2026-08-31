@@ -20,7 +20,71 @@
 #define printError(path_, errmsg) \
 	fprintf(stderr, "%s: %s: %s\n", argv0, path_, errmsg)
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── processChild ── ─────────────────────────────────────────────────────────────────────────────────────────── */
+
+static inline void processChild(
+	FileStat *pfs_child,
+	const struct dirent *const pd_child,
+	const char *const dirpath,
+	const int16_t dirpath_len
+) {
+	/* —— – basic child info (dirent) ——————————————————————————————— */
+
+	// copy the info from `dirent` over to the child's `FileStat` object
+	*pfs_child = (FileStat){
+		// allocate memory for the name, since the `dirent` memory won't last forever
+		.name		= emalloc(pd_child->d_namlen + 1), // +1 for the nullbyte
+		.name_len	= pd_child->d_namlen,
+		.type		= pd_child->d_type,
+		.inum		= pd_child->d_ino,
+	};
+
+	// copy the name from `dirent` to `FileStat`
+	//	we're using `memcpy` and not `strcpy` since we already know how long the string is
+	memcpy(pfs_child->name, pd_child->d_name, pd_child->d_namlen + 1);
+
+	/* —— – get path to child ——————————————————————————————————————— */
+
+	// make sure that the resultant child path won't be too long once we create it
+	if ((size_t)(dirpath_len + 1 + pfs_child->name_len) >= sizeof(path_t)) {
+		printError(pfs_child->name, "path name too long");
+		return;
+	}
+
+	// allocate the memory for the child's `stat` struct
+	pfs_child->s = emalloc(sizeof(struct stat));
+
+	// create a buffer to hold the path needed to pass to `stat`
+	path_t child_path = "";
+
+	// build the full path to the child from its component parts
+	memcpy(child_path, dirpath, dirpath_len); // no need to include the nullbyte, so no +1
+	child_path[dirpath_len] = '/'; // add the path separator
+	memcpy(child_path + 1 + dirpath_len, pfs_child->name, pfs_child->name_len + 1); // +1 for '\0' this time
+
+	/* —— – `stat` child file ——————————————————————————————————————— */
+
+	// run `lstat` on the path
+	if (lstat(child_path, pfs_child->s) == -1) {
+		// if it fails, print an error
+		debug(WARNING, "failed to `stat`: %s", child_path);
+		printError(pfs_child->name, strerror(errno));
+
+		// free the memory we allocated for the file's `stat` object
+		efree(pfs_child->s);
+		// then set the pointer to it to NULL, so we know not to process it later
+		pfs_child->s = NULL;
+
+		// and move on to the next child
+		return;
+	}
+
+	/* ———————————————————————————————————————————————————————————— */
+
+	printf("\t%s/%s\n", dirpath, pfs_child->name);
+}
+
+/* ── ── processInput ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 FileStat *processInput(char *path) {
 	struct stat file_stat = {0};
@@ -147,66 +211,13 @@ FileStat *processInput(char *path) {
 			memset(children + old_alloc_count, 0, sizeof(FileStat) * (child_alloc_count - old_alloc_count));
 		}
 
-		/* —— – basic child info (dirent) ——————————————————————————————— */
-
 		// find the position where the child's `FileStat` object will start
 		FileStat *pfs_child = children + p_fsobj->f->child_count;
 
 		// only increment the child count now that we've used it as an index to calculate where the child should be
 		p_fsobj->f->child_count++;
 
-		// copy the info from `dirent` over to the child's `FileStat` object
-		*pfs_child = (FileStat){
-			// allocate memory for the name, since the `dirent` memory won't last forever
-			.name		= emalloc(pd_child->d_namlen + 1), // +1 for the nullbyte
-			.name_len	= pd_child->d_namlen,
-			.type		= pd_child->d_type,
-			.inum		= pd_child->d_ino,
-		};
-
-		// copy the name from `dirent` to `FileStat`
-		//	we're using `memcpy` and not `strcpy` since we already know how long the string is
-		memcpy(pfs_child->name, pd_child->d_name, pd_child->d_namlen + 1);
-
-		/* —— – get path to child ——————————————————————————————————————— */
-
-		// make sure that the resultant child path won't be too long once we create it
-		if ((size_t)(dirpath_len + 1 + pfs_child->name_len) >= sizeof(path_t)) {
-			printError(pfs_child->name, "path name too long");
-			continue;
-		}
-
-		// allocate the memory for the child's `stat` struct
-		pfs_child->s = emalloc(sizeof(struct stat));
-
-		// create a buffer to hold the path needed to pass to `stat`
-		path_t child_path = "";
-
-		// build the full path to the child from its component parts
-		memcpy(child_path, dirpath, dirpath_len); // no need to include the nullbyte, so no +1
-		child_path[dirpath_len] = '/'; // add the path separator
-		memcpy(child_path + 1 + dirpath_len, pfs_child->name, pfs_child->name_len + 1); // +1 for '\0' this time
-
-		/* —— – `stat` child file ——————————————————————————————————————— */
-
-		// run `lstat` on the path
-		if (lstat(child_path, pfs_child->s) == -1) {
-			// if it fails, print an error
-			debug(WARNING, "failed to `stat`: %s", child_path);
-			printError(pfs_child->name, strerror(errno));
-
-			// free the memory we allocated for the file's `stat` object
-			efree(pfs_child->s);
-			// then set the pointer to it to NULL, so we know not to process it later
-			pfs_child->s = NULL;
-
-			// and move on to the next child
-			continue;
-		}
-
-		/* ———————————————————————————————————————————————————————————— */
-
-		printf("\t%s/%s\n", dirpath, pfs_child->name);
+		processChild(pfs_child, pd_child, dirpath, dirpath_len);
 	}
 
 	closedir(p_dir);
