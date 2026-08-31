@@ -55,17 +55,17 @@ int main(const int argc, char *argv[]) {
 	// if there were no paths entered, then assume the user inputted the path `.`
 	if (opt_count >= argc) file_paths[0] = DOTDIR;
 
-	/* —— For Each Input File ———————————————————————————————————————————————————————————————————— */
+	/* —— Process Each Input ————————————————————————————————————————————————————————————————————— */
 
 	// unfortunately, this has to be allocated on the heap, since wah wah, variable-size arrays are bad
 	//	boo hoo, and I want to be a good programmer, so I don't use them. bollocks >:(
 	/// An array of pointers to FileStat objects, each representing the inputted files/dirs.
-	FileStat **fs_input_arr = ecalloc(file_count, sizeof(FileStat*));
+	FileStat **pfs_input_arr = ecalloc(file_count, sizeof(FileStat*));
 
 	// iterate through each input, and get a pointer to the input's `FileStat` object to add to the array
 	for (int i = 0; i < file_count; i++) {
 		printf("%s\n", file_paths[i]);
-		fs_input_arr[i] = processInput(file_paths[i]);
+		pfs_input_arr[i] = processInput(file_paths[i]);
 	}
 
 	/* —— Free Alloc-ed Memory ——————————————————————————————————————————————————————————————————— */
@@ -73,7 +73,7 @@ int main(const int argc, char *argv[]) {
 	for (int i = 0; i < file_count; i++) {
 		/* Memory Allocated
 		 * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-		 *	- `FileStat *fs_input_arr[]` - one for each input that was successfully statted (set to NULL on failure)
+		 *	- `FileStat *pfs_input_arr[]` - one for each input that was successfully statted (set to NULL on failure)
 		 *		- `struct stat    *FileStat::s` - same conditions as above
 		 *		- `FileStatFields *FileStat::f` - same conditions as above
 		 *			- `FileStat (*FileStatFields::children)[]` - allocated if input is a directory
@@ -81,11 +81,11 @@ int main(const int argc, char *argv[]) {
 		 *				- `struct stat *FileStat::s` - allocated if child was statted successfully (NULL otherwise)
 		 */
 
-		FileStat *fsobj = fs_input_arr[i];
+		FileStat *fsobj = pfs_input_arr[i];
 		if (fsobj != NULL) efree(fsobj);
 	}
 
-	efree(fs_input_arr);
+	efree(pfs_input_arr);
 
 	/* —— Return ————————————————————————————————————————————————————————————————————————————————— */
 
