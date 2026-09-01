@@ -20,6 +20,28 @@
 #define printError(path_, errmsg) \
 	fprintf(stderr, "\33[31m%s: %s: %s\33[m\n", argv0, path_, errmsg)
 
+/* ── ── makeAbsPath ── ──────────────────────────────────────────────────────────────────────────────────────────── */
+
+static inline size_t makeAbsPath(path_t buffer,
+	const char *const filename, const size_t namelen,
+	const char *const dirpath , const size_t pathlen
+) {
+	const size_t full_size = pathlen + 1 + namelen;
+
+	// make sure that the resultant child path won't be too long once we create it
+	if (full_size >= sizeof(path_t)) {
+		printError(filename, "path name too long");
+		return 0;
+	}
+
+	// build the full path to the child from its component parts
+	memcpy(buffer, dirpath, pathlen); // no need to include the nullbyte, so no +1
+	buffer[pathlen] = '/'; // add the path separator
+	memcpy(buffer + 1 + pathlen, filename, namelen + 1); // +1 for '\0' this time
+
+	return full_size;
+}
+
 /* ── ── processChild ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline void processChild(
@@ -45,22 +67,12 @@ static inline void processChild(
 
 	/* —— get path to child ——————————————————————————————————————— */
 
-	// make sure that the resultant child path won't be too long once we create it
-	if ((size_t)(dirpath_len + 1 + pFS_child->name_len) >= sizeof(path_t)) {
-		printError(pFS_child->name, "path name too long");
-		return;
-	}
-
 	// allocate the memory for the child's `stat` struct
 	pFS_child->s = emalloc(sizeof(struct stat));
 
 	// create a buffer to hold the path needed to pass to `stat`
 	path_t child_path = "";
-
-	// build the full path to the child from its component parts
-	memcpy(child_path, dirpath, dirpath_len); // no need to include the nullbyte, so no +1
-	child_path[dirpath_len] = '/'; // add the path separator
-	memcpy(child_path + 1 + dirpath_len, pFS_child->name, pFS_child->name_len + 1); // +1 for '\0' this time
+	if (makeAbsPath(child_path, pFS_child->name, pFS_child->name_len, dirpath, dirpath_len) == 0) return;
 
 	/* —— `stat` child file ——————————————————————————————————————— */
 
