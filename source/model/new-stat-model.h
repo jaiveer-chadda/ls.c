@@ -8,7 +8,7 @@
 #include "types.h"
 #include "graphics/graphics.h"
 
-typedef struct { TimeColour colour; timestr time_str;		} TimeInfo;
+typedef struct { TimeColour colour; timestr str;			} TimeInfo;
 typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
 
 /* —— FileStat (main) —————————————————————————————————————————————————————————————————————————————————————————————— */

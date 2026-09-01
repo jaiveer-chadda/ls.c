@@ -16,53 +16,23 @@
 #include "features/ugid/ugid.h"
 #include "features/flags/flags.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-variable"
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#ifdef NOT_DEFINED
-	dev_t				st_dev;				/* [XSI] ID of device containing file */
-	mode_t				st_mode;			/* [XSI] Mode of file (see below) */
-	nlink_t				st_nlink;			/* [XSI] Number of hard links */
-	__darwin_ino64_t	st_ino;				/* [XSI] File serial number */
-	uid_t				st_uid;				/* [XSI] User ID of the file */
-	gid_t				st_gid;				/* [XSI] Group ID of the file */
-	dev_t				st_rdev;			/* [XSI] Device ID */
-	struct timespec		st_atimespec;		/* time of last access */
-	struct timespec		st_mtimespec;		/* time of last data modification */
-	struct timespec		st_ctimespec;		/* time of last status change */
-	struct timespec		st_birthtimespec;	/* time of file creation(birth) */
-	off_t				st_size;			/* [XSI] file size, in bytes */
-	blkcnt_t			st_blocks;			/* [XSI] blocks allocated for file */
-	blksize_t			st_blksize;			/* [XSI] optimal blocksize for I/O */
-	__uint32_t			st_flags;			/* user defined flags for file */
-	__uint32_t			st_gen;				/* file generation number */
-#elif defined(STILL_NOT_DEFINED)
-	// TODO: amalgamate `do_link_hl` into `file_col`
-	bool		do_link_hl	; /** Whether this file is a hardlink, and should be highlighted as such. */
-	bool		is_mount	; /** Whether this file is a mount point or not. */
-	bool		has_xattr	; /** Whether this file has extended attributes. */
-	bool		has_acl		; /** Whether this file has an access control list. */
-	//
-	char		size_unit	; /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
-	char		suffix		; /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
-	//
-	wchar_t		icon		; /** The icon to be shown before a filename. */
-	FileColour	file_col	; 
-	TargetInfo*	target		; /** Information about the target of a link, if one exists. */
-	//
-	char		size_str[10]; /** A string repr of the filesize. */
-	char		mode_str[11]; /** A string repr of the file's mode (type & permissions). */
-	char		usr_name[32]; /** The name of the file's owner. */
-	char		grp_name[32]; /** The name of the file's group. */
-	//
-	char*		flag_str	; /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
-	FileStat*	children	; /** If this file is a dir, then `children` points to an array of `FileStat`s */
-	int32_t		child_count	; /** The number of children that the directory has. If not a directory, then -1. */
-	//
-	TimeInfo*	times[TIME_COUNT];
-#endif
+#define A_TIME_SPEC st_atimespec
+#define M_TIME_SPEC st_mtimespec
+#define C_TIME_SPEC st_ctimespec
+#define B_TIME_SPEC st_btimespec
+
+#define parseTime_i(type) do {				\
+	if (do_time_i((type))) {				\
+		pfsf->times[(type)] = parseTime(	\
+			emalloc(sizeof(TimeInfo)),		\
+			(pstat->type##_SPEC.tv_sec)		\
+		);									\
+	}										\
+} while (0)
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /**
  * @fn parseFile
@@ -103,8 +73,7 @@ void parseFile(FileStat *const pfile) {
 	if (do_usr_name()) pfsf->usr_name = getUser(pstat->st_uid);
 	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
-
-	// if (do_time_str()) parseTime(pfile->time_str, pstat->st_mtimespec.tv_sec, pfsf->time_col);
+	if (do_time_str()) { parseTime_i(A_TIME); parseTime_i(M_TIME); parseTime_i(C_TIME); parseTime_i(B_TIME); }
 
 	/* ————————————————————————————————————————————————————————— */
 
@@ -119,5 +88,3 @@ void parseFile(FileStat *const pfile) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // spell:ignore pfsf
-
-#pragma clang diagnostic pop

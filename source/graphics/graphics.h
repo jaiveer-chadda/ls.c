@@ -290,7 +290,7 @@
 #define UNIT_ZERO		'-'
 #define UNIT_ERROR		'x'
 
-#define UNIT_BYTE		'\0'
+#define UNIT_BYTE		'b'
 #define UNIT_KILO		'k'
 #define UNIT_MEGA		'M'
 #define UNIT_GIGA		'G'

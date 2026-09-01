@@ -16,7 +16,6 @@
 #include "model/new-stat-model.h"
 
 #include "options/options.h"
-#include "features/time/time.h"
 #include "parsing/parse-file.h"
 #include "processing/process-input.h"
 
@@ -26,22 +25,24 @@
 // 		(f)->inum, (f)->type, (f)->s->st_nlink, (f)->s->st_size, (f)->name \
 // 	)
 
-#define check_no_null(field) (full ? ((field) != NULL ? (field) : "-") : "?")
+#define ifnonull(field) (full ? ((fs->f->field) != NULL ? (fs->f->field) : "-") : "?")
+#define iffull(field) (full ? (fs->f->field) : "?")
 
 static inline void printfields(FileStat *fs, const char *indent) {
 	const bool full = fs->f != NULL;
 
 	printf(
-		"%8x " "%06o " "%6s " "%-14s%-8s"
-		"%-12s"
+		"%8x %06o "    "%6s %c "    "%-14s%-8s"    "%-12s"
+		"%20s  %20s  %20s  %20s"
 		"%s  %lc %s\33[34m%c\33[m\n",
 
-		(unsigned)fs->inum,
-		fs->mode,
-		check_no_null(fs->f->size_str),
-		full ? fs->f->usr_name : "?",
-		full ? fs->f->grp_name : "?",
-		check_no_null(fs->f->flag_str),
+		(unsigned)fs->inum, fs->mode,
+		ifnonull(size_str), full ? fs->f->size_unit : ' ',
+
+		iffull(usr_name), iffull(grp_name),
+		ifnonull(flag_str),
+
+		iffull(times[A_TIME]->str), iffull(times[M_TIME]->str), iffull(times[C_TIME]->str), iffull(times[B_TIME]->str),
 
 		indent,
 		fs->icon,

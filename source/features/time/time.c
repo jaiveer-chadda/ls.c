@@ -1,9 +1,12 @@
 /// @file features/time/time.c
 
+#include <time.h>
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 
 #include "time.h"
+#include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -12,57 +15,77 @@
 #define HOUR (60 * MIN)
 #define DAY  (24 * HOUR)
 
-#define SET_DATE_TEXT(text) b_writ = strftime(time_str, MAX_TIME_LEN, (text TIME_FMT), pTime)
+#define SET_DATE_TEXT(text) b_writ = strftime(timeobj->str, sizeof(timestr), (text TIME_FMT), pTime)
+#define SET_TIME_TEXT(text)	strncpy(timeobj->str, (text), sizeof(timestr))
 
-#define SET_TIME_TEXT(text) strcpy(time_str, (text))
-#define SET_TIME_RELA(unit, text) sprintf(time_str, ("%ld " text), (long)(t_diff/(unit))) /* always round down */
+#define SET_TIME_RELA(unit, text) \
+	snprintf(timeobj->str, sizeof(timestr), ("%ld " text), (long)(t_diff/(unit))) /* always round down */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+bool time_initialised = false;
 
 time_t current_time;
 time_t diff_midn;	/// Number of seconds since midnight.
 time_t diff_month;	/// Number of seconds since midnight on the 1ˢᵗ of the month.
 time_t diff_year;	/// Number of seconds since midnight on the 1ˢᵗ of January this year.
 
-inline void initTime(void) {
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void initTime(void) {
+	time_initialised = true;
+
 	current_time = time(NULL);
-	const struct tm *cur_time_tm = localtime(&current_time);
+	const struct tm *time_tm = localtime(&current_time);
 
 	diff_midn =
-		cur_time_tm->tm_hour * HOUR +
-		cur_time_tm->tm_min  * MIN +
-		cur_time_tm->tm_sec;
+		time_tm->tm_hour * HOUR +
+		time_tm->tm_min  * MIN +
+		time_tm->tm_sec;
 
-	diff_month	= diff_midn + (cur_time_tm->tm_mday - 1) * DAY;
-	diff_year	= diff_midn + (cur_time_tm->tm_yday - 1) * DAY;
+	diff_month	= diff_midn + (time_tm->tm_mday - 1) * DAY;
+	diff_year	= diff_midn + (time_tm->tm_yday - 1) * DAY;
 }
 
-inline void parseTime(timestr time_str, const time_t file_time, TimeColour *time_col) {
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+inline TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time) {
+	if (!time_initialised) initTime();
+
+	if (file_time == 0) {
+		debug(WARNING, "parseTime: %s", strerror(errno));
+		strncpy(timeobj->str, TIME_ERR_STR, sizeof(timestr));
+
+		return timeobj;
+	}
+
 	/// How many seconds ago the file was modified.
 	const time_t t_diff = current_time - file_time;
 	const struct tm *pTime = localtime(&file_time);
 
-	size_t b_writ = -1;	// (bytes written)
+	int b_writ = 0; // bytes written
 
-	if		(t_diff <  5 * SEC)				{ SET_TIME_TEXT("Now"			); *time_col = TC_NOW	 ; }
-	else if	(t_diff <  1 * MIN)				{ SET_TIME_RELA(SEC, "secs"		); *time_col = TC_MIN	 ; }
+	if		(t_diff <  5 * SEC)				{ SET_TIME_TEXT("Now"			); timeobj->colour = TC_NOW		; }
+	else if	(t_diff <  1 * MIN)				{ SET_TIME_RELA(SEC, "secs"		); timeobj->colour = TC_MIN		; }
 
-	else if	(t_diff <  2 * MIN)				{ SET_TIME_TEXT("1 " "min. ago"	); *time_col = TC_MIN	 ; }
-	else if	(t_diff < 11 * MIN)				{ SET_TIME_RELA(MIN, "mins ago"	); *time_col = TC_MIN	 ; }
+	else if	(t_diff <  2 * MIN)				{ SET_TIME_TEXT("1 " "min. ago"	); timeobj->colour = TC_MIN		; }
+	else if	(t_diff < 11 * MIN)				{ SET_TIME_RELA(MIN, "mins ago"	); timeobj->colour = TC_MIN		; }
 
-	else if	(t_diff < diff_midn			 )	{ SET_DATE_TEXT("Today"			); *time_col = TC_TODAY	 ; }
-	else if	(t_diff < diff_midn + 1 * DAY)	{ SET_DATE_TEXT("Yesterday"		); *time_col = TC_YESTD	 ; }
-	else if	(t_diff < diff_midn + 2 * DAY)	{ SET_DATE_TEXT("2 Days Ago"	); *time_col = TC_2DAYS	 ; }
+	else if	(t_diff < diff_midn			 )	{ SET_DATE_TEXT("Today"			); timeobj->colour = TC_TODAY	; }
+	else if	(t_diff < diff_midn + 1 * DAY)	{ SET_DATE_TEXT("Yesterday"		); timeobj->colour = TC_YESTD	; }
+	else if	(t_diff < diff_midn + 2 * DAY)	{ SET_DATE_TEXT("2 Days Ago"	); timeobj->colour = TC_2DAYS	; }
 
-	else if	(t_diff < diff_month)			{ SET_DATE_TEXT(DATE_FMT		); *time_col = TC_THIS_MO; }
-	else if	(t_diff < diff_year	)			{ SET_DATE_TEXT(DATE_FMT		); *time_col = TC_THIS_YR; }
-	else									{ SET_DATE_TEXT(DATE_FMT		); *time_col = TC_OTHER	 ; }
+	else if	(t_diff < diff_month)			{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_THIS_MO	; }
+	else if	(t_diff < diff_year	)			{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_THIS_YR	; }
+	else									{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_OTHER	; }
 
-	if (!b_writ || file_time == 0) strcpy(time_str, TIME_ERR_STR);
+	if (b_writ == -1 || (size_t)b_writ >= sizeof(timestr)) {
+		debug(WARNING, "parseTime: %s", strerror(errno));
+		strncpy(timeobj->str, TIME_ERR_STR, sizeof(timestr));
+	}
+	return timeobj;
 }
 
-#undef MIN
-#undef HOUR
-#undef DAY
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // spell:word midn

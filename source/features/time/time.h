@@ -3,10 +3,11 @@
 #ifndef TIME_INITIALISED
 #define TIME_INITIALISED
 
-#include <time.h>
 #include "model/stat-model.h"
+#include "model/new-stat-model.h"
 
-void initTime(void);
-void parseTime(timestr time_str, const time_t file_time, TimeColour *time_col);
+#define st_btimespec st_birthtimespec 
+
+TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time);
 
 #endif /* !TIME_INITIALISED */
