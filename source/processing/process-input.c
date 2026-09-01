@@ -107,8 +107,10 @@ static inline void processChild(FileStat *pFS_child, const struct dirent *const 
 
 /* ── ── processDir ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
-static inline FileStat *processDir(FileStat *pFS_dir) {
+static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
 	const char *const dirpath = pFS_dir->name;
+
+	/* —— Open Dir & Error Check —————————————————————————————————— */
 
 	// firstly, open the directory and get a pointer to a `DIR` object
 	//	note: we can't get any info from `DIR`, it's use is to be passed into other functions
@@ -121,13 +123,12 @@ static inline FileStat *processDir(FileStat *pFS_dir) {
 
 		printError(dirpath, strerror(errno));
 
-		// make sure to close the dir - memory leaks!!
-		closedir(p_dir);
-
 		// even though we didn't get any of the dir's contents, this shouldn't be too bad for the base directory itself
 		//	since we `stat`ted it back when we were treating it like any other file, but the children will be an issue
 		return pFS_dir;
 	}
+
+	/* —— Set up `children` Array ————————————————————————————————— */
 
 	// bite the bullet and use `strlen` to calculate the dir's length now,
 	//	bc we're going to need it to get the path to the children in a moment
@@ -165,7 +166,7 @@ static inline FileStat *processDir(FileStat *pFS_dir) {
 		// with the output structure I'm building, I don't think it makes sense to show `..`
 		//	if I want to add an option to keep it later, I can just add it to this condition
 		if (strcmp(pDT_child->d_name, "..") == 0) continue;
-		// note: when I add the `-a` and `-A` options later, this is where I'll add a check for them
+		/// @todo when I add the `-a` and `-A` options later, this is where I'll add a check for them
 
 		/* —— alloc mem for children —————————————————————————————————— */
 
@@ -188,15 +189,23 @@ static inline FileStat *processDir(FileStat *pFS_dir) {
 			memset(*children + old_alloc_count, 0, sizeof(FileStat) * (child_alloc_count - old_alloc_count));
 		}
 
-		// find the position where the child's `FileStat` object will start
-		FileStat *pFS_child = *children + pFS_dir->f->child_count;
-		// only increment the child count now that we've used it as an index to calculate where the child should be
-		pFS_dir->f->child_count++;
+		/* —— set up & process child —————————————————————————————————— */
+
+		// find the position where the child's `FileStat` object will start, and increment the child count
+		FileStat *pFS_child = *children + pFS_dir->f->child_count++;
 
 		// assign this directory as the child's parent
 		pFS_child->parent = pFS_dir;
+
 		// then send the child off for processing
 		processChild(pFS_child, pDT_child);
+
+		/* —— recurse into child —————————————————————————————————————— */
+
+		// now that the child's been processed, check if we should recurse into it to calculate deeper
+		if (!S_ISDIR(pFS_child->mode) || depth + 1 > MAX_DEPTH || pFS_child->f == NULL) continue;
+		// if we should, then process the child in the same way we processed this dir
+		processDir(pFS_child, depth + 1);
 	}
 
 	closedir(p_dir);
@@ -259,7 +268,7 @@ FileStat *processInput(char *path) {
 		return pfilestat;
 
 	// if the input was a directory, however, we need to find & process its children
-	return processDir(pfilestat);
+	return processDir(pfilestat, 0);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
