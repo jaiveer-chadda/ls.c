@@ -20,34 +20,48 @@
 #define printError(path_, errmsg) \
 	fprintf(stderr, "\33[31m%s: %s: %s\33[m\n", argv0, path_, errmsg)
 
-/* ── ── getPathTo ── ────────────────────────────────────────────────────────────────────────────────────────────── */
+/* ── ── getPath ── ──────────────────────────────────────────────────────────────────────────────────────────────── */
 
-static inline size_t getPathTo(char *const buf, const size_t buflen, const FileStat *const file) {
-	const FileStat *const prnt = file->parent;
-	const size_t full_size = prnt->name_len + 1 + file->name_len;
+static inline char *getPath(FileStat *const file) {
+	// if we've already found this path before, then just return a pointer to it
+	if (file->path != NULL) return file->path;
 
-	if (file->name_len == -1) { printError(file->name, "file ""not fully initialised"); return 0; }
-	if (prnt->name_len == -1) { printError(prnt->name, "parent not fully initialised"); return 0; }
-
-	// make sure that the resultant child path won't be too long once we create it
-	if (full_size >= buflen) {
-		printError(file->name, "path name too long");
-		return 0;
+	// base case: if this file doesn't have any parents, then we know that its name is already a valid path
+	if (file->parent == NULL) {
+		file->path_len = file->name_len;
+		return file->name;
 	}
 
-	// copy the parent dir's name into the buffer
-	memcpy(buf, prnt->name, prnt->name_len); // no need to include the nullbyte, so no +1
+	/* —————————————————————————————————————————————————————— */
+
+	// allocate memory for the path
+	char *const path = emalloc(sizeof(path_t));
+
+	// copy the parent dir's path into the buffer - recurse if needed
+	memcpy(path, getPath(file->parent), file->parent->path_len); // no need to include the nullbyte, so no +1
+
+	/* —————————————————————————————————————————————————————— */
+
+	// only check the full size after we know that the parent definitely has a path
+	const size_t full_size = file->parent->path_len + 1 + file->name_len;
+	// make sure that the resultant child path won't be too long once we create it
+	if (full_size >= sizeof(path_t)) { efree(path); return NULL; }
+
+	/* —————————————————————————————————————————————————————— */
 
 	// add the path separator
-	buf[prnt->name_len] = '/';
+	path[file->parent->path_len] = '/';
 
 	// append the file's name to the end of the path
-	memcpy(buf + 1 + prnt->name_len,
+	memcpy(path + 1 + file->parent->path_len,
 		file->name,
 		file->name_len + 1 // +1 for the nullbyte this time
 	);
 
-	return full_size;
+	/* —————————————————————————————————————————————————————— */
+
+	file->path_len = full_size;
+	return path;
 }
 
 /* ── ── processChild ── ─────────────────────────────────────────────────────────────────────────────────────────── */
@@ -72,23 +86,20 @@ static inline void processChild(FileStat *pFS_child, const struct dirent *const 
 
 	/* —— get path to child ——————————————————————————————————————— */
 
-	// allocate the memory for the child's `stat` struct
-	pFS_child->s = emalloc(sizeof(struct stat));
-
-	// create a buffer to hold the path needed to pass to `stat`
-	path_t abspath = "";
-	// then fill it with the absolute path to the child
-	if (getPathTo(abspath, sizeof(path_t), pFS_child) == 0) return;
+	if (( pFS_child->path = getPath(pFS_child) ) == NULL) return;
 
 	/* —— `stat` child file ——————————————————————————————————————— */
 
+	// allocate the memory for the child's `stat` struct
+	pFS_child->s = emalloc(sizeof(struct stat));
+
 	// run `lstat` on the path
-	if (lstat(abspath, pFS_child->s) == -1) {
+	if (lstat(pFS_child->path, pFS_child->s) == -1) {
 		// if it fails, print an error
 		#ifdef DEBUG_MODE
-			debug(WARNING, "failed to `stat`: %s", abspath);
+			debug(WARNING, "failed to `stat`: %s", pFS_child->path);
 		#else
-			printError(abspath, strerror(errno));
+			printError(pFS_child->path, strerror(errno));
 		#endif
 
 		// free the memory we allocated for the file's `stat` object
@@ -108,7 +119,7 @@ static inline void processChild(FileStat *pFS_child, const struct dirent *const 
 /* ── ── processDir ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
-	const char *const dirpath = pFS_dir->name;
+	const char *const dirpath = getPath(pFS_dir);
 
 	/* —— Open Dir & Error Check —————————————————————————————————— */
 

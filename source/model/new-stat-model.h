@@ -34,8 +34,10 @@ struct FileStat {
 
 	// the following fields are all copied directly from `struct dirent`.
 	char		*name	; // 8 /** The name of this file, as it will be displayed. */
+	char		*path	; // 8 /** The absolute path to this file. */
 	ino_t		inum	; // 8 /** The inode number for this file. */
 	namlen_t	name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
+	namlen_t	path_len; // 2
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
 
 	// the following are fields which can be derived from just the information from `struct dirent`
@@ -45,7 +47,7 @@ struct FileStat {
 	modestr		mode_str; // 11 /** A string repr of the file's mode (type & permissions). */
 	bool		has_xat	; // 1 /** Whether this file has extended attributes. */
 	bool		has_acl	; // 1 /** Whether this file has an access control list. */
-}; // 62 + 2 pad = 64
+}; // 70 + 2 pad = 72
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
