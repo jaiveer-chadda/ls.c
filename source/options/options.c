@@ -1,6 +1,7 @@
 /// @file options/options.c
 
 #include <stdio.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -20,6 +21,7 @@
 
 // `U_DO_COLOUR` doesn't need a default - it's the only option that'll be set no matter what
 static bool U_DO_COLOUR, U_DO_TINY_FLAGS = false, U_DO_SHORT_FLAGS = true;
+static uint8_t U_DEPTH = 1;
 static SortByField U_SORT_BY = SB_DEFAULT;
 
 #define X(name, ...) [name] = { __VA_ARGS__ },
@@ -29,7 +31,7 @@ static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 /* —— Generic Macros ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] != '-'))
-#define HAS_ARG		(strcmp(optarg, "") != 0)
+#define HAS_ARG		(optarg != NULL && optarg[0] != '\0')
 
 #define CONTINUE goto label_continue
 
@@ -47,7 +49,6 @@ static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #define OPT_4(a, b, c, d)	IS_OPTION(a) || IS_OPTION(b) || IS_OPTION(c) || IS_OPTION(d)
 
 #define GET_MACRO(_1, _2, _3, NAME, ...) NAME
-
 #define OPTION_IS(...) GET_MACRO(__VA_ARGS__, OPT_3, OPT_2, OPT_1)(__VA_ARGS__)
 
 /* —— Binary Option Macros ——————————————————————————————————————————— */
@@ -81,6 +82,11 @@ static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #define ERR_EMPTY_ARG()	  THROW_ERR("argument for `%s` is empty", opt)
 #define ERR_NO_ARGS()	  THROW_ERR("`%s` doesn't take an argument", opt)
 #define ERR_BAD_ARG(args) THROW_ERR("invalid argument `%s` for `%s`. possible arguments are: %s", optarg, opt, (args))
+#define ERR_DEPTH()		  THROW_ERR(				\
+	"invalid argument `%s` for `%s`. "				\
+	"argument must be an integer between 0 and %d.",\
+	optarg, opt, RECURSION_LIMIT					\
+)
 
 /* —— all Opts/Fields On() ——————————————————————————————————————————— */
 
@@ -205,6 +211,25 @@ int setOptions(const int argc, const char *argv[]) {
 			VALUE_OF(do_flags) = true; CONTINUE;
 		}
 
+		/* —— --depth ———————————————————————————————————————————————————— */
+
+		if (OPTION_IS("--depth", "--level")) {
+			char *p_strend; // pointer to the end of the argument string
+			const long int_arg = strtol(optarg, &p_strend, BASE_10);
+
+			if (int_arg <= RECURSION_LIMIT && int_arg >= 0 && // if its within the set limits
+				p_strend > optarg && // and some characters were read
+				*p_strend == '\0' // and all the characters were read
+			) {
+				U_DEPTH = (uint8_t)int_arg;
+				CONSUME_ARG;
+				CONTINUE;
+			}
+
+			if (HAS_ARG) ERR_DEPTH();
+			else ERR_TAKES_ARG();
+		}
+
 		/* —— All Fields ————————————————————————————————————————————————— */
 
 		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  CONTINUE; }
@@ -249,6 +274,7 @@ int setOptions(const int argc, const char *argv[]) {
 /* —— Define Getter Functions —————————————————————————————————————————————————————————————————————————————————————— */
 
 SortByField SORT_BY	(void) { return U_SORT_BY		; }
+uint8_t O__DEPTH	(void) { return U_DEPTH			; }
 bool DO_COLOUR		(void) { return U_DO_COLOUR		; }
 bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS	; }
 bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS; }

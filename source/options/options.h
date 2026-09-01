@@ -62,24 +62,24 @@ typedef char test_flag_t[MAX_OPT_FLAG_LEN + 5];
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// temp
 #define do_time_i(type) true
-#define MAX_DEPTH 2
+#define MAX_DEPTH O__DEPTH()
 
 /* —————————————————————————————————————————————————————————————— */
 
 SortByField SORT_BY (void);
+uint8_t O__DEPTH	(void);
 bool DO_REVERSE_SORT(void);
+bool DO_COLOUR		(void);
+bool DO_TINY_FLAGS	(void);
+bool DO_SHORT_FLAGS	(void);
 
 bool DO_CLEAR		(void);
-bool DO_COLOUR		(void);
 bool DO_HEADER		(void);
 bool DO_DIVIDERS	(void);
 bool DO_MOUNT_DEV	(void);
 bool DO_DIM_HIDDEN	(void);
 bool DIRS_AS_FILES	(void);
-bool DO_TINY_FLAGS	(void);
-bool DO_SHORT_FLAGS	(void);
 bool SORT_DIRS_FIRST(void);
 
 /* —————————————————————————————————————————————————————————————— */

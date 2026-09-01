@@ -5,13 +5,18 @@
 
 // Includes all the `MAX...LEN` constants, but also the `DIR` struct
 #include <dirent.h>
+#include <limits.h>
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define PROGRAM_NAME "lk"
 #define DOTDIR "."
+#define BASE_10 10
 
 /* —————————————————————————————————————————————————————— */
+
+/// @brief The maximum number of levels the program is allowed to recuse.
+#define RECURSION_LIMIT 16
 
 /// @brief How many children of a directory to allocate memory for, before we know the final child count.
 #define INIT_CHILD_COUNT 2
@@ -33,6 +38,7 @@
 
 /// @brief The maximum number of possible user and superuser flags on macOS.
 #define MAX_FLAG_NUM 14
+
 /// @brief The longest flag name on macOS ("uimmutable") + 1.
 #define MAX_FLAG_LEN 11
 
