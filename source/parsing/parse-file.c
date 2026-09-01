@@ -23,8 +23,8 @@
 #define C_TIME_SPEC st_ctimespec
 #define B_TIME_SPEC st_btimespec
 
-#define parseTime_i(type) do {				\
-	if (do_time_i((type))) {				\
+#define parseTime_t(type) do {				\
+	if (do_time_t((type))) {				\
 		pfsf->times[(type)] = parseTime(	\
 			emalloc(sizeof(TimeInfo)),		\
 			(pstat->type##_SPEC.tv_sec)		\
@@ -79,7 +79,7 @@ void parseFile(FileStat *const pfile) {
 	if (do_usr_name()) pfsf->usr_name = getUser(pstat->st_uid);
 	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
-	if (do_time_str()) { parseTime_i(A_TIME); parseTime_i(M_TIME); parseTime_i(C_TIME); parseTime_i(B_TIME); }
+	if (do_time_str()) { parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); }
 
 	/* ————————————————————————————————————————————————————————— */
 

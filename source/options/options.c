@@ -24,7 +24,7 @@ static bool U_DO_COLOUR, U_DO_TINY_FLAGS = false, U_DO_SHORT_FLAGS = true;
 static uint8_t U_DEPTH = 1;
 static SortByField U_SORT_BY = SB_DEFAULT;
 
-#define X(name, ...) [name] = { __VA_ARGS__ },
+#define X(name, ...) [name] = (BinaryOption){ __VA_ARGS__ },
 static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #undef X
 
@@ -305,5 +305,23 @@ MAKE_BIN_OPT_FUNC(do_size	 )	MAKE_BIN_OPT_FUNC(do_size_str)
 MAKE_BIN_OPT_FUNC(do_uid	 )	MAKE_BIN_OPT_FUNC(do_usr_name)
 MAKE_BIN_OPT_FUNC(do_gid	 )	MAKE_BIN_OPT_FUNC(do_grp_name)
 MAKE_BIN_OPT_FUNC(do_time	 )	MAKE_BIN_OPT_FUNC(do_time_str)
+
+/* ————————————————————————————————————————————————————————— */
+
+static inline MAKE_BIN_OPT_FUNC(do_atime)
+static inline MAKE_BIN_OPT_FUNC(do_mtime)
+static inline MAKE_BIN_OPT_FUNC(do_ctime)
+static inline MAKE_BIN_OPT_FUNC(do_btime)
+
+bool do_time_t(TimeType type) {
+	static bool (* const funcs[])(void) = {
+		[A_TIME] = do_atime,
+		[M_TIME] = do_mtime,
+		[C_TIME] = do_ctime,
+		[B_TIME] = do_btime,
+	};
+
+	return funcs[type]();
+}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

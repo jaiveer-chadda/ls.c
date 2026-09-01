@@ -45,7 +45,12 @@ int setOptions(const int argc, const char *argv[]);
 	X(BO_do_gid				, false	, true	, 'g', { "gid"										}) \
 	X(BO_do_grp_name		, true	, true	, 'G', { "gid-str"		, "grp-name"	, "group"	}) \
 	X(BO_do_time			, false	, true	, NSF, { "time"										}) \
-	X(BO_do_time_str		, true	, true	, NSF, { "time-str"									})
+	X(BO_do_time_str		, true	, true	, NSF, { "time-str"									}) \
+	\
+	X(BO_do_atime			, false	, true	, NSF, { "atime"									}) \
+	X(BO_do_mtime			, true	, true	, NSF, { "mtime"									}) \
+	X(BO_do_ctime			, false	, true	, NSF, { "ctime"									}) \
+	X(BO_do_btime			, false	, true	, NSF, { "btime"									})
 
 #define X(name, ...) name,
 typedef enum { BINARY_OPTIONS_TABLE BINOPT_COUNT } BinOptIdx;
@@ -62,7 +67,6 @@ typedef char test_flag_t[MAX_OPT_FLAG_LEN + 5];
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define do_time_i(type) true
 #define MAX_DEPTH O__DEPTH()
 
 /* —————————————————————————————————————————————————————————————— */
@@ -97,6 +101,8 @@ bool do_size	(void);		bool do_size_str(void);
 bool do_uid		(void);		bool do_usr_name(void);
 bool do_gid		(void);		bool do_grp_name(void);
 bool do_time	(void);		bool do_time_str(void);
+
+bool do_time_t(TimeType type);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
