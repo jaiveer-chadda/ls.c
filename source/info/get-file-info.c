@@ -242,7 +242,7 @@ void getAllFileInfo(
 
 	struct dirent *entry;
 	// now process the rest of the directory
-	while ((entry = readdir((DIR *)dir_obj)) != NULL && *dir_count + *file_count <= MAX_CHILDREN) {
+	while ((entry = readdir((DIR *)dir_obj)) != NULL && *dir_count + *file_count <= MAX_CHILD_COUNT) {
 		// don't process the `..` directory, and don't re-process `.`
 		if (DO_IGNORE_FILE(entry)) continue;
 

@@ -1,15 +1,12 @@
 /// @file model/new-stat-model.h
 
-#ifndef NEW_STAT_MODEL_INITIALISED
-#define NEW_STAT_MODEL_INITIALISED
+#ifndef NEW_STAT_MODEL_H
+#define NEW_STAT_MODEL_H
 
 #include <sys/stat.h>
 
 #include "types.h"
 #include "graphics/graphics.h"
-
-typedef struct { TimeColour colour; timestr str;			} TimeInfo;
-typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
 
 /* —— FileStat (main) —————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -29,18 +26,22 @@ typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
  *	information that would fill that memory.
  */
 struct FileStat {
-	struct stat*	s	; // 8 /** Pointer to the struct returned when this file was `stat`ted. */
-	FileStatFields*	f	; // ? /** Fields which can only be derived if the file was successfully `stat`ted. */
-	FileStat	*parent	; // 8 /** This file's parent directory, if it has one. */
+	FileStat	*parent	; // 8 /** This file's parent directory, if one is known. */
 
-	// the following are all fields which can be derived from `struct dirent`, and don't come from `struct stat`.
-	char*		name	; // 8 /** The name of this file, as it will be displayed. */
-	int16_t		name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
+	// these two fields will only point to valid objects if `stat` succeeded on this file.
+	struct stat		*s	; // 8 /** Pointer to the struct returned when this file was passed to `stat`. */
+	FileStatFields	*f	; // 8 /** Fields which can only be derived if the file was successfully `stat`ted. */
+
+	// the following fields are all copied directly from `struct dirent`.
+	char		*name	; // 8 /** The name of this file, as it will be displayed. */
+	ino_t		inum	; // 8 /** The inode number for this file. */
+	namlen_t	name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
-	uint64_t	inum	; // 8 /** The inode number for this file. */
-	wchar_t		icon	; // 4 /** The icon to be shown before a filename. */
-	char		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
-};
+
+	// the following are fields which can be derived from just the information from `struct dirent`
+	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
+	suff_t		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
+}; // 29 + 7 pad = 56
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -52,27 +53,28 @@ struct FileStat {
  *	stored in this struct is calculated and assigned manually at runtime, by parsers implemented in this project.
  */
 struct FileStatFields {
-	// TODO: amalgamate `do_link_hl` into `file_col`
+	TimeInfo	*times[TT_COUNT]; // 32 /** Information about the access, mod, change, and birth time of the file. */
+
+	/// @todo amalgamate `do_link_hl` into `file_col`
 	bool		do_link_hl	; // 1 /** Whether this file is a hardlink, and should be highlighted as such. */
 	bool		is_mount	; // 1 /** Whether this file is a mount point or not. */
 	bool		has_xattr	; // 1 /** Whether this file has extended attributes. */
 	bool		has_acl		; // 1 /** Whether this file has an access control list. */
 
-	char		size_unit	; // 1 /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
-	FileColour	file_col	; // 4
-	TargetInfo*	target		; // 16 /** Information about the target of a link, if one exists. */
+	FileColour	file_col	; // 4 /** The colour which the file should be printed in. */
+	TargetInfo	*target		; // 8 /** Information about the target of a link, if one exists. */
 
-	char		mode_str[11]; // 11 /** A string repr of the file's mode (type & permissions). */
-	char*		size_str	; // 8 /** A string repr of the filesize. */
-	char*		flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
-	char*		usr_name	; // 8 /** The name of the file's owner. */
-	char*		grp_name	; // 8 /** The name of the file's group. */
+	char		*size_str	; // 8 /** A string repr of the filesize. */
+	char		*flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
+	char		*usr_name	; // 8 /** The name of the file's owner. */
+	char		*grp_name	; // 8 /** The name of the file's group. */
 
-	FileStat*	children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
+	FileStat	*children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
 	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
 
-	TimeInfo*	times[TIME_COUNT]; // 32
-};
+	modestr		mode_str	; // 11 /** A string repr of the file's mode (type & permissions). */
+	unit_t		size_unit	; // 1 /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
+}; // 104 + 0 pad = 104b
 
 /* —— TargetInfo ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -92,12 +94,23 @@ struct FileStatFields {
  * @var TargetInfo::is_apple Whether the source of this link is a symbolic link, or an Apple alias file.
  */
 struct TargetInfo {
-	char*		path	; // 8 /** The contents of the link (usually the absolute path to the target file). */
+	char		*path	; // 8 /** The contents of the link (usually the absolute path to the target file). */
 	FileColour	colour	; // 4 /** The colour that the file should be displayed in. */
 	char		suffix	; // 1 /** The symbol to be shown after the target's name. */
 	bool		is_apple; // 1 /** Whether the link that pointed to this target was an apple alias (or a symlink). */
-};
+}; // 14 + 2 pad = 16b
+
+/* —— TimeInfo ————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+/**
+ * @struct TimeInfo
+ * @brief Information about a file's time.
+ *
+ * Contains the string that should be used to display the time, as well as the colour that that string should be
+ * printed in.
+ */
+struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36b
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#endif /* !NEW_STAT_MODEL_INITIALISED */
+#endif /* !NEW_STAT_MODEL_H */

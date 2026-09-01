@@ -30,7 +30,7 @@ void printIcon(const icon_t icon, const FileColour file_col);
 
 typedef struct {
 	char *pattern;
-	wchar_t icon;
+	icon_t icon;
 } Icon;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
