@@ -5,6 +5,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#include "model/new-stat-model.h"
+
 #define LOG_LEVEL_TABLE \
 	X(TRACE		, 90) \
 	X(DEBUG		, 34) \
@@ -26,6 +28,7 @@ typedef struct {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void d__debug(const LogLevelIdx level_, const char *time, const int lineno, const char *file, const char *fmt, ...);
+void d__dump(const FileStat *const fs);
 void d__func(const char *func);
 void d__line(void);
 
@@ -33,6 +36,7 @@ void d__line(void);
 #	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __VA_ARGS__)
 #	define dfunc(func) d__func(#func)
 #	define dline() d__line()
+#	define dump(fs) d__dump(fs)
 #	define initDebugging(argv) do {										\
 		/* this is a very crude way to check for the `--clear` flag, */	\
 		/*	but it's only used for debugging, so it should be fine   */	\
@@ -50,6 +54,7 @@ void d__line(void);
 #	define debug(log_level, ...)
 #	define dfunc(func)
 #	define dline()
+#	define dump(fs)
 #	define initDebugging(argv1)
 #endif
 
