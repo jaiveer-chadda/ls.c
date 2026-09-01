@@ -41,7 +41,11 @@ struct FileStat {
 	// the following are fields which can be derived from just the information from `struct dirent`
 	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
 	suff_t		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
-}; // 29 + 7 pad = 56
+
+	modestr		mode_str; // 11 /** A string repr of the file's mode (type & permissions). */
+	bool		has_xat	; // 1 /** Whether this file has extended attributes. */
+	bool		has_acl	; // 1 /** Whether this file has an access control list. */
+}; // 62 + 2 pad = 64
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -55,13 +59,6 @@ struct FileStat {
 struct FileStatFields {
 	TimeInfo	*times[TT_COUNT]; // 32 /** Information about the access, mod, change, and birth time of the file. */
 
-	/// @todo amalgamate `do_link_hl` into `file_col`
-	bool		do_link_hl	; // 1 /** Whether this file is a hardlink, and should be highlighted as such. */
-	bool		is_mount	; // 1 /** Whether this file is a mount point or not. */
-	bool		has_xattr	; // 1 /** Whether this file has extended attributes. */
-	bool		has_acl		; // 1 /** Whether this file has an access control list. */
-
-	FileColour	file_col	; // 4 /** The colour which the file should be printed in. */
 	TargetInfo	*target		; // 8 /** Information about the target of a link, if one exists. */
 
 	char		*size_str	; // 8 /** A string repr of the filesize. */
@@ -72,9 +69,13 @@ struct FileStatFields {
 	FileStat	*children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
 	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
 
-	modestr		mode_str	; // 11 /** A string repr of the file's mode (type & permissions). */
+	FileColour	file_col	; // 4 /** The colour which the file should be printed in. */
 	unit_t		size_unit	; // 1 /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
-}; // 104 + 0 pad = 104b
+
+	/// @todo amalgamate `do_link_hl` into `file_col`
+	bool		do_link_hl	; // 1 /** Whether this file is a hardlink, and should be highlighted as such. */
+	bool		is_mount	; // 1 /** Whether this file is a mount point or not. */
+}; // 91 + 5 pad = 96b
 
 /* —— TargetInfo ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 

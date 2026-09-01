@@ -21,42 +21,42 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define ch_ful(field, nfull) (full ?  (pFSF->field) : nfull)
-#define ch_NUL(field, isnul) (full ? ((pFSF->field) != NULL ? (pFSF->field) : isnul) : "?")
+#define modext(field, istru) (pFS->has_##field	?  (istru) : ' ')
+#define ch_ful(field, nfull) (pFS->f != NULL	?  (pFS->f->field) : nfull)
+#define ch_NUL(field, isnul) (pFS->f != NULL	? ((pFS->f->field) != NULL ? (pFS->f->field) : isnul) : "?")
 
 static inline void printfields(FileStat *pFS, const uint8_t depth) {
-	// if an input's FileStat pointer points to `NULL`, we weren't able to be `stat` it in the first place
+	// if an file's FileStat pointer points to `NULL`, we weren't able to be `stat` it in the first place
 	if (pFS == NULL) return;
 
-	const FileStatFields *pFSF = pFS->f;
-	const bool full = pFSF != NULL;
-
-	FileStat *parent = pFS;
-
-	int indent = 0;
-	while ((parent = parent->parent) != NULL) indent += 4;
+	/* ———————————————————————————————————————————————— */
 
 	printf("%8x "		, (unsigned)pFS->inum);
 	printf("%06o "		, pFS->mode);
+	printf("%10s%c%c"	, pFS->mode_str, modext(xat, '@'), modext(acl, '+'));
 
-	printf("%6s %c "	, ch_NUL(size_str, "0"), ch_ful(size_unit, ' '));
+	printf("%5s %c "	, ch_NUL(size_str, "0"), ch_ful(size_unit, ' '));
 	printf("%-14s%-8s"	, ch_ful(usr_name, "?"), ch_ful(grp_name, "?"));
 
 	printf("%-12s"		, ch_NUL(flag_str, "-"));
 	printf("%20s"		, ch_ful(times[M_TIME]->str, "-"));
 
-	printf("%*s"		, indent + 2, "");
+	printf("%*s"		, (depth * 4) + 2, "");
 	printf("%lc %s"		, pFS->icon, pFS->name);
 	printf("%s%c%s"		, "\33[34m", pFS->suffix, "\33[m");
 
 	putchar('\n');
 
+	/* ———————————————————————————————————————————————— */
+
 	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
 
-	if (!full || pFSF->child_count == -1) { printf("\t%*s[[ error ]]\n", 81, ""); return; }
-	if			(pFSF->child_count ==  0) { printf("\t%*s(  empty  )\n", 81, ""); return; }
+	if (pFS->f == NULL || pFS->f->child_count == -1) { printf("\t%*s[[ error ]]\n", 92, ""); return; }
+	else if 			 (pFS->f->child_count ==  0) { printf("\t%*s(  empty  )\n", 92, ""); return; }
 
-	for (int i = 0; i < pFSF->child_count; i++) printfields(&pFSF->children[i], depth + 1);
+	/* ———————————————————————————————————————————————— */
+
+	for (int i = 0; i < pFS->f->child_count; i++) printfields(&pFS->f->children[i], depth + 1);
 }
 
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
