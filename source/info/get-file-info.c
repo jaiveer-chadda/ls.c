@@ -50,8 +50,8 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 
 	// parse the raw stat information into human-readable display formats
 	if (DO_MOUNT_DEV()) pFile->is_mount	= isMountPoint(pInfo->st_dev, path);
-	if (do_suffix  	())	pFile->suffix	= getTypeSuffix(pInfo->st_mode);
-	if (do_icon		())	pFile->icon		= getIcon(pFile->name, IS_REALPATH_DIR(pInfo->st_mode, pFile->ln_suf));
+	// if (do_suffix  	())	pFile->suffix	= getTypeSuffix(pInfo->st_mode);
+	// if (do_icon		())	pFile->icon		= getIcon(pFile->name, IS_REALPATH_DIR(pInfo->st_mode, pFile->ln_suf));
 
 	// if (do_flag_str	()) parseFlags(pFile->flag_str, pInfo->st_flags);
 	// if (do_size_str	())	 parseSize(pFile->size_str, &pFile->size_unit, &pFile->size, pInfo->st_rdev);
@@ -59,11 +59,11 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	// if (do_grp_name	())	  getGroup(pFile->grp_name, pInfo->st_gid);
 	// if (do_time_str	())	 parseTime(pFile->time_str, pInfo->st_mtimespec.tv_sec, &pFile->time_col);
 
-	if (do_mode_str()) {
-		getMode(pFile->mode_str, pInfo->st_mode);	// find the basic mode string ("drwxr-xr-x")
-		checkACL(&pFile->has_acl, path);			// find out whether the file has an access control list ("+")
-		checkXattr(&pFile->has_xattr, path);		// find out whether the file has any extended attributes ("@")
-	} 
+	// if (do_mode_str()) {
+	// 	getMode(pFile->mode_str, pInfo->st_mode);	// find the basic mode string ("drwxr-xr-x")
+	// 	checkACL(&pFile->has_acl, path);			// find out whether the file has an access control list ("+")
+	// 	checkXattr(&pFile->has_xattr, path);		// find out whether the file has any extended attributes ("@")
+	// } 
 
 	// work out the colour of the filename
 	if (DO_COLOUR()) setFileColour(&pFile->file_col, pFile->name, pInfo->st_mode, pInfo->st_flags, pFile->is_mount);

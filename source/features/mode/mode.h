@@ -14,8 +14,8 @@
 #endif
 
 void getMode(modestr mode_str, const mode_t oct_mode);
-void checkACL(bool *has_acl_perms, const path_t path);
-void checkXattr(bool *has_xattr, const path_t path);
+bool checkACL(const path_t path);
+bool checkXattr(const path_t path);
 
 char getTypeSuffix(const mode_t mode);
 

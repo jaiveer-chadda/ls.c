@@ -75,6 +75,12 @@ void parseFile(FileStat *const pfile) {
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
 	if (do_time_str()) { parseTime_i(A_TIME); parseTime_i(M_TIME); parseTime_i(C_TIME); parseTime_i(B_TIME); }
 
+	if (do_mode_str()) {
+		getMode(pfsf->mode_str, pstat->st_mode);	// find the basic mode string ("drwxr-xr-x")
+		pfsf->has_acl	=	checkACL(pfile->name);	// find out whether the file has an access control list ("+")
+		pfsf->has_xattr	= checkXattr(pfile->name);	// find out whether the file has any extended attributes ("@")
+	} 
+
 	/* ————————————————————————————————————————————————————————— */
 
 	// recursively call this function for all children in a directory

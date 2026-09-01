@@ -33,7 +33,7 @@ static inline void printfields(FileStat *fs, const char *indent) {
 
 	printf(
 		"%8x %06o "    "%6s %c "    "%-14s%-8s"    "%-12s"
-		"%20s  %20s  %20s  %20s"
+		"%20s"
 		"%s  %lc %s\33[34m%c\33[m\n",
 
 		(unsigned)fs->inum, fs->mode,
@@ -42,7 +42,7 @@ static inline void printfields(FileStat *fs, const char *indent) {
 		iffull(usr_name), iffull(grp_name),
 		ifnonull(flag_str),
 
-		iffull(times[A_TIME]->str), iffull(times[M_TIME]->str), iffull(times[C_TIME]->str), iffull(times[B_TIME]->str),
+		iffull(times[M_TIME]->str),
 
 		indent,
 		fs->icon,

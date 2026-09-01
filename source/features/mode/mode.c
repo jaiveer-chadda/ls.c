@@ -6,8 +6,6 @@
 
 #include "mode.h"
 
-#include "debugging.h"
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define EXT_MASK 0007000	/// A mask to get the extended bits (4,2,1 = uid, gid, sticky) from octal permissions.
@@ -20,19 +18,18 @@
 #define SET_EXT_BIT(str, chr) /* exec == lowercase, non-exec == uppercase */ \
 	((str)[2] = ((str)[2] == EXEC_BIT_CHAR) ? (chr) : (chr) - ('a' - 'A'))
 
-#define PARSE_PERM(location, ext_char, type) do {							\
-		getPermStr((type ## _oct), (type ## _str));							\
+#define PARSE_PERM(type, location, ext_char) do {							\
+		getPermStr((type ## _str), (type ## _oct));							\
 		if (ext_oct & (location)) SET_EXT_BIT((type ## _str), (ext_char));	\
 	} while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline void getPermStr(const mode_t oct_digit, char *perm_str) {
-	strcpy(perm_str, (char[]){NO_PERM_CHAR, NO_PERM_CHAR, NO_PERM_CHAR, '\0'});
-
-	if (oct_digit & 04) perm_str[0] = READ_BIT_CHAR;
-	if (oct_digit & 02) perm_str[1] = WRITE_BIT_CHAR;
-	if (oct_digit & 01) perm_str[2] = EXEC_BIT_CHAR;
+static inline void getPermStr(char *perm_str, const mode_t oct_digit) {
+	perm_str[0] = oct_digit & 04 ? READ_BIT_CHAR  : NO_PERM_CHAR;
+	perm_str[1] = oct_digit & 02 ? WRITE_BIT_CHAR : NO_PERM_CHAR;
+	perm_str[2] = oct_digit & 01 ? EXEC_BIT_CHAR  : NO_PERM_CHAR;
+	perm_str[3] = '\0';
 }
 
 /// @brief Gets the character representing the filetype specified by an octal type integer.
@@ -59,7 +56,6 @@ inline char getTypeSuffix(const mode_t mode) {
 		case S_IFIFO:	return PIPE_CHAR;		// named pipe
 		case S_IFSOCK:	return SOCKET_CHAR;		// socket
 		case S_IFWHT:	return WHITEOUT_CHAR;	// whiteout
-		default		: break;
 	}
 	if (mode & EXEC_MASK) return EXEC_SUFFIX;	// executable
 	return '\0';								// other/unknown
@@ -77,11 +73,11 @@ void getMode(modestr mode_str, const mode_t oct_mode) {
 
 	char usr_str[4], grp_str[4], oth_str[4];
 
-	PARSE_PERM(04, SUID_X_BIT_CHAR	, usr);
-	PARSE_PERM(02, SGID_X_BIT_CHAR	, grp);
-	PARSE_PERM(01, STICKY_X_BIT_CHAR, oth);
+	PARSE_PERM(usr, 04,	  SUID_X_BIT_CHAR);
+	PARSE_PERM(grp, 02,	  SGID_X_BIT_CHAR);
+	PARSE_PERM(oth, 01,	STICKY_X_BIT_CHAR);
 
-	sprintf(mode_str, "%c%s%s%s", getModeType(oct_mode), usr_str, grp_str, oth_str);
+	snprintf(mode_str, sizeof(modestr), "%c%s%s%s", getModeType(oct_mode), usr_str, grp_str, oth_str);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
