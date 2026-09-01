@@ -19,36 +19,50 @@
 #include "parsing/parse-file.h"
 #include "processing/process-input.h"
 
-// // for testing/debugging
-// #define printfields(f, ind) \
-// 	printf("%9llu %06o%4hu%7lldb"ind"  %s\n", \
-// 		(f)->inum, (f)->type, (f)->s->st_nlink, (f)->s->st_size, (f)->name \
-// 	)
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define ifnonull(field) (full ? ((fs->f->field) != NULL ? (fs->f->field) : "-") : "?")
-#define iffull(field) (full ? (fs->f->field) : "?")
+#define ifnonull(field) (full ? ((pFSF->field) != NULL ? (pFSF->field) : "-") : "?")
+#define iffull(field) (full ? (pFSF->field) : "?")
 
-static inline void printfields(FileStat *fs, const char *indent) {
-	const bool full = fs->f != NULL;
+static inline void printfields(FileStat *pFS, const uint8_t depth) {
+	// if an input's FileStat pointer points to `NULL`, we weren't able to be `stat` it in the first place
+	if (pFS == NULL) return;
+
+	const FileStatFields *pFSF = pFS->f;
+	const bool full = pFSF != NULL;
+
+	FileStat *parent = pFS;
+
+	int indent = 0;
+	while ((parent = parent->parent) != NULL) indent += 4;
 
 	printf(
 		"%8x %06o "    "%6s %c "    "%-14s%-8s"    "%-12s"
 		"%20s"
-		"%s  %lc %s\33[34m%c\33[m\n",
+		"%*s" "%lc %s\33[34m%c\33[m\n",
 
-		(unsigned)fs->inum, fs->mode,
-		ifnonull(size_str), full ? fs->f->size_unit : ' ',
+		(unsigned)pFS->inum, pFS->mode,
+		ifnonull(size_str), full ? pFSF->size_unit : ' ',
 
 		iffull(usr_name), iffull(grp_name),
 		ifnonull(flag_str),
 
 		iffull(times[M_TIME]->str),
 
-		indent,
-		fs->icon,
-		fs->name,
-		fs->suffix
+		indent + 2, "",
+		pFS->icon,
+		pFS->name,
+		pFS->suffix
 	);
+
+	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
+
+	if (!full || pFSF->child_count == -1) { printf("\t%*s[[ error ]]\n", 81, ""); return; }
+	if			(pFSF->child_count ==  0) { printf("\t%*s(  empty  )\n", 81, ""); return; }
+
+	for (int i = 0; i < pFSF->child_count; i++) {
+		printfields(pFSF->children + i, depth + 1);
+	}
 }
 
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
@@ -109,31 +123,20 @@ int main(const int argc, char *argv[]) {
 		parseFile(inputs[i]);
 	}
 
-	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
-
 	// if none of the inputs were valid, don't bother with even trying to print them - just return failure
 	if (!any_valid_input) return EXIT_FAILURE;
 
-	for (int i = 0; i < file_count; i++) {
-		// if an input's FileStat pointer points to `NULL`, we weren't able to be `stat` it in the first place
-		if (inputs[i] == NULL) continue;
+	/// @todo figure out a way to sort the inputs before they're printed
 
-		printfields(inputs[i], "");
+	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
 
-		if(inputs[i]->f == NULL) continue;
-
-		switch (inputs[i]->f->child_count) {
-			case  0: printf("\t[ no children ]\n"); break;
-			case -1: printf("\t[ unable to find children ]\n"); break;
-			default:
-				for (int j = 0; j < inputs[i]->f->child_count; j++) {
-					printfields(inputs[i]->f->children + j, "    ");
-				}
-		}
-	}
+	// print each of the inputs in the order they were given
+	// `printfields` will recurse into the file and print as many levels as was specified
+	for (int i = 0; i < file_count; i++) printfields(inputs[i], 0);
 
 	/* —— Cleanup ———————————————————————————————————————————————————————————————————————————————— */
 
+	/// @todo move most of this into the printing section
 	for (int i = 0; i < file_count; i++) {
 		/* Memory Allocated
 		 * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾

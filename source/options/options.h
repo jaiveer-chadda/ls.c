@@ -64,6 +64,9 @@ typedef char test_flag_t[MAX_OPT_FLAG_LEN + 5];
 
 // temp
 #define do_time_i(type) true
+#define MAX_DEPTH 2
+
+/* —————————————————————————————————————————————————————————————— */
 
 SortByField SORT_BY (void);
 bool DO_REVERSE_SORT(void);
