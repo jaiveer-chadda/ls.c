@@ -69,14 +69,13 @@ const char *argv0;
 /* ── ── main() ── ───────────────────────────────────────────────────────────────────────────────────────────────── */
 
 int main(const int argc, char *argv[]) {
-	initDebugging(argv);
-
 	// set the locale to the system default (it'll check the env vars)
 	//	(this is to ensure that multibyte characters can be printed as file icons)
 	const char *const locale = setlocale(LC_ALL, "");
 	if(!strends(locale, "UTF-8")) debug(WARNING, "Non-UTF-8 locale - locale is '%s'", locale);
 
 	argv0 = getArgv0(argc, argv);
+	initDebugging(argv);
 
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
 
@@ -123,6 +122,10 @@ int main(const int argc, char *argv[]) {
 	/// @todo figure out a way to sort the inputs before they're printed
 
 	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
+
+	// clear the screen after all the processing is done, but before we start printing
+	//	this should hopefully lead to the smoothest output
+	clearScreen();
 
 	// print each of the inputs in the order they were given
 	// `printfields` will recurse into the file and print as many levels as was specified

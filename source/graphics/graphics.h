@@ -342,6 +342,14 @@ extern const char *const size_colour_esc[SC_COUNT];
 #include "model/types.h"
 void setFileColour(FileColour *colour, const name_t name, const mode_t mode, const flag_t flags, const bool is_mount);
 
+#ifdef DEBUG_MODE
+#	define clearScreen()
+#else
+#	define clearScreen() do { if (DO_CLEAR()) printf("%s", CLEAR_SCREEN); } while (0)
+#endif
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignore nodim
 
 #endif /* !GRAPHICS_INITIALIASED */

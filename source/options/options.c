@@ -110,7 +110,7 @@ static inline void allFieldsOn(void) {
 /* ── ── setOptions() ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 int setOptions(const int argc, const char *argv[]) {
-	if (strends(argv[0], "c" PROGRAM_NAME)) VALUE_OF(DO_CLEAR) = true;
+	if (argv0[0] == 'c') VALUE_OF(DO_CLEAR) = true;
 
 	bool colour_auto = true;
 

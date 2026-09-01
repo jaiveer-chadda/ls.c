@@ -35,14 +35,14 @@ void d__line(void);
 #ifdef DEBUG_MODE
 #	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __VA_ARGS__)
 #	define dfunc(func) d__func(#func)
-#	define dline() d__line()
 #	define dump(fs) d__dump(fs)
+#	define dline() d__line()
 #	define initDebugging(argv) do {										\
 		/* this is a very crude way to check for the `--clear` flag, */	\
 		/*	but it's only used for debugging, so it should be fine   */	\
 		if (argv[1] != NULL												\
-			&& ( strcmp(argv[1], "--clear") == 0)						\
-			|| (strends(argv[0], "clk"))								\
+			&& (strcmp(argv[1], "--clear") == 0)						\
+			|| (argv0[0] == 'c')										\
 		) {																\
 			printf("%s", CLEAR_SCREEN);									\
 			fflush(stdout);												\
@@ -53,8 +53,8 @@ void d__line(void);
 #else
 #	define debug(log_level, ...)
 #	define dfunc(func)
-#	define dline()
 #	define dump(fs)
+#	define dline()
 #	define initDebugging(argv1)
 #endif
 
