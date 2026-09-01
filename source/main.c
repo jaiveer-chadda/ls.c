@@ -21,8 +21,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define ifnonull(field) (full ? ((pFSF->field) != NULL ? (pFSF->field) : "-") : "?")
-#define iffull(field) (full ? (pFSF->field) : "?")
+#define ch_ful(field, nfull) (full ?  (pFSF->field) : nfull)
+#define ch_NUL(field, isnul) (full ? ((pFSF->field) != NULL ? (pFSF->field) : isnul) : "?")
 
 static inline void printfields(FileStat *pFS, const uint8_t depth) {
 	// if an input's FileStat pointer points to `NULL`, we weren't able to be `stat` it in the first place
@@ -36,33 +36,27 @@ static inline void printfields(FileStat *pFS, const uint8_t depth) {
 	int indent = 0;
 	while ((parent = parent->parent) != NULL) indent += 4;
 
-	printf(
-		"%8x %06o "    "%6s %c "    "%-14s%-8s"    "%-12s"
-		"%20s"
-		"%*s" "%lc %s\33[34m%c\33[m\n",
+	printf("%8x "		, (unsigned)pFS->inum);
+	printf("%06o "		, pFS->mode);
 
-		(unsigned)pFS->inum, pFS->mode,
-		ifnonull(size_str), full ? pFSF->size_unit : ' ',
+	printf("%6s %c "	, ch_NUL(size_str, "0"), ch_ful(size_unit, ' '));
+	printf("%-14s%-8s"	, ch_ful(usr_name, "?"), ch_ful(grp_name, "?"));
 
-		iffull(usr_name), iffull(grp_name),
-		ifnonull(flag_str),
+	printf("%-12s"		, ch_NUL(flag_str, "-"));
+	printf("%20s"		, ch_ful(times[M_TIME]->str, "-"));
 
-		iffull(times[M_TIME]->str),
+	printf("%*s"		, indent + 2, "");
+	printf("%lc %s"		, pFS->icon, pFS->name);
+	printf("%s%c%s"		, "\33[34m", pFS->suffix, "\33[m");
 
-		indent + 2, "",
-		pFS->icon,
-		pFS->name,
-		pFS->suffix
-	);
+	putchar('\n');
 
 	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
 
 	if (!full || pFSF->child_count == -1) { printf("\t%*s[[ error ]]\n", 81, ""); return; }
 	if			(pFSF->child_count ==  0) { printf("\t%*s(  empty  )\n", 81, ""); return; }
 
-	for (int i = 0; i < pFSF->child_count; i++) {
-		printfields(pFSF->children + i, depth + 1);
-	}
+	for (int i = 0; i < pFSF->child_count; i++) printfields(&pFSF->children[i], depth + 1);
 }
 
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
