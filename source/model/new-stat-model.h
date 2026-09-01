@@ -31,6 +31,7 @@ typedef enum   { A_TIME, M_TIME, C_TIME, B_TIME, TIME_COUNT	} TimeType;
 struct FileStat {
 	struct stat*	s	; // 8 /** Pointer to the struct returned when this file was `stat`ted. */
 	FileStatFields*	f	; // ? /** Fields which can only be derived if the file was successfully `stat`ted. */
+	FileStat	*parent	; // 8 /** This file's parent directory, if it has one. */
 
 	// the following are all fields which can be derived from `struct dirent`, and don't come from `struct stat`.
 	char*		name	; // 8 /** The name of this file, as it will be displayed. */

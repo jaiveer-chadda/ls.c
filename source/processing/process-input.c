@@ -20,17 +20,14 @@
 #define printError(path_, errmsg) \
 	fprintf(stderr, "\33[31m%s: %s: %s\33[m\n", argv0, path_, errmsg)
 
-/* ── ── makeAbsPath ── ──────────────────────────────────────────────────────────────────────────────────────────── */
+/* ── ── getPathTo ── ────────────────────────────────────────────────────────────────────────────────────────────── */
 
-static inline size_t makeAbsPath(
-	char *const buf, const size_t buflen,
-	const FileStat *const file,
-	const FileStat *const parent
-) {
-	if (file  ->name_len == -1) { printError(file  ->name, "FileStat file ""not fully initialised"); return 0; }
-	if (parent->name_len == -1) { printError(parent->name, "FileStat parent not fully initialised"); return 0; }
+static inline size_t getPathTo(char *const buf, const size_t buflen, const FileStat *const file) {
+	const FileStat *const prnt = file->parent;
+	const size_t full_size = prnt->name_len + 1 + file->name_len;
 
-	const size_t full_size = parent->name_len + 1 + file->name_len;
+	if (file->name_len == -1) { printError(file->name, "file ""not fully initialised"); return 0; }
+	if (prnt->name_len == -1) { printError(prnt->name, "parent not fully initialised"); return 0; }
 
 	// make sure that the resultant child path won't be too long once we create it
 	if (full_size >= buflen) {
@@ -39,16 +36,15 @@ static inline size_t makeAbsPath(
 	}
 
 	// copy the parent dir's name into the buffer
-	memcpy(buf, parent->name, parent->name_len); // no need to include the nullbyte, so no +1
+	memcpy(buf, prnt->name, prnt->name_len); // no need to include the nullbyte, so no +1
 
 	// add the path separator
-	buf[parent->name_len] = '/';
+	buf[prnt->name_len] = '/';
 
 	// append the file's name to the end of the path
-	memcpy(
-		buf + 1 + parent->name_len,
+	memcpy(buf + 1 + prnt->name_len,
 		file->name,
-		file->name_len + 1 // +1 for '\0' this time
+		file->name_len + 1 // +1 for the nullbyte this time
 	);
 
 	return full_size;
@@ -56,25 +52,23 @@ static inline size_t makeAbsPath(
 
 /* ── ── processChild ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
-static inline void processChild(
-	FileStat *pFS_child,
-	const struct dirent *const pdirent_child,
-	const FileStat *const pFS_dir
-) {
+static inline void processChild(FileStat *pFS_child, const struct dirent *const pDT_child) {
 	/* —— basic child info (dirent) ——————————————————————————————— */
 
 	// copy the info from `dirent` over to the child's `FileStat` object
 	*pFS_child = (FileStat){
 		// allocate memory for the name, since the `dirent` memory won't last forever
-		.name		= emalloc(pdirent_child->d_namlen + 1), // +1 for the nullbyte
-		.name_len	= pdirent_child->d_namlen,
-		.mode		= DTTOIF(pdirent_child->d_type), // converting to the correct format
-		.inum		= pdirent_child->d_ino,
+		.name		= emalloc(pDT_child->d_namlen + 1), // +1 for the nullbyte
+		.name_len	= pDT_child->d_namlen,
+		.mode		= DTTOIF(pDT_child->d_type), // converting to the correct format
+		.inum		= pDT_child->d_ino,
+		// make sure to copy the parent over too, so it's not set to `NULL`
+		.parent		= pFS_child->parent,
 	};
 
 	// copy the name from `dirent` to `FileStat`
 	//	we're using `memcpy` and not `strcpy` since we already know how long the string is
-	memcpy(pFS_child->name, pdirent_child->d_name, pdirent_child->d_namlen + 1);
+	memcpy(pFS_child->name, pDT_child->d_name, pDT_child->d_namlen + 1);
 
 	/* —— get path to child ——————————————————————————————————————— */
 
@@ -82,19 +76,19 @@ static inline void processChild(
 	pFS_child->s = emalloc(sizeof(struct stat));
 
 	// create a buffer to hold the path needed to pass to `stat`
-	path_t child_path = "";
+	path_t abspath = "";
 	// then fill it with the absolute path to the child
-	if (makeAbsPath(child_path, sizeof(path_t), pFS_child, pFS_dir) == 0) return;
+	if (getPathTo(abspath, sizeof(path_t), pFS_child) == 0) return;
 
 	/* —— `stat` child file ——————————————————————————————————————— */
 
 	// run `lstat` on the path
-	if (lstat(child_path, pFS_child->s) == -1) {
+	if (lstat(abspath, pFS_child->s) == -1) {
 		// if it fails, print an error
 		#ifdef DEBUG_MODE
-			debug(WARNING, "failed to `stat`: %s", child_path);
+			debug(WARNING, "failed to `stat`: %s", abspath);
 		#else
-			printError(child_path, strerror(errno));
+			printError(abspath, strerror(errno));
 		#endif
 
 		// free the memory we allocated for the file's `stat` object
@@ -113,7 +107,9 @@ static inline void processChild(
 
 /* ── ── processDir ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
-static inline FileStat *processDir(char *const dirpath, FileStat *pfilestat_dir) {
+static inline FileStat *processDir(FileStat *pFS_dir) {
+	const char *const dirpath = pFS_dir->name;
+
 	// firstly, open the directory and get a pointer to a `DIR` object
 	//	note: we can't get any info from `DIR`, it's use is to be passed into other functions
 	DIR *p_dir = opendir(dirpath);
@@ -121,7 +117,7 @@ static inline FileStat *processDir(char *const dirpath, FileStat *pfilestat_dir)
 	if (p_dir == NULL) { // if we can't open the directory...
 		// set the number of children to -1, so we know the difference between having 0 children,
 		//	and not being able to search for children
-		pfilestat_dir->f->child_count = -1;
+		pFS_dir->f->child_count = -1;
 
 		printError(dirpath, strerror(errno));
 
@@ -130,50 +126,50 @@ static inline FileStat *processDir(char *const dirpath, FileStat *pfilestat_dir)
 
 		// even though we didn't get any of the dir's contents, this shouldn't be too bad for the base directory itself
 		//	since we `stat`ted it back when we were treating it like any other file, but the children will be an issue
-		return pfilestat_dir;
+		return pFS_dir;
 	}
 
 	// bite the bullet and use `strlen` to calculate the dir's length now,
 	//	bc we're going to need it to get the path to the children in a moment
 	const int16_t dirpath_len = (int16_t)strlen(dirpath);
-	pfilestat_dir->name_len = dirpath_len;
+	pFS_dir->name_len = dirpath_len;
 
 	// allocate some memory for an arbitrary number of children, with the intention that
 	//	we'll realloc if we need more memory later
 	int32_t child_alloc_count = INIT_CHILD_COUNT;
 
-	pfilestat_dir->f->children = ecalloc(child_alloc_count, sizeof(FileStat));
-	FileStat **children = &pfilestat_dir->f->children;
+	pFS_dir->f->children = ecalloc(child_alloc_count, sizeof(FileStat));
+	FileStat **children = &pFS_dir->f->children;
 
 	/* —— For Each Child in Dir ——————————————————————————————————— */
 
 	// iterate through the directory until you run out of children (or there's an error)
-	const struct dirent *pdirent_child;
-	while (( pdirent_child = readdir(p_dir) ) != NULL) {
+	const struct dirent *pDT_child;
+	while (( pDT_child = readdir(p_dir) ) != NULL) {
 
 		/* —— check for dotdir ———————————————————————————————————————— */
 
 		// if this child has the name ".", then it's not a child, but the dir itself
-		if (strcmp(pdirent_child->d_name, DOTDIR) == 0) {
+		if (strcmp(pDT_child->d_name, DOTDIR) == 0) {
 			// get the few pieces of information that we care about from the `dirent` object
 			// note: we're not keeping `d_name` or `d_namlen`, since these would just
 			//	return "." and 1 respectively, which isn't much help to us
-			pfilestat_dir->mode = DTTOIF(pdirent_child->d_type);
-			pfilestat_dir->inum = pdirent_child->d_ino;
+			pFS_dir->mode = DTTOIF(pDT_child->d_type);
+			pFS_dir->inum = pDT_child->d_ino;
 
-			continue; // continue - the rest of the information we need is already in `pfilestat_dir->s`
+			continue; // continue - the rest of the information we need is already in `pFS_dir->s`
 		}
 
 		/* —— check for ignored files ————————————————————————————————— */
 
 		// with the output structure I'm building, I don't think it makes sense to show `..`
 		//	if I want to add an option to keep it later, I can just add it to this condition
-		if (strcmp(pdirent_child->d_name, "..") == 0) continue;
+		if (strcmp(pDT_child->d_name, "..") == 0) continue;
 		// note: when I add the `-a` and `-A` options later, this is where I'll add a check for them
 
 		/* —— alloc mem for children —————————————————————————————————— */
 
-		if (pfilestat_dir->f->child_count >= child_alloc_count) {
+		if (pFS_dir->f->child_count >= child_alloc_count) {
 			const int32_t old_alloc_count = child_alloc_count; // save the old capacity before multiplying
 
 			// if the number of children (before we increment it) is more than we have space for,
@@ -193,16 +189,18 @@ static inline FileStat *processDir(char *const dirpath, FileStat *pfilestat_dir)
 		}
 
 		// find the position where the child's `FileStat` object will start
-		FileStat *pFS_child = *children + pfilestat_dir->f->child_count;
-
+		FileStat *pFS_child = *children + pFS_dir->f->child_count;
 		// only increment the child count now that we've used it as an index to calculate where the child should be
-		pfilestat_dir->f->child_count++;
+		pFS_dir->f->child_count++;
 
-		processChild(pFS_child, pdirent_child, pfilestat_dir);
+		// assign this directory as the child's parent
+		pFS_child->parent = pFS_dir;
+		// then send the child off for processing
+		processChild(pFS_child, pDT_child);
 	}
 
 	closedir(p_dir);
-	return pfilestat_dir;
+	return pFS_dir;
 }
 
 /* ── ── processInput ── ─────────────────────────────────────────────────────────────────────────────────────────── */
@@ -261,7 +259,9 @@ FileStat *processInput(char *path) {
 		return pfilestat;
 
 	// if the input was a directory, however, we need to find & process its children
-	return processDir(/*dirpath*/path, /*pfilestat_dir*/pfilestat);
+	return processDir(pfilestat);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignore prnt
