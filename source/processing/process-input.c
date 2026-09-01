@@ -27,6 +27,9 @@ static inline size_t makeAbsPath(
 	const FileStat *const file,
 	const FileStat *const parent
 ) {
+	if (file  ->name_len == -1) { printError(file  ->name, "FileStat file ""not fully initialised"); return 0; }
+	if (parent->name_len == -1) { printError(parent->name, "FileStat parent not fully initialised"); return 0; }
+
 	const size_t full_size = parent->name_len + 1 + file->name_len;
 
 	// make sure that the resultant child path won't be too long once we create it
