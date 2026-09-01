@@ -22,22 +22,31 @@
 
 /* ── ── makeAbsPath ── ──────────────────────────────────────────────────────────────────────────────────────────── */
 
-static inline size_t makeAbsPath(path_t buffer,
-	const char *const filename, const size_t namelen,
-	const char *const dirpath , const size_t pathlen
+static inline size_t makeAbsPath(
+	char *const buf, const size_t buflen,
+	const FileStat *const file,
+	const FileStat *const parent
 ) {
-	const size_t full_size = pathlen + 1 + namelen;
+	const size_t full_size = parent->name_len + 1 + file->name_len;
 
 	// make sure that the resultant child path won't be too long once we create it
-	if (full_size >= sizeof(path_t)) {
-		printError(filename, "path name too long");
+	if (full_size >= buflen) {
+		printError(file->name, "path name too long");
 		return 0;
 	}
 
-	// build the full path to the child from its component parts
-	memcpy(buffer, dirpath, pathlen); // no need to include the nullbyte, so no +1
-	buffer[pathlen] = '/'; // add the path separator
-	memcpy(buffer + 1 + pathlen, filename, namelen + 1); // +1 for '\0' this time
+	// copy the parent dir's name into the buffer
+	memcpy(buf, parent->name, parent->name_len); // no need to include the nullbyte, so no +1
+
+	// add the path separator
+	buf[parent->name_len] = '/';
+
+	// append the file's name to the end of the path
+	memcpy(
+		buf + 1 + parent->name_len,
+		file->name,
+		file->name_len + 1 // +1 for '\0' this time
+	);
 
 	return full_size;
 }
@@ -47,8 +56,7 @@ static inline size_t makeAbsPath(path_t buffer,
 static inline void processChild(
 	FileStat *pFS_child,
 	const struct dirent *const pdirent_child,
-	const char *const dirpath,
-	const int16_t dirpath_len
+	const FileStat *const pFS_dir
 ) {
 	/* —— basic child info (dirent) ——————————————————————————————— */
 
@@ -72,7 +80,8 @@ static inline void processChild(
 
 	// create a buffer to hold the path needed to pass to `stat`
 	path_t child_path = "";
-	if (makeAbsPath(child_path, pFS_child->name, pFS_child->name_len, dirpath, dirpath_len) == 0) return;
+	// then fill it with the absolute path to the child
+	if (makeAbsPath(child_path, sizeof(path_t), pFS_child, pFS_dir) == 0) return;
 
 	/* —— `stat` child file ——————————————————————————————————————— */
 
@@ -186,7 +195,7 @@ static inline FileStat *processDir(char *const dirpath, FileStat *pfilestat_dir)
 		// only increment the child count now that we've used it as an index to calculate where the child should be
 		pfilestat_dir->f->child_count++;
 
-		processChild(pFS_child, pdirent_child, dirpath, dirpath_len);
+		processChild(pFS_child, pdirent_child, pfilestat_dir);
 	}
 
 	closedir(p_dir);
@@ -249,7 +258,7 @@ FileStat *processInput(char *path) {
 		return pfilestat;
 
 	// if the input was a directory, however, we need to find & process its children
-	return processDir(path, pfilestat);
+	return processDir(/*dirpath*/path, /*pfilestat_dir*/pfilestat);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
