@@ -6,8 +6,6 @@
 #include "model/stat-model.h"
 #include "model/new-stat-model.h"
 
-#define st_btimespec st_birthtimespec 
-
 TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time);
 
 #endif /* !TIME_INITIALISED */

@@ -17,6 +17,8 @@
 #	define false 0
 #endif
 
+#define st_btimespec st_birthtimespec 
+
 /* ——————————————————————————————————————————————————— */
 
 /**
