@@ -17,9 +17,10 @@
 #define MULT_BY_1_5(var) \
 	((var) += (var) == 1 ? 1 : (var) >> 1)
 
-#define printError(path_, errmsg) \
-	fprintf(stderr, "\33[31m%s: %s: %s\33[m\n", argv0, path_, errmsg)
+#define printError(path_) \
+	fprintf(stderr, "\33[31m%s: %s: %s\33[m\n", argv0, path_, strerror(errno))
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── getPath ── ──────────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline char *getPath(FileStat *const file) {
@@ -64,6 +65,7 @@ static inline char *getPath(FileStat *const file) {
 	return path;
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── processChild ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline void processChild(FileStat *pFS_child, const struct dirent *const pDT_child) {
@@ -97,9 +99,9 @@ static inline void processChild(FileStat *pFS_child, const struct dirent *const 
 	if (lstat(pFS_child->path, pFS_child->s) == -1) {
 		// if it fails, print an error
 		#ifdef DEBUG_MODE
-			debug(WARNING, "failed to `stat`: %s", pFS_child->path);
+			debug(WARNING, "failed to stat '%s'", pFS_child->path);
 		#else
-			printError(pFS_child->path, strerror(errno));
+			printError(pFS_child->path);
 		#endif
 
 		// free the memory we allocated for the file's `stat` object
@@ -116,6 +118,7 @@ static inline void processChild(FileStat *pFS_child, const struct dirent *const 
 	pFS_child->f = ecalloc(1, sizeof(FileStatFields));
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── processDir ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
@@ -132,7 +135,7 @@ static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
 		//	and not being able to search for children
 		pFS_dir->f->child_count = -1;
 
-		printError(dirpath, strerror(errno));
+		printError(dirpath);
 
 		// even though we didn't get any of the dir's contents, this shouldn't be too bad for the base directory itself
 		//	since we `stat`ted it back when we were treating it like any other file, but the children will be an issue
@@ -223,6 +226,7 @@ static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
 	return pFS_dir;
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── processInput ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 FileStat *processInput(char *path) {
@@ -235,16 +239,12 @@ FileStat *processInput(char *path) {
 	//	whether its a directory or not, so we might as well store the stat information if we have it
 	if (lstat(path, &statobj) == -1) {
 		// if it fails, print an error and move onto the next file
-		const int stat_errno = errno;
-		if (stat_errno == ENOENT) { /* handle */ }
+		if (errno == ENOENT) { /* handle */ }
 
-		printError(path, strerror(stat_errno));
-
+		printError(path);
 		// set the pointer to this input to NULL, so we know not to process/print it later
 		return NULL;
 	}
-
-	// file was `stat`ted successfully
 
 	/* —— alloc FileStat for Input ———————————————————————————————— */
 	// since we successfully got the `stat` information, we can start building the `FileStat` object
@@ -282,6 +282,7 @@ FileStat *processInput(char *path) {
 	return processDir(pfilestat, 0);
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // spell:ignore prnt
