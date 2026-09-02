@@ -5,7 +5,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#include "model/new-stat-model.h"
+#include "model/stat-model.h"
 
 #define LOG_LEVEL_TABLE \
 	X(TRACE		, 90) \

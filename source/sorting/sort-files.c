@@ -5,11 +5,12 @@
 #include <string.h>
 
 #include "sort.h"
-#include "info/info.h"
 #include "utils/strings.h"
 #include "options/options.h"
 #include "features/mode/mode.h"
 #include "debugging.h"
+
+#ifndef NEW
 
 /// The multiplier which will be applied to a sort if the `--reverse-sort` option is enabled.
 static int REVERSE;
@@ -170,3 +171,5 @@ void sortFiles(FileInfo arr[], const int *arr_count) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#endif /* !NEW */

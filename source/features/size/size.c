@@ -9,7 +9,6 @@
 #include "debugging.h"
 
 #include "size.h"
-#include "model/stat-model.h"
 
 #define CHECK_PRINTF_ERR() do {															\
 	if (str_len < 0 || (size_t)str_len >= sizeof(sizestr)) {							\

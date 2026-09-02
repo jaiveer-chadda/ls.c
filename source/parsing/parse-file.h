@@ -3,7 +3,7 @@
 #ifndef PARSE_FILE_H
 #define PARSE_FILE_H
 
-#include "model/new-stat-model.h"
+#include "model/stat-model.h"
 
 void parseFile(FileStat *const pfile);
 

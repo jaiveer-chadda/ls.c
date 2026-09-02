@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "malloc.h"
-#include "model/stat-model.h"
+#include "model/global.h"
 #include "debugging.h"
 
 #ifdef DEBUG_MODE

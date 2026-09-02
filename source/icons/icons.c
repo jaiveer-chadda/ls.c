@@ -7,9 +7,7 @@
 
 #include "icons.h"
 
-#include "info/info.h"
 #include "utils/strings.h"
-#include "output/output.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
 
@@ -87,9 +85,9 @@ void printIcon(const icon_t icon, const FileColour file_col) {
 		return;
 	}
 
-	// FIXME: this is an impoerfect solution, but it's fine for now
+	// FIXME: this is an imperfect solution, but it's fine for now
 	const char *const colour_str = file_colour_esc[file_col];
-	const bool sets_bg = doesSetBackground(colour_str);
+	const bool sets_bg = false; // doesSetBackground(colour_str);
 
 	PRINTF_ERROR("%s%s%s%s" "%lc" "%s",
 		CSI, colour_str, sets_bg ? ";7" : "", END, icon, RESET

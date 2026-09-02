@@ -5,8 +5,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "apple-alias.h"
-#include "utils/malloc.h"
 
+#include "malloc.h"
 #include "debugging.h"
 
 #define FILE_EXISTS(path) (access((path), F_OK) == 0)

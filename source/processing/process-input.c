@@ -9,7 +9,7 @@
 #include "options/options.h"
 
 #include "model/global.h"
-#include "model/new-stat-model.h"
+#include "model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

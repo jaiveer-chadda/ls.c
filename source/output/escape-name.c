@@ -6,12 +6,10 @@
 #include <string.h>
 #include <sys/ioctl.h>
 
-#include "info/info.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
 
 #include "output.h"
-
 #include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

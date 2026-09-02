@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "model/stat-model.h"
 #include "features/mode/mode.h"
 
 #include "graphics.h"

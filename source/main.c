@@ -12,8 +12,8 @@
 #include "debugging.h" // initDebugging(), debug()
 
 #include "model/global.h" // argv0
+#include "output/output.h" // printFile()
 #include "options/options.h" // setOptions(), DO_CLEAR()
-#include "print/print-file.h" // printFile()
 #include "parsing/parse-file.h" // parseFile()
 #include "processing/process-input.h" // processInput()
 

@@ -1,11 +1,11 @@
-/// @file print/print-file.c
+/// @file output/print-file.c
 
 #include <stdio.h>
 
-#include "print-file.h"
+#include "output.h"
 
 #include "options/options.h"
-#include "model/new-stat-model.h"
+#include "model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

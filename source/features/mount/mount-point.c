@@ -7,6 +7,7 @@
 #include <sys/mount.h>
 
 #include "mount-point.h"
+#include "graphics/graphics.h"
 
 static inline dev_t getDevNo(const path_t path) {
 	struct stat file_info;

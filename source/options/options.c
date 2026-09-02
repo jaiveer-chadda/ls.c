@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "options.h"
+#include "model/global.h"
 #include "utils/malloc.h"
 #include "utils/strings.h"
 

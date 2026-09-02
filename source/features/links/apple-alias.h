@@ -3,7 +3,7 @@
 #ifndef APPLE_ALIAS_INITIALISED
 #define APPLE_ALIAS_INITIALISED
 
-#include "model/stat-model.h"
+#include "model/types.h"
 
 bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t file_path);
 

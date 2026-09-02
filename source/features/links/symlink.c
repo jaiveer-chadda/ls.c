@@ -6,7 +6,6 @@
 #include <sys/types.h> // errno_t
 
 #include "utils/malloc.h"
-#include "model/stat-model.h"
 #include "features/path/path.h"
 
 #include "debugging.h"
