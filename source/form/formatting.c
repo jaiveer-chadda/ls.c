@@ -1,4 +1,4 @@
-/// @file form/init-formatting.c
+/// @file form/formatting.c
 
 #include <string.h>
 #include "formatting.h"
