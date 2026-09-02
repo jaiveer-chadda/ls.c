@@ -20,13 +20,18 @@
 #define C_TIME_SPEC st_ctimespec
 #define B_TIME_SPEC st_btimespec
 
+#define SPEC(chr) chr##_SPEC
+
 #define parseTime_t(type) do {				\
+	size_t b_writ = 0;						\
 	if (do_time_t((type))) {				\
 		pfsf->times[(type)] = parseTime(	\
 			emalloc(sizeof(TimeInfo)),		\
-			(pstat->type##_SPEC.tv_sec)		\
+			(pstat->SPEC(type).tv_sec),		\
+			&b_writ							\
 		);									\
 	}										\
+	setLen(timeFieldStr(type), b_writ);		\
 } while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

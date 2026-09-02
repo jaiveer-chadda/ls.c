@@ -7,6 +7,7 @@
 
 #include "time.h"
 #include "debugging.h"
+#include "form/formatting.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -15,11 +16,11 @@
 #define HOUR (60 * MIN)
 #define DAY  (24 * HOUR)
 
-#define SET_DATE_TEXT(text) b_writ = strftime(timeobj->str, sizeof(timestr), (text TIME_FMT), pTime)
-#define SET_TIME_TEXT(text)	strncpy(timeobj->str, (text), sizeof(timestr))
+#define SET_DATE_TEXT(text) *b_writ = strftime(timeobj->str, sizeof(timestr), (text TIME_FMT), pTime)
+#define SET_TIME_TEXT(text)	*b_writ = sizeof(text); strncpy(timeobj->str, (text), sizeof(timestr))
 
 #define SET_TIME_RELA(unit, text) \
-	snprintf(timeobj->str, sizeof(timestr), ("%ld " text), (long)(t_diff/(unit))) /* always round down */
+	*b_writ = snprintf(timeobj->str, sizeof(timestr), ("%ld " text), (long)(t_diff/(unit))) /* always round down */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -49,12 +50,13 @@ void initTime(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-inline TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time) {
+inline TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *const b_writ) {
 	if (!time_initialised) initTime();
 
 	if (file_time == 0) {
 		debug(WARNING, "parseTime: %s", strerror(errno));
-		strncpy(timeobj->str, TIME_ERR_STR, sizeof(timestr));
+		memcpy(timeobj->str, TIME_ERR_STR, sizeof(TIME_ERR_STR));
+		*b_writ = sizeof(TIME_ERR_STR);
 
 		return timeobj;
 	}
@@ -63,7 +65,7 @@ inline TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time) {
 	const time_t t_diff = current_time - file_time;
 	const struct tm *pTime = localtime(&file_time);
 
-	int b_writ = 0; // bytes written
+	*b_writ = 0; // bytes written
 
 	if		(t_diff <  5 * SEC)				{ SET_TIME_TEXT("Now"			); timeobj->colour = TC_NOW		; }
 	else if	(t_diff <  1 * MIN)				{ SET_TIME_RELA(SEC, "secs"		); timeobj->colour = TC_MIN		; }
@@ -79,10 +81,12 @@ inline TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time) {
 	else if	(t_diff < diff_year	)			{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_THIS_YR	; }
 	else									{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_OTHER	; }
 
-	if (b_writ == -1 || (size_t)b_writ >= sizeof(timestr)) {
+	if ((int)*b_writ == -1 || *b_writ >= sizeof(timestr)) {
 		debug(WARNING, "parseTime: %s", strerror(errno));
-		strncpy(timeobj->str, TIME_ERR_STR, sizeof(timestr));
+		memcpy(timeobj->str, TIME_ERR_STR, sizeof(TIME_ERR_STR));
+		*b_writ = sizeof(TIME_ERR_STR);
 	}
+
 	return timeobj;
 }
 

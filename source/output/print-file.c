@@ -6,6 +6,7 @@
 
 #include "options/options.h"
 #include "model/stat-model.h"
+#include "form/formatting.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -26,10 +27,10 @@ void printFile(FileStat *pFS, const uint8_t depth) {
 	printf("%10s%c%c"	, pFS->mode_str, modext(xat, '@'), modext(acl, '+'));
 
 	printf("%5s %c "	, ch_NUL(size_str, "0"), ch_ful(size_unit, ' '));
-	printf("%-14s%-8s"	, ch_ful(usr_name, "?"), ch_ful(grp_name, "?"));
+	printf("%-*s%-*s"	, getLen(usr_name) + 1, ch_ful(usr_name, "?"), getLen(grp_name) + 1, ch_ful(grp_name, "?"));
 
-	printf("%-12s"		, ch_NUL(flag_str, "-"));
-	printf("%20s"		, ch_ful(times[M_TIME]->str, "-"));
+	printf("%-*s"		, getLen(flag_str) + 1, ch_NUL(flag_str, "-"));
+	printf("%*s"		, getLen(mtime_str) + 1, ch_ful(times[M_TIME]->str, "-"));
 
 	printf("%*s"		, (depth * 4) + 2, "");
 	printf("%s%s%s"		, CSI, file_colour_esc[pFS->f->file_col], END);

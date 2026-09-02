@@ -8,7 +8,7 @@
 /* ——————————————————————————————————————————————————————— */
 
 typedef struct {
-	const char title[8];
+	const char title[10];
 	const char fmt_s[6];
 	const char fmt_l[6];
 	size_t len;
@@ -32,13 +32,28 @@ extern field_t fields[];
 	X(FI_usr_name	, "User"	, "%s"	, "%-*s"	) \
 	X(FI_gid		, "GID"		, "%d"	, "%*d"		) \
 	X(FI_grp_name	, "Group"	, "%s"	, "%-*s"	) \
-	X(FI_time		, "Time"	, "%ld"	, "%*ld"	) \
-	X(FI_time_str	, "Time"	, "%s"	, "%*s"		) \
 	X(FI_majmin		, "Size"	, "%#x"	, "%#*x"	) \
+	\
+	X(FI_atime		, "ATime"	, "%ld"	, "%*ld"	) \
+	X(FI_mtime		, "MTime"	, "%ld"	, "%*ld"	) \
+	X(FI_ctime		, "CTime"	, "%ld"	, "%*ld"	) \
+	X(FI_btime		, "BTime"	, "%ld"	, "%*ld"	) \
+	X(FI_atime_str	, "Accessed", "%s"	, "%*s"		) \
+	X(FI_mtime_str	, "Modified", "%s"	, "%*s"		) \
+	X(FI_ctime_str	, "Changed"	, "%s"	, "%*s"		) \
+	X(FI_btime_str	, "Birth"	, "%s"	, "%*s"		) \
 
 #define X(field, title, fmt_s, fmt_l) field,
 typedef enum { FIELDS_TABLE FI_COUNT } FieldIdx;
 #undef X
+
+#define FIRST_TIME_FIELD	FI_atime
+#define FIRST_TIMESTR_FIELD FI_atime_str
+
+#define timeFieldStr(type)	(FIRST_TIMESTR_FIELD + (type))
+#define timeField(type)		(FIRST_TIME_FIELD	 + (type))
+
+#define getLen(type) ((int)(fields[(FI_##type)].len))
 
 /* ——————————————————————————————————————————————————————— */
 
