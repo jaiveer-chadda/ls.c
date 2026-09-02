@@ -5,8 +5,6 @@
 
 #include "model/stat-model.h"
 
-void initFormatting(void);
-
 /* ——————————————————————————————————————————————————————— */
 
 typedef struct {
@@ -39,8 +37,13 @@ extern field_t fields[];
 	X(FI_majmin		, "Size"	, "%#x"	, "%#*x"	) \
 
 #define X(field, title, fmt_s, fmt_l) field,
-typedef enum { FIELDS_TABLE FI_COUNT } Field;
+typedef enum { FIELDS_TABLE FI_COUNT } FieldIdx;
 #undef X
+
+/* ——————————————————————————————————————————————————————— */
+
+void initFormatting(void);
+void setLen(const FieldIdx field, const size_t length);
 
 /* ——————————————————————————————————————————————————————— */
 

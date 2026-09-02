@@ -13,6 +13,7 @@
 
 #include "model/global.h" // argv0
 #include "output/output.h" // printFile()
+#include "form/formatting.h" // initFormatting()
 #include "options/options.h" // setOptions(), DO_CLEAR()
 #include "parsing/parse-file.h" // parseFile()
 #include "processing/process-input.h" // processInput()
@@ -38,6 +39,7 @@ int main(const int argc, char *argv[]) {
 	// parse the user's inputted options, and find where the options end (& where the files start)
 	//	e.g. if the program is run as `lk --clear --sort name ~/.config/options`, then `files_start` will be 4
 	const int opt_count = setOptions(argc, (const char**)argv);
+	initFormatting();
 
 	/* —— Determine Input Paths —————————————————————————————————————————————————————————————————— */
 

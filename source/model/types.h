@@ -6,16 +6,12 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #include <stddef.h>
+#include <stdbool.h>
 #include <inttypes.h>
 #include <sys/stat.h>
 
 #include "consts.h"
-
-#ifndef bool
-#	define bool	_Bool
-#	define true	1
-#	define false 0
-#endif
+#include "form/formatting.h"
 
 #define st_btimespec st_birthtimespec 
 

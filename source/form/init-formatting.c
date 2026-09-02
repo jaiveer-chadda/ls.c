@@ -1,7 +1,6 @@
 /// @file form/init-formatting.c
 
 #include <string.h>
-
 #include "formatting.h"
 #include "options/options.h"
 
@@ -11,6 +10,9 @@
 field_t fields[FI_COUNT] = { FIELDS_TABLE };
 #undef X
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// called from `main()`
 inline void initFormatting(void) {
 	if (DO_HEADER()) {
 		#define X(fld, ttl, fms, fml) fields[fld].len = sizeof(ttl);
@@ -18,3 +20,11 @@ inline void initFormatting(void) {
 		#undef X
 	}
 }
+
+void setLen(const FieldIdx field, const size_t length) {
+	if (length > fields[field].len) {
+		fields[field].len = length;
+	}
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
