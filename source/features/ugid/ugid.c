@@ -12,6 +12,8 @@ char *getUser(const uid_t uid) {
 	if (pw == NULL) return (char*)NULL;
 
 	const size_t strsize = strlen(pw->pw_name) + 1;
+	setLen(FI_usr_name, strsize);
+
 	return memcpy(malloc(strsize), pw->pw_name, strsize);
 }
 
@@ -20,5 +22,7 @@ char *getGroup(const gid_t gid) {
 	if (grp == NULL) return (char*)NULL;
 
 	const size_t strsize = strlen(grp->gr_name) + 1;
+	setLen(FI_grp_name, strsize);
+
 	return memcpy(emalloc(strsize), grp->gr_name, strsize);
 }

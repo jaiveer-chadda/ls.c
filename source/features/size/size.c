@@ -35,6 +35,8 @@ inline char *parseSize(char *const size_unit, const off_t size, const dev_t rdev
 		CHECK_PRINTF_ERR();
 
 		size_str[str_len] = '\0';
+		setLen(FI_size_str, str_len);
+
 		return memcpy(emalloc(str_len + 1), size_str, str_len + 1);
 	}
 
@@ -69,6 +71,8 @@ inline char *parseSize(char *const size_unit, const off_t size, const dev_t rdev
 	CHECK_PRINTF_ERR();
 
 	size_str[str_len] = '\0';
+	setLen(FI_size_str, str_len);
+
 	return memcpy(emalloc(str_len + 1), size_str, str_len + 1);
 }
 

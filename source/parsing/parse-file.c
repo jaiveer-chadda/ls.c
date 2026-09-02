@@ -56,6 +56,9 @@ void parseFile(FileStat *const pfile) {
 	// `FileStat::mode` is the one field where the field is filled by both `dirent` and `stat`
 	if (!is_incomplete) pfile->mode = pstat->st_mode;
 
+	// make sure to keep calculating the maximum name length
+	setLen(FI_name, pfile->name_len);
+
 	if (do_icon	 ()) pfile->icon   = getIcon(pfile->name, S_ISDIR(pfile->mode));
 	if (do_suffix()) pfile->suffix = getTypeSuffix(pfile->mode);
 

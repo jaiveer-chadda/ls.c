@@ -52,6 +52,8 @@ inline char *parseFlags(const flag_t raw_flags) {
 		}
 	}
 
+	setLen(FI_flag_str, str_len);
+
 	flag_str[str_len++] = '\0';
 	return memcpy(emalloc(str_len), flag_str, str_len);
 }
