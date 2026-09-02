@@ -106,7 +106,7 @@ void d__dump(const FileStat *const fs) {
 		err(I"  "T" "V(time_t)" st_atimespec.tv_sec"E NUM(%ld), pst->st_atimespec.tv_sec );
 		err(I"  "T" "V(time_t)" st_mtimespec.tv_sec"E NUM(%ld), pst->st_mtimespec.tv_sec );
 		err(I"  "T" "V(time_t)" st_ctimespec.tv_sec"E NUM(%ld), pst->st_ctimespec.tv_sec );
-		err(I"  "O" "V(time_t)" st_btimespec.tv_sec"E NUM(%ld), pst->st_btimespec.tv_sec );
+		err(I"  "O" "V(time_t)" st_btimespec.tv_sec"E NUM(%ld), pst->st_birthtimespec.tv_sec );
 		ERR(I);
 	} else {
 		ERR(I"  "O  null);

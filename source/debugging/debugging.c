@@ -1,9 +1,11 @@
 /// @file debugging/debugging.c
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdbool.h>
+#include <execinfo.h>
 
 #define DEBUGGING_IMPLEMENTATION
 #include "debugging.h"
@@ -31,6 +33,8 @@
 #define RPA DIMS(")")
 
 #define REL_PATH(file) (char *)(strstr((char *)(file), "source/") + (int)strlen("source/"))
+
+#define STACK_MAX 128
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -96,6 +100,29 @@ void d__line(void) {
 	toStderr("%s", DIM);
 	for (int i = 0; i < 150; i++) fputs("─", stderr);
 	toStderr("%s\n", RESET);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void d__stacktrace(void) {
+	void *stack_buffer[STACK_MAX];
+
+	// get the current stack return addresses
+	int trace_size = backtrace(stack_buffer, STACK_MAX);
+	// translate addresses into strings
+	char **symbols = backtrace_symbols(stack_buffer, trace_size);
+
+	dline();
+	if (symbols == NULL) {
+		debug(ERROR, "`stacktrace` failed");
+		return;
+	}
+
+	printf("%s function call stack (depth: %d) %s\n", "────────", trace_size, "────────");
+	for (int i = 0; i < trace_size; i++) printf("[%d] %s\n", i, symbols[i]);
+	dline(); 
+
+	free(symbols);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
