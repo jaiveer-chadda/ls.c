@@ -53,6 +53,7 @@ typedef enum { FIELDS_TABLE FI_COUNT } FieldIdx;
 #define timeFieldStr(type)	(FIRST_TIMESTR_FIELD + (type))
 #define timeField(type)		(FIRST_TIME_FIELD	 + (type))
 
+/// Get the calculated maximum length of the inputted field (`type`).
 #define getLen(type) ((int)(fields[(FI_##type)].len))
 
 /* ——————————————————————————————————————————————————————— */
