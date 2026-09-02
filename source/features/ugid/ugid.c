@@ -6,6 +6,7 @@
 
 #include "malloc.h"
 #include "model/types.h"
+#include "form/formatting.h"
 
 char *getUser(const uid_t uid) {
 	const struct passwd *pw = getpwuid(uid);

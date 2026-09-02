@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "mode.h"
+#include "form/formatting.h"
 #include "graphics/graphics.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

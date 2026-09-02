@@ -5,10 +5,10 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include "size.h"
 #include "malloc.h"
 #include "debugging.h"
-
-#include "size.h"
+#include "form/formatting.h"
 
 #define CHECK_PRINTF_ERR() do {															\
 	if (str_len < 0 || (size_t)str_len >= sizeof(sizestr)) {							\

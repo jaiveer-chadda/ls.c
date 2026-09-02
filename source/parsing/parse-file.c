@@ -10,6 +10,7 @@
 #include "options/options.h"
 
 #include "icons/icons.h"
+#include "form/formatting.h"
 #include "features/features.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

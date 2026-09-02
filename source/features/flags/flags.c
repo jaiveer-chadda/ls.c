@@ -5,6 +5,7 @@
 
 #include "malloc.h"
 #include "debugging.h"
+#include "form/formatting.h"
 
 #include "flags.h"
 
