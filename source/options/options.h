@@ -22,7 +22,7 @@ int setOptions(const int argc, const char *argv[]);
 	X(BO_DO_CLEAR			, false	, false	, 'c', { "clear"									}) \
 	X(BO_DO_HEADER			, false	, false	, 'H', { "header"		, "headers"					}) \
 	X(BO_DO_DIVIDERS		, true	, false	, '_', { "divider"		, "dividers"				}) \
-	X(BO_DO_MOUNT_DEV		, true	, false	, 'M', { "mount"		, "mounts"					}) \
+	X(BO_DO_MOUNTDEV		, true	, false	, 'M', { "mount"		, "mounts"					}) \
 	X(BO_DO_DIM_HIDDEN		, true	, false	, '.', { "dim-hidden"	, "dim"						}) \
 	X(BO_DIRS_AS_FILES		, false	, false	, 'd', { "dirs-as-files", "treat-dirs-as-files"		}) \
 	X(BO_SORT_DIRS_FIRST	, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}) \
@@ -81,7 +81,7 @@ bool DO_SHORT_FLAGS	(void);
 bool DO_CLEAR		(void);
 bool DO_HEADER		(void);
 bool DO_DIVIDERS	(void);
-bool DO_MOUNT_DEV	(void);
+bool DO_MOUNTDEV	(void);
 bool DO_DIM_HIDDEN	(void);
 bool DIRS_AS_FILES	(void);
 bool SORT_DIRS_FIRST(void);

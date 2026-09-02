@@ -112,7 +112,7 @@ inline void printFields(const FileInfo *all_files, const int *count) {
 		if (DO_SYMLINK()) { printSymlink(file.link_to, file.ln_suf, file.link_col, file.is_ln_apple); ff; }
 
 		// then, if the file's a mount point, print some information about the mount
-		if (DO_MOUNT_DEV() && file.is_mount) { printMountDevice(file.name); ff; }
+		if (DO_MOUNTDEV() && file.is_mount) { printMountDevice(file.name); ff; }
 
 		// finally, print a newline and move onto the next file
 		putchar('\n');

@@ -58,13 +58,11 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
-	if (!is_incomplete) {
-		// `FileStat::mode` is the one field where the field holds both the `dirent` and `stat` info
-		pfile->mode = pstat->st_mode;
-	}
+	// `FileStat::mode` is the one field where the field is filled by both `dirent` and `stat`
+	if (!is_incomplete) pfile->mode = pstat->st_mode;
 
+	if (do_icon	 ()) pfile->icon   = getIcon(pfile->name, S_ISDIR(pfile->mode));
 	if (do_suffix()) pfile->suffix = getTypeSuffix(pfile->mode);
-	if (do_icon()) pfile->icon = getIcon(pfile->name, S_ISDIR(pfile->mode));
 
 	if (do_mode_str()) {
 		getMode(pfile->mode_str, pfile->mode);	  // find the basic mode string ("drwxr-xr-x")
@@ -76,14 +74,13 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
-	if (do_flag_str()) pfsf->flag_str = parseFlags(pstat->st_flags);
 	if (do_usr_name()) pfsf->usr_name = getUser(pstat->st_uid);
 	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
+	if (do_flag_str()) pfsf->flag_str = parseFlags(pstat->st_flags);
+	if (DO_MOUNTDEV()) pfsf->is_mount = isMountPoint(pstat->st_dev, pfile->path);
+	if (DO_COLOUR  ()) pfsf->file_col = setFileColour(pfile->name, pfile->mode, pstat->st_flags, pfsf->is_mount);
 	if (do_time_str()) { parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); }
-
-	if (DO_MOUNT_DEV())	pfsf->is_mount = isMountPoint(pstat->st_dev, pfile->path);
-	if (DO_COLOUR())	pfsf->file_col = setFileColour(pfile->name, pfile->mode, pstat->st_flags, pfsf->is_mount);
 
 	if (!S_ISDIR(pstat->st_mode) && pstat->st_nlink > 1) pfsf->do_link_hl = true;
 

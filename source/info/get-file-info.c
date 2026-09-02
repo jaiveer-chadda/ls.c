@@ -49,7 +49,7 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	pFile->time		= pInfo->st_mtimespec.tv_sec;
 
 	// parse the raw stat information into human-readable display formats
-	// if (DO_MOUNT_DEV()) pFile->is_mount	= isMountPoint(pInfo->st_dev, path);
+	// if (DO_MOUNTDEV()) pFile->is_mount	= isMountPoint(pInfo->st_dev, path);
 	// if (do_suffix  	())	pFile->suffix	= getTypeSuffix(pInfo->st_mode);
 	// if (do_icon		())	pFile->icon		= getIcon(pFile->name, IS_REALPATH_DIR(pInfo->st_mode, pFile->ln_suf));
 
