@@ -16,8 +16,9 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/// If `name` is ".", then replace it with the full path to `$PWD`. Otherwise, just reinsert the name.
-#define GET_NAME(name)	(strcmp((name), DOTDIR) == 0 ? G_DOTDIR_PATH : (name))
+// /// If `name` is ".", then replace it with the full path to `$PWD`. Otherwise, just reinsert the name.
+// #define GET_NAME(name)	(strcmp((name), DOTDIR) == 0 ? G_DOTDIR_PATH : (name))
+#define GET_NAME(name) (name)
 
 #define DO_OCT_ESC(chr) (0 <= (chr) && (chr) <= 7)
 #define DO_HEX_ESC(chr) ((7 < (chr) && (chr) <= 31) || (chr) == 127)

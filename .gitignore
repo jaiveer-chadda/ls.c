@@ -8,5 +8,7 @@ archive/
 *.tmp*
 _*
 
+!_output/
+
 resources/icons/icons.rs
 resources/POSIX/ls.html

@@ -44,14 +44,14 @@ static inline icon_t findIconMatch(const char *check_str, const Icon icon_arr[])
 icon_t getIcon(const char *filename, const bool is_dir) {
 	name_t name;
 	char *make_lower = (char *)filename;
-	// make the filename lowercase, so we can find more matches
-	// if the filename is `.`, then get the basename of the actual path, and make that lowercase instead
-	if (strcmp(filename, DOTDIR) == 0) {
-		const char *basename = strrchr(G_DOTDIR_PATH, '/');
-		if (basename != NULL) {
-			make_lower = (char *)basename + 1;
-		}
-	}
+	// // make the filename lowercase, so we can find more matches
+	// // if the filename is `.`, then get the basename of the actual path, and make that lowercase instead
+	// if (strcmp(filename, DOTDIR) == 0) {
+	// 	const char *basename = strrchr(G_DOTDIR_PATH, '/');
+	// 	if (basename != NULL) {
+	// 		make_lower = (char *)basename + 1;
+	// 	}
+	// }
 	toLower(name, make_lower);
 
 	const Icon *NAME_ARRAY = (Icon *)(is_dir ? &DIRNAME_ICONS : &FILENAME_ICONS);

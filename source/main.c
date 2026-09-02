@@ -3,68 +3,23 @@
  * @file main.c
  */
 
-#include <stdio.h>
-#include <locale.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h> // printf()
+#include <string.h> // strrchr()
+#include <locale.h> // setlocale()
 
-#include "malloc.h"
-#include "strings.h"
-#include "debugging.h"
+#include "malloc.h" // efree()
+#include "strings.h" // strends()
+#include "debugging.h" // initDebugging(), debug()
 
-#include "model/global.h"
-#include "model/new-stat-model.h"
-
-#include "options/options.h"
-#include "parsing/parse-file.h"
-#include "processing/process-input.h"
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#define modext(field, istru) (pFS->has_##field	?  (istru) : ' ')
-#define ch_ful(field, nfull) (pFS->f != NULL	?  (pFS->f->field) : nfull)
-#define ch_NUL(field, isnul) (pFS->f != NULL	? ((pFS->f->field) != NULL ? (pFS->f->field) : isnul) : "?")
-
-static inline void printfields(FileStat *pFS, const uint8_t depth) {
-	// if an file's FileStat pointer points to `NULL`, we weren't able to be `stat` it in the first place
-	if (pFS == NULL) return;
-
-	/* ———————————————————————————————————————————————— */
-
-	printf("%8x "		, (unsigned)pFS->inum);
-	printf("%06o "		, pFS->mode);
-	printf("%10s%c%c"	, pFS->mode_str, modext(xat, '@'), modext(acl, '+'));
-
-	printf("%5s %c "	, ch_NUL(size_str, "0"), ch_ful(size_unit, ' '));
-	printf("%-14s%-8s"	, ch_ful(usr_name, "?"), ch_ful(grp_name, "?"));
-
-	printf("%-12s"		, ch_NUL(flag_str, "-"));
-	printf("%20s"		, ch_ful(times[M_TIME]->str, "-"));
-
-	printf("%*s"		, (depth * 4) + 2, "");
-	printf("%s%s%s"		, CSI, file_colour_esc[pFS->f->file_col], END);
-	printf("%lc %s"		, pFS->icon, pFS->name);
-	printf("%s%c%s"		, "\33[34m", pFS->suffix, RESET);
-
-	putchar('\n');
-
-	/* ———————————————————————————————————————————————— */
-
-	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
-
-	if (pFS->f == NULL || pFS->f->child_count == -1) { printf("\t%*s[[ error ]]\n", 92, ""); return; }
-	else if 			 (pFS->f->child_count ==  0) { printf("\t%*s(  empty  )\n", 92, ""); return; }
-
-	/* ———————————————————————————————————————————————— */
-
-	for (int i = 0; i < pFS->f->child_count; i++) printfields(&pFS->f->children[i], depth + 1);
-}
+#include "model/global.h" // argv0
+#include "options/options.h" // setOptions(), DO_CLEAR()
+#include "print/print-file.h" // printFile()
+#include "parsing/parse-file.h" // parseFile()
+#include "processing/process-input.h" // processInput()
 
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline const char *getArgv0(const int argc, char *restrict argv[]);
-
-path_t G_DOTDIR_PATH;
 const char *argv0;
 
 /* ── ── main() ── ───────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -133,8 +88,8 @@ int main(const int argc, char *argv[]) {
 	#endif
 
 	// print each of the inputs in the order they were given
-	// `printfields` will recurse into the file and print as many levels as was specified
-	for (int i = 0; i < file_count; i++) printfields(inputs[i], 0);
+	// `printFile` will recurse into the file and print as many levels as was specified
+	for (int i = 0; i < file_count; i++) printFile(inputs[i], 0);
 
 	/* —— Cleanup ———————————————————————————————————————————————————————————————————————————————— */
 
