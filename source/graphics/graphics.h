@@ -340,7 +340,7 @@ extern const char *const size_colour_esc[SC_COUNT];
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 
 #include "model/types.h"
-void setFileColour(FileColour *colour, const name_t name, const mode_t mode, const flag_t flags, const bool is_mount);
+FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flags, const bool is_mount);
 
 #ifdef DEBUG_MODE
 #	define clearScreen()

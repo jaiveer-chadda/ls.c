@@ -15,6 +15,7 @@
 #include "features/time/time.h"
 #include "features/ugid/ugid.h"
 #include "features/flags/flags.h"
+#include "features/mount/mount-point.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -80,6 +81,11 @@ void parseFile(FileStat *const pfile) {
 	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
 	if (do_time_str()) { parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); }
+
+	if (DO_MOUNT_DEV())	pfsf->is_mount = isMountPoint(pstat->st_dev, pfile->path);
+	if (DO_COLOUR())	pfsf->file_col = setFileColour(pfile->name, pfile->mode, pstat->st_flags, pfsf->is_mount);
+
+	if (!S_ISDIR(pstat->st_mode) && pstat->st_nlink > 1) pfsf->do_link_hl = true;
 
 	/* ————————————————————————————————————————————————————————— */
 

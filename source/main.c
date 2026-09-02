@@ -42,8 +42,9 @@ static inline void printfields(FileStat *pFS, const uint8_t depth) {
 	printf("%20s"		, ch_ful(times[M_TIME]->str, "-"));
 
 	printf("%*s"		, (depth * 4) + 2, "");
+	printf("%s%s%s"		, CSI, file_colour_esc[pFS->f->file_col], END);
 	printf("%lc %s"		, pFS->icon, pFS->name);
-	printf("%s%c%s"		, "\33[34m", pFS->suffix, "\33[m");
+	printf("%s%c%s"		, "\33[34m", pFS->suffix, RESET);
 
 	putchar('\n');
 

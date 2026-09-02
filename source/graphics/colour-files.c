@@ -46,8 +46,7 @@ static const char *ALL_TEMP_BACK_EXTS [] = {
 		ALL_ ## type ## _EXTS,				\
 		GET_ARR_LEN(ALL_ ## type ## _EXTS))	\
 	) {										\
-		*colour = FC_ ## type;				\
-		return;								\
+		return FC_ ## type;					\
 	}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -61,64 +60,55 @@ static inline bool strInArr(const char *string, const char *array[], const int a
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void setFileColour(FileColour *colour, const name_t name, const mode_t mode, const flag_t flags, const bool is_mount) {
+FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flags, const bool is_mount) {
 
 	/* —— Flags ————————————————————————————————————————————————— */
 
 	// dataless files have the highest priority, so if the file is dataless, colour it and return immediately
-	if (flags & SF_DATALESS) { *colour = FC_DATALESS; return; }
+	if (flags & SF_DATALESS) return FC_DATALESS;
 
 	/* —— Type —————————————————————————————————————————————————— */
 
 	// colour the file based on its type - filetype has the next highest priority after dataless
 	switch (mode & TYPE_MASK) {
-		case S_IFIFO:	*colour = FC_PIPE		; return; // named pipe
-		case S_IFCHR:	*colour = FC_CHR_DEV	; return; // char device
-		case S_IFBLK:	*colour = FC_BLK_DEV	; return; // block device
-		case S_IFLNK:	*colour = FC_SYMLINK	; return; // symbolic link
-		case S_IFSOCK:	*colour = FC_SOCKET		; return; // socket
-		case S_IFWHT:	*colour = FC_WHITEOUT	; return; // whiteout
+		case S_IFIFO:	return FC_PIPE		; // named pipe
+		case S_IFCHR:	return FC_CHR_DEV	; // char device
+		case S_IFBLK:	return FC_BLK_DEV	; // block device
+		case S_IFLNK:	return FC_SYMLINK	; // symbolic link
+		case S_IFSOCK:	return FC_SOCKET	; // socket
+		case S_IFWHT:	return FC_WHITEOUT	; // whiteout
 
 		/* —— Permissions ——————————————————————————————————————— */
 
-		case S_IFDIR:									  // directories
-			if		(mode & S_ISVTX) *colour = GET_STICKY_COLOUR(mode);	// directory w/ sticky bit set
-			else if (mode & S_IWOTH) *colour = FC_OW_DIR;				// other-writeable directory
-			else if (is_mount)		 *colour = FC_MOUNT;				// mount point
-			else					 *colour = FC_DIRECT;				// regular directory
-			return;
-
-		default: break;
+		case S_IFDIR:						  // directories
+			if (mode & S_ISVTX)	return GET_STICKY_COLOUR(mode);	// directory w/ sticky bit set
+			if (mode & S_IWOTH)	return FC_OW_DIR;				// other-writeable directory
+			if (is_mount)		return FC_MOUNT;				// mount point
+			else				return FC_DIRECT;				// regular directory
 	}
 
 	// colour the file based on the suid/sgid bits
 	// note: directories with the suid/sgid bit are intentionally not coloured by these suid/sgid colours
-	if (mode & S_ISUID) { *colour = GET_SUID_COLOUR(mode); return; } // file w/ suid bit set
-	if (mode & S_ISGID) { *colour = GET_SGID_COLOUR(mode); return; } // file w/ sgid bit set
+	if (mode & S_ISUID) return GET_SUID_COLOUR(mode); // file w/ suid bit set
+	if (mode & S_ISGID) return GET_SGID_COLOUR(mode); // file w/ sgid bit set
 
-	if (mode & EXEC_MASK) { *colour = FC_EXEC; return; } // executable file
-
-	/* —— Regular File —————————————————————————————————————————— */
-
-	// file is a regular file
-	*colour = FC_REGULAR;
+	if (mode & EXEC_MASK) return FC_EXEC; // executable file
 
 	/* —— Specific Filenames ———————————————————————————————————— */
 
-	if (name == NULL) return;
+	if (name == NULL) return FC_REGULAR;
 
 	const size_t name_len = strlen(name);
 
 	// if a file ends with a `~` or `#`, then it's a temporary file
 	if (name[name_len] == '~' || name[name_len] == '#') {
-		*colour = FC_TEMP_BACK;
-		return;
+		return FC_TEMP_BACK;
 	}
 
 	/* —— Extensions ———————————————————————————————————————————— */
 
-	const char* extension = strrchr(name, '.');
-	if (extension == name || extension == NULL) return;
+	const char *extension = strrchr(name, '.');
+	if (extension == name || extension == NULL) return FC_REGULAR;
 
 	CHECK_EXTENSION_TYPE(COMPRESSED);
 	CHECK_EXTENSION_TYPE(IMAGE);
@@ -126,6 +116,8 @@ void setFileColour(FileColour *colour, const name_t name, const mode_t mode, con
 	CHECK_EXTENSION_TYPE(AUDIO_UNCM);
 	CHECK_EXTENSION_TYPE(AUDIO_COMP);
 	CHECK_EXTENSION_TYPE(TEMP_BACK);
+
+	return FC_REGULAR;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

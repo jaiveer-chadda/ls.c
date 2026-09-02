@@ -49,7 +49,7 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	pFile->time		= pInfo->st_mtimespec.tv_sec;
 
 	// parse the raw stat information into human-readable display formats
-	if (DO_MOUNT_DEV()) pFile->is_mount	= isMountPoint(pInfo->st_dev, path);
+	// if (DO_MOUNT_DEV()) pFile->is_mount	= isMountPoint(pInfo->st_dev, path);
 	// if (do_suffix  	())	pFile->suffix	= getTypeSuffix(pInfo->st_mode);
 	// if (do_icon		())	pFile->icon		= getIcon(pFile->name, IS_REALPATH_DIR(pInfo->st_mode, pFile->ln_suf));
 
@@ -66,7 +66,9 @@ static inline void parseStatObject(FileInfo *pFile, const struct stat *pInfo, co
 	// } 
 
 	// work out the colour of the filename
-	if (DO_COLOUR()) setFileColour(&pFile->file_col, pFile->name, pInfo->st_mode, pInfo->st_flags, pFile->is_mount);
+	// if (DO_COLOUR()) setFileColour(&pFile->file_col, pFile->name, pInfo->st_mode, pInfo->st_flags, pFile->is_mount);
+
+	(void)path;
 
 	// if the file has more than one link, and isn't a directory, then mark it for highlighting as hardlinked
 	if (!S_ISDIR(pInfo->st_mode) && pInfo->st_nlink > 1) {
@@ -113,7 +115,7 @@ static inline bool getTargetInfo(FileInfo *pFile, const path_t path) {
 	if (pFile->ln_suf == '\0') pFile->link_to = getLink(path);
 	pFile->ln_suf = getTypeSuffix(target_info.st_mode);
 	pFile->is_mount	= isMountPoint(target_info.st_dev, path);
-	setFileColour(&pFile->link_col, pFile->link_to, target_info.st_mode, target_info.st_flags, pFile->is_mount);
+	// setFileColour(&pFile->link_col, pFile->link_to, target_info.st_mode, target_info.st_flags, pFile->is_mount);
 
 	if (stat_did_fail) pFile->ln_suf = INVALID_LINK;
 	return stat_did_fail;
