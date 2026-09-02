@@ -79,7 +79,7 @@ void getMode(modestr mode_str, const mode_t oct_mode) {
 	PARSE_PERM(grp, 02,	  SGID_X_BIT_CHAR);
 	PARSE_PERM(oth, 01,	STICKY_X_BIT_CHAR);
 
-	setLen(FI_grp_name,
+	setLen(FI_mode_str,
 		snprintf(mode_str, sizeof(modestr), "%c%s%s%s", getModeType(oct_mode), usr_str, grp_str, oth_str)
 	);
 }
