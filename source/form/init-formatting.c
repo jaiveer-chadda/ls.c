@@ -4,9 +4,20 @@
 #include "formatting.h"
 #include "options/options.h"
 
-#define X(fld, ttl, fms, fml) \
-	/* initialise the array, and set all the elements' lengths to 0 */ \
-	[fld] = (field_t){ .title = ttl, .fmt_s = fms, .fmt_l = fml, .len = 0 },
+#define FMT_left "-"
+#define FMT_right ""
+
+#define GET_FMT_S(fmt, lor) "%" FMT_##lor	  #fmt
+#define GET_FMT_L(fmt, lor) "%" FMT_##lor "*" #fmt
+
+/* initialise the array, and set all the elements' lengths to 0 */
+#define X(fld, hdr, fmt, lor)			\
+	[FI_##fld] = (field_t){				\
+		.title = hdr,					\
+		.fmt_s = GET_FMT_S(fmt, lor),	\
+		.fmt_l = GET_FMT_L(fmt, lor),	\
+		.len   = 0						\
+	},
 
 field_t fields[FI_COUNT] = { FIELDS_TABLE };
 #undef X
@@ -17,8 +28,8 @@ field_t fields[FI_COUNT] = { FIELDS_TABLE };
 inline void initFormatting(void) {
 	if (DO_HEADER()) {
 		// if we're printing a header, then set all field lengths to the lengths of their header strings
-		#define X(fld, ttl, fms, fml) \
-			fields[fld].len = sizeof(ttl) - 1;
+		#define X(fld, hdr, fmt, lor) \
+			fields[FI_##fld].len = sizeof(hdr) - 1;
 
 		FIELDS_TABLE
 		#undef X

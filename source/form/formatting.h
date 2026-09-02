@@ -8,7 +8,7 @@
 /* ——————————————————————————————————————————————————————— */
 
 typedef struct {
-	const char title[10];
+	const char title[12];
 	const char fmt_s[6];
 	const char fmt_l[6];
 	size_t len;
@@ -17,33 +17,33 @@ typedef struct {
 extern field_t fields[];
 
 #define FIELDS_TABLE \
-	/* field		  title		  fmt_s	  fmt_l	   */ \
-	X(FI_name		, "Name"	, "%s"	, "%*s"		) \
-	X(FI_nlink		, "Links"	, "%d"	, "%*d"		) \
-	X(FI_dev_no		, "Dev No"	, "%d"	, "%*d"		) \
-	X(FI_inode		, "Inode"	, "%llu", "%*llu"	) \
-	X(FI_flags		, "Flags"	, "%x"	, "%*x"		) \
-	X(FI_flag_str	, "Flags"	, "%s"	, "%-*s"	) \
-	X(FI_mode		, "Mode"	, "%o"	, "%0*o"	) \
-	X(FI_mode_str	, "Perms"	, "%s"	, "%-*s"	) \
-	X(FI_size		, "Size"	, "%zd"	, "%*zd"	) \
-	X(FI_size_str	, "Size"	, "%s"	, "%*s"		) \
-	X(FI_uid		, "UID"		, "%d"	, "%*d"		) \
-	X(FI_usr_name	, "User"	, "%s"	, "%-*s"	) \
-	X(FI_gid		, "GID"		, "%d"	, "%*d"		) \
-	X(FI_grp_name	, "Group"	, "%s"	, "%-*s"	) \
-	X(FI_majmin		, "Size"	, "%#x"	, "%#*x"	) \
+	/* field	 header		 fmt  L/R	*/\
+	X(name		, "Name"	, s	, left	) \
+	X(nlink		, "Links"	, d	, right	) \
+	X(dev_no	, "Dev No"	, d	, right	) \
+	X(inum		, "Inode No", llu,right	) \
+	X(flags		, "Flags"	, x	, right	) \
+	X(flag_str	, "Flags"	, s	, left	) \
+	X(mode		, "Mode"	, o	, right	) \
+	X(mode_str	, "Perms"	, s	, left	) \
+	X(size		, "Size"	, zd, right	) \
+	X(size_str	, "Size"	, s	, right	) \
+	X(uid		, "UID"		, d	, right	) \
+	X(usr_name	, "User"	, s	, left	) \
+	X(gid		, "GID"		, d	, right	) \
+	X(grp_name	, "Group"	, s	, left	) \
 	\
-	X(FI_atime		, "ATime"	, "%ld"	, "%*ld"	) \
-	X(FI_mtime		, "MTime"	, "%ld"	, "%*ld"	) \
-	X(FI_ctime		, "CTime"	, "%ld"	, "%*ld"	) \
-	X(FI_btime		, "BTime"	, "%ld"	, "%*ld"	) \
-	X(FI_atime_str	, "Accessed", "%s"	, "%*s"		) \
-	X(FI_mtime_str	, "Modified", "%s"	, "%*s"		) \
-	X(FI_ctime_str	, "Changed"	, "%s"	, "%*s"		) \
-	X(FI_btime_str	, "Birth"	, "%s"	, "%*s"		) \
+	X(atime		, "ATime"	, ld, right	) \
+	X(mtime		, "MTime"	, ld, right	) \
+	X(ctime		, "CTime"	, ld, right	) \
+	X(btime		, "BTime"	, ld, right	) \
+	X(atime_str	, "Accessed", s	, right	) \
+	X(mtime_str	, "Modified", s	, right	) \
+	X(ctime_str	, "Changed"	, s	, right	) \
+	X(btime_str	, "Birth"	, s	, right	) \
+/**/
 
-#define X(field, title, fmt_s, fmt_l) field,
+#define X(fld, hdr, fms, lor) FI_##fld,
 typedef enum { FIELDS_TABLE FI_COUNT } FieldIdx;
 #undef X
 

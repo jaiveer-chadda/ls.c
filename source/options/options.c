@@ -298,7 +298,7 @@ MAKE_BIN_OPT_FUNC(do_link_to )
 
 MAKE_BIN_OPT_FUNC(do_nlink	 )
 MAKE_BIN_OPT_FUNC(do_dev_no	 )
-MAKE_BIN_OPT_FUNC(do_inode	 )
+MAKE_BIN_OPT_FUNC(do_inum	 )
 
 MAKE_BIN_OPT_FUNC(do_flags	 )	MAKE_BIN_OPT_FUNC(do_flag_str)
 MAKE_BIN_OPT_FUNC(do_mode	 )	MAKE_BIN_OPT_FUNC(do_mode_str)

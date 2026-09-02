@@ -13,6 +13,7 @@
 #include "consts.h"
 
 #define st_btimespec st_birthtimespec 
+#define st_btime st_btimespec.tv_sec
 
 /* ——————————————————————————————————————————————————— */
 

@@ -3,10 +3,9 @@
 #include <stdio.h>
 
 #include "output.h"
-
+#include "form/formatting.h"
 #include "options/options.h"
 #include "model/stat-model.h"
-#include "form/formatting.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -26,13 +25,13 @@ void printFile(FileStat *pFS, const uint8_t depth) {
 	printf("%06o "		, pFS->mode);
 	printf("%10s%c%c"	, pFS->mode_str, modext(xat, '@'), modext(acl, '+'));
 
-	printf("%5s %c "	, ch_NUL(size_str, "0"), ch_ful(size_unit, ' '));
-	printf("%-*s%-*s"	, getLen(usr_name) + 1, ch_ful(usr_name, "?"), getLen(grp_name) + 1, ch_ful(grp_name, "?"));
+	printf("%*s %c "	, getLen(size_str), ch_NUL(size_str, "-"), ch_ful(size_unit, ' '));
+	printf("%-*s %-*s "	, getLen(usr_name), ch_ful(usr_name, "?"), getLen(grp_name), ch_ful(grp_name, "?"));
 
-	printf("%-*s"		, getLen(flag_str) + 1, ch_NUL(flag_str, "-"));
-	printf("%*s"		, getLen(mtime_str) + 1, ch_ful(times[M_TIME]->str, "-"));
+	printf("%-*s "		, getLen(flag_str), ch_NUL(flag_str, "-"));
+	printf("%*s"		, getLen(mtime_str), ch_ful(times[M_TIME]->str, "-"));
 
-	printf("%*s"		, (depth * 4) + 2, "");
+	printf("%*s"		, (depth * 4) + 1, "");
 	printf("%s%s%s"		, CSI, file_colour_esc[pFS->f->file_col], END);
 	printf("%lc %s"		, pFS->icon, pFS->name);
 	printf("%s%c%s"		, "\33[34m", pFS->suffix, RESET);
