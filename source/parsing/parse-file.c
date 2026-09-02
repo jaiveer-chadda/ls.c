@@ -23,47 +23,16 @@
 #define SPEC(chr) chr##_SPEC
 
 #define parseTime_t(type) do {				\
-	size_t b_writ = 0;						\
 	if (do_time_t((type))) {				\
+		size_t b_writ = 0;					\
 		pfsf->times[(type)] = parseTime(	\
 			emalloc(sizeof(TimeInfo)),		\
 			(pstat->SPEC(type).tv_sec),		\
 			&b_writ							\
 		);									\
+		setLen(timeFieldStr(type), b_writ);	\
 	}										\
-	setLen(timeFieldStr(type), b_writ);		\
 } while (0)
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#define st_dev_no st_dev
-
-#define GET_LEN(field, var) ((size_t)snprintf(NULL, 0, fields[field].fmt_s, (var)))
-#define SET_LEN(field, cond) if (cond) setLen(FI_##field, GET_LEN(FI_##field, pfile->s->st_##field))
-
-#define CHECK_STAT_LEN(field)		SET_LEN(field, do_ ## field())
-#define CHECK_TIME_LEN(field, idx)	SET_LEN(field, do_time_t(idx))
-
-void checkBasicLengths(const FileStat *const pfile) {
-	if (do_inum()) setLen(FI_inum, GET_LEN(FI_inum, pfile->inum));
-	if (do_mode()) setLen(FI_mode, GET_LEN(FI_mode, pfile->mode));
-}
-
-void checkFullLengths(const FileStat *const pfile) {
-	CHECK_STAT_LEN(dev_no);
-	CHECK_STAT_LEN(flags);
-	CHECK_STAT_LEN(gid);
-	CHECK_STAT_LEN(uid);
-	CHECK_STAT_LEN(nlink);
-	CHECK_STAT_LEN(size);
-
-	if (do_time()) {
-		CHECK_TIME_LEN(atime, A_TIME);
-		CHECK_TIME_LEN(mtime, M_TIME);
-		CHECK_TIME_LEN(ctime, C_TIME);
-		CHECK_TIME_LEN(btime, B_TIME);
-	}
-}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -105,7 +74,7 @@ void parseFile(FileStat *const pfile) {
 		pfile->has_xat = checkXattr(pfile->name); // find out whether the file has any extended attributes ("@")
 	}
 
-	checkBasicLengths(pfile); // calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
+	checkLengths(pfile); // calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
 
 	if (is_incomplete) return;
 
@@ -121,7 +90,7 @@ void parseFile(FileStat *const pfile) {
 
 	if (!S_ISDIR(pstat->st_mode) && pstat->st_nlink > 1) pfsf->do_link_hl = true;
 
-	checkFullLengths(pfile); // calculate the lengths of all numerical fields (i.e., non-string fields)
+	checkLengths(pfile); // calculate the lengths of all numerical fields (i.e., non-string fields)
 
 	/* ————————————————————————————————————————————————————————— */
 
