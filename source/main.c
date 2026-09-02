@@ -128,6 +128,10 @@ int main(const int argc, char *argv[]) {
 	//	this should hopefully lead to the smoothest output
 	clearScreen();
 
+	#if defined(DEBUG_MODE) && defined(DUMP)
+		dump(inputs[0]);
+	#endif
+
 	// print each of the inputs in the order they were given
 	// `printfields` will recurse into the file and print as many levels as was specified
 	for (int i = 0; i < file_count; i++) printfields(inputs[i], 0);
