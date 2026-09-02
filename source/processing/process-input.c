@@ -279,7 +279,7 @@ FileStat *processInput(char *path) {
 		return pfilestat;
 
 	// if the input was a directory, however, we need to find & process its children
-	return processDir(pfilestat, 0);
+	return processDir(pfilestat, 1);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
