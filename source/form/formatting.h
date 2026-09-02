@@ -59,7 +59,7 @@ typedef enum { FIELDS_TABLE FI_COUNT } FieldIdx;
 /* ——————————————————————————————————————————————————————— */
 
 void initFormatting(void);
-void checkLengths(const FileStat *const pfile);
+void checkLengths(const FileStat *const pfile, const bool do_basic);
 void setLen(const FieldIdx field, const size_t length);
 
 /* ——————————————————————————————————————————————————————— */

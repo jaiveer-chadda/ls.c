@@ -21,7 +21,7 @@ void printFile(FileStat *pFS, const uint8_t depth) {
 
 	/* ———————————————————————————————————————————————— */
 
-	printf("%8x "		, (unsigned)pFS->inum);
+	printf("%*llu "		, getLen(inum), pFS->inum);
 	printf("%06o "		, pFS->mode);
 	printf("%10s%c%c"	, pFS->mode_str, modext(xat, '@'), modext(acl, '+'));
 
@@ -29,12 +29,16 @@ void printFile(FileStat *pFS, const uint8_t depth) {
 	printf("%-*s %-*s "	, getLen(usr_name), ch_ful(usr_name, "?"), getLen(grp_name), ch_ful(grp_name, "?"));
 
 	printf("%-*s "		, getLen(flag_str), ch_NUL(flag_str, "-"));
-	printf("%*s"		, getLen(mtime_str), ch_ful(times[M_TIME]->str, "-"));
+	printf(CSI_FG"%sm" "%*s" RESET,
+		time_colour_esc[pFS->f->times[M_TIME]->colour],
+		getLen(mtime_str),
+		ch_ful(times[M_TIME]->str, "-")
+	);
 
 	printf("%*s"		, (depth * 4) + 1, "");
 	printf("%s%s%s"		, CSI, file_colour_esc[pFS->f->file_col], END);
 	printf("%lc %s"		, pFS->icon, pFS->name);
-	printf("%s%c%s"		, "\33[34m", pFS->suffix, RESET);
+	printf("%s%c%s"		, "\33[;34m", pFS->suffix, RESET);
 
 	putchar('\n');
 

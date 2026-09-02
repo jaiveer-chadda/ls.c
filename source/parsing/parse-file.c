@@ -74,7 +74,7 @@ void parseFile(FileStat *const pfile) {
 		pfile->has_xat = checkXattr(pfile->name); // find out whether the file has any extended attributes ("@")
 	}
 
-	checkLengths(pfile); // calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
+	checkLengths(pfile, true); // calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
 
 	if (is_incomplete) return;
 
@@ -90,7 +90,7 @@ void parseFile(FileStat *const pfile) {
 
 	if (!S_ISDIR(pstat->st_mode) && pstat->st_nlink > 1) pfsf->do_link_hl = true;
 
-	checkLengths(pfile); // calculate the lengths of all numerical fields (i.e., non-string fields)
+	checkLengths(pfile, false); // calculate the lengths of all numerical fields (i.e., non-string fields)
 
 	/* ————————————————————————————————————————————————————————— */
 

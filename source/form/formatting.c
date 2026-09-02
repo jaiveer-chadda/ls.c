@@ -58,8 +58,8 @@ inline void setLen(const FieldIdx field, const size_t length) {
 #define CHECK_TIME_LEN(field, idx)	SET_LEN(field, do_time_t(idx))
 
 // called from `parseFile()`
-void checkLengths(const FileStat *const pfile) {
-	if (pfile->f == NULL) {
+void checkLengths(const FileStat *const pfile, const bool do_basic) {
+	if (do_basic) {
 		if (do_inum()) setLen(FI_inum, GET_LEN(FI_inum, pfile->inum));
 		if (do_mode()) setLen(FI_mode, GET_LEN(FI_mode, pfile->mode));
 		return;
