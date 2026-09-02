@@ -5,6 +5,8 @@
 
 #include "model/types.h"
 
-void printFile(FileStat *pFS, const uint8_t depth);
+#define NO_LINES ((const bool[RECURSION_LIMIT]){0})
+
+void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_last, const lines_t lines);
 
 #endif /* !OUTPUT_H */

@@ -11,6 +11,7 @@ typedef struct {
 	const char title[12];
 	const char fmt_s[6];
 	const char fmt_l[6];
+	const char fmt_p[8];
 	size_t len;
 } field_t;
 
@@ -54,7 +55,7 @@ typedef enum { FIELDS_TABLE FI_COUNT } FieldIdx;
 #define timeField(type)		(FIRST_TIME_FIELD	 + (type))
 
 /// Get the calculated maximum length of the inputted field (`type`).
-#define getLen(type) ((int)(fields[(FI_##type)].len))
+#define getLen(type) ((int)(fields[(type)].len))
 
 /* ——————————————————————————————————————————————————————— */
 

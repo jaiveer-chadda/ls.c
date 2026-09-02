@@ -12,6 +12,7 @@
 
 #define GET_FMT_S(fmt, lor) "%" FMT_##lor	  #fmt
 #define GET_FMT_L(fmt, lor) "%" FMT_##lor "*" #fmt
+#define GET_FMT_P(fmt, lor) GET_FMT_L(fmt, lor) "%s"
 
 /* initialise the array, and set all the elements' lengths to 0 */
 #define X(fld, hdr, fmt, lor)			\
@@ -19,6 +20,7 @@
 		.title = hdr,					\
 		.fmt_s = GET_FMT_S(fmt, lor),	\
 		.fmt_l = GET_FMT_L(fmt, lor),	\
+		.fmt_p = GET_FMT_P(fmt, lor),	\
 		.len   = 0						\
 	},
 

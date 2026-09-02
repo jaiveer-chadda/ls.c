@@ -182,6 +182,10 @@ static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
 		if (strcmp(pDT_child->d_name, "..") == 0) continue;
 		/// @todo when I add the `-a` and `-A` options later, this is where I'll add a check for them
 
+		#ifdef DEBUG_MODE
+		if (strcmp(pDT_child->d_name, ".git") == 0) continue;
+		#endif
+
 		/* —— alloc mem for children —————————————————————————————————— */
 
 		if (pFS_dir->f->child_count >= child_alloc_count) {

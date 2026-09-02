@@ -91,7 +91,7 @@ int main(const int argc, char *argv[]) {
 
 	// print each of the inputs in the order they were given
 	// `printFile` will recurse into the file and print as many levels as was specified
-	for (int i = 0; i < file_count; i++) printFile(inputs[i], 0);
+	for (int i = 0; i < file_count; i++) printFile(inputs[i], 0, i == file_count - 1, NO_LINES);
 
 	/* —— Cleanup ———————————————————————————————————————————————————————————————————————————————— */
 
