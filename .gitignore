@@ -10,5 +10,7 @@ _*
 
 !_output/
 
+Icon?
+
 resources/icons/icons.rs
 resources/POSIX/ls.html

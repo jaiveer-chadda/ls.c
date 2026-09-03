@@ -8,9 +8,9 @@
 /* —— ANSI Constants ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #ifndef CSI
-#	define CSI "\033["
-#	define END "m"
-#	define ANSI(str) CSI str END
+#	define CSI		 "\033[" // \e[
+#	define END		 "m"	 // m
+#	define ANSI(esc) CSI esc END
 #endif
 
 #define ANSI_OFF_MOD	(+20) /** The modifier that turns (most) ANSI on-codes into off-codes. */

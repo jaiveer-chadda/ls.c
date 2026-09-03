@@ -15,12 +15,12 @@
 /* —— Base ANSI Definitions ————————————————————————————————————————————————— */
 
 #ifndef CSI
-#	define CSI		 "\033["	// \e[
-#	define END		 "m"		// m
-#	define ANSI(esc) CSI	esc END
+#	define CSI		 "\033[" // \e[
+#	define END		 "m"	 // m
+#	define ANSI(esc) CSI esc END
 #endif
 
-#define NO_COLOUR ""
+#define NO_COLOUR	""
 #define RESET		CSI END	/// \e[m /** Reset all ANSI highlighting. */
 
 #define CSIR		CSI ";"	/// \e[; /** Reset all ANSI highlighting before printing the subsequent escape sequence. */
