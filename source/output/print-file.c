@@ -73,10 +73,11 @@ static inline void print_time_str(const FileStat *const pFS, const TimeType type
 }
 
 static inline void print_name(const FileStat *const pFS) {
+	const char *const to_print = (DO_PATH() && pFS->path != NULL) ? pFS->path : pFS->name;
 	printf("%s" "%s%s%s" "%lc %s" "%s",
 		PRE_NAME_PAD,
 		CSI, file_colour_esc[pFS->file_col], END,
-		pFS->icon, pFS->name,
+		pFS->icon, to_print,
 		RESET
 	);
 }
