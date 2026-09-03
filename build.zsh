@@ -17,7 +17,7 @@ function -- () {
 
   # dev mode is supposed to be halfway between the debug and production modes
   local mode=dev
-  local -i 2 print_cmd=0 do_time=0 do_dump=0
+  local -i 2 print_cmd=0 do_time=0 do_dump=0 run_cmd=1
 
   while [[ -n "$1" ]] { #
     case "$1" {
@@ -25,6 +25,7 @@ function -- () {
       ( --debug(ging|)   ) mode=debug  ;;
       ( --prod(uction|)  ) mode=prod   ;;
       ( --dev(elopment|) ) mode=dev    ;;
+      ( --no-run         ) run_cmd=0   ;;
       ( --time           ) do_time=1   ;;
       ( --dump           ) do_dump=1   ;;
       ( -- ) shift ;&
@@ -132,7 +133,11 @@ function -- () {
   # then, if successful, execute the program
   # and if that _also_ works, make a copy of the binary available in `~/bin`
   "$CC" "${(@)BUILD_ARGS}" \
-    &&  "${(@)CMD}"         \
+    && {                   \
+      (( run_cmd ))        \
+        && "${(@)CMD}"     \
+        || true;           \
+    }                      \
     && cp "$TARGET" "$HOME/bin/${TARGET##*/}"
 
 } "$@"
