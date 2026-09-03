@@ -32,17 +32,21 @@ typedef uint16_t style_t; /** A bit record holding all styles that should be app
 /* —— Basic Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// A value in `[-1, 255]`, representing an 8-bit ANSI colour code. I.e., `(colour_t)ID` = `\e[38;5;{ID}m`.
-typedef int16_t colour_t;
+typedef int32_t colour_t;
 
-#define COLOUR_T_MIN ((colour_t)-1)			/**  -1 */
-#define COLOUR_T_MAX ((colour_t)UINT8_MAX)	/** 255 */
+#define COLOUR_8_MIN  ((colour_t)-1)		 /**			-1 */
+#define COLOUR_8_MAX  ((colour_t)UINT8_MAX)	 /**		   255 */
+#define COLOUR_24_MIN ((colour_t)1E9)		 /** 1,000,000,000 */
+#define COLOUR_24_MAX ((colour_t)1255255255) /** 1,255,255,255 */
+
+#define IS_8B(val)	(COLOUR_8_MIN  <= (val) && (val) <= COLOUR_8_MAX )
+#define IS_24B(val)	(COLOUR_24_MIN <= (val) && (val) <= COLOUR_24_MAX)
 
 #define G_NO_FGBG ((colour_t)0)
 
 #define G_NO_FG	G_NO_FGBG /** Don't change the foreground colour. */
 #define G_NO_BG	G_NO_FGBG /** Don't change the background colour. */
 
-#define G_REG_START
 #define G_BLK	((colour_t)-1)	// \e[30m /** Black		*/
 #define G_RED	((colour_t)1)	// \e[31m /** Red		*/
 #define G_GRN	((colour_t)2)	// \e[32m /** Green		*/
@@ -83,6 +87,7 @@ typedef int16_t colour_t;
 
 /* —— Main struct/object ——————————————————————————————————————————————————————————————————————————————————————————— */
 
+typedef struct { uint8_t r, g, b; } rgb_t;
 typedef struct {
 	style_t style;
 	colour_t fg, bg;
@@ -95,5 +100,6 @@ typedef struct {
 int colprint(const Colour input_col);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+// spell:ignoreRegexp /(?<=G_)\w+\b/g
 
 #endif /* !COLOUR_OBJECTS_INITIALIASED */

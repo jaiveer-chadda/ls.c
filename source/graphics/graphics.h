@@ -14,16 +14,17 @@
 
 /* —— Base ANSI Definitions ————————————————————————————————————————————————— */
 
-#define CSI		"\033["	// \e[
-#define END		"m"		// m
-
-#define RESET	CSI END	/// \e[m /** Reset all ANSI highlighting. */
-#define CSIR	CSI ";"	/// \e[; /** Reset all ANSI highlighting before printing the subsequent escape sequence. */
+#ifndef CSI
+#	define CSI		 "\033["	// \e[
+#	define END		 "m"		// m
+#	define ANSI(esc) CSI	esc END
+#endif
 
 #define NO_COLOUR ""
+#define RESET		CSI END	/// \e[m /** Reset all ANSI highlighting. */
 
-#define ANSI(esc)  CSI	esc END
-#define ANSIR(esc) CSIR	esc END
+#define CSIR		CSI ";"	/// \e[; /** Reset all ANSI highlighting before printing the subsequent escape sequence. */
+#define ANSIR(esc)	CSIR	esc END
 
 /* —— ANSI Non-Colour ——————————————————————————————————————————————————————— */
 

@@ -19,20 +19,32 @@ static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
 
 static Colour active = RESET_ALL;
 
+/* ── ── `to_rgb()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
+
+static inline rgb_t toRGB(const style_t raw) {
+	const uint8_t rgb = (raw - COLOUR_24_MIN);
+
+	const uint8_t red = (rgb / 1000000);
+	const uint8_t grn = (rgb / 1000) -  (red * 1000);
+	const uint8_t blu = (rgb - ((rgb / 1000) * 1000));
+
+	return (const rgb_t){ .r = red, .g = grn, .b = blu };
+}
+
 /* ── ── `d_snprintf()` ── ───────────────────────────────────────────────────────────────────────────────────────── */
 
 #ifdef DEBUG_MODE
 #	define SNPRINTF(str, size, ...) d_snprintf(str, size, __VA_ARGS__)
-
+	//
 	/// @brief A version of `snprintf` with bounds-checking, and which prints debugging messages.
 	static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...) {
 		va_list va_args;
 		va_start(va_args, format);
-
+		//
 		const int f_retcode = vsnprintf(str, size, format, va_args);
 		const int f_errno = errno;
 		va_end(va_args);
-
+		//
 		if ((size_t)f_retcode >= size || f_retcode == EOF) {
 			debug(WARNING, "snprintf(): `char *str`: %s",
 				(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
@@ -56,7 +68,7 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 		switch (style) {
 			case G_DUNDER:	return ANSI_NO_UNDER;	// on = `\e[21m`, off = `\e[24m`
 			case G_BOLD:	return ANSI_NO_BOLD;	// on = `\e[1m` , off = `\e[22m`
-			default: // recurse into this function, and add 20 to its normal output
+			default: // recurse once into this function, and add 20 to its normal output
 				return stylelookup(style, ON) + ANSI_OFF_MOD; // on = `\e[Xm` , off = `\e[2Xm`
 		}
 	}
@@ -81,28 +93,25 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 /* ── ── `colprint()` ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 int colprint(const Colour input_col) {
-	/// A working copy of the inputted colour object, which we can manipulate if needed.
+	/// A working copy of the inputted colour object, which we can mutate if needed.
 	Colour colour = input_col;
 
 	/* ── Bounds Checking ─────────────────────────────────────────────── */
 
+	// check that `colour.style` is <= STYLE_T_MAX
 	STYLE_BOUNDS_CHECK();
 
+	// check that fg and bg are between `COLOUR_T_MIN` and `COLOUR_T_MAX`
 	FGBG_BOUNDS_CHECK(fg);
 	FGBG_BOUNDS_CHECK(bg);
 
 	/* ── Check Identical Colours ─────────────────────────────────────── */
 
 	// if everything is exactly the same as the last time we printed, then don't do anything
-	if (colour.style == active.style &&
-		colour.fg	 == active.fg	 &&
-		colour.bg	 == active.bg
+	if (colour.fg	 == active.fg &&
+		colour.bg	 == active.bg &&
+		colour.style == active.style
 	) return 0;
-
-	/* ── Set Up Strings ──────────────────────────────────────────────── */
-
-	char style[STYLE_BUFSIZE] = "", fg[FGBG_BUFSIZE] = "", bg[FGBG_BUFSIZE] = "";
-	int st_len = 0; /** Current strlen of the `style` variable. */
 
 	/* ── Process Colour::style ───────────────────────────────────────── */
 
@@ -131,6 +140,8 @@ int colprint(const Colour input_col) {
 
 	/* ———————————————————————————————————————————————— */
 
+	char style[STYLE_BUFSIZE] = "";
+	int st_len = 0; /** Current strlen of the `style` variable. */
 	bool has_st = false;
 
 	// if the current style is identical to the previous style, then nothing has to be printed
@@ -169,6 +180,7 @@ int colprint(const Colour input_col) {
 
 	int fg_len, bg_len;
 	bool has_fg, has_bg;
+	char fg[FGBG_BUFSIZE] = "", bg[FGBG_BUFSIZE] = "";
 
 	SIMPLIFY_FGBG(fg);
 	SIMPLIFY_FGBG(bg);
@@ -203,6 +215,8 @@ int colprint(const Colour input_col) {
 
 	return printf(CSI "%s%s" "%s" "%s" END, style, fg, foreg_sc, bg);
 }
+
+// spell:ignore gstyles fgbg foreg
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ─────────────────────────────────────────────── ── eof ── ─────────────────────────────────────────────────────── */
