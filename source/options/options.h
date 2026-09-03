@@ -24,7 +24,7 @@ int setOptions(const int argc, const char *argv[]);
 	X(BO_DO_DIVIDERS		, true	, false	, '_', { "divider"		, "dividers"				}) \
 	X(BO_DO_MOUNTDEV		, true	, false	, 'M', { "mount"		, "mounts"					}) \
 	X(BO_DO_DIM_HIDDEN		, true	, false	, '.', { "dim-hidden"	, "dim"						}) \
-	X(BO_DIRS_AS_FILES		, false	, false	, 'd', { "dirs-as-files", "treat-dirs-as-files"		}) \
+	X(BO_RECURSE_DIRS		, true	, false	, 'd', { "recurse-dirs"								}) \
 	X(BO_SORT_DIRS_FIRST	, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}) \
 	X(BO_DO_REVERSE_SORT	, false	, false	, 'r', { "reverse"		, "rev"						}) \
 	\
@@ -83,7 +83,7 @@ bool DO_HEADER		(void);
 bool DO_DIVIDERS	(void);
 bool DO_MOUNTDEV	(void);
 bool DO_DIM_HIDDEN	(void);
-bool DIRS_AS_FILES	(void);
+bool RECURSE_DIRS	(void);
 bool SORT_DIRS_FIRST(void);
 
 /* —————————————————————————————————————————————————————————————— */
