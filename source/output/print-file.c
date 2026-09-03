@@ -16,49 +16,67 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void print_inum(const ino_t  inum) { printf(fields[FI_inum].fmt_p, getLen(FI_inum), inum, FIELD_PAD); }
-void print_mode(const mode_t mode) { printf(fields[FI_mode].fmt_p, getLen(FI_mode), mode, FIELD_PAD); }
-
-void print_usr_name(const char *const usr_name) {
-	printf(fields[FI_usr_name].fmt_p, getLen(FI_usr_name), usr_name, FIELD_PAD);
-}
-void print_grp_name(const char *const grp_name) {
-	printf(fields[FI_grp_name].fmt_p, getLen(FI_grp_name), grp_name, FIELD_PAD);
-}
-void print_flag_str(const char *const flag_str) {
-	printf(fields[FI_flag_str].fmt_p, getLen(FI_flag_str), flag_str != NULL ? flag_str : "-", FIELD_PAD);
+static inline void print_inum(const FileStat *const pFS) {
+	printf(fields[FI_inum].fmt_p, getLen(FI_inum), pFS->inum, FIELD_PAD);
 }
 
-void print_mode_str(const modestr mode_str, const bool has_xat, const bool has_acl) {
-	printf(fields[FI_mode_str].fmt_l, getLen(FI_mode_str), mode_str);
+static inline void print_mode(const FileStat *const pFS) {
+	printf(fields[FI_mode].fmt_p, getLen(FI_mode), pFS->mode, FIELD_PAD);
+}
 
-	putchar(has_xat ? XATTR_CHAR : ' ');
-	putchar(has_acl ? ACL_CHAR	 : ' ');
+static inline void print_usr_name(const FileStat *const pFS) {
+	const bool valid = pFS->f != NULL && pFS->f->usr_name != NULL;
+	printf(fields[FI_usr_name].fmt_p, getLen(FI_usr_name), valid ? pFS->f->usr_name : INV_FILE_USRNAME, FIELD_PAD);
+}
+
+static inline void print_grp_name(const FileStat *const pFS) {
+	const bool valid = pFS->f != NULL && pFS->f->grp_name != NULL;
+	printf(fields[FI_grp_name].fmt_p, getLen(FI_grp_name), valid ? pFS->f->grp_name : INV_FILE_GRPNAME, FIELD_PAD);
+}
+
+static inline void print_flag_str(const FileStat *const pFS) {
+	const bool valid = pFS->f != NULL && pFS->f->flag_str != NULL;
+	printf(fields[FI_flag_str].fmt_p, getLen(FI_flag_str), valid ? pFS->f->flag_str : NO_FLAG_STR, FIELD_PAD);
+}
+
+static inline void print_mode_str(const FileStat *const pFS) {
+	printf(fields[FI_mode_str].fmt_l, getLen(FI_mode_str), pFS->mode_str);
+
+	putchar(pFS->has_xat ? XATTR_CHAR : ' ');
+	putchar(pFS->has_acl ? ACL_CHAR	  : ' ');
 
 	fputs(FIELD_PAD, stdout);
 }
 
-void print_size_str(const char *const size_str, const char size_unit) {
+static inline void print_size_str(const FileStat *const pFS) {
+	const bool valid = pFS->f != NULL && pFS->f->size_str != NULL;
+
 	printf("%*s%c%s",
-		getLen(FI_size_str), size_str != NULL ? size_str : "-",
-		size_unit ? size_unit : ' ',
+		getLen(FI_size_str), valid ? pFS->f->size_str : NO_SIZE_STR,
+		/// @todo handle `size_unit` printing
+		valid ? (pFS->f->size_unit ? pFS->f->size_unit : ' ') : ' ',
 		FIELD_PAD
 	);
 }
 
-void print_time_str(TimeInfo *const times[4], const TimeType type) {
-	printf(CSI_FG "%s" END "%*s" RESET "%s",
-		time_colour_esc[times[type]->colour],
-		getLen(timeFieldStr(type)), times[type]->str,
-		FIELD_PAD
-	);
+static inline void print_time_str(const FileStat *const pFS, const TimeType type) {
+	if (pFS->f != NULL && pFS->f->times[type] != NULL) {
+		printf(CSI_FG "%s" END "%*s" RESET "%s",
+			time_colour_esc[pFS->f->times[type]->colour],
+			getLen(timeFieldStr(type)), pFS->f->times[type]->str,
+			FIELD_PAD
+		);
+		return;
+	}
+
+	printf("%*s" RESET "%s", getLen(timeFieldStr(type)), TIME_ERR_STR, FIELD_PAD);
 }
 
-void print_name(const char *const name, const icon_t icon, const FileColour colour) {
+static inline void print_name(const FileStat *const pFS) {
 	printf("%s" "%s%s%s" "%lc %s" "%s",
 		PRE_NAME_PAD,
-		CSI, file_colour_esc[colour], END,
-		icon, name,
+		CSI, file_colour_esc[pFS->file_col], END,
+		pFS->icon, pFS->name,
 		RESET
 	);
 }
@@ -71,26 +89,21 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	/* ———————————————————————————————————————————————— */
 
-	print_inum(pFS->inum);
-	print_mode(pFS->mode);
-	print_mode_str(pFS->mode_str, pFS->has_xat, pFS->has_acl);
-
-	if (pFS->f != NULL) {
-		print_size_str(pFS->f->size_str, pFS->f->size_unit);
-		print_usr_name(pFS->f->usr_name);
-		print_grp_name(pFS->f->grp_name);
-		print_flag_str(pFS->f->flag_str);
-		print_time_str(pFS->f->times, M_TIME);
-	} else {
-		printf("%*s",
-			getLen(FI_size_str) + 2 +
-			getLen(FI_usr_name) + 1 +
-			getLen(FI_grp_name) + 1 +
-			getLen(FI_flag_str) + 1 +
-			getLen(timeFieldStr(M_TIME)) + 1, ""
-		);
+	if (do_inum		()) print_inum	  (pFS);
+	if (do_mode		()) print_mode	  (pFS);
+	if (do_mode_str	()) print_mode_str(pFS);
+	if (do_size_str	()) print_size_str(pFS);
+	if (do_usr_name	()) print_usr_name(pFS);
+	if (do_grp_name	()) print_grp_name(pFS);
+	if (do_flag_str	()) print_flag_str(pFS);
+	if (do_time_str ()) {
+		if (do_time_t(A_TIME)) print_time_str(pFS, A_TIME);
+		if (do_time_t(M_TIME)) print_time_str(pFS, M_TIME);
+		if (do_time_t(C_TIME)) print_time_str(pFS, C_TIME);
+		if (do_time_t(B_TIME)) print_time_str(pFS, B_TIME);
 	}
-	
+
+	/* ———————————————————————————————————————————————— */
 
 	for (int i = 0; i < depth - 1; i++) printf("%*s%s", i ? 2 : 1 , "", lines[i] ? "│" : " ");
 
@@ -102,7 +115,9 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 		new_lines[depth - 1] = !is_last;
 	}
 
-	print_name(pFS->name, pFS->icon, pFS->file_col);
+	/* ———————————————————————————————————————————————— */
+
+	print_name(pFS);
 
 	putchar(pFS->suffix);
 	putchar('\n');

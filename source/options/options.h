@@ -33,10 +33,10 @@ int setOptions(const int argc, const char *argv[]);
 	X(BO_do_link_to			, true	, true	, 'l', { "link-to"		, "symlinks"				}) \
 	X(BO_do_nlink			, true	, true	, 'n', { "nlink"									}) \
 	X(BO_do_dev_no			, false	, true	, NSF, { "dev-no"		, "device-number"			}) \
-	X(BO_do_inum			, false	, true	, 'i', { "inode"		, "ino"			, "inum"	}) \
+	X(BO_do_inum		/**/, true	, true	, 'i', { "inode"		, "ino"			, "inum"	}) \
 	X(BO_do_flags			, false	, true	, NSF, { "flags"									}) \
 	X(BO_do_flag_str		, true	, true	, NSF, { "flag-str"		, "flags-str"				}) \
-	X(BO_do_mode			, false	, true	, NSF, { "mode"										}) \
+	X(BO_do_mode		/**/, true	, true	, NSF, { "mode"										}) \
 	X(BO_do_mode_str		, true	, true	, NSF, { "mode-str"									}) \
 	X(BO_do_size			, false	, true	, NSF, { "size"										}) \
 	X(BO_do_size_str		, true	, true	, NSF, { "size-str"									}) \

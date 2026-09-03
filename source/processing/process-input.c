@@ -99,7 +99,8 @@ static inline void processChild(FileStat *pFS_child, const struct dirent *const 
 	if (lstat(pFS_child->path, pFS_child->s) == -1) {
 		// if it fails, print an error
 		#ifdef DEBUG_MODE
-			debug(WARNING, "failed to stat '%s'", pFS_child->path);
+			printError(pFS_child->path);
+			// debug(WARNING, "failed to stat '%s'", pFS_child->path);
 		#else
 			printError(pFS_child->path);
 		#endif

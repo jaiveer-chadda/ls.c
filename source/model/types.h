@@ -85,7 +85,7 @@ typedef struct FileStatFields	FileStatFields;
 
 // 2,147,483,647 files ≈ 2.1 Gb
 
-typedef bool lines_t[RECURSION_LIMIT]; // `char[RECURSION_LIMIT] = 16`
+typedef bool lines_t[RECURSION_LIMIT]; // `bool[RECURSION_LIMIT] = 16`
 
 typedef wchar_t icon_t;
 typedef uint32_t flag_t;
