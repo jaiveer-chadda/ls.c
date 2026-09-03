@@ -76,7 +76,10 @@ void parseFile(FileStat *const pfile) {
 
 	checkLengths(pfile, true); // calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
 
-	if (is_incomplete) return;
+	if (is_incomplete) {
+		if (DO_COLOUR()) pfile->file_col = setFileColour(pfile->name, pfile->mode, 0U, false);
+		return;
+	}
 
 	/* ————————————————————————————————————————————————————————— */
 
@@ -85,7 +88,7 @@ void parseFile(FileStat *const pfile) {
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
 	if (do_flag_str()) pfsf->flag_str = parseFlags(pstat->st_flags);
 	if (DO_MOUNTDEV()) pfsf->is_mount = isMountPoint(pstat->st_dev, pfile->path);
-	if (DO_COLOUR  ()) pfsf->file_col = setFileColour(pfile->name, pfile->mode, pstat->st_flags, pfsf->is_mount);
+	if (DO_COLOUR  ()) pfile->file_col = setFileColour(pfile->name, pfile->mode, pstat->st_flags, pfsf->is_mount);
 	if (do_time_str()) { parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); }
 
 	if (!S_ISDIR(pstat->st_mode) && pstat->st_nlink > 1) pfsf->do_link_hl = true;

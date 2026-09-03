@@ -74,18 +74,19 @@ void d__dump(const FileStat *const fs) {
 
 	err(V(FileStat) S"fs"E PTR, ptr(fs));
 	if (fs == NULL) { ERR(" "O  null); return; }
-	err(T     CHAR  "   "S"name  "E STR      , str(fs->name)     );
-	err(T" "V(icon_t)"   icon    "E LCR      , fs->icon          );
-	err(T" "V(suff_t)"   suffix  "E CHR      , fs->suffix        );
+	err(T     CHAR  "    "S"name  "E STR      , str(fs->name)     );
+	err(T" "V(icon_t)"    icon    "E LCR      , fs->icon          );
+	err(T" "V(suff_t)"    suffix  "E CHR      , fs->suffix        );
 	ERR(I);
-	err(T" "V(FileStat)  S"parent"E PTR      , ptr(fs->parent)   );
-	err(T" "V(ino_t)"    inum    "E NUM(%llu), fs->inum          );
-	err(T" "V(namlen_t)" name_len"E NUM(%hd) , fs->name_len      );
+	err(T" "V(FileStat)   S"parent"E PTR      , ptr(fs->parent)   );
+	err(T" "V(ino_t)"     inum    "E NUM(%llu), fs->inum          );
+	err(T" "V(namlen_t)"  name_len"E NUM(%hd) , fs->name_len      );
+	err(T" "V(FileColour)"file_col"E NUM(%u)  , fs->file_col      );
 	ERR(I);
-	err(T" "V(mode_t)"   mode    "E OCT(%06o), fs->mode          );
-	err(T" "V(modestr)"  mode_str"E STR      , str(fs->mode_str) );
-	err(T     BOOL  "    has_xat "E"%s"      , pbool(fs->has_xat));
-	err(T     BOOL  "    has_acl "E"%s"      , pbool(fs->has_acl));
+	err(T" "V(mode_t)"    mode    "E OCT(%06o), fs->mode          );
+	err(T" "V(modestr)"   mode_str"E STR      , str(fs->mode_str) );
+	err(T     BOOL  "     has_xat "E"%s"      , pbool(fs->has_xat));
+	err(T     BOOL  "     has_acl "E"%s"      , pbool(fs->has_acl));
 	ERR(I);
 
 	err(T STRUCT V(stat) S"s"E PTR, ptr(fsf));
@@ -120,7 +121,6 @@ void d__dump(const FileStat *const fs) {
 		err("    "T     CHAR"   " S "usr_name"E STR    , str(fsf->usr_name)    );
 		err("    "T     CHAR"   " S "grp_name"E STR    , str(fsf->grp_name)    );
 		ERR("    "I);
-		err("    "T" "V(FileColour)" file_col"E NUM(%u), fsf->file_col         );
 		err("    "T" "V(unit_t)"    size_unit"E CHR    , fsf->size_unit        );
 		ERR("    "I);
 		err("    "T     BOOL  "    do_link_hl"E"%s"    , pbool(fsf->do_link_hl));

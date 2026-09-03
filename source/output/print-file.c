@@ -74,11 +74,23 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	print_inum(pFS->inum);
 	print_mode(pFS->mode);
 	print_mode_str(pFS->mode_str, pFS->has_xat, pFS->has_acl);
-	print_size_str(pFS->f->size_str, pFS->f->size_unit);
-	print_usr_name(pFS->f->usr_name);
-	print_grp_name(pFS->f->grp_name);
-	print_flag_str(pFS->f->flag_str);
-	print_time_str(pFS->f->times, M_TIME);
+
+	if (pFS->f != NULL) {
+		print_size_str(pFS->f->size_str, pFS->f->size_unit);
+		print_usr_name(pFS->f->usr_name);
+		print_grp_name(pFS->f->grp_name);
+		print_flag_str(pFS->f->flag_str);
+		print_time_str(pFS->f->times, M_TIME);
+	} else {
+		printf("%*s",
+			getLen(FI_size_str) + 2 +
+			getLen(FI_usr_name) + 1 +
+			getLen(FI_grp_name) + 1 +
+			getLen(FI_flag_str) + 1 +
+			getLen(timeFieldStr(M_TIME)) + 1, ""
+		);
+	}
+	
 
 	for (int i = 0; i < depth - 1; i++) printf("%*s%s", i ? 2 : 1 , "", lines[i] ? "│" : " ");
 
@@ -90,7 +102,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 		new_lines[depth - 1] = !is_last;
 	}
 
-	print_name(pFS->name, pFS->icon, pFS->f->file_col);
+	print_name(pFS->name, pFS->icon, pFS->file_col);
 
 	putchar(pFS->suffix);
 	putchar('\n');
@@ -101,6 +113,8 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	// if (pFS->f == NULL || pFS->f->child_count == -1) { printf("\t%*s[[ error ]]\n", 92, ""); return; }
 	// else if				 (pFS->f->child_count ==  0) { printf("\t%*s(  empty  )\n", 92, ""); return; }
+	if (pFS->f == NULL || pFS->f->child_count == -1) return;
+	else if				 (pFS->f->child_count ==  0) return;
 
 	/* ———————————————————————————————————————————————— */
 

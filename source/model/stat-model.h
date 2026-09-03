@@ -41,6 +41,7 @@ struct FileStat {
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
 
 	// the following are fields which can be derived from just the information from `struct dirent`
+	FileColour	file_col; // 4 /** The colour which the file should be printed in. */
 	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
 	suff_t		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
 
@@ -70,8 +71,6 @@ struct FileStatFields {
 
 	FileStat	*children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
 	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
-
-	FileColour	file_col	; // 4 /** The colour which the file should be printed in. */
 	unit_t		size_unit	; // 1 /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
 
 	/// @todo amalgamate `do_link_hl` into `file_col`
