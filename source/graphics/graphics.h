@@ -3,6 +3,8 @@
 #ifndef GRAPHICS_INITIALIASED
 #define GRAPHICS_INITIALIASED
 
+#include "colour/colour-object.h"
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /* —— —— Chars & Strings —— ————————————————————————————————————————————————— */
@@ -46,8 +48,6 @@
 
 #define CSI_FG	CSI "3"
 #define CSI_BG	CSI "4"
-
-#define RGB(r,g,b)	"8;2;" #r ";" #g ";" #b
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -274,14 +274,14 @@
 #define TIME_FMT		DATETIME_SPACE "%R"
 
 #define TIME_COLOUR_TABLE \
-	X(TC_NOW	, RGB(203, 210, 242) ";1"	) \
-	X(TC_MIN	, RGB(200, 208, 241)		) \
-	X(TC_TODAY	, RGB(165, 183, 236)		) \
-	X(TC_YESTD	, RGB(133, 161, 228)		) \
-	X(TC_2DAYS	, RGB(100, 145, 225)		) \
-	X(TC_THIS_MO, RGB( 70, 132, 230)		) \
-	X(TC_THIS_YR, RGB( 35, 106, 204)		) \
-	X(TC_OTHER	, RGB(  4,  65, 145)		)
+	X(TC_NOW	, toColour( .fg = RGB(203, 210, 242), .style = G_BOLD	)) \
+	X(TC_MIN	, toColour( .fg = RGB(200, 208, 241)					)) \
+	X(TC_TODAY	, toColour( .fg = RGB(165, 183, 236)					)) \
+	X(TC_YESTD	, toColour( .fg = RGB(133, 161, 228)					)) \
+	X(TC_2DAYS	, toColour( .fg = RGB(100, 145, 225)					)) \
+	X(TC_THIS_MO, toColour( .fg = RGB( 70, 132, 230)					)) \
+	X(TC_THIS_YR, toColour( .fg = RGB( 35, 106, 204)					)) \
+	X(TC_OTHER	, toColour( .fg = RGB(  4,  65, 145)					))
 
 /* —— File Sizes ———————————————————————————————————————————————————————————— */
 
@@ -325,19 +325,20 @@
 
 /* —— —— Type Definitions —— ——————————————————————————————————————————————————————————————————————————————————————— */
 
-#define X(name, esc) name,	// only unpack the names
+#define X(name, esc) name, // only unpack the names
 typedef enum { FILE_COLOUR_TABLE FC_COUNT } FileColour;
 typedef enum { PERM_COLOUR_TABLE PC_COUNT } PermColour;
-typedef enum { TIME_COLOUR_TABLE TC_COUNT } TimeColour;
 typedef enum { SIZE_COLOUR_TABLE SC_COUNT } SizeColour;
+
+typedef enum { TIME_COLOUR_TABLE TC_COUNT } TimeColour;
 #undef X
 
 /* —— —— Colour Enum Declarations —— ——————————————————————————————————————————————————————————————————————————————— */
 
-extern const char *const file_colour_esc[FC_COUNT];
-extern const char *const perm_colour_esc[PC_COUNT];
-extern const char *const time_colour_esc[TC_COUNT];
-extern const char *const size_colour_esc[SC_COUNT];
+const char * file_colour_esc[FC_COUNT];
+const char * perm_colour_esc[PC_COUNT];
+const char * size_colour_esc[SC_COUNT];
+const Colour time_colour_esc[TC_COUNT];
 
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 

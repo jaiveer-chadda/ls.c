@@ -84,22 +84,22 @@
 		else if	(col <= G_REG_END) *len = SET(fgbg, false, code					  , col					); /* 31 */ \
 		else if	(col <= G_BRT_END) *len = SET(fgbg, false, code + ANSI_REG_BRT_MOD, col - G_REG_BRT_DIFF); /* 92 */ \
 		else					   *len = SET(fgbg, true , code					  , col					); /* 38;5*/\
-		\
-		has_##fgbg = (*len > 0);				\
-		if (has_##fgbg) *act = col;				\
 	\
 	} else {									\
 		if (col == *act) {						\
 			*len = 0;							\
 		\
 		} else {								\
-			const rgb_t rgb = toRGB(col);		\
+			const rgb_t rgb = toRGB_t(col);		\
 			*len = SNPRINTF(fgbg, FGBG_BUFSIZE,	\
-				ANSI("%d8;2;%hu;%hu;%hum"),		\
+				"%d8;2;%hu;%hu;%hu",			\
 				code, rgb.r, rgb.g, rgb.b		\
 			);									\
 		}										\
 	}											\
+	\
+	has_##fgbg = (*len > 0);					\
+	if (has_##fgbg) *act = col;					\
 } while(0)
 
 /* —— Bounds Checks ———————————————————————————————————————————————————————————————————————————————————————————————— */

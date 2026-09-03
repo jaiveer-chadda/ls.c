@@ -12,6 +12,8 @@
 
 #include "debugging.h"
 
+typedef struct { uint8_t r, g, b; } rgb_t;
+
 /* ── ── Static Variables ── ────────────────────────────────────────────────────────────────────────────────——————— */
 
 static const style_t G_STYLES[] = { G_BOLD, G_DIM, G_ITALIC, G_UNDER, G_BLINK, G_INVERT, G_INVIS, G_STRIKE, G_DUNDER };
@@ -19,10 +21,10 @@ static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
 
 static Colour active = RESET_ALL;
 
-/* ── ── `to_rgb()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
+/* ── ── `toRGB_t()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
-static inline rgb_t toRGB(const style_t raw) {
-	const uint8_t rgb = (raw - COLOUR_24_MIN);
+static inline rgb_t toRGB_t(const colour_t raw) {
+	const int rgb = (raw - COLOUR_24_MIN);
 
 	const uint8_t red = (rgb / 1000000);
 	const uint8_t grn = (rgb / 1000) -  (red * 1000);

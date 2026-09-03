@@ -87,13 +87,17 @@ typedef int32_t colour_t;
 
 /* —— Main struct/object ——————————————————————————————————————————————————————————————————————————————————————————— */
 
-typedef struct { uint8_t r, g, b; } rgb_t;
 typedef struct {
 	style_t style;
 	colour_t fg, bg;
 } Colour;
 
 #define RESET_ALL ((Colour){ .style = G_NONE, .fg = G_NO_FG, .bg = G_NO_BG }) /** Equivalent to `((Colour){0})`. */
+
+/* —— Helper Macros ———————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define RGB(r,g,b) ((colour_t)(COLOUR_24_MIN + ((r) * 1E6) + ((g) * 1E3) + (b)))
+#define toColour(...) ((Colour){ __VA_ARGS__ })
 
 /* —— Function Declarations ———————————————————————————————————————————————————————————————————————————————————————— */
 

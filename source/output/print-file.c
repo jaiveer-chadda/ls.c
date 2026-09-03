@@ -61,11 +61,13 @@ static inline void print_size_str(const FileStat *const pFS) {
 
 static inline void print_time_str(const FileStat *const pFS, const TimeType type) {
 	if (pFS->f != NULL && pFS->f->times[type] != NULL) {
-		printf(CSI_FG "%s" END "%*s" RESET "%s",
-			time_colour_esc[pFS->f->times[type]->colour],
-			getLen(timeFieldStr(type)), pFS->f->times[type]->str,
-			FIELD_PAD
-		);
+		colprint(time_colour_esc[pFS->f->times[type]->colour]);
+
+		printf("%*s", getLen(timeFieldStr(type)), pFS->f->times[type]->str);
+
+		colprint(RESET_ALL);
+		fputs(FIELD_PAD, stdout);
+
 		return;
 	}
 
