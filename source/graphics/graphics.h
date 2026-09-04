@@ -92,12 +92,15 @@
 
 #define HEADER_HL				"1;4;94"		// \e[94m
 
-/* —— Box Drawing ——————————————————————————————————————————————————————————— */
+/* —— Tree Drawing —————————————————————————————————————————————————————————— */
 
-#define BOX_HORI				"─"
-#define BOX_VERT				"│"
-#define BOX_BRANCH				"├"
-#define BOX_CORNER				"└"
+#define TREE_PAD				2
+#define TREE_LV1_PAD			1
+
+#define TREE_HORI				"─"
+#define TREE_VERT				"│"
+#define TREE_BRANCH				"├"
+#define TREE_CORNER				"└"
 
 /* —— Punctuation ——————————————————————————————————————————————————————————— */
 

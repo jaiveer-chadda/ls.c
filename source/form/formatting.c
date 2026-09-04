@@ -91,40 +91,40 @@ static int total_len = 0;
 int getTotalLen(void) {
 	if (total_len != 0) return total_len;
 
-	total_len = (int)(
+	const int padlen = (int)(sizeof(FIELD_PAD) - 1);
+
+	return (total_len = (int)(
 		(getLen(FI_xat)) +
 		(getLen(FI_acl)) +
 
-		(do_nlink	() * (getLen(FI_nlink	) + 1)) +
-		(do_dev_no	() * (getLen(FI_dev_no	) + 1)) +
-		(do_inum	() * (getLen(FI_inum	) + 1)) +
-		(do_flags	() * (getLen(FI_flags	) + 1)) +
-		(do_flag_str() * (getLen(FI_flag_str) + 1)) +
-		(do_mode	() * (getLen(FI_mode	) + 1)) +
-		(do_mode_str() * (getLen(FI_mode_str) + 1)) +
-		(do_size	() * (getLen(FI_size	) + 1)) +
-		(do_size_str() * (getLen(FI_size_str) + 1)) +
-		(do_uid		() * (getLen(FI_uid		) + 1)) +
-		(do_usr_name() * (getLen(FI_usr_name) + 1)) +
-		(do_gid		() * (getLen(FI_gid		) + 1)) +
-		(do_grp_name() * (getLen(FI_grp_name) + 1)) +
+		(do_nlink	() * (getLen(FI_nlink	) + padlen)) +
+		(do_dev_no	() * (getLen(FI_dev_no	) + padlen)) +
+		(do_inum	() * (getLen(FI_inum	) + padlen)) +
+		(do_flags	() * (getLen(FI_flags	) + padlen)) +
+		(do_flag_str() * (getLen(FI_flag_str) + padlen)) +
+		(do_mode	() * (getLen(FI_mode	) + padlen)) +
+		(do_mode_str() * (getLen(FI_mode_str) + padlen)) +
+		(do_size	() * (getLen(FI_size	) + padlen)) +
+		(do_size_str() * (getLen(FI_size_str) + padlen)) +
+		(do_uid		() * (getLen(FI_uid		) + padlen)) +
+		(do_usr_name() * (getLen(FI_usr_name) + padlen)) +
+		(do_gid		() * (getLen(FI_gid		) + padlen)) +
+		(do_grp_name() * (getLen(FI_grp_name) + padlen)) +
 
 		(do_time()) * (
-			(do_time_t(A_TIME) * (getLen(FI_atime) + 1)) +
-			(do_time_t(M_TIME) * (getLen(FI_mtime) + 1)) +
-			(do_time_t(C_TIME) * (getLen(FI_ctime) + 1)) +
-			(do_time_t(B_TIME) * (getLen(FI_btime) + 1))
+			(do_time_t(A_TIME) * (getLen(FI_atime) + padlen)) +
+			(do_time_t(M_TIME) * (getLen(FI_mtime) + padlen)) +
+			(do_time_t(C_TIME) * (getLen(FI_ctime) + padlen)) +
+			(do_time_t(B_TIME) * (getLen(FI_btime) + padlen))
 		) +
 
 		(do_time_str()) * (
-			(do_time_t(A_TIME) * (getLen(FI_atime_str) + 1)) +
-			(do_time_t(M_TIME) * (getLen(FI_mtime_str) + 1)) +
-			(do_time_t(C_TIME) * (getLen(FI_ctime_str) + 1)) +
-			(do_time_t(B_TIME) * (getLen(FI_btime_str) + 1))
+			(do_time_t(A_TIME) * (getLen(FI_atime_str) + padlen)) +
+			(do_time_t(M_TIME) * (getLen(FI_mtime_str) + padlen)) +
+			(do_time_t(C_TIME) * (getLen(FI_ctime_str) + padlen)) +
+			(do_time_t(B_TIME) * (getLen(FI_btime_str) + padlen))
 		)
-	);
-
-	return total_len;
+	));
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

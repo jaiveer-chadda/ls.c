@@ -11,9 +11,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define modext(field, istru) (pFS->has_##field	?  (istru) : ' ')
-#define ch_ful(field, nfull) (pFS->f != NULL	?  (pFS->f->field) : nfull)
-#define ch_NUL(field, isnul) (pFS->f != NULL	? ((pFS->f->field) != NULL ? (pFS->f->field) : isnul) : "?")
+#define DO_NOTHING 0
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -43,8 +41,8 @@ static inline void print_flag_str(const FileStat *const pFS) {
 static inline void print_mode_str(const FileStat *const pFS) {
 	printf(fields[FI_mode_str].fmt_s, pFS->mode_str);
 
-	pFS->has_xat ? (void)putchar(XATTR_CHAR	) : getLen(FI_xat) ? (void)putchar(' ') : (void)0;
-	pFS->has_acl ? (void)putchar(ACL_CHAR	) : getLen(FI_acl) ? (void)putchar(' ') : (void)0;
+	pFS->has_xat ? putchar(XATTR_CHAR) : (getLen(FI_xat) ? putchar(' ') : DO_NOTHING);
+	pFS->has_acl ? putchar(ACL_CHAR	 ) : (getLen(FI_acl) ? putchar(' ') : DO_NOTHING);
 
 	fputs(FIELD_PAD, stdout);
 }
@@ -106,18 +104,20 @@ void print_tree(lines_t new_lines, const lines_t lines, const uint8_t depth, con
 
 	for (int level = 0; level < depth - 1; level++) {
 		printf("%*s" "%s",
-			level == 0 ? 1 : 2 , "", // add 2 spaces of padding on every level except the 0ᵗʰ one
-			lines[level] ? BOX_VERT : " " // only if this level needs a line should you print one
+			level == 0 ? TREE_LV1_PAD : TREE_PAD, "", // add 2 spaces of padding on every level except the 1ˢᵗ one
+			lines[level] ? TREE_VERT : " " // only if this level needs a line should you print one
 		);
 	}
 
 	printf("%*s" "%s%s",
 		// add 2 spaces of padding on every level except the 1ˢᵗ one
-		depth == 1 ? 1 : 2, "",
+		depth == 1 ? TREE_LV1_PAD : TREE_PAD, "",
 		// print `├` before every file except the last one, where we print `└`
-		is_last ? BOX_CORNER : BOX_BRANCH,
-		BOX_HORI
+		is_last ? TREE_CORNER : TREE_BRANCH,
+		TREE_HORI
 	);
+
+	if (new_lines == NULL) return;
 
 	// populate the new line array with the contents of the old one
 	memcpy(new_lines, lines, sizeof(lines_t));
@@ -132,6 +132,8 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	if (pFS == NULL) return;
 
 	/* ———————————————————————————————————————————————— */
+
+	colprint(RESET_ALL);
 
 	if (do_inum		()) print_inum	  (pFS);
 	if (do_mode		()) print_mode	  (pFS);
@@ -149,7 +151,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	/* ———————————————————————————————————————————————— */
 
-	lines_t new_lines;
+	lines_t new_lines = {0};
 	print_tree(new_lines, lines, depth, is_last);
 
 	/* ———————————————————————————————————————————————— */
@@ -165,10 +167,24 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
 
-	// if (pFS->f == NULL || pFS->f->child_count == -1) { printf("\t%*s[[ error ]]\n", 92, ""); return; }
-	// else if				 (pFS->f->child_count ==  0) { printf("\t%*s(  empty  )\n", 92, ""); return; }
-	if (pFS->f == NULL || pFS->f->child_count == -1) return;
-	else if				 (pFS->f->child_count ==  0) return;
+	if (pFS->f == NULL || pFS->f->child_count <= 0) {
+		printf("%*s", getTotalLen(), "");
+		print_tree(NULL, lines, depth + 1, true);
+
+		if (pFS->f->child_count == 0) {
+			printf("%s%s\n", PRE_NAME_PAD, "( empty )");
+
+		} else {
+			printf("%s%s\n", PRE_NAME_PAD, "[[ error ]]");
+		}
+
+		return;
+	}
+
+	// // if (pFS->f == NULL || pFS->f->child_count == -1) { printf("\t%*s[[ error ]]\n", 92, ""); return; }
+	// // else if				 (pFS->f->child_count ==  0) { printf("\t%*s(  empty  )\n", 92, ""); return; }
+	// if (pFS->f == NULL || pFS->f->child_count == -1) return;
+	// else if				 (pFS->f->child_count ==  0) return;
 
 	/* ———————————————————————————————————————————————— */
 
