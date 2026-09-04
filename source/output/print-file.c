@@ -183,9 +183,21 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
 
-	// FIXME: run `cl --level 6 './tests/test1'`
-	//	for some reason, only in this case, the tree isn't aligned correctly
-	//	and i have 0 idea why
+	/*
+	 * FIXME: run `cl --level 6 './tests/test1'`
+	 *	for some reason, only in this case, the tree isn't aligned correctly
+	 *	and i have 0 idea why
+	 *
+	 * 102467474 40755 drwxr-xr-x 96 jv staff - Today  13:41   tests/test1/
+	 * 102467475 40755 drwxr-xr-x 96 jv staff - Today  20:09  └─  test2/
+	 * 102606769 40755 drwxr-xr-x 64 jv staff - Today  20:09     └─  test3/
+	 *                                                             └─ ( empty )
+	 * see how all the tree branches are aligned correctly except  ↑ this one
+	 *	it genuinely doesn't happen in any other scenario i tested :(((
+	 * I've checked `getTotalLen()`, and it seems to be working fine,
+	 *	so my best guess is its something to do w the `print_tree()` function
+	 * who knows
+	 */
 	if (pFS->f->child_count == 0) {
 		print_empty_tree();
 
