@@ -35,11 +35,15 @@ void d__func(const char *func);
 void d__line(void);
 
 #ifdef DEBUG_MODE
+#	define IN_DEBUG_MODE true
+#	define IF_DEBUG(expr) expr
+
 #	define stacktrace() d__stacktrace()
 #	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __VA_ARGS__)
 #	define dfunc(func) d__func(#func)
 #	define dump(fs) d__dump(fs)
 #	define dline() d__line()
+
 #	define initDebugging(argv) do {										\
 		/* this is a very crude way to check for the `--clear` flag, */	\
 		/*	but it's only used for debugging, so it should be fine   */	\
@@ -53,7 +57,10 @@ void d__line(void);
 		debug(DEBUG, "────── DEBUGGING ──────");						\
 		dline();														\
 	} while (0)
+
 #else
+#	define IN_DEBUG_MODE false
+#	define IF_DEBUG(expr)
 #	define stacktrace()
 #	define debug(log_level, ...)
 #	define dfunc(func)
