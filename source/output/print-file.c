@@ -2,8 +2,10 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "output.h"
+#include "debugging.h"
 #include "icons/icons.h"
 #include "form/formatting.h"
 #include "options/options.h"
@@ -12,6 +14,11 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define DO_NOTHING 0
+
+#define print_empty_tree() do {						\
+	printf("%*s", getTotalLen(), "");				\
+	print_tree(NULL, new_lines, depth + 1, true);	\
+} while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -165,26 +172,27 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	/* ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
+	// assert that if `pFS->f` is NULL, errno will be set
+	assert(pFS->f == NULL ? pFS->err_no > 0 : true);
 
-	if (pFS->f == NULL || pFS->f->child_count <= 0) {
-		printf("%*s", getTotalLen(), "");
-		print_tree(NULL, lines, depth + 1, true);
-
-		if (pFS->f->child_count == 0) {
-			printf("%s%s\n", PRE_NAME_PAD, "( empty )");
-
-		} else {
-			printf("%s%s\n", PRE_NAME_PAD, "[[ error ]]");
-		}
-
+	if (pFS->err_no > 0) {
+		print_empty_tree();
+		printf("%s[[ error: %s ]]\n", PRE_NAME_PAD, strerror(pFS->err_no));
 		return;
 	}
 
-	// // if (pFS->f == NULL || pFS->f->child_count == -1) { printf("\t%*s[[ error ]]\n", 92, ""); return; }
-	// // else if				 (pFS->f->child_count ==  0) { printf("\t%*s(  empty  )\n", 92, ""); return; }
-	// if (pFS->f == NULL || pFS->f->child_count == -1) return;
-	// else if				 (pFS->f->child_count ==  0) return;
+	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
+
+	// FIXME: run `cl --level 6 './tests/test1'`
+	//	for some reason, only in this case, the tree isn't aligned correctly
+	//	and i have 0 idea why
+	if (pFS->f->child_count == 0) {
+		print_empty_tree();
+
+		colprint(EMPTY_DIR_BR_COL);
+		printf("%s" "(%s %s", PRE_NAME_PAD, getcol(EMPTY_DIR_COL), EMPTY_DIR_MSG);
+		printf(" %s)\n", getcol(EMPTY_DIR_BR_COL));
+	}
 
 	/* ———————————————————————————————————————————————— */
 

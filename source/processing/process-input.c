@@ -97,13 +97,8 @@ static inline void processChild(FileStat *pFS_child, const struct dirent *const 
 
 	// run `lstat` on the path
 	if (lstat(pFS_child->path, pFS_child->s) == -1) {
-		// if it fails, print an error
-		#ifdef DEBUG_MODE
-			printError(pFS_child->path);
-			// debug(WARNING, "failed to stat '%s'", pFS_child->path);
-		#else
-			printError(pFS_child->path);
-		#endif
+		// if it fails, note down the errno
+		pFS_child->err_no = errno;
 
 		// free the memory we allocated for the file's `stat` object
 		efree(pFS_child->s);
@@ -135,8 +130,7 @@ static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
 		// set the number of children to -1, so we know the difference between having 0 children,
 		//	and not being able to search for children
 		pFS_dir->f->child_count = -1;
-
-		printError(dirpath);
+		pFS_dir->err_no = errno;
 
 		// even though we didn't get any of the dir's contents, this shouldn't be too bad for the base directory itself
 		//	since we `stat`ted it back when we were treating it like any other file, but the children will be an issue

@@ -92,6 +92,12 @@
 
 #define HEADER_HL				"1;4;94"		// \e[94m
 
+/* —— Empty Dirs ———————————————————————————————————————————————————————————— */
+
+#define EMPTY_DIR_MSG		"empty"
+#define EMPTY_DIR_BR_COL	toColour( .style = G_DIM, .fg = G_WHT )
+#define EMPTY_DIR_COL		toColour( .fg = G_WHT )
+
 /* —— Tree Drawing —————————————————————————————————————————————————————————— */
 
 #define TREE_PAD				2

@@ -41,14 +41,17 @@ struct FileStat {
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
 
 	// the following are fields which can be derived from just the information from `struct dirent`
-	FileColour	file_col; // 4 /** The colour which the file should be printed in. */
-	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
-	suff_t		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
-
-	modestr		mode_str; // 11 /** A string repr of the file's mode (type & permissions). */
 	bool		has_xat	; // 1 /** Whether this file has extended attributes. */
 	bool		has_acl	; // 1 /** Whether this file has an access control list. */
-}; // 70 + 2 pad = 72
+
+	FileColour	file_col; // 4 /** The colour which the file should be printed in. */
+	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
+
+	modestr		mode_str; // 14 /** A string repr of the file's mode (type & permissions). */
+
+	suff_t		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
+	uint8_t		err_no	; // 1 /** The `errno` of a file if it fails to process for some reason. */
+}; // 79 + 1 pad = 80
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 

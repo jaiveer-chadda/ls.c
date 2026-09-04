@@ -6,7 +6,17 @@
 #define LINE "—————————————————————————————————————————————"
 #define PLINE() puts(LINE LINE LINE)
 
-#define COLPRINT(...) do { putchar('\n'); colprint(((Colour){ __VA_ARGS__ })); PLINE(); } while(0)
+void t__colprint(Colour colour) {
+	putchar('\n');
+
+	colprint(colour);
+
+	puts("[lorem ipsum]");
+
+	PLINE(); 
+}
+
+#define COLPRINT(...) t__colprint(((Colour){ __VA_ARGS__ }))
 
 #define test_x ((Colour){ .style = G_ALL			, .fg = 999, .bg = G_BLU})
 #define test_y ((Colour){ .fg = -10})
@@ -88,10 +98,13 @@ int main(const int argc, const char* argv[]) {
 	// COLPRINT();
 	// COLPRINT(bold | dim);
 
-	COLPRINT(bold | dim, red);
-	COLPRINT(add | bold, 0, black);
-	COLPRINT(bold | dim | under | dunder | italic, 0, 18);
-	COLPRINT(0, red, 18);
+	COLPRINT();
+	COLPRINT( .style = G_DIM, .fg = 244 );
+
+	// COLPRINT(bold | dim, red);
+	// COLPRINT(add | bold, 0, black);
+	// COLPRINT(bold | dim | under | dunder | italic, 0, 18);
+	// COLPRINT(0, red, 18);
 
 	// COLPRINT();
 	// COLPRINT(bold | dim | under | dunder | italic, red, black);

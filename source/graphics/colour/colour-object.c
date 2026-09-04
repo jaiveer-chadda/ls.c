@@ -160,29 +160,10 @@ char *getcol(const Colour input_col) {
 
 	/* ── Set Buffer & Return ─────────────────────────────────────────── */
 
-	if (sizeof(CSI END) + st_len + fg_len + (do_fg_sc ? 1 : 0) + bg_len > OUTPUT_BUFSIZE) {
-		debug(ERROR, "trying to create a colour string which will end up being longer than the buffer size");
-		return "";
-	}
-
-	// start the output pointer at the nullbyte after `\e[`
-	char *op_ptr = output_buffer + sizeof(CSI) - 1;
-
-	// copy the style and foreground, and increment the output pointer
-	memcpy(op_ptr, style, st_len); op_ptr += st_len;
-	memcpy(op_ptr, fg, fg_len); op_ptr += fg_len;
-
-	// add the semicolon if it needs to be added
-	if (do_fg_sc) *op_ptr++ = ';';
-
-	// copy the background
-	memcpy(op_ptr, bg, bg_len); op_ptr += bg_len;
-	// then end the string with `m\0`
-	*op_ptr++ = 'm';
-	*op_ptr++ = '\0';
-
-	// make sure the output pointer hasn't gone beyond the end of the buffer
-	assert(op_ptr < output_buffer + OUTPUT_BUFSIZE);
+	if (snprintf(output_buffer, OUTPUT_BUFSIZE,
+		ANSI("%s%s" "%s" "%s"),
+		style, fg, do_fg_sc ? ";" : "", bg
+	) >= OUTPUT_BUFSIZE) return "";
 
 	return output_buffer;
 }
