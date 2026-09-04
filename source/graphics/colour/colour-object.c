@@ -1,5 +1,6 @@
 /// @file graphics/colour/colour-object.c
 
+#include <assert.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -28,11 +29,17 @@ static char output_buffer[OUTPUT_BUFSIZE] = CSI;
 /* ── ── `toRGB_t()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline rgb_t toRGB_t(const colour_t raw) {
+	assert(raw >= COLOUR_24_MIN);
+
 	const int rgb = (raw - COLOUR_24_MIN);
 
 	const uint8_t red = (rgb / 1000000);
 	const uint8_t grn = (rgb / 1000) -  (red * 1000);
 	const uint8_t blu = (rgb - ((rgb / 1000) * 1000));
+
+	assert(0U <= red && red <= 255U);
+	assert(0U <= grn && grn <= 255U);
+	assert(0U <= blu && blu <= 255U);
 
 	return (const rgb_t){ .r = red, .g = grn, .b = blu };
 }
@@ -67,7 +74,17 @@ static inline rgb_t toRGB_t(const colour_t raw) {
 #define ON	true
 #define OFF	false
 
+/**
+ * @brief Get the ANSI code corresponding to turning a style on or off.
+ *
+ * @param style A `style_t` integer with only one style set.
+ * @param turn_style Whether the ouput code should turn `style` on or off (true = on, false = off).
+ * @return int: The ANSI code representing turning the input style on or off. Returns 6 or 26 if `style` was invalid.
+ */
 static inline int stylelookup(const style_t style, const bool turn_style) {
+	assert(0x0000 < style && style <= 0x0200); // `style` is in range
+	assert(log2(style) == floor(log2(style))); // `style` is a power of 2
+
 	if (turn_style == OFF) {
 		// bold and double underline don't conform to the normal escape
 		//	sequences that turn styles off, so they need special exceptions
@@ -237,6 +254,9 @@ char *getcol(const Colour input_col) {
 	// then end the string with `m\0`
 	*op_ptr++ = 'm';
 	*op_ptr++ = '\0';
+
+	// make sure the output pointer hasn't gone beyond the end of the buffer
+	assert(op_ptr < output_buffer + OUTPUT_BUFSIZE);
 
 	return output_buffer;
 }
