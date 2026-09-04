@@ -22,6 +22,9 @@ static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
 
 static Colour active = RESET_ALL;
 
+// the initial `CSI` will always remain here; only chars after it will ever be changed
+static char output_buffer[OUTPUT_BUFSIZE] = CSI;
+
 /* ── ── `toRGB_t()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline rgb_t toRGB_t(const colour_t raw) {
@@ -96,8 +99,6 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 /* ── ── `getcol()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 // note: this function isn't threadsafe, but that should be fine I think, since its only really used for printing
-
-static char output_buffer[OUTPUT_BUFSIZE];
 
 char *getcol(const Colour input_col) {
 	/// A working copy of the inputted colour object, which we can mutate if needed.
@@ -212,14 +213,30 @@ char *getcol(const Colour input_col) {
 	) style[st_len - 1] = '\0';		//		and delete the semicolon if it exists.
 	// this is to prevent the output being something like `\e[1;4;m`
 
-	const char* foreg_sc = has_fg && has_bg ? ";" : "";
+	const bool do_fg_sc = has_fg && has_bg;
 
 	/* ── Set Buffer & Return ─────────────────────────────────────────── */
 
-	if (snprintf(output_buffer, OUTPUT_BUFSIZE,
-		ANSI("%s%s" "%s" "%s"),
-		style, fg, foreg_sc, bg
-	) >= OUTPUT_BUFSIZE) return "";
+	if (sizeof(CSI END) + st_len + fg_len + (do_fg_sc ? 1 : 0) + bg_len > OUTPUT_BUFSIZE) {
+		debug(ERROR, "trying to create a colour string which will end up being longer than the buffer size");
+		return "";
+	}
+
+	// start the output pointer at the nullbyte after `\e[`
+	char *op_ptr = output_buffer + sizeof(CSI) - 1;
+
+	// copy the style and foreground, and increment the output pointer
+	memcpy(op_ptr, style, st_len); op_ptr += st_len;
+	memcpy(op_ptr, fg, fg_len); op_ptr += fg_len;
+
+	// add the semicolon if it needs to be added
+	if (do_fg_sc) *op_ptr++ = ';';
+
+	// copy the background
+	memcpy(op_ptr, bg, bg_len); op_ptr += bg_len;
+	// then end the string with `m\0`
+	*op_ptr++ = 'm';
+	*op_ptr++ = '\0';
 
 	return output_buffer;
 }
