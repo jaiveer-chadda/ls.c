@@ -117,8 +117,8 @@ int setOptions(const int argc, const char *argv[]) {
 
 	int i;
 	for (i = 1; i < argc; i++) {
-		char *opt	 = (char *)argv[i];
-		char *optarg = ARG_EXISTS ? (char *)argv[i + 1] : "";
+		const char *opt		= (char *)argv[i];
+		const char *optarg	= ARG_EXISTS ? (char *)argv[i + 1] : "";
 
 		/* —— End Option Parsing ————————————————————————————————————————— */
 
@@ -127,16 +127,17 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— Check for `--option=value` ————————————————————————————————— */
 
-		const char *equal_arg = strchr(opt, '=');
+		const char *const equal_arg = strchr(opt, '=');
 		bool did_malloc = false;
 
 		if (equal_arg != NULL) {
-			optarg = (char *)(equal_arg + 1);
+			optarg = equal_arg + 1;
+
 			UN_CONSUME_ARG;
 			if (strlen(optarg) == 0) ERR_EMPTY_ARG();
 
 			const int option_len = equal_arg - opt;
-			char *adj_opt = emalloc(option_len + 1);
+			char *const adj_opt = emalloc(option_len + 1);
 			did_malloc = true;
 
 			strncpy(adj_opt, opt, option_len);
@@ -238,12 +239,14 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— Binary Options ————————————————————————————————————————————— */
 
+		test_flag_t flag_buf;
+
 		for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
-			BinaryOption *bin_opt = &BINARY_OPTS[opt_i];
+			BinaryOption *const bin_opt = &BINARY_OPTS[opt_i];
 
 			for (int flag_i = 0; NOT_REACHED_END_OF_ARR(flag_i, bin_opt->long_flags); flag_i++) {
-				const char *base_flag = bin_opt->long_flags[flag_i];
-				test_flag_t flag_buf;
+				const char *const base_flag = bin_opt->long_flags[flag_i];
+				if (base_flag[0] == '\0') continue;
 
 				CHECK_LONG_FLAG("--"   , true ); // check standard `--...` flag
 				CHECK_LONG_FLAG("--do-", true ); // check `--do-...` flag
@@ -259,7 +262,7 @@ int setOptions(const int argc, const char *argv[]) {
 		/* —— `goto label_continue` Target ——————————————————————————————— */
 
 		label_continue:
-			if (did_malloc) free(opt);
+			if (did_malloc) efree((void*)opt);
 			continue;
 	}
 

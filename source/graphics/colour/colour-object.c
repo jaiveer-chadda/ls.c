@@ -19,10 +19,10 @@ typedef struct { uint8_t r, g, b; } rgb_t;
 /* ── ── Function Defs ── ───────────────────────────────────────────────────────────────────────────────────——————— */
 
 static inline rgb_t toRGB_t(const colour_t raw);
-static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...);
 static inline int stylelookup(const style_t style, const bool turn_style);
 
 #ifdef DEBUG_MODE
+	static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...);
 #	define SNPRINTF(str, size, ...) d_snprintf(str, size, __VA_ARGS__)
 #else
 #	define SNPRINTF(str, size, ...) snprintf(str, size, __VA_ARGS__)
@@ -189,15 +189,16 @@ static inline rgb_t toRGB_t(const colour_t raw) {
 
 /* ── ── `d_snprintf()` ── ───────────────────────────────────────────────────────────────────────────────────────── */
 
+#ifdef DEBUG_MODE
 /// @brief A version of `snprintf` with bounds-checking, and which prints debugging messages.
 static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...) {
 	va_list va_args;
 	va_start(va_args, format);
-	//
+
 	const int f_retcode = vsnprintf(str, size, format, va_args);
 	const int f_errno = errno;
 	va_end(va_args);
-	//
+
 	if ((size_t)f_retcode >= size || f_retcode == EOF) {
 		debug(WARNING, "snprintf(): `char *str`: %s",
 			(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
@@ -205,6 +206,7 @@ static inline int d_snprintf(char *restrict str, size_t size, const char *restri
 	}
 	return f_retcode;
 }
+#endif
 
 /* ── ── `stylelookup()` ── ──────────────────────────────────────────────────────────────────────────────────────── */
 
