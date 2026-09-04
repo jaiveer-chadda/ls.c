@@ -66,6 +66,9 @@
 
 /* —— Style Handling ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define ON	true
+#define OFF	false
+
 #define add_style(st) style |=  (st) /** Add   `st`to	the style attribute. */
 #define rem_style(st) style &= ~(st) /** Remove`st`from the style attribute. */
 

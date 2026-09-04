@@ -14,9 +14,15 @@
 #include "malloc.h"
 #include "debugging.h"
 
-typedef struct { uint8_t r, g, b; } rgb_t;
+/* ── ── Function Defs ── ───────────────────────────────────────────────────────────────────────────────────——————— */
+
+static inline rgb_t toRGB_t(const colour_t raw);
+static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...);
+static inline int stylelookup(const style_t style, const bool turn_style);
 
 /* ── ── Static Variables ── ────────────────────────────────────────────────────────────────────────────────——————— */
+
+typedef struct { uint8_t r, g, b; } rgb_t;
 
 static const style_t G_STYLES[] = { G_BOLD, G_DIM, G_ITALIC, G_UNDER, G_BLINK, G_INVERT, G_INVIS, G_STRIKE, G_DUNDER };
 static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
@@ -25,92 +31,6 @@ static Colour active = RESET_ALL;
 
 // the initial `CSI` will always remain here; only chars after it will ever be changed
 static char output_buffer[OUTPUT_BUFSIZE] = CSI;
-
-/* ── ── `toRGB_t()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
-
-static inline rgb_t toRGB_t(const colour_t raw) {
-	assert(raw >= COLOUR_24_MIN);
-
-	const int rgb = (raw - COLOUR_24_MIN);
-
-	const uint8_t red = (rgb / 1000000);
-	const uint8_t grn = (rgb / 1000) -  (red * 1000);
-	const uint8_t blu = (rgb - ((rgb / 1000) * 1000));
-
-	assert(0U <= red && red <= 255U);
-	assert(0U <= grn && grn <= 255U);
-	assert(0U <= blu && blu <= 255U);
-
-	return (const rgb_t){ .r = red, .g = grn, .b = blu };
-}
-
-/* ── ── `d_snprintf()` ── ───────────────────────────────────────────────────────────────────────────────────────── */
-
-#ifdef DEBUG_MODE
-#	define SNPRINTF(str, size, ...) d_snprintf(str, size, __VA_ARGS__)
-	//
-	/// @brief A version of `snprintf` with bounds-checking, and which prints debugging messages.
-	static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...) {
-		va_list va_args;
-		va_start(va_args, format);
-		//
-		const int f_retcode = vsnprintf(str, size, format, va_args);
-		const int f_errno = errno;
-		va_end(va_args);
-		//
-		if ((size_t)f_retcode >= size || f_retcode == EOF) {
-			debug(WARNING, "snprintf(): `char *str`: %s",
-				(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
-			);
-		}
-		return f_retcode;
-	}
-#else
-#	define SNPRINTF(str, size, ...) snprintf(str, size, __VA_ARGS__)
-#endif
-
-/* ── ── `stylelookup()` ── ──────────────────────────────────────────────────────────────────────────────────────── */
-
-#define ON	true
-#define OFF	false
-
-/**
- * @brief Get the ANSI code corresponding to turning a style on or off.
- *
- * @param style A `style_t` integer with only one style set.
- * @param turn_style Whether the ouput code should turn `style` on or off (true = on, false = off).
- * @return int: The ANSI code representing turning the input style on or off. Returns 6 or 26 if `style` was invalid.
- */
-static inline int stylelookup(const style_t style, const bool turn_style) {
-	assert(0x0000 < style && style <= 0x0200); // `style` is in range
-	assert(log2(style) == floor(log2(style))); // `style` is a power of 2
-
-	if (turn_style == OFF) {
-		// bold and double underline don't conform to the normal escape
-		//	sequences that turn styles off, so they need special exceptions
-		switch (style) {
-			case G_DUNDER:	return ANSI_NO_UNDER;	// on = `\e[21m`, off = `\e[24m`
-			case G_BOLD:	return ANSI_NO_BOLD;	// on = `\e[1m` , off = `\e[22m`
-			default: // recurse once into this function, and add 20 to its normal output
-				return stylelookup(style, ON) + ANSI_OFF_MOD; // on = `\e[Xm` , off = `\e[2Xm`
-		}
-	}
-
-	switch (style) {
-		case G_BOLD		: return ANSI_BOLD	;
-		case G_DIM		: return ANSI_DIM	;
-		case G_ITALIC	: return ANSI_ITALIC;
-		case G_UNDER	: return ANSI_UNDER	;
-		case G_BLINK	: return ANSI_BLINK	;
-		case G_INVERT	: return ANSI_INVERT;
-		case G_INVIS	: return ANSI_INVIS	;
-		case G_STRIKE	: return ANSI_STRIKE;
-		case G_DUNDER	: return ANSI_DUNDER;
-		default:
-			debug(WARNING, "Invalid `Colour::style` value: '%#x'", style);
-			return ANSI_NOTHING; // the esc seq `\e[6m` does nothing, and is harmless to print
-	}
-}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── `getcol()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
@@ -260,6 +180,92 @@ char *getcol(const Colour input_col) {
 
 	return output_buffer;
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── `toRGB_t()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
+
+static inline rgb_t toRGB_t(const colour_t raw) {
+	assert(raw >= COLOUR_24_MIN);
+
+	const int rgb = (raw - COLOUR_24_MIN);
+
+	const uint8_t red = (rgb / 1000000);
+	const uint8_t grn = (rgb / 1000) -  (red * 1000);
+	const uint8_t blu = (rgb - ((rgb / 1000) * 1000));
+
+	assert(0U <= red && red <= 255U);
+	assert(0U <= grn && grn <= 255U);
+	assert(0U <= blu && blu <= 255U);
+
+	return (const rgb_t){ .r = red, .g = grn, .b = blu };
+}
+
+/* ── ── `d_snprintf()` ── ───────────────────────────────────────────────────────────────────────────────────────── */
+
+#ifdef DEBUG_MODE
+#	define SNPRINTF(str, size, ...) d_snprintf(str, size, __VA_ARGS__)
+	//
+	/// @brief A version of `snprintf` with bounds-checking, and which prints debugging messages.
+	static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...) {
+		va_list va_args;
+		va_start(va_args, format);
+		//
+		const int f_retcode = vsnprintf(str, size, format, va_args);
+		const int f_errno = errno;
+		va_end(va_args);
+		//
+		if ((size_t)f_retcode >= size || f_retcode == EOF) {
+			debug(WARNING, "snprintf(): `char *str`: %s",
+				(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
+			);
+		}
+		return f_retcode;
+	}
+#else
+#	define SNPRINTF(str, size, ...) snprintf(str, size, __VA_ARGS__)
+#endif
+
+/* ── ── `stylelookup()` ── ──────────────────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * @brief Get the ANSI code corresponding to turning a style on or off.
+ *
+ * @param style A `style_t` integer with only one style set.
+ * @param turn_style Whether the ouput code should turn `style` on or off (true = on, false = off).
+ * @return int: The ANSI code representing turning the input style on or off. Returns 6 or 26 if `style` was invalid.
+ */
+static inline int stylelookup(const style_t style, const bool turn_style) {
+	assert(0x0000 < style && style <= 0x0200); // `style` is in range
+	assert(log2(style) == floor(log2(style))); // `style` is a power of 2
+
+	if (turn_style == OFF) {
+		// bold and double underline don't conform to the normal escape
+		//	sequences that turn styles off, so they need special exceptions
+		switch (style) {
+			case G_DUNDER:	return ANSI_NO_UNDER;	// on = `\e[21m`, off = `\e[24m`
+			case G_BOLD:	return ANSI_NO_BOLD;	// on = `\e[1m` , off = `\e[22m`
+			default: // recurse once into this function, and add 20 to its normal output
+				return stylelookup(style, ON) + ANSI_OFF_MOD; // on = `\e[Xm` , off = `\e[2Xm`
+		}
+	}
+
+	switch (style) {
+		case G_BOLD		: return ANSI_BOLD	;
+		case G_DIM		: return ANSI_DIM	;
+		case G_ITALIC	: return ANSI_ITALIC;
+		case G_UNDER	: return ANSI_UNDER	;
+		case G_BLINK	: return ANSI_BLINK	;
+		case G_INVERT	: return ANSI_INVERT;
+		case G_INVIS	: return ANSI_INVIS	;
+		case G_STRIKE	: return ANSI_STRIKE;
+		case G_DUNDER	: return ANSI_DUNDER;
+		default:
+			debug(WARNING, "Invalid `Colour::style` value: '%#x'", style);
+			return ANSI_NOTHING; // the esc seq `\e[6m` does nothing, and is harmless to print
+	}
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // spell:ignore gstyles fgbg foreg
 

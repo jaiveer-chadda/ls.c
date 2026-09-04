@@ -29,8 +29,6 @@ typedef uint16_t style_t; /** A bit record holding all styles that should be app
 #define G_DUNDER	((style_t)0x0200)
 #define G_ALL		((style_t)0x03FF) /** 1023 - Set all styles (only really useful for debugging).  */
 
-#define G_REV	G_INVERT
-
 /* —— Basic Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// A value in `[-1, 255]`, representing an 8-bit ANSI colour code. I.e., `(colour_t)ID` = `\e[38;5;{ID}m`.
@@ -94,23 +92,27 @@ typedef struct {
 	colour_t fg, bg;
 } Colour;
 
-#define ST style
-#define RESET_ALL ((Colour){ .style = G_NONE, .fg = G_NO_FG, .bg = G_NO_BG }) /** Equivalent to `((Colour){0})`. */
+/* —— Function Declarations ———————————————————————————————————————————————————————————————————————————————————————— */
+
+char *getcol(const Colour input_col);
+#define colprint(input_col) fputs(getcol((input_col)), stdout)
 
 /* —— Helper Macros ———————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define ST style
+
+#define G_REV G_INVERT
+#define G_REVERSE G_INVERT
 
 #define RGB(r,g,b) ((colour_t)(COLOUR_24_MIN + ((r) * 1E6) + ((g) * 1E3) + (b)))
 #define toColour(...) ((Colour){ __VA_ARGS__ })
 
-#define has_fg() fg != G_NO_FG /// To be used as: `(bool)(colour.has_fg())`.
-#define has_bg() bg != G_NO_BG /// To be used as: `(bool)(colour.has_bg())`.
-#define has_style(st) style & (st) /// To be used as: `(bool)(colour.has_style(G_STYLE))`.
+#define has_fg() fg != G_NO_FG		/// To be used as: `(bool)(colour.has_fg())`.
+#define has_bg() bg != G_NO_BG		/// To be used as: `(bool)(colour.has_bg())`.
+#define has_style(st) style & (st)	/// To be used as: `(bool)(colour.has_style(G_STYLE))`.
 
-/* —— Function Declarations ———————————————————————————————————————————————————————————————————————————————————————— */
-
-char *getcol(const Colour input_col);
-
-#define colprint(input_col) fputs(getcol((input_col)), stdout)
+#define RESET_ALL ((Colour){ .style = G_NONE, .fg = G_NO_FG, .bg = G_NO_BG }) /** Equivalent to `((Colour){0})`. */
+#define NO_CHANGE ((Colour){ .style = G_ADD | G_NONE })			 /** Add nothing. Equivalent to `((Colour){1})`. */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 // spell:ignoreRegexp /(?<=G_)\w+\b/g
