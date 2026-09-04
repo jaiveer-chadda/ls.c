@@ -16,7 +16,7 @@ typedef struct {
 	char short_name[6];
 	char tiny_name[3];
 
-	char colour[16];
+	Colour colour;
 } flagset;
 
 extern const flagset ALL_FLAGS[MAX_FLAG_NUM];

@@ -19,14 +19,14 @@
 
 #ifdef DEBUG_MODE
 #	include "debugging/debugging.h"
-#	define PRINTF_ERROR(...) do {											\
+#	define PRINTF_CHECK_ERROR(...) do {										\
 		if (printf(__VA_ARGS__) == EOF) {									\
 			const int printf_errno = errno;									\
 			debug(ERROR, "printIcon: printf: %s", strerror(printf_errno));	\
 		}																	\
 	} while (0)
 #else
-#	define PRINTF_ERROR(...) printf(__VA_ARGS__)
+#	define PRINTF_CHECK_ERROR(...) printf(__VA_ARGS__)
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -80,18 +80,21 @@ icon_t getIcon(const char *filename, const bool is_dir) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printIcon(const icon_t icon, const FileColour file_col) {
-	if (!DO_COLOUR()) {
-		PRINTF_ERROR("%lc", icon);
-		return;
+	if (icon == L'\0') return;
+
+	if (DO_COLOUR()) {
+		Colour colour = file_colour_esc[file_col];
+
+		// if the colour has a background, then set its forground to the background colour
+		if (colour.has_bg()) {
+			colour.fg = colour.bg;
+			colour.bg = G_NO_BG;
+		}
+
+		colprint(colour);
 	}
 
-	// FIXME: this is an imperfect solution, but it's fine for now
-	const char *const colour_str = file_colour_esc[file_col];
-	const bool sets_bg = false; // doesSetBackground(colour_str);
-
-	PRINTF_ERROR("%s%s%s%s" "%lc" "%s",
-		CSI, colour_str, sets_bg ? ";7" : "", END, icon, RESET
-	);
+	PRINTF_CHECK_ERROR("%lc", icon);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

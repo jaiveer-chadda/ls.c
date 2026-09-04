@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "output.h"
+#include "icons/icons.h"
 #include "form/formatting.h"
 #include "options/options.h"
 #include "model/stat-model.h"
@@ -63,25 +64,28 @@ static inline void print_time_str(const FileStat *const pFS, const TimeType type
 	if (pFS->f != NULL && pFS->f->times[type] != NULL) {
 		colprint(time_colour_esc[pFS->f->times[type]->colour]);
 
-		printf("%*s", getLen(timeFieldStr(type)), pFS->f->times[type]->str);
-
-		colprint(RESET_ALL);
-		fputs(FIELD_PAD, stdout);
+		printf("%*s %s",
+			getLen(timeFieldStr(type)), pFS->f->times[type]->str,
+			FIELD_PAD
+		);
 
 		return;
 	}
 
-	printf("%*s" RESET "%s", getLen(timeFieldStr(type)), TIME_ERR_STR, FIELD_PAD);
+	printf("%*s" "%s", getLen(timeFieldStr(type)), TIME_ERR_STR, FIELD_PAD);
 }
 
 static inline void print_name(const FileStat *const pFS) {
-	const char *const to_print = (DO_PATH() && pFS->path != NULL) ? pFS->path : pFS->name;
-	printf("%s" "%s%s%s" "%lc %s" "%s",
-		PRE_NAME_PAD,
-		CSI, file_colour_esc[pFS->file_col], END,
-		pFS->icon, to_print,
-		RESET
-	);
+	const char *const name_or_path = (DO_PATH() && pFS->path != NULL) ? pFS->path : pFS->name;
+
+	fputs(PRE_ICON_PAD, stdout);
+	printIcon(pFS->icon, pFS->file_col);
+
+	fputs(PRE_NAME_PAD, stdout);
+	colprint(file_colour_esc[pFS->file_col]);
+	printf("%s", name_or_path);
+
+	colprint(RESET_ALL);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -108,6 +112,8 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	/* ———————————————————————————————————————————————— */
 
+	colprint(PUNCT);
+
 	for (int i = 0; i < depth - 1; i++) printf("%*s%s", i ? 2 : 1 , "", lines[i] ? "│" : " ");
 
 	lines_t new_lines;
@@ -121,8 +127,8 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	/* ———————————————————————————————————————————————— */
 
 	print_name(pFS);
+	if (do_suffix()) putchar(pFS->suffix);
 
-	putchar(pFS->suffix);
 	putchar('\n');
 
 	/* ———————————————————————————————————————————————— */

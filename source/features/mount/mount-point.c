@@ -55,14 +55,15 @@ void printMountDevice(const name_t filename) {
 	struct statfs dev_info;
 	if (statfs(abs_path, &dev_info) != 0) return;
 
-	// recreating `eza`s format: `[source (filesystem)]`
-	printf(" %s%s" "%s%s" " %s%s" "%s%s" "%s%s" "%s%s" "%s",
-		ANSI(MTPT_COL_PUNC_1), "[",
-		ANSI(MTPT_COL_FROM	), dev_info.f_mntfromname,
-		ANSI(MTPT_COL_PUNC_2), "(",
-		ANSI(MTPT_COL_TYPE	), dev_info.f_fstypename,
-		ANSI(MTPT_COL_PUNC_2), ")",
-		ANSI(MTPT_COL_PUNC_1), "]",
-		RESET
-	);
+	// /// FIXME:
+	// // recreating `eza`s format: `[source (filesystem)]`
+	// printf(" %s%s" "%s%s" " %s%s" "%s%s" "%s%s" "%s%s" "%s",
+	// 	ANSI(MTPT_COL_PUNC_1), "[",
+	// 	ANSI(MTPT_COL_FROM	), dev_info.f_mntfromname,
+	// 	ANSI(MTPT_COL_PUNC_2), "(",
+	// 	ANSI(MTPT_COL_TYPE	), dev_info.f_fstypename,
+	// 	ANSI(MTPT_COL_PUNC_2), ")",
+	// 	ANSI(MTPT_COL_PUNC_1), "]",
+	// 	RESET
+	// );
 }

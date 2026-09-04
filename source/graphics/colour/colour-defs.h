@@ -61,7 +61,6 @@
 
 #define add_style(st) style |=  (st) /** Add   `st`to	the style attribute. */
 #define rem_style(st) style &= ~(st) /** Remove`st`from the style attribute. */
-#define has_style(st) style &   (st)
 
 #define APPEND_TO_STYLE(num) \
 	st_len += SNPRINTF(style + st_len, STYLE_BUFSIZE - st_len, "%d;", num)
