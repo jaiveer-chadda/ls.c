@@ -14,15 +14,21 @@
 #include "malloc.h"
 #include "debugging.h"
 
+typedef struct { uint8_t r, g, b; } rgb_t;
+
 /* ── ── Function Defs ── ───────────────────────────────────────────────────────────────────────────────────——————— */
 
 static inline rgb_t toRGB_t(const colour_t raw);
 static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...);
 static inline int stylelookup(const style_t style, const bool turn_style);
 
-/* ── ── Static Variables ── ────────────────────────────────────────────────────────────────────────────────——————— */
+#ifdef DEBUG_MODE
+#	define SNPRINTF(str, size, ...) d_snprintf(str, size, __VA_ARGS__)
+#else
+#	define SNPRINTF(str, size, ...) snprintf(str, size, __VA_ARGS__)
+#endif
 
-typedef struct { uint8_t r, g, b; } rgb_t;
+/* ── ── Static Variables ── ────────────────────────────────────────────────────────────────────────────────——————— */
 
 static const style_t G_STYLES[] = { G_BOLD, G_DIM, G_ITALIC, G_UNDER, G_BLINK, G_INVERT, G_INVIS, G_STRIKE, G_DUNDER };
 static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
@@ -202,28 +208,22 @@ static inline rgb_t toRGB_t(const colour_t raw) {
 
 /* ── ── `d_snprintf()` ── ───────────────────────────────────────────────────────────────────────────────────────── */
 
-#ifdef DEBUG_MODE
-#	define SNPRINTF(str, size, ...) d_snprintf(str, size, __VA_ARGS__)
+/// @brief A version of `snprintf` with bounds-checking, and which prints debugging messages.
+static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...) {
+	va_list va_args;
+	va_start(va_args, format);
 	//
-	/// @brief A version of `snprintf` with bounds-checking, and which prints debugging messages.
-	static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...) {
-		va_list va_args;
-		va_start(va_args, format);
-		//
-		const int f_retcode = vsnprintf(str, size, format, va_args);
-		const int f_errno = errno;
-		va_end(va_args);
-		//
-		if ((size_t)f_retcode >= size || f_retcode == EOF) {
-			debug(WARNING, "snprintf(): `char *str`: %s",
-				(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
-			);
-		}
-		return f_retcode;
+	const int f_retcode = vsnprintf(str, size, format, va_args);
+	const int f_errno = errno;
+	va_end(va_args);
+	//
+	if ((size_t)f_retcode >= size || f_retcode == EOF) {
+		debug(WARNING, "snprintf(): `char *str`: %s",
+			(f_errno != 0) ? strerror(f_errno) : "buffer overflow"
+		);
 	}
-#else
-#	define SNPRINTF(str, size, ...) snprintf(str, size, __VA_ARGS__)
-#endif
+	return f_retcode;
+}
 
 /* ── ── `stylelookup()` ── ──────────────────────────────────────────────────────────────────────────────────────── */
 
