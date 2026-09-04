@@ -10,6 +10,7 @@
 #include "colour-defs.h"
 #include "colour-object.h"
 
+#include "malloc.h"
 #include "debugging.h"
 
 typedef struct { uint8_t r, g, b; } rgb_t;
@@ -92,9 +93,13 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ── ── `colprint()` ── ─────────────────────────────────────────────────────────────────────────────────────────── */
+/* ── ── `getcol()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
-int colprint(const Colour input_col) {
+// note: this function isn't threadsafe, but that should be fine I think, since its only really used for printing
+
+static char output_buffer[OUTPUT_BUFSIZE];
+
+char *getcol(const Colour input_col) {
 	/// A working copy of the inputted colour object, which we can mutate if needed.
 	Colour colour = input_col;
 
@@ -113,7 +118,7 @@ int colprint(const Colour input_col) {
 	if (colour.fg	 == active.fg &&
 		colour.bg	 == active.bg &&
 		colour.style == active.style
-	) return 0;
+	) return "";
 
 	/* ── Process Colour::style ───────────────────────────────────────── */
 
@@ -191,17 +196,13 @@ int colprint(const Colour input_col) {
 
 	// if everything is set to 0, then there's no point individually
 	//	resetting everything, so we can just print `\e[m` instead.
-	if (active.style + active.fg + active.bg == 0) {
-		return printf("%s", CSI END);
-	}
+	if (active.style + active.fg + active.bg == 0) return CSI END;
 
 	/* ── Check for Nothing-ness ──────────────────────────────────────── */
 
 	// if we're adding to the colours/styles, but there's nothing to add,
-	//	then don't print anything, and just return 0
-	if (do_add && !(has_st || has_fg || has_bg)) {
-		return 0;
-	}
+	//	then don't output anything
+	if (do_add && !(has_st || has_fg || has_bg)) return "";
 
 	/* ── Clean Up Semicolons ─────────────────────────────────────────── */
 
@@ -213,9 +214,14 @@ int colprint(const Colour input_col) {
 
 	const char* foreg_sc = has_fg && has_bg ? ";" : "";
 
-	/* ── Print & Return ──────────────────────────────────────────────── */
+	/* ── Set Buffer & Return ─────────────────────────────────────────── */
 
-	return printf(CSI "%s%s" "%s" "%s" END, style, fg, foreg_sc, bg);
+	if (snprintf(output_buffer, OUTPUT_BUFSIZE,
+		ANSI("%s%s" "%s" "%s"),
+		style, fg, foreg_sc, bg
+	) >= OUTPUT_BUFSIZE) return "";
+
+	return output_buffer;
 }
 
 // spell:ignore gstyles fgbg foreg

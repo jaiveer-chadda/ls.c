@@ -61,10 +61,11 @@ static inline void print_size_str(const FileStat *const pFS) {
 }
 
 static inline void print_time_str(const FileStat *const pFS, const TimeType type) {
-	if (pFS->f != NULL && pFS->f->times[type] != NULL) {
-		colprint(time_colour_esc[pFS->f->times[type]->colour]);
-
-		printf("%*s %s",
+	if (pFS->f				!= NULL &&
+		pFS->f->times[type] != NULL
+	) {
+		printf("%s" "%*s %s",
+			getcol(time_colour_esc[pFS->f->times[type]->colour]),
 			getLen(timeFieldStr(type)), pFS->f->times[type]->str,
 			FIELD_PAD
 		);
@@ -81,11 +82,12 @@ static inline void print_name(const FileStat *const pFS) {
 	fputs(PRE_ICON_PAD, stdout);
 	printIcon(pFS->icon, pFS->file_col);
 
-	fputs(PRE_NAME_PAD, stdout);
-	colprint(file_colour_esc[pFS->file_col]);
-	printf("%s", name_or_path);
-
-	colprint(RESET_ALL);
+	printf("%s" "%s" "%s" "%s",
+		PRE_NAME_PAD,
+		getcol(file_colour_esc[pFS->file_col]),
+		name_or_path,
+		getcol(RESET_ALL)
+	);
 }
 
 void print_tree(lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last) {

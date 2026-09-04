@@ -108,7 +108,9 @@ typedef struct {
 
 /* —— Function Declarations ———————————————————————————————————————————————————————————————————————————————————————— */
 
-int colprint(const Colour input_col);
+char *getcol(const Colour input_col);
+
+#define colprint(input_col) fputs(getcol((input_col)), stdout)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 // spell:ignoreRegexp /(?<=G_)\w+\b/g

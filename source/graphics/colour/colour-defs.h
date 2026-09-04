@@ -48,14 +48,21 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Buffer Sizes ————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/**	The maximum number of characters needed to represent the longest ANSI supported code, including a null terminator.
+ *	- This would be: `"\e[;22;23;24;25;27;28;29;38;2;255;255;255;48;2;255;255;255m\0"` (len = 60).
+ *	- Rounded up to 64. */
+#define OUTPUT_BUFSIZE 64
+
 /**	The number of characters needed to represent every style's reset sequence (usually longer),
- * including a trailing semicolon and null terminator.
- *	- This would be: `"22;23;24;25;27;28;29;\0"`. */
-#define STYLE_BUFSIZE 22
+ *	including a trailing semicolon and null terminator.
+ *	- This would be: `"22;23;24;25;27;28;29;\0"` (len = 22).
+ *	- Rounded up to 24. */
+#define STYLE_BUFSIZE 24
 
 /**	The maximum number of characters needed to represent an ANSI colour code, including a null terminator.
- *	- This would be: `"38;2;255;255;255\0"`. */
-#define FGBG_BUFSIZE  17
+ *	- This would be: `"38;2;255;255;255\0"` (len = 17).
+ *	- Rounded up to 20. */
+#define FGBG_BUFSIZE  20
 
 /* —— Style Handling ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -129,7 +136,7 @@
 		( COLOUR_24_MIN <= colour.fgbg && colour.fgbg <= COLOUR_24_MAX))	\
 	) {																		\
 		colour.fgbg = abs(colour.fgbg) % COLOUR_8_MAX;						\
-		return -1;															\
+		return "";															\
 	}																		\
 } while(0)
 
