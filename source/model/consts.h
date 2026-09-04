@@ -47,8 +47,8 @@
 /// @brief The length of the mode (including type) when written in octal (e.g. `040755`).
 #define OCT_MODE_LEN 6
 
-/// @brief The length of the human-readable mode string +1 (e.g. `drwxr-xr-x`).
-#define MODE_STR_LEN 11
+/// @brief The length of the human-readable mode string +1 (e.g. `drwxr-xr-x@+`).
+#define MODE_STR_LEN 14
 
 /**
  * @brief The length of the string displaying a file's size.

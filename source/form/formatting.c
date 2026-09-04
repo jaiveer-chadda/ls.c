@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+
 #include "formatting.h"
 #include "options/options.h"
 
@@ -80,6 +81,50 @@ void checkLengths(const FileStat *const pfile, const bool do_basic) {
 		CHECK_TIME_LEN(ctime, C_TIME);
 		CHECK_TIME_LEN(btime, B_TIME);
 	}
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static int total_len = 0;
+
+// yes this is awful - i don't care
+int getTotalLen(void) {
+	if (total_len != 0) return total_len;
+
+	total_len = (int)(
+		(getLen(FI_xat)) +
+		(getLen(FI_acl)) +
+
+		(do_nlink	() * (getLen(FI_nlink	) + 1)) +
+		(do_dev_no	() * (getLen(FI_dev_no	) + 1)) +
+		(do_inum	() * (getLen(FI_inum	) + 1)) +
+		(do_flags	() * (getLen(FI_flags	) + 1)) +
+		(do_flag_str() * (getLen(FI_flag_str) + 1)) +
+		(do_mode	() * (getLen(FI_mode	) + 1)) +
+		(do_mode_str() * (getLen(FI_mode_str) + 1)) +
+		(do_size	() * (getLen(FI_size	) + 1)) +
+		(do_size_str() * (getLen(FI_size_str) + 1)) +
+		(do_uid		() * (getLen(FI_uid		) + 1)) +
+		(do_usr_name() * (getLen(FI_usr_name) + 1)) +
+		(do_gid		() * (getLen(FI_gid		) + 1)) +
+		(do_grp_name() * (getLen(FI_grp_name) + 1)) +
+
+		(do_time()) * (
+			(do_time_t(A_TIME) * (getLen(FI_atime) + 1)) +
+			(do_time_t(M_TIME) * (getLen(FI_mtime) + 1)) +
+			(do_time_t(C_TIME) * (getLen(FI_ctime) + 1)) +
+			(do_time_t(B_TIME) * (getLen(FI_btime) + 1))
+		) +
+
+		(do_time_str()) * (
+			(do_time_t(A_TIME) * (getLen(FI_atime_str) + 1)) +
+			(do_time_t(M_TIME) * (getLen(FI_mtime_str) + 1)) +
+			(do_time_t(C_TIME) * (getLen(FI_ctime_str) + 1)) +
+			(do_time_t(B_TIME) * (getLen(FI_btime_str) + 1))
+		)
+	);
+
+	return total_len;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

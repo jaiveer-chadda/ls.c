@@ -37,15 +37,15 @@ static inline void getPermStr(char *perm_str, const mode_t oct_digit) {
 /// @brief Gets the character representing the filetype specified by an octal type integer.
 static inline char getModeType(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
-		case S_IFIFO:	return PIPE_CHAR	; // named pipe		('|' or 'p')
-		case S_IFCHR:	return CHRDEV_CHAR	; // char device
-		case S_IFDIR:	return DIR_CHAR		; // directory
-		case S_IFBLK:	return BLKDEV_CHAR	; // block device
-		case S_IFREG:	return REGULAR_CHAR	; // regular file	('.' or '-')
-		case S_IFLNK:	return SYMLINK_CHAR	; // symbolic link
-		case S_IFSOCK:	return SOCKET_CHAR	; // socket			('=' or 's')
-		case S_IFWHT:	return WHITEOUT_CHAR; // whiteout		('%' or 'w')
-		default:		return UNKNOWN_CHAR	; // unknown
+		case S_IFIFO:	return PIPE_CHAR	; // named pipe		'|' / 'p'
+		case S_IFCHR:	return CHRDEV_CHAR	; // char device	'c'
+		case S_IFDIR:	return DIR_CHAR		; // directory		'/'
+		case S_IFBLK:	return BLKDEV_CHAR	; // block device	'b'
+		case S_IFREG:	return REGULAR_CHAR	; // regular file	'.' / '-'
+		case S_IFLNK:	return SYMLINK_CHAR	; // symbolic link	'l'
+		case S_IFSOCK:	return SOCKET_CHAR	; // socket			'=' / 's'
+		case S_IFWHT:	return WHITEOUT_CHAR; // whiteout		'%' / 'w'
+		default:		return UNKNOWN_CHAR	; // unknown		'?'
 	}
 }
 
@@ -53,13 +53,13 @@ static inline char getModeType(const mode_t mode) {
 
 inline char getTypeSuffix(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
-		case S_IFLNK:	return SYMLINK_SUFFIX;	// symlink
-		case S_IFDIR:	return DIR_SUFFIX;		// directory
-		case S_IFIFO:	return PIPE_CHAR;		// named pipe
-		case S_IFSOCK:	return SOCKET_CHAR;		// socket
-		case S_IFWHT:	return WHITEOUT_CHAR;	// whiteout
+		case S_IFLNK:	return SYMLINK_SUFFIX;	// symlink		 '@'
+		case S_IFDIR:	return DIR_SUFFIX;		// directory	 '/'
+		case S_IFIFO:	return PIPE_CHAR;		// named pipe	 '|'
+		case S_IFSOCK:	return SOCKET_CHAR;		// socket		 '='
+		case S_IFWHT:	return WHITEOUT_CHAR;	// whiteout		 '%'
 	}
-	if (mode & EXEC_MASK) return EXEC_SUFFIX;	// executable
+	if (mode & EXEC_MASK) return EXEC_SUFFIX;	// executable	 '*'
 	return '\0';								// other/unknown
 }
 

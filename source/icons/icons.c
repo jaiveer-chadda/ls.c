@@ -80,7 +80,7 @@ icon_t getIcon(const char *filename, const bool is_dir) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printIcon(const icon_t icon, const FileColour file_col) {
-	if (icon == L'\0') return;
+	if (icon == L'\0') { putchar(' '); return; }
 
 	if (DO_COLOUR()) {
 		Colour colour = file_colour_esc[file_col];

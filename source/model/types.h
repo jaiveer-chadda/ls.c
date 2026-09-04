@@ -98,7 +98,7 @@ typedef char  name_t[MAX_NAME_LEN]; // `char[MAX_NAME_LEN] = 255`
 typedef char  path_t[MAX_PATH_LEN]; // `char[MAX_PATH_LEN] = 1024`
 
 typedef char sizestr[MAX_SIZE_LEN]; // `char sizestr[MAX_SIZE_LEN]` = 10
-typedef char modestr[MODE_STR_LEN]; // `char modestr[MODE_STR_LEN]` = 11
+typedef char modestr[MODE_STR_LEN]; // `char modestr[MODE_STR_LEN]` = 14
 typedef char timestr[MAX_TIME_LEN]; // `char timestr[MAX_TIME_LEN]` = `(1 << 5)` = 32 
 typedef char ugidstr[MAX_UGID_LEN]; // `char ugidstr[MAX_UGID_LEN]` = `(1 << 5)` = 32
 typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; // `(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM` = 168

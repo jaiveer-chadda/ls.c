@@ -42,6 +42,9 @@ extern field_t fields[];
 	X(mtime_str	, "Modified", s	, right	) \
 	X(ctime_str	, "Changed"	, s	, right	) \
 	X(btime_str	, "Birth"	, s	, right	) \
+	\
+	X(acl		, ""		, c	, left	) \
+	X(xat		, ""		, c	, left	) \
 /**/
 
 #define X(fld, hdr, fms, lor) FI_##fld,
@@ -54,14 +57,16 @@ typedef enum { FIELDS_TABLE FI_COUNT } FieldIdx;
 #define timeFieldStr(type)	(FIRST_TIMESTR_FIELD + (type))
 #define timeField(type)		(FIRST_TIME_FIELD	 + (type))
 
+/* ——————————————————————————————————————————————————————— */
+
 /// Get the calculated maximum length of the inputted field (`type`).
 #define getLen(type) ((int)(fields[(type)].len))
-
-/* ——————————————————————————————————————————————————————— */
 
 void initFormatting(void);
 void checkLengths(const FileStat *const pfile, const bool do_basic);
 void setLen(const FieldIdx field, const size_t length);
+
+int getTotalLen(void);
 
 /* ——————————————————————————————————————————————————————— */
 

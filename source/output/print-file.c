@@ -41,30 +41,38 @@ static inline void print_flag_str(const FileStat *const pFS) {
 }
 
 static inline void print_mode_str(const FileStat *const pFS) {
-	printf(fields[FI_mode_str].fmt_l, getLen(FI_mode_str), pFS->mode_str);
+	printf(fields[FI_mode_str].fmt_s, pFS->mode_str);
 
-	putchar(pFS->has_xat ? XATTR_CHAR : ' ');
-	putchar(pFS->has_acl ? ACL_CHAR	  : ' ');
+	pFS->has_xat ? (void)putchar(XATTR_CHAR	) : getLen(FI_xat) ? (void)putchar(' ') : (void)0;
+	pFS->has_acl ? (void)putchar(ACL_CHAR	) : getLen(FI_acl) ? (void)putchar(' ') : (void)0;
 
 	fputs(FIELD_PAD, stdout);
 }
 
 static inline void print_size_str(const FileStat *const pFS) {
 	const bool valid = pFS->f != NULL && pFS->f->size_str != NULL;
+	const bool do_unit = valid && DO_PRINT_SIZE_UNIT(pFS->f->size_unit);
 
-	printf("%*s%c%s",
-		getLen(FI_size_str), valid ? pFS->f->size_str : NO_SIZE_STR,
-		/// @todo handle `size_unit` printing
-		valid ? (pFS->f->size_unit ? pFS->f->size_unit : ' ') : ' ',
-		FIELD_PAD
-	);
+	if (do_unit) {
+		printf("%*s%c",
+			getLen(FI_size_str) - 1, pFS->f->size_str,
+			pFS->f->size_unit
+		);
+
+	} else {
+		printf("%*s",
+			getLen(FI_size_str), valid ? pFS->f->size_str : NO_SIZE_STR
+		);
+	}
+
+	fputs(FIELD_PAD, stdout);
 }
 
 static inline void print_time_str(const FileStat *const pFS, const TimeType type) {
 	if (pFS->f				!= NULL &&
 		pFS->f->times[type] != NULL
 	) {
-		printf("%s" "%*s %s",
+		printf("%s" "%*s" "%s",
 			getcol(time_colour_esc[pFS->f->times[type]->colour]),
 			getLen(timeFieldStr(type)), pFS->f->times[type]->str,
 			FIELD_PAD

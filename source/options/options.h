@@ -31,8 +31,8 @@ int setOptions(const int argc, const char *argv[]);
 	\
 	X(BO_do_icon			, true	, true	, 'I', { "icon"			, "icons"					}) \
 	X(BO_do_suffix			, true	, true	, 'P', { "suffix"		, "mark-type"				}) \
-	X(BO_do_link_to			, true	, true	, 'l', { "link-to"		, "symlinks"				}) \
-	X(BO_do_nlink			, true	, true	, 'n', { "nlink"									}) \
+	X(BO_do_link_to		/**/, false	, true	, 'l', { "link-to"		, "symlinks"				}) \
+	X(BO_do_nlink		/**/, false	, true	, 'n', { "nlink"									}) \
 	X(BO_do_dev_no			, false	, true	, NSF, { "dev-no"		, "device-number"			}) \
 	X(BO_do_inum		/**/, true	, true	, 'i', { "inode"		, "ino"			, "inum"	}) \
 	X(BO_do_flags			, false	, true	, NSF, { "flags"									}) \
@@ -45,6 +45,7 @@ int setOptions(const int argc, const char *argv[]);
 	X(BO_do_usr_name		, true	, true	, 'U', { "uid-str"		, "usr-name"	, "user"	}) \
 	X(BO_do_gid				, false	, true	, 'g', { "gid"										}) \
 	X(BO_do_grp_name		, true	, true	, 'G', { "gid-str"		, "grp-name"	, "group"	}) \
+	\
 	X(BO_do_time			, false	, true	, NSF, { "time"										}) \
 	X(BO_do_time_str		, true	, true	, NSF, { "time-str"									}) \
 	\

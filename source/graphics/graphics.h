@@ -295,21 +295,29 @@
 #define NO_SIZE_STR		"-"
 #define MAJ_MIN_SEP		","
 
-#define UNIT_MAJ_MIN	','
-#define UNIT_ZERO		'-'
-#define UNIT_ERROR		'x'
+#define UNIT_MAJ_MIN	((unit_t)',')
+#define UNIT_ZERO		((unit_t)'-')
+#define UNIT_ERROR		((unit_t)'x')
 
-#define UNIT_BYTE		'b'
-#define UNIT_KILO		'k'
-#define UNIT_MEGA		'M'
-#define UNIT_GIGA		'G'
-#define UNIT_TERA		'T'
-#define UNIT_PETA		'P'
-#define UNIT_EXA		'E'
-#define UNIT_ZETA		'Z'
-#define UNIT_YOTTA		'Y'
-#define UNIT_RONNA		'R'
-#define UNIT_QUETTA		'Q'
+#define UNIT_BYTE		((unit_t)'b')
+#define UNIT_KILO		((unit_t)'k')
+#define UNIT_MEGA		((unit_t)'M')
+#define UNIT_GIGA		((unit_t)'G')
+#define UNIT_TERA		((unit_t)'T')
+#define UNIT_PETA		((unit_t)'P')
+#define UNIT_EXA		((unit_t)'E')
+#define UNIT_ZETA		((unit_t)'Z')
+#define UNIT_YOTTA		((unit_t)'Y')
+#define UNIT_RONNA		((unit_t)'R')
+#define UNIT_QUETTA		((unit_t)'Q')
+
+#define DO_PRINT_SIZE_UNIT(u)	\
+	(!((u) == UNIT_MAJ_MIN		\
+	|| (u) == UNIT_ERROR		\
+	|| (u) == UNIT_ZERO			\
+	|| (u) == UNIT_BYTE			\
+	|| (u) == '\0'				\
+	))
 
 #define MAJ_COL	"1;37"	// \e[37m
 #define MIN_COL	"36"	// \e[36m

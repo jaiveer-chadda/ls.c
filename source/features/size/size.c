@@ -20,7 +20,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-inline char *parseSize(char *const size_unit, const off_t size, const dev_t rdev) {
+inline char *parseSize(unit_t *const size_unit, const off_t size, const dev_t rdev) {
 	sizestr size_str = "";
 
 	if (rdev != 0) { // if there's any info in `rdev`, then display them instead of the `off_t`
@@ -71,7 +71,7 @@ inline char *parseSize(char *const size_unit, const off_t size, const dev_t rdev
 	CHECK_PRINTF_ERR();
 
 	size_str[str_len] = '\0';
-	setLen(FI_size_str, str_len);
+	setLen(FI_size_str, str_len + (DO_PRINT_SIZE_UNIT(*size_unit) ? 1 : 0));
 
 	return memcpy(emalloc(str_len + 1), size_str, str_len + 1);
 }

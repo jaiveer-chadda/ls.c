@@ -69,9 +69,9 @@ void parseFile(FileStat *const pfile) {
 	if (do_suffix()) pfile->suffix = getTypeSuffix(pfile->mode);
 
 	if (do_mode_str()) {
-		getMode(pfile->mode_str, pfile->mode);	  // find the basic mode string ("drwxr-xr-x")
-		pfile->has_acl =   checkACL(pfile->name); // find out whether the file has an access control list ("+")
-		pfile->has_xat = checkXattr(pfile->name); // find out whether the file has any extended attributes ("@")
+		getMode(pfile->mode_str, pfile->mode);						// find the basic mode string ("drwxr-xr-x")
+		setLen(FI_acl, (pfile->has_acl =   checkACL(pfile->name)));	// check if file has an access control list ("+")
+		setLen(FI_xat, (pfile->has_xat = checkXattr(pfile->name)));	// check if file has any extended attributes ("@")
 	}
 
 	checkLengths(pfile, true); // calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
