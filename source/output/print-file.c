@@ -88,6 +88,33 @@ static inline void print_name(const FileStat *const pFS) {
 	colprint(RESET_ALL);
 }
 
+void print_tree(lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last) {
+	// for depth 0 (the original inputs), there aren't any tree levels to print
+	if (depth == 0) return;
+
+	colprint(PUNCT);
+
+	for (int level = 0; level < depth - 1; level++) {
+		printf("%*s" "%s",
+			level == 0 ? 1 : 2 , "", // add 2 spaces of padding on every level except the 0ᵗʰ one
+			lines[level] ? BOX_VERT : " " // only if this level needs a line should you print one
+		);
+	}
+
+	printf("%*s" "%s%s",
+		// add 2 spaces of padding on every level except the 1ˢᵗ one
+		depth == 1 ? 1 : 2, "",
+		// print `├` before every file except the last one, where we print `└`
+		is_last ? BOX_CORNER : BOX_BRANCH,
+		BOX_HORI
+	);
+
+	// populate the new line array with the contents of the old one
+	memcpy(new_lines, lines, sizeof(lines_t));
+	// then set the most recent line to `true` _iff_ there are more files to print on this level
+	new_lines[depth - 1] = !is_last;
+}
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_last, const lines_t lines) {
@@ -112,26 +139,19 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	/* ———————————————————————————————————————————————— */
 
-	colprint(PUNCT);
-
-	for (int i = 0; i < depth - 1; i++) printf("%*s%s", i ? 2 : 1 , "", lines[i] ? "│" : " ");
-
 	lines_t new_lines;
-	memcpy(new_lines, lines, sizeof(lines_t));
-
-	if (depth != 0) {
-		printf("%*s%s", depth != 1 ? 2 : 1, "", is_last ? "└─" : "├─");
-		new_lines[depth - 1] = !is_last;
-	}
+	print_tree(new_lines, lines, depth, is_last);
 
 	/* ———————————————————————————————————————————————— */
 
 	print_name(pFS);
-	if (do_suffix()) putchar(pFS->suffix);
-
-	putchar('\n');
+	if (do_suffix() && pFS->suffix != '\0') putchar(pFS->suffix);
 
 	/* ———————————————————————————————————————————————— */
+ 
+	putchar('\n'); // end the entry printing, and output a newline
+
+	/* ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
 
