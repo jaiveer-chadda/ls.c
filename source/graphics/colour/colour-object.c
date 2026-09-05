@@ -13,6 +13,7 @@
 
 #include "malloc.h"
 #include "debugging.h"
+#include "options/options.h"
 
 typedef struct { uint8_t r, g, b; } rgb_t;
 
@@ -44,6 +45,7 @@ static char output_buffer[OUTPUT_BUFSIZE] = CSI;
 // note: this function isn't threadsafe, but that should be fine I think, since its only really used for printing
 
 char *getcol(const Colour input_col) {
+	if (!DO_COLOUR()) return "";
 	/// A working copy of the inputted colour object, which we can mutate if needed.
 	Colour colour = input_col;
 
