@@ -11,20 +11,20 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define SEC    1
-#define MIN   60
+#define SEC	   1
+#define MIN	  60
 #define HOUR (60 * MIN)
-#define DAY  (24 * HOUR)
+#define DAY	 (24 * HOUR)
 
 #define SET_DATE_TEXT(text) *b_writ = strftime(timeobj->str, sizeof(timestr), (text TIME_FMT), pTime)
-#define SET_TIME_TEXT(text)	*b_writ = sizeof(text); strncpy(timeobj->str, (text), sizeof(timestr))
+#define SET_TIME_TEXT(text)	*b_writ = sizeof(text) - 1; strncpy(timeobj->str, (text), sizeof(timestr))
 
 #define SET_TIME_RELA(unit, text) \
 	*b_writ = snprintf(timeobj->str, sizeof(timestr), ("%ld " text), (long)(t_diff/(unit))) /* always round down */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-bool time_initialised = false;
+static bool time_initialised = false;
 
 time_t current_time;
 time_t diff_midn;	/// Number of seconds since midnight.
