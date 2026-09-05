@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/acl.h>
+#include <sys/xattr.h>
 
 #include "mode.h"
 #include "form/formatting.h"
@@ -82,6 +84,19 @@ void getMode(modestr mode_str, const mode_t oct_mode) {
 	setLen(FI_mode_str,
 		snprintf(mode_str, sizeof(modestr), "%c%s%s%s", getModeType(oct_mode), usr_str, grp_str, oth_str)
 	);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+bool checkACL(const path_t path) {
+	acl_t const p_acl = acl_get_link_np(path, ACL_TYPE_EXTENDED);
+	acl_free(p_acl);
+
+	return p_acl != NULL;
+}
+
+bool checkXattr(const path_t path) {
+	return listxattr(path, NULL, 0, XATTR_NOFOLLOW) > 0;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
