@@ -86,7 +86,12 @@ char *parseFlags(const flag_t raw_flags) {
 
 void print_flags(const FileStat *const pFS) {
 	const bool valid = pFS->s != NULL;
-	printf(fields[FI_flags].fmt_p, getLen(FI_flags), valid ? pFS->s->st_flags : 0, FIELD_PAD);
+	printf(
+		valid ? fields[FI_flags].fmt_p : "%*c%s",
+		getLen(FI_flags),
+		valid ? pFS->s->st_flags : '-',
+		FIELD_PAD
+	);
 }
 
 void print_flag_str(const FileStat *const pFS) {

@@ -79,7 +79,12 @@ char *parseSize(unit_t *const size_unit, const off_t size, const dev_t rdev) {
 
 void print_size(const FileStat *const pFS) {
 	const bool valid = pFS->s != NULL;
-	printf(fields[FI_size].fmt_p, getLen(FI_size), valid ? pFS->s->st_size : 0, FIELD_PAD);
+	printf(
+		valid ? fields[FI_size].fmt_p : "%*c%s",
+		getLen(FI_size),
+		valid ? pFS->s->st_size : '-',
+		FIELD_PAD
+	);
 }
 
 void print_size_str(const FileStat *const pFS) {

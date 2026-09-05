@@ -12,7 +12,7 @@ void print_dev_no(const FileStat *const pFS) {
 	const bool valid = pFS->s != NULL;
 
 	if (!valid || !DO_DEVNO_MAJMIN()) {
-		printf(fields[FI_dev_no].fmt_p, getLen(FI_dev_no), valid ? pFS->s->st_dev : 0, FIELD_PAD);
+		printf("%*c%s", getLen(FI_dev_no), valid ? pFS->s->st_dev : '-', FIELD_PAD);
 		return;
 	}
 

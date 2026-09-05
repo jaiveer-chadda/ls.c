@@ -106,7 +106,7 @@ bool checkXattr(const path_t path) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_mode(const FileStat *const pFS) {
-	printf(fields[FI_mode].fmt_p, getLen(FI_mode), pFS->mode, FIELD_PAD);
+	printf("%0*o%s", getLen(FI_mode), pFS->mode, FIELD_PAD);
 }
 
 void print_mode_str(const FileStat *const pFS) {
