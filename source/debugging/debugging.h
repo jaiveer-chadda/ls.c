@@ -29,7 +29,11 @@ typedef struct {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void d__stacktrace(void);
-void d__debug(const LogLevelIdx level_, const char *time, const int lineno, const char *file, const char *fmt, ...);
+void d__debug(
+	const LogLevelIdx level_,
+	const char *const time, const int lineno, const char *const file,
+	const char *const fmt, ...
+);
 void d__dump(const FileStat *const fs);
 void d__func(const char *func);
 void d__line(void);
@@ -54,7 +58,6 @@ void d__line(void);
 			printf("%s", CLEAR_SCREEN);									\
 			fflush(stdout);												\
 		}																\
-		debug(DEBUG, "────── DEBUGGING ──────");						\
 		dline();														\
 	} while (0)
 

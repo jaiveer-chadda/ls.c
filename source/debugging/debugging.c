@@ -57,7 +57,11 @@ static char *last_func = "";
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void d__debug(const LogLevelIdx level_, const char *time, const int lineno, const char *file, const char *fmt, ...) {
+void d__debug(
+	const LogLevelIdx level_,
+	const char *const time, const int lineno, const char *const file,
+	const char *const fmt, ...
+) {
 	if (strcmp(last_file, file) != 0) {
 		last_file = (char*)file;
 		dline();
@@ -88,6 +92,7 @@ void d__debug(const LogLevelIdx level_, const char *time, const int lineno, cons
 	va_end(va_args);
 
 	fputs(RESET "\n", stderr);
+	dline();
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
