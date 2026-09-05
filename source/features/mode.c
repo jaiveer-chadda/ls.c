@@ -17,6 +17,8 @@
 #define GRP_MASK S_IRWXG	/// A mask to get the group octal permissions.
 #define OTH_MASK S_IRWXO	/// A mask to get the other octal permissions.
 
+#define DO_NOTHING 0
+
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
 #define SET_EXT_BIT(str, chr) /* exec == lowercase, non-exec == uppercase */ \
@@ -87,6 +89,7 @@ void getMode(modestr mode_str, const mode_t oct_mode) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 bool checkACL(const path_t path) {
 	acl_t const p_acl = acl_get_link_np(path, ACL_TYPE_EXTENDED);
@@ -97,6 +100,22 @@ bool checkACL(const path_t path) {
 
 bool checkXattr(const path_t path) {
 	return listxattr(path, NULL, 0, XATTR_NOFOLLOW) > 0;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void print_mode(const FileStat *const pFS) {
+	printf(fields[FI_mode].fmt_p, getLen(FI_mode), pFS->mode, FIELD_PAD);
+}
+
+void print_mode_str(const FileStat *const pFS) {
+	printf(fields[FI_mode_str].fmt_s, pFS->mode_str);
+
+	pFS->has_xat ? putchar(XATTR_CHAR) : (getLen(FI_xat) ? putchar(' ') : DO_NOTHING);
+	pFS->has_acl ? putchar(ACL_CHAR	 ) : (getLen(FI_acl) ? putchar(' ') : DO_NOTHING);
+
+	fputs(FIELD_PAD, stdout);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

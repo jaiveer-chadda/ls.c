@@ -82,4 +82,13 @@ char *parseFlags(const flag_t raw_flags) {
 	return memcpy(emalloc(str_len), flag_str, str_len);
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void print_flag_str(const FileStat *const pFS) {
+	const bool valid = pFS->f != NULL && pFS->f->flag_str != NULL;
+	printf(fields[FI_flag_str].fmt_p, getLen(FI_flag_str), valid ? pFS->f->flag_str : NO_FLAG_STR, FIELD_PAD);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 // spell:ignoreRegExp /, "\w+"/g

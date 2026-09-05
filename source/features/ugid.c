@@ -2,11 +2,14 @@
 
 #include <pwd.h>
 #include <grp.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "malloc.h"
 #include "model/types.h"
 #include "form/formatting.h"
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 char *getUser(const uid_t uid) {
 	const struct passwd *pw = getpwuid(uid);
@@ -27,3 +30,17 @@ char *getGroup(const gid_t gid) {
 
 	return memcpy(emalloc(strsize), grp->gr_name, strsize);
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void print_usr_name(const FileStat *const pFS) {
+	const bool valid = pFS->f != NULL && pFS->f->usr_name != NULL;
+	printf(fields[FI_usr_name].fmt_p, getLen(FI_usr_name), valid ? pFS->f->usr_name : INV_FILE_USRNAME, FIELD_PAD);
+}
+
+void print_grp_name(const FileStat *const pFS) {
+	const bool valid = pFS->f != NULL && pFS->f->grp_name != NULL;
+	printf(fields[FI_grp_name].fmt_p, getLen(FI_grp_name), valid ? pFS->f->grp_name : INV_FILE_GRPNAME, FIELD_PAD);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

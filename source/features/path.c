@@ -7,6 +7,8 @@
 #include <errno.h>
 
 #include "debugging.h"
+#include "icons/icons.h"
+#include "options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -104,6 +106,22 @@ int getDirPath(path_t out_path, const path_t path) {
 
 	// abbrPath will always succeed, so return with success
 	return EXIT_SUCCESS;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void print_name(const FileStat *const pFS) {
+	const char *const name_or_path = (DO_PATH() && pFS->path != NULL) ? pFS->path : pFS->name;
+
+	fputs(PRE_ICON_PAD, stdout);
+	printIcon(pFS->icon, pFS->file_col);
+
+	printf("%s" "%s" "%s" "%s",
+		PRE_NAME_PAD,
+		getcol(file_colour_esc[pFS->file_col]),
+		name_or_path,
+		getcol(RESET_ALL)
+	);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

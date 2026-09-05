@@ -13,6 +13,19 @@
 #define EXEC_MASK 0000111	/// A mask to tell whether a file is an executable or not.
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void print_inum(const FileStat *const pFS);
+void print_mode(const FileStat *const pFS);
+void print_name(const FileStat *const pFS);
+void print_flag_str(const FileStat *const pFS);
+void print_mode_str(const FileStat *const pFS);
+void print_size_str(const FileStat *const pFS);
+void print_usr_name(const FileStat *const pFS);
+void print_grp_name(const FileStat *const pFS);
+void print_time_str(const FileStat *const pFS, const TimeType type);
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— flags.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 char *parseFlags(const flag_t raw_flags);

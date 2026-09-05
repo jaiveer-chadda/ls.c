@@ -92,4 +92,22 @@ TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *con
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+void print_time_str(const FileStat *const pFS, const TimeType type) {
+	if (pFS->f				!= NULL &&
+		pFS->f->times[type] != NULL
+	) {
+		printf("%s" "%*s" "%s",
+			getcol(time_colour_esc[pFS->f->times[type]->colour]),
+			getLen(timeFieldStr(type)), pFS->f->times[type]->str,
+			FIELD_PAD
+		);
+
+		return;
+	}
+
+	printf("%*s" "%s", getLen(timeFieldStr(type)), TIME_ERR_STR, FIELD_PAD);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 // spell:word midn
