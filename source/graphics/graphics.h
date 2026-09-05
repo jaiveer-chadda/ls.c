@@ -395,7 +395,11 @@ FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flag
 #ifdef DEBUG_MODE
 #	define clearScreen()
 #else
-#	define clearScreen() do { if (DO_CLEAR()) printf("%s", CLEAR_SCREEN); } while (0)
+#	define clearScreen() do {									\
+		if (DO_CLEAR()) {										\
+			fputs(CLEAR_SCREEN, DO_COLOUR() ? stdout : stderr);	\
+		}														\
+	} while (0)
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

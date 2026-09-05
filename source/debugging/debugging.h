@@ -55,8 +55,8 @@ void d__line(void);
 			&& (strcmp(argv[1], "--clear") == 0)						\
 			|| (argv0[0] == 'c')										\
 		) {																\
-			printf("%s", CLEAR_SCREEN);									\
-			fflush(stdout);												\
+			fputs(CLEAR_SCREEN, stderr);								\
+			fflush(stderr);												\
 		}																\
 		dline();														\
 	} while (0)
