@@ -94,6 +94,7 @@ typedef struct {
 
 /* —— Function Declarations ———————————————————————————————————————————————————————————————————————————————————————— */
 
+void setActive(const Colour input);
 char *getcol(const Colour input_col);
 #define colprint(input_col) fputs(getcol((input_col)), stdout)
 

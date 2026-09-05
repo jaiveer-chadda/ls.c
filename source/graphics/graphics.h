@@ -92,15 +92,34 @@
 
 #define HEADER_HL				"1;4;94"		// \e[94m
 
+#define IFCOLOUR(str)				(DO_COLOUR() ? (str) : "")
+#define IFELSECOLOUR(col, ncol)		(DO_COLOUR() ? (col) : (ncol))
+
+#define ANSI_IFCOL(str)				(DO_COLOUR() ? ANSI(str) : "")
+#define ANSI_IFELSECOL(col, ncol)	(DO_COLOUR() ? ANSI(col) : ncol)
+
+/* —————————————————————————————————————————————————————————————————————————— */
 /* —— Empty Dirs / Errors ——————————————————————————————————————————————————— */
 
 #define EMPTY_DIR_MSG		"empty"
+
 #define EMPTY_DIR_BR_COL	toColour( .fg = G_WHT, .style = G_DIM )
 #define EMPTY_DIR_COL		toColour( .fg = G_WHT )
 
+#define EMPTY_DIR_BR_ANSI	ANSI_IFCOL(/*.fg =*/"37"/*.style =*/";2" ) // `\e[37m` `\e[2m`
+#define EMPTY_DIR_NB_ANSI	ANSI_IFCOL(				/*.style =*/ "2" ) //		   `\e[2m`
+#define EMPTY_DIR_ANSI		ANSI_IFCOL(				/*.style =*/"22" ) // `\e[37m`
+
+/* —————————————————————————————————————— */
+
 #define ERR_FILE_MSG		"error"
+
 #define ERR_FILE_BR_COL		toColour( .fg = G_RED, .style = G_DIM )
 #define ERR_FILE_COL		toColour( .fg = G_RED )
+
+#define ERR_FILE_BR_ANSI	ANSI_IFCOL(/*.fg =*/"31"/*.style =*/";2" ) // `\e[31m` `\e[2m`
+#define ERR_FILE_NB_ANSI	ANSI_IFCOL(				/*.style =*/ "2" ) //		   `\e[2m`
+#define ERR_FILE_ANSI		ANSI_IFCOL(				/*.style =*/"22" ) // `\e[31m`
 
 /* —— Tree Drawing —————————————————————————————————————————————————————————— */
 
@@ -381,6 +400,6 @@ FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flag
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// spell:ignoreRegexp /(?<=G_)\w+\b|nodim/gi
+// spell:ignoreRegexp /(?<=G_)\w+\b|nodim|strncol/gi
 
 #endif /* !GRAPHICS_INITIALIASED */

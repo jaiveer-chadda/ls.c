@@ -179,12 +179,22 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	if (pFS->err_no != 0) {
 		print_empty_tree();
 
-		colprint(ERR_FILE_BR_COL);
-		printf("%s[ %s%s %hu: %s",
-			PRE_NAME_PAD, getcol(ERR_FILE_COL), ERR_FILE_MSG,
-			pFS->err_no, strerror(pFS->err_no)
+		printf(/**/"%s%s[ "/**/"%s%s "/**/"%hu%s: "/**/"%s%s "/**/"%s]\n"/**/,
+			// make the opening bracket red and dim
+			PRE_NAME_PAD, (ERR_FILE_BR_ANSI),						// "%s%s[ "	--> " \e[31;2m[␣"
+			// remove the dimming, leaving the "error" string just red
+			(ERR_FILE_ANSI), ERR_FILE_MSG,							// "%s%s "	--> "\e[22m␣error␣"
+			// re-dim the text for the colon
+			pFS->err_no, (ERR_FILE_NB_ANSI),						// "%hu%s: "--> "12\e[2m:␣"
+			// un-dim the text, and print strerror in red
+			(ERR_FILE_ANSI), strerror(pFS->err_no),					// "%s%s "	--> "\e[22mCannot allocate memory␣"
+			// finally, re-dim the text for the final bracket
+			(ERR_FILE_NB_ANSI)										// "%s]\n"	--> "\e[2m]\n"
 		);
-		printf(" %s]\n", getcol(ERR_FILE_BR_COL));
+
+		// the colour that's left is a dimmed, red style (equivalent to `\e[2;31m`)
+		//	tell the 'colour object' that `\e[2;31m` is currently active
+		setActive(ERR_FILE_BR_COL);
 
 		return;
 	}
@@ -198,16 +208,18 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	/* ———————————————————————————————————————————————— */
 
-	// trying to recurse into an empty
+	// trying to recurse into an empty directory
 	if (pFS->f->child_count == 0) {
 		print_empty_tree();
 
-		/// @todo find a solution to this, cos this is rly rather slow at the moment
-		// the colours have to all be printed sequentially,
-		//	so that their orderings don't interfere with eachother
-		colprint(EMPTY_DIR_BR_COL);
-		printf("%s" "(%s %s", PRE_NAME_PAD, getcol(EMPTY_DIR_COL), EMPTY_DIR_MSG);
-		printf(" %s)\n", getcol(EMPTY_DIR_BR_COL));
+		printf(/**/"%s%s( "/**/"%s%s "/**/"%s)\n"/**/,
+			PRE_NAME_PAD, (EMPTY_DIR_BR_ANSI),	// "%s%s( "	--> " \e[37;2m(␣"
+			(EMPTY_DIR_ANSI), EMPTY_DIR_MSG,	// "%s%s "	--> "\e[22mempty␣"
+			(EMPTY_DIR_NB_ANSI)					// "%s)\n"	--> "\e[2m)\n"
+		);
+
+		// tell the colour object that the currently active colour is `\e[2;37m`
+		setActive(EMPTY_DIR_BR_COL);
 
 		return;
 	}

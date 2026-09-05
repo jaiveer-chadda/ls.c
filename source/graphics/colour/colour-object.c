@@ -40,12 +40,35 @@ static Colour active = RESET_ALL;
 static char output_buffer[OUTPUT_BUFSIZE] = CSI;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── `setActive()` ── ────────────────────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * @fn setActive
+ * @brief Notify `getcol()` to what the active colour on screen is.
+ *
+ * Lets the the colour printing functions, `getcol()` or `colprint()`, know what the active colour on screen is,
+ * in the case that a colour was printed manually.
+ *
+ * @param input[in] The colour which the active colour should be set.
+ * @result Sets `static Colour active` to be equal to `input`.
+ */
+void setActive(const Colour input) {
+	if (!DO_COLOUR()) return;
+
+	active.fg	 = input.fg,
+	active.bg	 = input.bg,
+	active.style = input.style;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── `getcol()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 // note: this function isn't threadsafe, but that should be fine I think, since its only really used for printing
 
 char *getcol(const Colour input_col) {
+	// this is a nice and simple way to make sure that nothing's printed when colour output is turned off
 	if (!DO_COLOUR()) return "";
+
 	/// A working copy of the inputted colour object, which we can mutate if needed.
 	Colour colour = input_col;
 
@@ -213,6 +236,7 @@ static inline int d_snprintf(char *restrict str, size_t size, const char *restri
 /* ── ── `stylelookup()` ── ──────────────────────────────────────────────────────────────────────────────────────── */
 
 /**
+ * @fn stylelookup
  * @brief Get the ANSI code corresponding to turning a style on or off.
  *
  * @param style A `style_t` integer with only one style set.
