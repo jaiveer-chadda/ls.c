@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
 
 #include "formatting.h"
 #include "options/options.h"
@@ -56,20 +57,26 @@ inline void setLen(const FieldIdx field, const size_t length) {
 #define st_inum	st_ino
 #define st_dev_no st_dev
 
-#define GET_LEN(field, var) (size_t)snprintf(NULL, 0, fields[field].fmt_s, (var))
-#define SET_LEN(field) if (do_##field()) setLen(FI_##field, GET_LEN(FI_##field, pfile->s->st_##field));
+#define GET_LEN(...) ((size_t)snprintf(NULL, 0, __VA_ARGS__))
+#define SET_LEN(field) if (do_##field()) setLen(FI_##field, GET_LEN(fields[FI_##field].fmt_s, pfile->s->st_##field));
 
 // called from `parseFile()`
 inline void checkLengths(const FileStat *const pfile, const bool do_basic) {
 	// these are the only two fields (which we need to find the lengths of) which don't come from `stat`,
 	//	which is why their signatures are slightly different to the rest
 	if (do_basic) {
-		if (do_inum()) setLen(FI_inum, GET_LEN(FI_inum, pfile->inum));
-		if (do_mode()) setLen(FI_mode, GET_LEN(FI_mode, pfile->mode));
+		if (do_inum()) setLen(FI_inum, GET_LEN(fields[FI_inum].fmt_s, pfile->inum));
+		if (do_mode()) setLen(FI_mode, GET_LEN(fields[FI_mode].fmt_s, pfile->mode));
 		return;
 	}
 
-	SET_LEN(dev_no);
+	if (do_dev_no()) {
+		setLen(FI_dev_no, DO_DEVNO_MAJMIN()
+			? GET_LEN("%d,%d", major(pfile->s->st_dev), minor(pfile->s->st_dev))
+			: GET_LEN(fields[FI_inum].fmt_s, pfile->s->st_dev)
+		);
+	}
+
 	SET_LEN(flags);
 	SET_LEN(gid);
 	SET_LEN(uid);
