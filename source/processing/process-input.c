@@ -75,7 +75,7 @@ static inline char *getPath(FileStat *const file) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── processChild ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
-static inline void processChild(FileStat *pFS_child, const struct dirent *const pDT_child) {
+static inline void processChild(FileStat *const pFS_child, const struct dirent *const pDT_child) {
 	/* —— basic child info (dirent) ——————————————————————————————— */
 
 	// copy the info from `dirent` over to the child's `FileStat` object
@@ -85,7 +85,7 @@ static inline void processChild(FileStat *pFS_child, const struct dirent *const 
 		.name_len	= pDT_child->d_namlen,
 		.mode		= DTTOIF(pDT_child->d_type), // converting to the correct format
 		.inum		= pDT_child->d_ino,
-		// make sure to copy the parent over too, so it's not set to `NULL`
+		// make sure to copy the parent over too, so that it's not set to `NULL`
 		.parent		= pFS_child->parent,
 	};
 
@@ -124,14 +124,14 @@ static inline void processChild(FileStat *pFS_child, const struct dirent *const 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── processDir ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
-static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
+static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth) {
 	const char *const dirpath = getPath(pFS_dir);
 
 	/* —— Open Dir & Error Check —————————————————————————————————— */
 
 	// firstly, open the directory and get a pointer to a `DIR` object
 	//	note: we can't get any info from `DIR`, it's use is to be passed into other functions
-	DIR *p_dir = opendir(dirpath);
+	DIR *const p_dir = opendir(dirpath);
 
 	if (p_dir == NULL) { // if we can't open the directory...
 		// set the number of children to -1, so we know the difference between having 0 children,
@@ -156,7 +156,7 @@ static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
 	int32_t child_alloc_count = INIT_CHILD_COUNT;
 
 	pFS_dir->f->children = ecalloc(child_alloc_count, sizeof(FileStat));
-	FileStat **children = &pFS_dir->f->children;
+	FileStat **const children = &pFS_dir->f->children;
 
 	/* —— For Each Child in Dir ——————————————————————————————————— */
 
@@ -212,7 +212,7 @@ static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
 		/* —— set up & process child —————————————————————————————————— */
 
 		// find the position where the child's `FileStat` object will start, and increment the child count
-		FileStat *pFS_child = *children + pFS_dir->f->child_count++;
+		FileStat *const pFS_child = *children + pFS_dir->f->child_count++;
 
 		// assign this directory as the child's parent
 		pFS_child->parent = pFS_dir;
