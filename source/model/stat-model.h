@@ -37,8 +37,8 @@ struct FileStat {
 	FileStatFields	*f	; // 8 /** Fields which can only be derived if the file was successfully `stat`ted. */
 
 	// the following fields are all taken directly from `struct dirent`.
-	char		*name	; // 8 /** The name of this file, as it will be displayed. */
-	char		*path	; // 8 /** The absolute path to this file. */
+	char		*name	; // 8 /** A pointer to the place in `.path` where the file's name starts. */
+	const char	*path	; // 8 /** The absolute path to this file. */
 	ino_t		inum	; // 8 /** The inode number for this file. */
 	namlen_t	name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
@@ -52,8 +52,8 @@ struct FileStat {
 	FileColour	file_col; // 4 /** The colour which the file should be printed in. */
 	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
 
-	modestr		mode_str; // 14 /** A string repr of the file's mode (type & permissions). */
-}; // 78 + 2 pad = 80
+	modestr		mode_str; // 12 /** A string repr of the file's mode (type & permissions). */
+}; // 76 + 4 pad = 80b
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -65,14 +65,14 @@ struct FileStat {
  *	stored in this struct is calculated and assigned manually at runtime, by parsers implemented in this project.
  */
 struct FileStatFields {
-	TimeInfo	*times[TT_COUNT]; // 32 /** Information about the access, mod, change, and birth time of the file. */
+	const TimeInfo *times[TT_COUNT]; // 32 /** Info about access, modification, change, and birth times of the file. */
 
-	TargetInfo	*target		; // 8 /** Information about the target of a link, if one exists. */
+	const TargetInfo *target; // 8 /** Information about the target of a link, if one exists. */
 
-	char		*size_str	; // 8 /** A string repr of the filesize. */
-	char		*flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
-	char		*usr_name	; // 8 /** The name of the file's owner. */
-	char		*grp_name	; // 8 /** The name of the file's group. */
+	const char	*size_str	; // 8 /** A string repr of the filesize. */
+	const char	*flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
+	const char	*usr_name	; // 8 /** The name of the file's owner. */
+	const char	*grp_name	; // 8 /** The name of the file's group. */
 
 	FileStat	*children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
 	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
@@ -101,7 +101,7 @@ struct FileStatFields {
  * @var TargetInfo::is_apple Whether the source of this link is a symbolic link, or an Apple alias file.
  */
 struct TargetInfo {
-	char		*path	; // 8 /** The contents of the link (usually the absolute path to the target file). */
+	const char	*path	; // 8 /** The contents of the link (usually the absolute path to the target file). */
 	FileColour	colour	; // 4 /** The colour that the file should be displayed in. */
 	char		suffix	; // 1 /** The symbol to be shown after the target's name. */
 	bool		is_apple; // 1 /** Whether the link that pointed to this target was an apple alias (or a symlink). */
@@ -121,11 +121,8 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36b
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Helper Macros ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define getPathLen(p_fs)										\
-	((namlen_t)(												\
-		((p_fs)->path == NULL || (p_fs)->name == NULL)			\
-		? 0														\
-		: (((p_fs)->name - (p_fs)->path) + (p_fs)->name_len)	\
-	))
+#define getPathLen(p_fs) \
+	((namlen_t)(((p_fs)->path == NULL || (p_fs)->name == NULL) ? 0 \
+		: (((p_fs)->name - (p_fs)->path) + (p_fs)->name_len)))
 
 #endif /* !NEW_STAT_MODEL_H */
