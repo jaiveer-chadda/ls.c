@@ -59,8 +59,6 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 /* —— printFields() ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define print_time_raw(p,t) /** @todo implement */;
-
 // note: to use the `print_field` macro, a function must have the following signature:
 //	`void print_[field_name](const FileStat *const pFS)`
 #define print_field(field)  if (do_##field()) print_##field(pFS)
@@ -73,11 +71,17 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 static inline void printFields(const FileStat *const pFS) {
 	print_field(inum	);
+	print_field(dev_no	);
 	print_field(mode	);
 	print_field(mode_str);
+	print_field(nlink	);
+	print_field(size	);
 	print_field(size_str);
+	print_field(uid		);
 	print_field(usr_name);
+	print_field(gid		);
 	print_field(grp_name);
+	print_field(flags	);
 	print_field(flag_str);
 
 	print_time(A_TIME);

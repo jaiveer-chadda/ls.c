@@ -92,16 +92,30 @@ TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *con
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+void print_time_raw(const FileStat *const pFS, const TimeType type) {
+	const bool valid = pFS->s != NULL;
+	const time_t times[TT_COUNT] = {
+		[A_TIME] = pFS->s->st_atime,
+		[M_TIME] = pFS->s->st_mtime,
+		[C_TIME] = pFS->s->st_ctime,
+		[B_TIME] = pFS->s->st_btime,
+	};
+
+	printf(
+		fields[timeField(type)].fmt_p,
+		getLen(timeField(type)),
+		valid ? times[type] : 0,
+		FIELD_PAD
+	);
+}
+
 void print_time_str(const FileStat *const pFS, const TimeType type) {
-	if (pFS->f				!= NULL &&
-		pFS->f->times[type] != NULL
-	) {
+	if (pFS->f != NULL && pFS->f->times[type] != NULL) {
 		printf("%s" "%*s" "%s",
 			getcol(time_colour_esc[pFS->f->times[type]->colour]),
 			getLen(timeFieldStr(type)), pFS->f->times[type]->str,
 			FIELD_PAD
 		);
-
 		return;
 	}
 

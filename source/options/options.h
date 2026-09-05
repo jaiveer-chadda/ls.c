@@ -32,22 +32,22 @@ int setOptions(const int argc, const char *argv[]);
 	\
 	X(do_icon			, true	, true	, 'I', { "icon"			, "icons"					}) \
 	X(do_suffix			, true	, true	, 'P', { "suffix"		, "mark-type"				}) \
-	X(do_link_to	/**/, false	, true	, 'l', { "link-to"		, "symlinks"				}) \
-	X(do_nlink		/**/, false	, true	, 'n', { "nlink"									}) \
-	X(do_dev_no			, false	, true	, NSF, { "dev-no"		, "device-number"			}) \
+	X(do_link_to	/**/, false	, true	, 'L', { "link-to"		, "symlinks"				}) \
+	X(do_nlink			, true	, true	, 'n', { "nlink"									}) \
+	X(do_dev_no		/**/, true	, true	, NSF, { "dev-no"		, "device-number"			}) \
 	X(do_inum		/**/, true	, true	, 'i', { "inode"		, "ino"			, "inum"	}) \
-	X(do_flags			, false	, true	, NSF, { "flags"									}) \
+	X(do_flags		/**/, true	, true	, NSF, { "flags"									}) \
 	X(do_flag_str		, true	, true	, NSF, { "flag-str"		, "flags-str"				}) \
 	X(do_mode		/**/, true	, true	, NSF, { "mode"										}) \
 	X(do_mode_str		, true	, true	, NSF, { "mode-str"									}) \
-	X(do_size			, false	, true	, NSF, { "size"										}) \
+	X(do_size		/**/, true	, true	, NSF, { "size"										}) \
 	X(do_size_str		, true	, true	, NSF, { "size-str"									}) \
-	X(do_uid			, false	, true	, 'u', { "uid"										}) \
+	X(do_uid		/**/, true	, true	, 'u', { "uid"										}) \
 	X(do_usr_name		, true	, true	, 'U', { "uid-str"		, "usr-name"	, "user"	}) \
-	X(do_gid			, false	, true	, 'g', { "gid"										}) \
+	X(do_gid		/**/, true	, true	, 'g', { "gid"										}) \
 	X(do_grp_name		, true	, true	, 'G', { "gid-str"		, "grp-name"	, "group"	}) \
 	\
-	X(do_time			, false	, true	, NSF, { "time"										}) \
+	X(do_time		/**/, true	, true	, NSF, { "time"										}) \
 	X(do_time_str		, true	, true	, NSF, { "time-str"									}) \
 	\
 	X(do_atime			, false	, true	, NSF, { "atime"									}) \

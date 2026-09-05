@@ -43,4 +43,20 @@ void print_grp_name(const FileStat *const pFS) {
 	printf(fields[FI_grp_name].fmt_p, getLen(FI_grp_name), valid ? pFS->f->grp_name : INV_FILE_GRPNAME, FIELD_PAD);
 }
 
+/* ———————————————————————————————————————————————————————— */
+
+#define print_ugid(ugid)								\
+	void print_##ugid(const FileStat *const pFS) {		\
+		const bool valid = pFS->s != NULL;				\
+		printf(											\
+			valid ? fields[FI_##ugid].fmt_p : "%*c%s",	\
+			getLen(FI_##ugid),							\
+			valid ? pFS->s->st_##ugid : '?',			\
+			FIELD_PAD									\
+		);												\
+	}
+
+print_ugid(uid)
+print_ugid(gid)
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

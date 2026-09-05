@@ -13,17 +13,24 @@
 #define EXEC_MASK 0000111	/// A mask to tell whether a file is an executable or not.
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Field Printing Functions ————————————————————————————————————————————————————————————————————————————————————— */
 
+void print_uid(const FileStat *const pFS);
+void print_gid(const FileStat *const pFS);
 void print_inum(const FileStat *const pFS);
 void print_mode(const FileStat *const pFS);
 void print_name(const FileStat *const pFS);
+void print_size(const FileStat *const pFS);
+void print_flags(const FileStat *const pFS);
+void print_nlink(const FileStat *const pFS);
+void print_dev_no(const FileStat *const pFS);
 void print_flag_str(const FileStat *const pFS);
 void print_mode_str(const FileStat *const pFS);
 void print_size_str(const FileStat *const pFS);
 void print_usr_name(const FileStat *const pFS);
 void print_grp_name(const FileStat *const pFS);
 void print_time_str(const FileStat *const pFS, const TimeType type);
+void print_time_raw(const FileStat *const pFS, const TimeType type);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— flags.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
