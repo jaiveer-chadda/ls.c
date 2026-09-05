@@ -307,7 +307,7 @@ FileStat *processInput(char *const path) {
 
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
 	//	then there's nothing else to do at this stage - send it off for parsing
-	if (!S_ISDIR(statobj.st_mode) || !RECURSE_DIRS())
+	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES())
 		return pfilestat;
 
 	// if the input was a directory, however, we need to find & process its children

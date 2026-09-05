@@ -25,7 +25,7 @@ int setOptions(const int argc, const char *argv[]);
 	X(DO_HEADER			, false	, false	, 'H', { "header"		, "headers"					}) \
 	X(DO_DIVIDERS		, true	, false	, '_', { "divider"		, "dividers"				}) \
 	X(DO_MOUNTDEV		, true	, false	, 'M', { "mount"		, "mounts"					}) \
-	X(RECURSE_DIRS		, true	, false	, 'd', { "recurse-dirs"								}) \
+	X(DIRS_AS_FILES		, false	, false	, 'd', { "dirs-as-files", "no-recurse-dirs"			}) \
 	X(DO_DIM_HIDDEN		, true	, false	, '.', { "dim-hidden"	, "dim"						}) \
 	X(DO_REVERSE_SORT	, false	, false	, 'r', { "reverse"		, "rev"						}) \
 	X(SORT_DIRS_FIRST	, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}) \

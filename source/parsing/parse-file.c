@@ -59,8 +59,16 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
-	// `FileStat::mode` is the one field where the field is filled by both `dirent` and `stat`
-	if (!is_incomplete) pfile->mode = pstat->st_mode;
+	// `FileStat::mode` and `FileStat::inum` are the two fields which are filled by both `dirent` and `stat`
+	if (!is_incomplete) {
+		// move the inode and mode fields from the `stat` object into the main `FileStat` object
+		// this is just to make sure everything's always in the same place - makes it easier to get later
+
+		// `mode` is always transferred over, since its needed to parse other fields
+		pfile->mode = pstat->st_mode;
+		// however, `inum` is being transferred conditionally, since its only use is to be printed
+		if (do_inum()) pfile->inum = pstat->st_ino;
+	}
 
 	// make sure to keep calculating the maximum name length
 	setLen(FI_name, pfile->name_len);

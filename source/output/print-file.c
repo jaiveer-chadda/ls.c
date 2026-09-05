@@ -203,8 +203,8 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	// there shouldn't be a way to go over the recursion limit
 	assert(depth + 1 < RECURSION_LIMIT);
-	// if this isn't a directory, or we've reached the recursion limit,
-	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
+	// if this isn't a directory (or we're not treating it as one), or we've reached the recursion limit, then return
+	if (!S_ISDIR(pFS->mode) || DIRS_AS_FILES() || depth + 1 > MAX_DEPTH) return;
 
 	/* ———————————————————————————————————————————————— */
 

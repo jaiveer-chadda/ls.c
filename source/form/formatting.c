@@ -52,34 +52,35 @@ inline void setLen(const FieldIdx field, const size_t length) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// these are just here to ease the conversion between different naming conventions
+#define st_inum	st_ino
 #define st_dev_no st_dev
 
-#define GET_LEN(field, var) ((size_t)snprintf(NULL, 0, fields[field].fmt_s, (var)))
-#define SET_LEN(field, cond) if (cond) setLen(FI_##field, GET_LEN(FI_##field, pfile->s->st_##field))
-
-#define CHECK_STAT_LEN(field)		SET_LEN(field, do_ ## field())
-#define CHECK_TIME_LEN(field, idx)	SET_LEN(field, do_time_t(idx))
+#define GET_LEN(field, var) (size_t)snprintf(NULL, 0, fields[field].fmt_s, (var))
+#define SET_LEN(field) if (do_##field()) setLen(FI_##field, GET_LEN(FI_##field, pfile->s->st_##field));
 
 // called from `parseFile()`
-void checkLengths(const FileStat *const pfile, const bool do_basic) {
+inline void checkLengths(const FileStat *const pfile, const bool do_basic) {
+	// these are the only two fields (which we need to find the lengths of) which don't come from `stat`,
+	//	which is why their signatures are slightly different to the rest
 	if (do_basic) {
 		if (do_inum()) setLen(FI_inum, GET_LEN(FI_inum, pfile->inum));
 		if (do_mode()) setLen(FI_mode, GET_LEN(FI_mode, pfile->mode));
 		return;
 	}
 
-	CHECK_STAT_LEN(dev_no);
-	CHECK_STAT_LEN(flags);
-	CHECK_STAT_LEN(gid);
-	CHECK_STAT_LEN(uid);
-	CHECK_STAT_LEN(nlink);
-	CHECK_STAT_LEN(size);
+	SET_LEN(dev_no);
+	SET_LEN(flags);
+	SET_LEN(gid);
+	SET_LEN(uid);
+	SET_LEN(nlink);
+	SET_LEN(size);
 
 	if (do_time()) {
-		CHECK_TIME_LEN(atime, A_TIME);
-		CHECK_TIME_LEN(mtime, M_TIME);
-		CHECK_TIME_LEN(ctime, C_TIME);
-		CHECK_TIME_LEN(btime, B_TIME);
+		SET_LEN(atime);
+		SET_LEN(mtime);
+		SET_LEN(ctime);
+		SET_LEN(btime);
 	}
 }
 
