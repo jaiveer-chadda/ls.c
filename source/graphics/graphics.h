@@ -92,11 +92,15 @@
 
 #define HEADER_HL				"1;4;94"		// \e[94m
 
-/* —— Empty Dirs ———————————————————————————————————————————————————————————— */
+/* —— Empty Dirs / Errors ——————————————————————————————————————————————————— */
 
 #define EMPTY_DIR_MSG		"empty"
-#define EMPTY_DIR_BR_COL	toColour( .style = G_DIM, .fg = G_WHT )
+#define EMPTY_DIR_BR_COL	toColour( .fg = G_WHT, .style = G_DIM )
 #define EMPTY_DIR_COL		toColour( .fg = G_WHT )
+
+#define ERR_FILE_MSG		"error"
+#define ERR_FILE_BR_COL		toColour( .fg = G_RED, .style = G_DIM )
+#define ERR_FILE_COL		toColour( .fg = G_RED )
 
 /* —— Tree Drawing —————————————————————————————————————————————————————————— */
 

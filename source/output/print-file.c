@@ -173,22 +173,43 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	/* ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 	// assert that if `pFS->f` is NULL, errno will be set
-	assert(pFS->f == NULL ? pFS->err_no > 0 : true);
+	assert(pFS->f == NULL ? pFS->err_no != 0 : true);
 
+	// trying to print a file that raised an error while parsing/processing it
 	if (pFS->err_no != 0) {
 		print_empty_tree();
-		printf("%s[[ error: %s ]]\n", PRE_NAME_PAD, strerror(pFS->err_no));
+
+		colprint(ERR_FILE_BR_COL);
+		printf("%s[ %s%s %hu: %s",
+			PRE_NAME_PAD, getcol(ERR_FILE_COL), ERR_FILE_MSG,
+			pFS->err_no, strerror(pFS->err_no)
+		);
+		printf(" %s]\n", getcol(ERR_FILE_BR_COL));
+
 		return;
 	}
 
+	/* ———————————————————————————————————————————————— */
+
+	// there shouldn't be a way to go over the recursion limit
+	assert(depth + 1 < RECURSION_LIMIT);
+	// if this isn't a directory, or we've reached the recursion limit,
 	if (!S_ISDIR(pFS->mode) || depth + 1 > MAX_DEPTH) return;
 
+	/* ———————————————————————————————————————————————— */
+
+	// trying to recurse into an empty
 	if (pFS->f->child_count == 0) {
 		print_empty_tree();
 
+		/// @todo find a solution to this, cos this is rly rather slow at the moment
+		// the colours have to all be printed sequentially,
+		//	so that their orderings don't interfere with eachother
 		colprint(EMPTY_DIR_BR_COL);
 		printf("%s" "(%s %s", PRE_NAME_PAD, getcol(EMPTY_DIR_COL), EMPTY_DIR_MSG);
 		printf(" %s)\n", getcol(EMPTY_DIR_BR_COL));
+
+		return;
 	}
 
 	/* ———————————————————————————————————————————————— */
