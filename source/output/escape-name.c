@@ -70,7 +70,7 @@ static bool escapeCharacter(char *esc_seq, const char orig_char) {
  *  `\\e[38;5;105m` or `\\e[38;2;250;40;125m`
  *
  * @param colour[in] The ANSI escape sequence to check, without the leading `\\e` or trailing `m`,
- * 						but with the leading `[`
+ *						but with the leading `[`
  * @return true if `colour` will set the background colour, false otherwise.
  */
 bool doesSetBackground(const char *colour) {

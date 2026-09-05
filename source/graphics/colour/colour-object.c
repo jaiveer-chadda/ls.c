@@ -175,7 +175,7 @@ char *getcol(const Colour input_col) {
 
 	/* ── Clean Up Semicolons ─────────────────────────────────────────── */
 
-	if (!(has_fg || has_bg) 		// if there isn't any foreground or background,
+	if (!(has_fg || has_bg)			// if there isn't any foreground or background,
 		&& has_st					// and there is at least one style code,
 		&& style[st_len - 1] == ';' //   then check if the last char is a semicolon,
 	) style[st_len - 1] = '\0';		//		and delete the semicolon if it exists.

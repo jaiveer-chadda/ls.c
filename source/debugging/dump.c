@@ -26,7 +26,7 @@
 #define I		DIMS("│ ")
 #define O		DIMS("└─")
 
-#define p		 "\33[96m*" 		RESET
+#define p		 "\33[96m*"			RESET
 #define S		" \33[96m* "		RESET
 #define E		" \33[94m= "		RESET
 

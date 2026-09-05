@@ -72,7 +72,7 @@ void d__debug(
 	toStderr(
 		ANSI("%hu") LBR " %-7s " RBR RESET " "	// [ WARNING ]
 		LBR "%s" RBR " "						//		[02:41:15]
-		ANSI("38;5;217") " %-22s" DIMS("@")		// 			getTargetInfo @
+		ANSI("38;5;217") " %-22s" DIMS("@")		//			getTargetInfo @
 		ANSI("38;5;111") " %-30s"				//				info/get-file-info.c
 		LPA "%3d" RPA RESET " "					//					(110)
 		ANSI("%hu")
