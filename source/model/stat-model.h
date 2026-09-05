@@ -10,6 +10,10 @@
 
 /* —— FileStat (main) —————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#ifdef DEBUG_MODE
+#	define _FILESTAT_SIZE sizeof(FileStat) /* DO NOT USE IN ANY PRODUCTION CODE! */
+#endif
+
 /**
  * @struct FileStat
  * @brief The primary information about a file.
@@ -32,26 +36,24 @@ struct FileStat {
 	struct stat		*s	; // 8 /** Pointer to the struct returned when this file was passed to `stat`. */
 	FileStatFields	*f	; // 8 /** Fields which can only be derived if the file was successfully `stat`ted. */
 
-	// the following fields are all copied directly from `struct dirent`.
+	// the following fields are all taken directly from `struct dirent`.
 	char		*name	; // 8 /** The name of this file, as it will be displayed. */
 	char		*path	; // 8 /** The absolute path to this file. */
 	ino_t		inum	; // 8 /** The inode number for this file. */
 	namlen_t	name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
-	namlen_t	path_len; // 2
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
 
 	// the following are fields which can be derived from just the information from `struct dirent`
 	bool		has_xat	; // 1 /** Whether this file has extended attributes. */
 	bool		has_acl	; // 1 /** Whether this file has an access control list. */
+	suff_t		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
+	uint8_t		err_no	; // 1 /** The `errno` of a file if it fails to process for some reason. */
 
 	FileColour	file_col; // 4 /** The colour which the file should be printed in. */
 	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
 
 	modestr		mode_str; // 14 /** A string repr of the file's mode (type & permissions). */
-
-	suff_t		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%` */
-	uint8_t		err_no	; // 1 /** The `errno` of a file if it fails to process for some reason. */
-}; // 79 + 1 pad = 80
+}; // 78 + 2 pad = 80
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -117,5 +119,13 @@ struct TargetInfo {
 struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36b
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Helper Macros ———————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define getPathLen(p_fs)										\
+	((namlen_t)(												\
+		((p_fs)->path == NULL || (p_fs)->name == NULL)			\
+		? 0														\
+		: (((p_fs)->name - (p_fs)->path) + (p_fs)->name_len)	\
+	))
 
 #endif /* !NEW_STAT_MODEL_H */

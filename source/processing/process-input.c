@@ -27,7 +27,7 @@
  * @fn getPath
  * @brief Get the path to the given file, relative to its most senior parent.
  */
-static inline char *getPath(FileStat *const file) {
+static inline const char *getPath(FileStat *const file) {
 	// if we've already found this path before, then just return a pointer to it
 	if (file->path != NULL) return file->path;
 
@@ -35,7 +35,7 @@ static inline char *getPath(FileStat *const file) {
 
 	// base case: if this file doesn't have any parents, then we know that its name is already a valid path
 	if (parent == NULL) {
-		file->path_len = file->name_len;
+		file->path = file->name;
 		return file->name;
 	}
 
@@ -43,24 +43,24 @@ static inline char *getPath(FileStat *const file) {
 
 	// allocate memory for this file's path, then copy the parent dir's path into the buffer - recurse if needed
 	//	(note: no need to include the nullbyte, so no +1 for the length)
-	char *const path = memcpy(emalloc(sizeof(path_t)), getPath(parent), parent->path_len);
+	char *const path = memcpy(emalloc(sizeof(path_t)), getPath(parent), getPathLen(parent));
 	//v)path = "/path/to/parent"
 
 	/* —————————————————————————————————————————————————————— */
 
 	// only check the full size after we know that the parent definitely has a path
-	const size_t full_size = parent->path_len + 1 + file->name_len;
+	const size_t full_size = getPathLen(parent) + 1 + file->name_len;
 	// make sure that the resultant child path won't be too long once we create it
 	if (full_size >= sizeof(path_t)) { efree(path); return NULL; }
 
 	/* —————————————————————————————————————————————————————— */
 
 	// add the path separator
-	path[parent->path_len] = '/';
+	path[getPathLen(parent)] = '/';
 	//v)path = "/path/to/parent/"
 
 	// append the file's name to the end of the path
-	memcpy(path + 1 + parent->path_len,
+	memcpy(path + 1 + getPathLen(parent),
 		file->name,
 		file->name_len + 1 // +1 for the nullbyte this time
 	);
@@ -68,7 +68,9 @@ static inline char *getPath(FileStat *const file) {
 
 	/* —————————————————————————————————————————————————————— */
 
-	file->path_len = full_size;
+	file->name = &path[getPathLen(parent)] + 1;
+	file->name_len = full_size - (path - file->name);
+
 	return path;
 }
 
@@ -78,10 +80,12 @@ static inline char *getPath(FileStat *const file) {
 static inline void processChild(FileStat *const pFS_child, const struct dirent *const pDT_child) {
 	/* —— basic child info (dirent) ——————————————————————————————— */
 
+	char *child_name = emalloc(pDT_child->d_namlen + 1); // +1 for the nullbyte
+
 	// copy the info from `dirent` over to the child's `FileStat` object
 	*pFS_child = (FileStat){
 		// allocate memory for the name, since the `dirent` memory won't last forever
-		.name		= emalloc(pDT_child->d_namlen + 1), // +1 for the nullbyte
+		.name		= child_name,
 		.name_len	= pDT_child->d_namlen,
 		.mode		= DTTOIF(pDT_child->d_type), // converting to the correct format
 		.inum		= pDT_child->d_ino,
@@ -96,6 +100,10 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 	/* —— get path to child ——————————————————————————————————————— */
 
 	if (( pFS_child->path = getPath(pFS_child) ) == NULL) return;
+
+	// rather than being its own data, a file's name is now a pointer to where its name starts in `.path`
+	//	this saves having to alloc memory for its name (hence the `free` here), and having to store the path's length
+	efree(child_name);
 
 	/* —— `stat` child file ——————————————————————————————————————— */
 
