@@ -30,7 +30,12 @@ const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 inline char *parseFlags(const flag_t raw_flags) {
-	if (raw_flags == 0) return (char*)NULL;
+	if (raw_flags == 0) {
+		// make sure that we note down the size of the string
+		//	which will be displayed if there aren't any flags
+		setLen(FI_flag_str, sizeof(NO_FLAG_STR) - 1);
+		return (char*)NULL;
+	}
 
 	flagstr flag_str = {0};
 	bool is_first_flag = true;
