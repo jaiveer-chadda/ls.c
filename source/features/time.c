@@ -94,19 +94,24 @@ TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *con
 
 void print_time_raw(const FileStat *const pFS, const TimeType type) {
 	if (pFS->s == NULL) {
-		printf("%*c%s", getLen(timeField(type)), '-', FIELD_PAD);
+		printf("%s" "%*c" "%s", getcol(PUNCT), getLen(timeField(type)), '-', FIELD_PAD);
 		return;
 	}
 
 	const time_t times[TT_COUNT] = {
-		[A_TIME] = pFS->s->st_atime,
-		[M_TIME] = pFS->s->st_mtime,
-		[C_TIME] = pFS->s->st_ctime,
-		[B_TIME] = pFS->s->st_btime,
+		[A_TIME] = pFS->s->st_atime, [M_TIME] = pFS->s->st_mtime,
+		[C_TIME] = pFS->s->st_ctime, [B_TIME] = pFS->s->st_btime,
 	};
 
-	printf(fields[timeField(type)].fmt_p, getLen(timeField(type)), times[type], FIELD_PAD);
+	printf("%s" "%*ld" "%s",
+		getcol(time_colour_esc[pFS->f->times[type]->colour]),
+		getLen(timeField(type)),
+		times[type],
+		FIELD_PAD
+	);
 }
+
+/* —————————————————————————————————————————————————————————————— */
 
 void print_time_str(const FileStat *const pFS, const TimeType type) {
 	if (pFS->f != NULL && pFS->f->times[type] != NULL) {
@@ -118,7 +123,7 @@ void print_time_str(const FileStat *const pFS, const TimeType type) {
 		return;
 	}
 
-	printf("%*s" "%s", getLen(timeFieldStr(type)), TIME_ERR_STR, FIELD_PAD);
+	printf("%s" "%*s" "%s", getcol(PUNCT), getLen(timeFieldStr(type)), TIME_ERR_STR, FIELD_PAD);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
