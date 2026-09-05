@@ -23,41 +23,48 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── getPath ── ──────────────────────────────────────────────────────────────────────────────────────────────── */
 
+/**
+ * @fn getPath
+ * @brief Get the path to the given file, relative to its most senior parent.
+ */
 static inline char *getPath(FileStat *const file) {
 	// if we've already found this path before, then just return a pointer to it
 	if (file->path != NULL) return file->path;
 
+	FileStat *const parent = file->parent;
+
 	// base case: if this file doesn't have any parents, then we know that its name is already a valid path
-	if (file->parent == NULL) {
+	if (parent == NULL) {
 		file->path_len = file->name_len;
 		return file->name;
 	}
 
 	/* —————————————————————————————————————————————————————— */
 
-	// allocate memory for the path
-	char *const path = emalloc(sizeof(path_t));
-
-	// copy the parent dir's path into the buffer - recurse if needed
-	memcpy(path, getPath(file->parent), file->parent->path_len); // no need to include the nullbyte, so no +1
+	// allocate memory for this file's path, then copy the parent dir's path into the buffer - recurse if needed
+	//	(note: no need to include the nullbyte, so no +1 for the length)
+	char *const path = memcpy(emalloc(sizeof(path_t)), getPath(parent), parent->path_len);
+	//v)path = "/path/to/parent"
 
 	/* —————————————————————————————————————————————————————— */
 
 	// only check the full size after we know that the parent definitely has a path
-	const size_t full_size = file->parent->path_len + 1 + file->name_len;
+	const size_t full_size = parent->path_len + 1 + file->name_len;
 	// make sure that the resultant child path won't be too long once we create it
 	if (full_size >= sizeof(path_t)) { efree(path); return NULL; }
 
 	/* —————————————————————————————————————————————————————— */
 
 	// add the path separator
-	path[file->parent->path_len] = '/';
+	path[parent->path_len] = '/';
+	//v)path = "/path/to/parent/"
 
 	// append the file's name to the end of the path
-	memcpy(path + 1 + file->parent->path_len,
+	memcpy(path + 1 + parent->path_len,
 		file->name,
 		file->name_len + 1 // +1 for the nullbyte this time
 	);
+	//v)path = "/path/to/parent/child_name"
 
 	/* —————————————————————————————————————————————————————— */
 
@@ -228,7 +235,25 @@ static inline FileStat *processDir(FileStat *pFS_dir, const uint8_t depth) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── processInput ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
-FileStat *processInput(char *path) {
+/**
+ * @fn processInput
+ * @brief Process an inputted file, getting all information necessary from it.
+ *
+ * Note: The reason I'm recursing from `processDir`, and not from this function, is because input files and child files
+ *	are processed & handled differently:
+ *
+ *		- For input files, I first run `lstat` on them, and immediately return if they fail (cos I can't get any other
+ *			useful information from them).
+ *		- However, for child files, I first get their `dirent` information, and only then do I try and run `lstat` on
+ *			them. So it doesn't matter if `lstat` fails, because I'll still have _something_ to display.
+ *
+ * This is all due to the fact that a dirent object can only be gotten from iterating over the parent directory, which
+ *	I don't have when given just the input.
+ *
+ * @param path[in] A string containing the path to the input file.
+ * @return `FileStat*`: A pointer to the `FileStat` object generated from the input file. `NULL` on failure.
+ */
+FileStat *processInput(char *const path) {
 	struct stat statobj = {0};
 
 	/* —— `stat` input file ——————————————————————————————————————— */
