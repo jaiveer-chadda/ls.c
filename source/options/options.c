@@ -25,8 +25,8 @@ static bool U_DO_COLOUR, U_DO_TINY_FLAGS = false, U_DO_SHORT_FLAGS = true;
 static uint8_t U_DEPTH = 1;
 static SortByField U_SORT_BY = SB_DEFAULT;
 
-#define X(name, ...) [name] = (BinaryOption){ __VA_ARGS__ },
-static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
+#define X(name, ...) [(BO_ ## name)] = (BinaryOption){ __VA_ARGS__ },
+BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #undef X
 
 /* —— Generic Macros ——————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -42,7 +42,7 @@ static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 /* —— Option/Optarg Macros ——————————————————————————————————————————— */
 
 #define OPTARG_IS(str) (strcmp(optarg, (str)) == 0)
-#define IS_OPTION(str) (strcmp(opt, (str)) == 0)
+#define IS_OPTION(str) (strcmp(opt,	   (str)) == 0)
 
 #define OPT_1(a)			IS_OPTION(a)
 #define OPT_2(a, b)			IS_OPTION(a) || IS_OPTION(b)
@@ -54,21 +54,19 @@ static BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 
 /* —— Binary Option Macros ——————————————————————————————————————————— */
 
-#define ARR_LEN(array) (int)(sizeof(array) / sizeof(array[0]))
-#define NOT_REACHED_END_OF_ARR(idx, array) idx < ARR_LEN(array) && array[idx] != NULL
+#define ARR_LEN(array) ((int)(sizeof((array)) / sizeof((array)[0])))
+#define NOT_REACHED_END_OF_ARR(idx, array) (((idx) < ARR_LEN((array))) && ((array)[(idx)] != NULL))
 
-#define VALUE_OF(option) BINARY_OPTS[BO_ ## option].value
-#define MAKE_BIN_OPT_FUNC(option) bool option(void) { return VALUE_OF(option); }
+#define VALUE_OF(option) (BINARY_OPTS[(BO_ ## option)].value)
 
-#define CHECK_LONG_FLAG(prefix, bool_val)						\
-	do {														\
-		sprintf(flag_buf, prefix "%s", base_flag);				\
-		if (OPTION_IS(flag_buf)) {								\
-			if ((equal_arg != NULL) && HAS_ARG) ERR_NO_ARGS();	\
-			bin_opt->value = bool_val;							\
-			CONTINUE;											\
-		}														\
-	} while (0)
+#define CHECK_LONG_FLAG(prefix, bool_val) do {				\
+	sprintf(flag_buf, (prefix "%s"), base_flag);			\
+	if (OPTION_IS(flag_buf)) {								\
+		if ((equal_arg != NULL) && HAS_ARG) ERR_NO_ARGS();	\
+		bin_opt->value = (bool_val);						\
+		CONTINUE;											\
+	}														\
+} while (0)
 
 /* —— Error Macros ——————————————————————————————————————————————————— */
 
@@ -283,42 +281,14 @@ bool DO_COLOUR		(void) { return U_DO_COLOUR		; }
 bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS	; }
 bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS; }
 
-/* ————————————————————————————————————————————————————————— */
-
-MAKE_BIN_OPT_FUNC(DO_PATH)
-MAKE_BIN_OPT_FUNC(DO_CLEAR)
-MAKE_BIN_OPT_FUNC(DO_HEADER)
-MAKE_BIN_OPT_FUNC(DO_DIVIDERS)
-MAKE_BIN_OPT_FUNC(DO_MOUNTDEV)
-MAKE_BIN_OPT_FUNC(RECURSE_DIRS)
-MAKE_BIN_OPT_FUNC(DO_DIM_HIDDEN)
-MAKE_BIN_OPT_FUNC(SORT_DIRS_FIRST)
-MAKE_BIN_OPT_FUNC(DO_REVERSE_SORT)
+#define X(name, ...) \
+	inline bool name(void) { return VALUE_OF(name); }
+BINARY_OPTIONS_TABLE
+#undef X
 
 /* ————————————————————————————————————————————————————————— */
 
-MAKE_BIN_OPT_FUNC(do_suffix	 )	MAKE_BIN_OPT_FUNC(do_icon)
-MAKE_BIN_OPT_FUNC(do_link_to )
-
-MAKE_BIN_OPT_FUNC(do_nlink	 )
-MAKE_BIN_OPT_FUNC(do_dev_no	 )
-MAKE_BIN_OPT_FUNC(do_inum	 )
-
-MAKE_BIN_OPT_FUNC(do_flags	 )	MAKE_BIN_OPT_FUNC(do_flag_str)
-MAKE_BIN_OPT_FUNC(do_mode	 )	MAKE_BIN_OPT_FUNC(do_mode_str)
-MAKE_BIN_OPT_FUNC(do_size	 )	MAKE_BIN_OPT_FUNC(do_size_str)
-MAKE_BIN_OPT_FUNC(do_uid	 )	MAKE_BIN_OPT_FUNC(do_usr_name)
-MAKE_BIN_OPT_FUNC(do_gid	 )	MAKE_BIN_OPT_FUNC(do_grp_name)
-MAKE_BIN_OPT_FUNC(do_time	 )	MAKE_BIN_OPT_FUNC(do_time_str)
-
-/* ————————————————————————————————————————————————————————— */
-
-static inline MAKE_BIN_OPT_FUNC(do_atime)
-static inline MAKE_BIN_OPT_FUNC(do_mtime)
-static inline MAKE_BIN_OPT_FUNC(do_ctime)
-static inline MAKE_BIN_OPT_FUNC(do_btime)
-
-bool do_time_t(TimeType type) {
+inline bool do_time_t(TimeType type) {
 	static bool (* const funcs[])(void) = {
 		[A_TIME] = do_atime,
 		[M_TIME] = do_mtime,

@@ -13,48 +13,50 @@ int setOptions(const int argc, const char *argv[]);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define NSF 0 /// No short flag.
-#define MAX_OPT_FLAG_LEN 20
-#define MAX_OPT_FLAG_NUM 3
+#define NSF '\0' /// No short flag.
+#define MAX_OPT_FLAG_LEN 20 /// The maximum length that an option's long flag can be (exc. `--`, but including `\0`).
+#define MAX_OPT_FLAG_NUM 3 /// The maximum number of long flags that an option can have.
 
 #define BINARY_OPTIONS_TABLE \
-	/* when set here, column 2 (↓) marks the default value of each option */\
-	X(BO_DO_PATH			, false	, false	, NSF, { "path"			, "full-path"				}) \
-	X(BO_DO_CLEAR			, false	, false	, 'c', { "clear"									}) \
-	X(BO_DO_HEADER			, false	, false	, 'H', { "header"		, "headers"					}) \
-	X(BO_DO_DIVIDERS		, true	, false	, '_', { "divider"		, "dividers"				}) \
-	X(BO_DO_MOUNTDEV		, true	, false	, 'M', { "mount"		, "mounts"					}) \
-	X(BO_RECURSE_DIRS		, true	, false	, 'd', { "recurse-dirs"								}) \
-	X(BO_DO_DIM_HIDDEN		, true	, false	, '.', { "dim-hidden"	, "dim"						}) \
-	X(BO_SORT_DIRS_FIRST	, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}) \
-	X(BO_DO_REVERSE_SORT	, false	, false	, 'r', { "reverse"		, "rev"						}) \
+	/*│ Name			│default│ is	│short │ long flags								   │*/ \
+	/*│					│ value	│ field	│ flag │										   │*/ \
+	X(DO_PATH			, false	, false	, NSF, { "path"			, "full-path"				}) \
+	X(DO_CLEAR			, false	, false	, 'c', { "clear"									}) \
+	X(DO_HEADER			, false	, false	, 'H', { "header"		, "headers"					}) \
+	X(DO_DIVIDERS		, true	, false	, '_', { "divider"		, "dividers"				}) \
+	X(DO_MOUNTDEV		, true	, false	, 'M', { "mount"		, "mounts"					}) \
+	X(RECURSE_DIRS		, true	, false	, 'd', { "recurse-dirs"								}) \
+	X(DO_DIM_HIDDEN		, true	, false	, '.', { "dim-hidden"	, "dim"						}) \
+	X(DO_REVERSE_SORT	, false	, false	, 'r', { "reverse"		, "rev"						}) \
+	X(SORT_DIRS_FIRST	, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}) \
 	\
-	X(BO_do_icon			, true	, true	, 'I', { "icon"			, "icons"					}) \
-	X(BO_do_suffix			, true	, true	, 'P', { "suffix"		, "mark-type"				}) \
-	X(BO_do_link_to		/**/, false	, true	, 'l', { "link-to"		, "symlinks"				}) \
-	X(BO_do_nlink		/**/, false	, true	, 'n', { "nlink"									}) \
-	X(BO_do_dev_no			, false	, true	, NSF, { "dev-no"		, "device-number"			}) \
-	X(BO_do_inum		/**/, true	, true	, 'i', { "inode"		, "ino"			, "inum"	}) \
-	X(BO_do_flags			, false	, true	, NSF, { "flags"									}) \
-	X(BO_do_flag_str		, true	, true	, NSF, { "flag-str"		, "flags-str"				}) \
-	X(BO_do_mode		/**/, true	, true	, NSF, { "mode"										}) \
-	X(BO_do_mode_str		, true	, true	, NSF, { "mode-str"									}) \
-	X(BO_do_size			, false	, true	, NSF, { "size"										}) \
-	X(BO_do_size_str		, true	, true	, NSF, { "size-str"									}) \
-	X(BO_do_uid				, false	, true	, 'u', { "uid"										}) \
-	X(BO_do_usr_name		, true	, true	, 'U', { "uid-str"		, "usr-name"	, "user"	}) \
-	X(BO_do_gid				, false	, true	, 'g', { "gid"										}) \
-	X(BO_do_grp_name		, true	, true	, 'G', { "gid-str"		, "grp-name"	, "group"	}) \
+	X(do_icon			, true	, true	, 'I', { "icon"			, "icons"					}) \
+	X(do_suffix			, true	, true	, 'P', { "suffix"		, "mark-type"				}) \
+	X(do_link_to	/**/, false	, true	, 'l', { "link-to"		, "symlinks"				}) \
+	X(do_nlink		/**/, false	, true	, 'n', { "nlink"									}) \
+	X(do_dev_no			, false	, true	, NSF, { "dev-no"		, "device-number"			}) \
+	X(do_inum		/**/, true	, true	, 'i', { "inode"		, "ino"			, "inum"	}) \
+	X(do_flags			, false	, true	, NSF, { "flags"									}) \
+	X(do_flag_str		, true	, true	, NSF, { "flag-str"		, "flags-str"				}) \
+	X(do_mode		/**/, true	, true	, NSF, { "mode"										}) \
+	X(do_mode_str		, true	, true	, NSF, { "mode-str"									}) \
+	X(do_size			, false	, true	, NSF, { "size"										}) \
+	X(do_size_str		, true	, true	, NSF, { "size-str"									}) \
+	X(do_uid			, false	, true	, 'u', { "uid"										}) \
+	X(do_usr_name		, true	, true	, 'U', { "uid-str"		, "usr-name"	, "user"	}) \
+	X(do_gid			, false	, true	, 'g', { "gid"										}) \
+	X(do_grp_name		, true	, true	, 'G', { "gid-str"		, "grp-name"	, "group"	}) \
 	\
-	X(BO_do_time			, false	, true	, NSF, { "time"										}) \
-	X(BO_do_time_str		, true	, true	, NSF, { "time-str"									}) \
+	X(do_time			, false	, true	, NSF, { "time"										}) \
+	X(do_time_str		, true	, true	, NSF, { "time-str"									}) \
 	\
-	X(BO_do_atime			, false	, true	, NSF, { "atime"									}) \
-	X(BO_do_mtime			, true	, true	, NSF, { "mtime"									}) \
-	X(BO_do_ctime			, false	, true	, NSF, { "ctime"									}) \
-	X(BO_do_btime			, false	, true	, NSF, { "btime"									})
+	X(do_atime			, false	, true	, NSF, { "atime"									}) \
+	X(do_mtime			, true	, true	, NSF, { "mtime"									}) \
+	X(do_ctime			, false	, true	, NSF, { "ctime"									}) \
+	X(do_btime			, false	, true	, NSF, { "btime"									}) \
+/**/
 
-#define X(name, ...) name,
+#define X(name, ...) BO_ ## name,
 typedef enum { BINARY_OPTIONS_TABLE BINOPT_COUNT } BinOptIdx;
 #undef X
 
@@ -75,37 +77,15 @@ typedef char test_flag_t[MAX_OPT_FLAG_LEN + 5];
 
 SortByField SORT_BY (void);
 uint8_t O__DEPTH	(void);
-bool DO_REVERSE_SORT(void);
 bool DO_COLOUR		(void);
 bool DO_TINY_FLAGS	(void);
 bool DO_SHORT_FLAGS	(void);
 
-bool DO_PATH		(void);
-bool DO_CLEAR		(void);
-bool DO_HEADER		(void);
-bool DO_DIVIDERS	(void);
-bool DO_MOUNTDEV	(void);
-bool RECURSE_DIRS	(void);
-bool DO_DIM_HIDDEN	(void);
-bool SORT_DIRS_FIRST(void);
-
-/* —————————————————————————————————————————————————————————————— */
-
-bool do_suffix	(void);		bool do_icon(void);
-bool do_link_to	(void);
-
-bool do_nlink	(void);
-bool do_dev_no	(void);
-bool do_inum	(void);
-
-bool do_flags	(void);		bool do_flag_str(void);
-bool do_mode	(void);		bool do_mode_str(void);
-bool do_size	(void);		bool do_size_str(void);
-bool do_uid		(void);		bool do_usr_name(void);
-bool do_gid		(void);		bool do_grp_name(void);
-bool do_time	(void);		bool do_time_str(void);
-
 bool do_time_t(TimeType type);
+
+#define X(name, ...) bool name(void);
+BINARY_OPTIONS_TABLE
+#undef X
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
