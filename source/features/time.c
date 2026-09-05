@@ -50,7 +50,7 @@ void initTime(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-inline TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *const b_writ) {
+TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *const b_writ) {
 	if (!time_initialised) initTime();
 
 	if (file_time == 0) {

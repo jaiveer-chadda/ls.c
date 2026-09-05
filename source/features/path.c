@@ -6,7 +6,6 @@
 #include <string.h>
 #include <errno.h>
 
-#include "path.h"
 #include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -45,8 +44,8 @@ int getDirPath(path_t out_path, const path_t path) {
 
 		// all the ...errno variables will be unused when not in debug mode
 		#ifndef DEBUG_MODE
-		#pragma clang diagnostic push
-		#pragma clang diagnostic ignored "-Wunused-variable"
+		#	pragma clang diagnostic push
+		#	pragma clang diagnostic ignored "-Wunused-variable"
 		#endif
 
 		// we're getting the env var instead of running `getcwd`,
@@ -94,7 +93,7 @@ int getDirPath(path_t out_path, const path_t path) {
 		}
 
 		#ifndef DEBUG_MODE
-		#pragma clang diagnostic pop
+		#	pragma clang diagnostic pop
 		#endif
 	}
 

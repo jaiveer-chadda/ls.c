@@ -5,9 +5,22 @@
 
 #include "malloc.h"
 #include "debugging.h"
-#include "form/formatting.h"
 
-#include "flags.h"
+#include "form/formatting.h"
+#include "options/options.h"
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+typedef struct {
+	flag_t mask;
+	char name[MAX_FLAG_LEN];
+	char short_name[6];
+	char tiny_name[3];
+
+	Colour colour;
+} flagset;
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 	{ UF_NODUMP		, "nodump"		, "nodmp", "nd", FL_U_NODUMP	 }, // do not dump file
@@ -29,7 +42,12 @@ const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-inline char *parseFlags(const flag_t raw_flags) {
+#define GET_FLAG_NAME(flag) \
+	(DO_TINY_FLAGS() ? (flag).tiny_name : ( \
+		DO_SHORT_FLAGS() ? (flag).short_name : (flag).name \
+	))
+
+char *parseFlags(const flag_t raw_flags) {
 	if (raw_flags == 0) {
 		// make sure that we note down the size of the string
 		//	which will be displayed if there aren't any flags

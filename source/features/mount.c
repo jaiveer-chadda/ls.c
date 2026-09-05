@@ -1,4 +1,4 @@
-/// @file features/mount/mount-point.c
+/// @file features/mount/mount.c
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,7 +6,6 @@
 #include <libgen.h>
 #include <sys/mount.h>
 
-#include "mount-point.h"
 #include "graphics/graphics.h"
 
 static inline dev_t getDevNo(const path_t path) {

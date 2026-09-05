@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "features/mode/mode.h"
+#include "features/features.h"
 
 #include "graphics.h"
 

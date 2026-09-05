@@ -3,13 +3,12 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h> // errno_t
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "malloc.h"
 #include "debugging.h"
 
-#include "features/path/path.h"
+#include "features.h" // abbrpath()
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -17,7 +16,7 @@ link_t getLink(const path_t link_path) {
 	path_t target_path = "";
 
 	const ssize_t target_path_len = readlink(link_path, target_path, sizeof(path_t));
-	const errno_t readlink_errno = errno;
+	const int readlink_errno = errno;
 
 	if (target_path_len == -1) {
 		debug(WARNING, "%s: %s", link_path, strerror(readlink_errno));

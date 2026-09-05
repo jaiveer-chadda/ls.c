@@ -7,7 +7,8 @@
 #include "sort.h"
 #include "utils/strings.h"
 #include "options/options.h"
-#include "features/mode/mode.h"
+#include "features/features.h"
+
 #include "debugging.h"
 
 #ifndef NEW

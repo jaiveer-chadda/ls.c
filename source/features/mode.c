@@ -6,7 +6,7 @@
 #include <sys/acl.h>
 #include <sys/xattr.h>
 
-#include "mode.h"
+#include "features.h"
 #include "form/formatting.h"
 #include "graphics/graphics.h"
 

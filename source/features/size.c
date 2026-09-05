@@ -5,7 +5,6 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "size.h"
 #include "malloc.h"
 #include "debugging.h"
 #include "form/formatting.h"
@@ -20,7 +19,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-inline char *parseSize(unit_t *const size_unit, const off_t size, const dev_t rdev) {
+char *parseSize(unit_t *const size_unit, const off_t size, const dev_t rdev) {
 	sizestr size_str = "";
 
 	if (rdev != 0) { // if there's any info in `rdev`, then display them instead of the `off_t`
