@@ -17,7 +17,7 @@ function -- () {
 
   # dev mode is supposed to be halfway between the debug and production modes
   local mode=dev
-  local -i 2 print_cmd=0 do_time=0 do_dump=0 run_cmd=1
+  local -i 2 print_cmd=0 do_time=0 do_dump=0 run_cmd=1 do_clear=1
 
   while [[ -n "$1" ]] { #
     case "$1" {
@@ -25,6 +25,7 @@ function -- () {
       ( --debug(ging|)   ) mode=debug  ;;
       ( --prod(uction|)  ) mode=prod   ;;
       ( --dev(elopment|) ) mode=dev    ;;
+      ( --no-clear       ) do_clear=0  ;;
       ( --no-run         ) run_cmd=0   ;;
       ( --time           ) do_time=1   ;;
       ( --dump           ) do_dump=1   ;;
@@ -80,8 +81,11 @@ function -- () {
   local -r COPY_TO="$HOME/bin/lk"
 
   # the command that should be run after compilation
-  local -a CMD=( "$TARGET" --clear "$@" )
-  if (( do_time )) CMD=( zsh -c "time ${(@q)CMD}" )
+  local -a CMD=( "$TARGET" )
+  if (( do_clear )) CMD+=( --clear )
+  CMD+=( "$@" )
+
+  if (( do_time  )) CMD=( zsh -c "time ${(@q)CMD}" )
 
   # ———————————————————————————————————————————————————— #
 
