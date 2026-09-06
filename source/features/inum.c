@@ -36,15 +36,13 @@ static uint32_t
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline void initInums(void) {
-	inited = true;
-
-	all_inums = emalloc(sizeof(ino_t) * INIT_INUM_COUNT);
-	inum_store_count = inum_alloc_count = INIT_INUM_COUNT;
-}
-
 void processInum(ino_t inum) {
-	if (!inited) initInums();
+	if (!inited) {
+		inited = true;
+
+		all_inums = emalloc(sizeof(ino_t) * INIT_INUM_COUNT);
+		inum_store_count = inum_alloc_count = INIT_INUM_COUNT;
+	}
 
 	if (inum_store_count + 1 > inum_alloc_count) {
 		const uint32_t new_count = MULT_BY_1_5(inum_alloc_count);
@@ -67,7 +65,10 @@ static inline int compareInums(const void *inp1, const void *inp2) {
 /* ——————————————————————————————————————————————————— */
 
 void print_inum(const FileStat *const pFS) {
-	if (!sorted) qsort(all_inums, inum_store_count, sizeof(ino_t), compareInums);
+	if (!sorted) {
+		sorted = true;
+		qsort(all_inums, inum_store_count, sizeof(ino_t), compareInums);
+	}
 
 	const ino_t *elem = bsearch(&(pFS->inum), all_inums, inum_store_count, sizeof(ino_t), compareInums);
 	const uint64_t idx = elem != NULL ? elem - all_inums : 0llu;
