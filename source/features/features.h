@@ -8,9 +8,9 @@
 
 #include "model/types.h"
 
-#define TYPE_MASK S_IFMT	/// A mask to keep just the type information from the Unix octal mode - (0o170000).
-#define PERM_MASK 0000777	/// A mask to keep just the permission info. from the Unix octal mode - (0o000777).
-#define EXEC_MASK 0000111	/// A mask to tell whether a file is an executable or not.
+#define TYPE_MASK S_IFMT  /// A mask to keep just the type information from the Unix octal mode - (`0o170000`).
+#define PERM_MASK 0007777 /// A mask to keep just the permission info. from the Unix octal mode - (`0o007777`).
+#define EXEC_MASK 0000111 /// A mask to tell whether a file is an executable or not - (`0o000111`).
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Field Printing Functions ————————————————————————————————————————————————————————————————————————————————————— */

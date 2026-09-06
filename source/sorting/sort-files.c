@@ -1,6 +1,7 @@
 /// @file info/sorting/sort-files.c
 
 #include <stdio.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -19,7 +20,8 @@ static int8_t REVERSE;
 /* ——————————————————————————————————————————————— */
 
 /// Get the specified `field` from either file_1 or file_2.
-#define GET_ATTR(n, field) (((const FileStat *)file_ ## n)->field)
+#define GET_ATTR(n, field) \
+	(((const FileStat *const)file_ ## n)->field)
 
 /// For all numerical fields, we can find out whether one if above or below another by subtracting boolean values.
 #define GET_ORDERING(field) ( \
@@ -27,93 +29,83 @@ static int8_t REVERSE;
 		(GET_ATTR(1, field) < GET_ATTR(2, field))	\
 	)
 
-/// Make sure that `.` is always the first file sorted - no matter what.
-#define CHECK_DOTDIR_SORT(name_1, name_2) \
-	do { \
-		if (strcmp(name_1, DOTDIR) == 0) return -1; \
-		if (strcmp(name_2, DOTDIR) == 0) return  1; \
-	} while (0)
-
-/// Define a function that can be passed into `qsort` by the `SORT_FILES_BY` macro.
-#define DEFINE_COMPARE_FUNCTION(field) \
-	static inline int compare_ ## field ## s(const void *file_1, const void *file_2) { \
-		CHECK_DOTDIR_SORT(GET_ATTR(1, name), GET_ATTR(2, name));\
-		\
-		const int result = GET_ORDERING(field) * REVERSE;		\
-		if (result != 0) return result;							\
-		\
-		/* in the case of a tie, sort the files by name */		\
-		return compare_names(file_1, file_2);					\
+/// Define a function that can be passed into `qsort` (by the `SORT_FILES_BY` macro).
+#define DEFINE_COMPARE_FUNCTION(name, field) \
+	static inline int compare_ ## name ## s(const void *file_1, const void *file_2) { \
+		const int8_t result = GET_ORDERING(field) * REVERSE;		\
+		/* in the case of a tie, sort the files by name */			\
+		return result != 0 ? result : compare_names(file_1, file_2);\
 	}
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define IS_DIGIT(chr) ('0' <= (chr) && (chr) <= '9')
+#define xor !=
 
 /* ——————————————————————————————————————————————— */
 
 // Note: I know this function's name goes against convention, but I'm doing some macro magic ot make this all easier,
 //	so it's been done for a reason (see the `SORT_FILES_BY` macro)
 static inline int compare_names(const void *file_1, const void *file_2) {
-	const char 
-		*name_1 = GET_ATTR(1, name),
-		*name_2 = GET_ATTR(2, name);
+	const char *const inp_name_1 = GET_ATTR(1, name);
+	const char *const inp_name_2 = GET_ATTR(2, name);
 
-	CHECK_DOTDIR_SORT(name_1, name_2);
+	/// @todo implement an option to turn case-sensitivity on/off
+	name_t name_1, name_2;
+	toLower(name_1, inp_name_1);
+	toLower(name_2, inp_name_2);
 
-	name_t adj_name_1, adj_name_2;
-	toLower(adj_name_1, name_1);
-	toLower(adj_name_2, name_2);
-
-	typedef char intbuf_t[32];
-
-	int i = 0, j = 0;
-	while (adj_name_1[i] != '\0' && adj_name_2[j] != '\0') {
+	namlen_t i = 0, j = 0;
+	while (name_1[i] != '\0' && name_2[j] != '\0') {
 		// make sure dotfiles always sort above non-dotfiles
-		if (adj_name_1[i] != adj_name_2[j]) {
-			if (adj_name_1[i] == '.') return -1 * REVERSE;
-			if (adj_name_2[j] == '.') return  1 * REVERSE;
+		if (name_1[i] != name_2[j]) {
+			if (name_1[i] == '.') return -1 * REVERSE;
+			if (name_2[j] == '.') return  1 * REVERSE;
 		}
 
-		if (IS_DIGIT(adj_name_1[i]) && IS_DIGIT(adj_name_2[j])) {
-			intbuf_t int_buf_1, int_buf_2;
-			/// The running length of each int buffer.
-			int len_1 = 0, len_2 = 0;
+		// if both characters are digits
+		if (IS_DIGIT(name_1[i]) && IS_DIGIT(name_2[j])) {
+			char buf_1[32], buf_2[32];
+			int	 len_1 = 0, len_2 = 0;
 
-			// iterate through the characters, consuming them (i++) as you pass a digit
-			while (IS_DIGIT(adj_name_1[i])) { int_buf_1[len_1++] = adj_name_1[i++]; }
-			while (IS_DIGIT(adj_name_2[j])) { int_buf_2[len_2++] = adj_name_2[j++]; }
+			// iterate through the characters, consuming them ([ij]++) as you pass a digit
+			while (IS_DIGIT(name_1[i])) buf_1[len_1++] = name_1[i++];
+			while (IS_DIGIT(name_2[j])) buf_2[len_2++] = name_2[j++];
+			// by now, both buffers should have a string containing the entire number that begins at this index
 
-			int_buf_1[len_1] = '\0',
-			int_buf_2[len_2] = '\0';
+			// null termination is needed for `atoi`
+			buf_1[len_1] = '\0', buf_2[len_2] = '\0';
 
 			// now that both int buffers contain strings of purely digits, convert them to integers
+			//	I would usually use `strtol` instead of `atoi`, but since I know for sure that the strings will only
+			//	contain digits, this should be fine
 			const int // NOLINT(*-err34-c)
-				num_1 = atoi(int_buf_1),
-				num_2 = atoi(int_buf_2);
+				num_1 = atoi(buf_1),
+				num_2 = atoi(buf_2);
 
-			// if the numbers are different from each other, then compare them normally
-			if (num_1 != num_2) {
-				return (num_1 < num_2 ? -1 : 1) * REVERSE;
-			}
+			// if the numbers differ, compare them, and sort the smaller one first
+			if (num_1 != num_2) return (num_1 < num_2 ? -1 : 1) * REVERSE;
 
-		} else { // if either character is a non-digit, just return them in their regular ascii sorting order
-			if (adj_name_1[i] != adj_name_2[j]) {
-				return (adj_name_1[i] < adj_name_2[j] ? -1 : 1) * REVERSE;
-			}
-			i++; j++;
-		}
+			// if the numbers are equal, keep checking
+
+		// if either character is a non-digit, return them in their regular ascii sorting order
+		} else if (name_1[i] != name_2[j]) {
+			return (name_1[i] < name_2[j] ? -1 : 1) * REVERSE;
+
+		// if both characters are the same, then move onto the next character
+		} else i++; j++;
 	}
 
-	if (adj_name_1[i] == '\0' && adj_name_2[j] == '\0') return 0;
-	return (adj_name_1[i] == '\0' ? -1 : 1) * REVERSE;
+	// we should have reached the end of one of the strings, but not both
+	assert((name_1[i] != '\0') xor (name_2[j] != '\0'));
+	// if one of the names is a prefix of the other, sort the shorter name first
+	return (name_1[i] == '\0' ? -1 : 1) * REVERSE;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline int compare_modes(const void *file_1, const void *file_2) {
-	CHECK_DOTDIR_SORT(GET_ATTR(1, name), GET_ATTR(2, name));
-
-	const mode_t
+	const mode_t // get rid of the type info, and keep just the permissions
 		mode_1 = GET_ATTR(1, mode) & PERM_MASK,
 		mode_2 = GET_ATTR(2, mode) & PERM_MASK;
 
@@ -123,19 +115,21 @@ static inline int compare_modes(const void *file_1, const void *file_2) {
 	) * REVERSE;
 
 	if (result != 0) return result;
+	// if the modes are the same, sort by name as backup
 	return compare_names(file_1, file_2);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// DEFINE_COMPARE_FUNCTION(size)
-// DEFINE_COMPARE_FUNCTION(time)
-// DEFINE_COMPARE_FUNCTION(inode)
-// DEFINE_COMPARE_FUNCTION(dev_no)
-// DEFINE_COMPARE_FUNCTION(uid)
-// DEFINE_COMPARE_FUNCTION(gid)
-// DEFINE_COMPARE_FUNCTION(nlink)
-// DEFINE_COMPARE_FUNCTION(flags)
+/// @todo add checks for if `file->s == NULL`
+DEFINE_COMPARE_FUNCTION(inode, inum			)
+DEFINE_COMPARE_FUNCTION(size , s->st_size	)
+DEFINE_COMPARE_FUNCTION(devno, s->st_dev	)
+DEFINE_COMPARE_FUNCTION(uid	 , s->st_uid	)
+DEFINE_COMPARE_FUNCTION(gid	 , s->st_gid	)
+DEFINE_COMPARE_FUNCTION(nlink, s->st_nlink	)
+DEFINE_COMPARE_FUNCTION(flags, s->st_flags	)
+DEFINE_COMPARE_FUNCTION(time , s->st_mtime	) /** @todo make this work for other times too */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -148,17 +142,16 @@ void sortFiles(FileStat arr[], const int *const arr_count) {
 
 	switch (SORT_BY()) {
 		case SB_DEFAULT	: /* sort by name by default*/
-		case SB_NAME	: SORT_FILES_BY(name); return;
-		case SB_MODE	: SORT_FILES_BY(mode); return;
-		case SB_SIZE	: return;
-		case SB_TIME	: return;
-		case SB_INODE	: return;
-		case SB_DEVNO	: return;
-		case SB_UID		: return;
-		case SB_GID		: return;
-		case SB_NLINK	: return;
-		case SB_FLAGS	: return;
-
+		case SB_NAME	: SORT_FILES_BY(name ); return;
+		case SB_MODE	: SORT_FILES_BY(mode ); return;
+		case SB_SIZE	: SORT_FILES_BY(size ); return;
+		case SB_INODE	: SORT_FILES_BY(inode); return;
+		case SB_DEVNO	: SORT_FILES_BY(devno); return;
+		case SB_UID		: SORT_FILES_BY(uid	 ); return;
+		case SB_GID		: SORT_FILES_BY(gid	 ); return;
+		case SB_NLINK	: SORT_FILES_BY(nlink); return;
+		case SB_FLAGS	: SORT_FILES_BY(flags); return;
+		case SB_TIME	: SORT_FILES_BY(time ); return; // note: not fully implemented
 		case SB_NONE	: ;
 	}
 
