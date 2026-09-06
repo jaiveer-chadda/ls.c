@@ -45,30 +45,33 @@ static inline const char *getPath(FileStat *const file) {
 
 	/* —————————————————————————————————————————————————————— */
 
-	// allocate memory for this file's path, then copy the parent dir's path into the buffer - recurse if needed
-	//	(note: no need to include the nullbyte, so no +1 for the length)
-	char *const path = memcpy(emalloc(sizeof(path_t)), getPath(parent), getPathLen(parent));
-	//v)path = "/path/to/parent"
+	// recurse until we have the full path to the parent, then calculate its path len
+	const char *const parent_path = getPath(parent);
+	const namlen_t parent_plen = getPathLen(parent);
 
 	/* —————————————————————————————————————————————————————— */
 
-	// only check the full size after we know that the parent definitely has a path
-	const size_t full_size = getPathLen(parent) + 1 + file->name_len;
+	// check the resultant size, including the parent path, the `/`, the child's name, and a null terminator
+	const size_t child_size = parent_plen + 1 + file->name_len + 1;
 	// make sure that the resultant child path won't be too long once we create it
-	if (full_size >= sizeof(path_t)) { efree(path); return NULL; }
+	if (child_size > sizeof(path_t)) return NULL;
+
+	/* —————————————————————————————————————————————————————— */
+
+	// allocate memory for this file's path, then copy the parent's path into the buffer
+	//	(note: no need to copy the nullbyte, so no +1 for the length)
+	char *const path = memcpy(emalloc(child_size), parent_path, parent_plen);  //i)path = "/path/to/parent"
 
 	/* —————————————————————————————————————————————————————— */
 
 	// add the path separator
-	path[getPathLen(parent)] = '/';
-	//v)path = "/path/to/parent/"
+	path[getPathLen(parent)] = '/';  //i)path = "/path/to/parent/"
 
 	// append the file's name to the end of the path
-	memcpy(path + 1 + getPathLen(parent),
+	memcpy(path + 1 + getPathLen(parent),  //i)path = "/path/to/parent/child_name"
 		file->name,
 		file->name_len + 1 // +1 for the nullbyte this time
 	);
-	//v)path = "/path/to/parent/child_name"
 
 	/* —————————————————————————————————————————————————————— */
 
@@ -322,5 +325,3 @@ FileStat *processInput(char *const path) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-// spell:ignore prnt
