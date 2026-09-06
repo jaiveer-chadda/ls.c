@@ -114,8 +114,6 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 		} else i++; j++;
 	}
 
-	// we should have reached the end of one of the strings, but not both
-	assert((name_1[i] != '\0') xor (name_2[j] != '\0'));
 	// if one of the names is a prefix of the other, sort the shorter name first
 	return (name_1[i] == '\0' ? -1 : 1) * REVERSE;
 }
