@@ -85,7 +85,7 @@ char *parseFlags(const flag_t raw_flags) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_flags(const FileStat *const pFS) {
-	const bool valid = pFS->s != NULL;
+	const bool valid = pFS->s != NULL && pFS->s->st_flags != 0;
 	printf(
 		valid ? fields[FI_flags].fmt_p : "%*c%ls",
 		getLen(FI_flags),
