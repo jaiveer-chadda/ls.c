@@ -111,11 +111,16 @@ static inline void allFieldsOn(void) {
 int setOptions(const int argc, const char *argv[]) {
 	if (argv0[0] == 'c') VALUE_OF(DO_CLEAR) = true;
 
+	/// True if the colour should be determined automatically by the program.
+	/// False if the user has specified either `--colour=always` or `--colour=never`.
 	bool colour_auto = true;
 
 	int i;
 	for (i = 1; i < argc; i++) {
+
+		/// The option to be parsed, including the leading `--`.
 		const char *opt		= (char *)argv[i];
+		/// The argument given to an option either as `--opt arg`, or `--opt=arg`. An empty string if no arg was passed.
 		const char *optarg	= ARG_EXISTS ? (char *)argv[i + 1] : "";
 
 		/* —— End Option Parsing ————————————————————————————————————————— */
@@ -125,8 +130,8 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— Check for `--option=value` ————————————————————————————————— */
 
-		const char *const equal_arg = strchr(opt, '=');
 		bool did_malloc = false;
+		const char *const equal_arg = strchr(opt, '=');
 
 		if (equal_arg != NULL) {
 			optarg = equal_arg + 1;
@@ -156,7 +161,10 @@ int setOptions(const int argc, const char *argv[]) {
 		}
 
 		if (OPTION_IS("--sort", "--sort-by", "--rsort")) {
-			if (OPTION_IS("--rsort")) VALUE_OF(DO_REVERSE_SORT) = !VALUE_OF(DO_REVERSE_SORT);
+			// if the sort should be reversed, flip the boolean representing the sorting order
+			if (OPTION_IS("--rsort")) {
+				VALUE_OF(DO_REVERSE_SORT) = !VALUE_OF(DO_REVERSE_SORT);
+			}
 
 			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE  ;
 			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME  ;
@@ -183,16 +191,20 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --colour ——————————————————————————————————————————————————— */
 
+		// just providing an easier way to turn colour off
 		if (OPTION_IS("--no-colour", "--no-color")) {
 			colour_auto = false, U_DO_COLOUR = false;
 			CONTINUE;
 		}
 
 		if (OPTION_IS("--colour", "--color")) {
+			// if the option is `--colour`, assume that the user passed `always` or `never` as an argument,
+			//	and set `colour_auto` to false
 			colour_auto = false;
 			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; CONSUME_ARG; CONTINUE; }
 			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; CONSUME_ARG; CONTINUE; }
 			if (OPTARG_IS("auto"  )) { colour_auto = true ; CONSUME_ARG; CONTINUE; }
+			// ↑ only if they passed `auto`, should we set `colour_auto` back to true
 			if (HAS_ARG) ERR_BAD_ARG("always, never, auto");
 
 			// if no argument is given, then, like `ls`, assume `--colour` means `--colour always`
@@ -208,6 +220,7 @@ int setOptions(const int argc, const char *argv[]) {
 			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; CONSUME_ARG; CONTINUE; }
 			if (HAS_ARG) ERR_BAD_ARG("long, short, tiny");
 			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
+			//	this is similar to `--colour`, except that it changes a binary field instead
 			VALUE_OF(do_flags) = true; CONTINUE;
 		}
 
@@ -215,12 +228,14 @@ int setOptions(const int argc, const char *argv[]) {
 
 		if (OPTION_IS("--depth", "--level")) {
 			char *p_strend; // pointer to the end of the argument string
+			// convert the string to a `long`
 			const long int_arg = strtol(optarg, &p_strend, BASE_10);
 
 			if (int_arg <= RECURSION_LIMIT && int_arg >= 0 && // if its within the set limits
 				p_strend > optarg && // and some characters were read
-				*p_strend == '\0' // and all the characters were read
+				p_strend[0] == '\0' // and all characters were read
 			) {
+				// then set it as the globally available depth (and convert it down to an unsigned char)
 				U_DEPTH = (uint8_t)int_arg;
 				CONSUME_ARG;
 				CONTINUE;
@@ -239,9 +254,11 @@ int setOptions(const int argc, const char *argv[]) {
 
 		test_flag_t flag_buf;
 
+		// iterate through the binary options and check them one at a time
 		for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
 			BinaryOption *const bin_opt = &BINARY_OPTS[opt_i];
 
+			// then iterate through all the possible long flags for each bin opt, and check those
 			for (int flag_i = 0; NOT_REACHED_END_OF_ARR(flag_i, bin_opt->long_flags); flag_i++) {
 				const char *const base_flag = bin_opt->long_flags[flag_i];
 				if (base_flag[0] == '\0') continue;
@@ -264,9 +281,9 @@ int setOptions(const int argc, const char *argv[]) {
 			continue;
 	}
 
-	/* —— Handle Colour & Return ————————————————————————————————————— */
+	/* —— Post-Loop Logic & Return ——————————————————————————————————— */
 
-	// if `--colour` wasn't set, or if `--colour auto` was given, then determine whether colour should be used
+	// if `--colour` wasn't set, or if `--colour=auto` was given, then determine whether colour should be used
 	if (colour_auto) U_DO_COLOUR = doColourAuto();
 
 	// returns how many options were parsed, and therefore where the names of the files/directories start
@@ -281,6 +298,7 @@ bool DO_COLOUR		(void) { return U_DO_COLOUR		; }
 bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS	; }
 bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS; }
 
+// create very basic getter functions for each of the binary options
 #define X(name, ...) \
 	inline bool name(void) { return VALUE_OF(name); }
 BINARY_OPTIONS_TABLE
