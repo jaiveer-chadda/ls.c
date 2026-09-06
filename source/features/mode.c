@@ -1,6 +1,7 @@
 /// @file features/mode/mode.c
 
 #include <stdio.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/acl.h>
@@ -8,6 +9,7 @@
 
 #include "features.h"
 #include "form/formatting.h"
+#include "options/options.h"
 #include "graphics/graphics.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -110,12 +112,15 @@ void print_mode(const FileStat *const pFS) {
 }
 
 void print_mode_str(const FileStat *const pFS) {
-	printf(fields[FI_mode_str].fmt_s, pFS->mode_str);
+	if (!DO_COLOUR() /* for debugging */ || true /**/) {
+		char xa_buf[3] = {0};
+		uint8_t xa_len = 0;
 
-	pFS->has_xat ? putchar(XATTR_CHAR) : (getLen(FI_xat) ? putchar(' ') : DO_NOTHING);
-	pFS->has_acl ? putchar(ACL_CHAR	 ) : (getLen(FI_acl) ? putchar(' ') : DO_NOTHING);
+		if (pFS->has_xat) xa_buf[xa_len++] = XATTR_CHAR;
+		if (pFS->has_acl) xa_buf[xa_len	 ] = ACL_CHAR;
 
-	fputs(FIELD_PAD, stdout);
+		printf("%s" "%-*s" "%s", pFS->mode_str, getLen(FI_xat_acl), xa_buf, FIELD_PAD);
+	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

@@ -102,8 +102,7 @@ int getTotalLen(void) {
 	const int padlen = (int)(sizeof(FIELD_PAD) - 1);
 
 	return (total_len = (int)(
-		(getLen(FI_xat)) +
-		(getLen(FI_acl)) +
+		(getLen(FI_xat_acl)) +
 
 		(do_nlink	() * (getLen(FI_nlink	) + padlen)) +
 		(do_dev_no	() * (getLen(FI_dev_no	) + padlen)) +

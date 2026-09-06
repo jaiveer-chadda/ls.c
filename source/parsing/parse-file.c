@@ -77,12 +77,15 @@ void parseFile(FileStat *const pfile) {
 	if (do_suffix()) pfile->suffix = getTypeSuffix(pfile->mode);
 
 	if (do_mode_str()) {
-		getMode(pfile->mode_str, pfile->mode);						// find the basic mode string ("drwxr-xr-x")
-		setLen(FI_acl, (pfile->has_acl =   checkACL(pfile->name)));	// check if file has an access control list ("+")
-		setLen(FI_xat, (pfile->has_xat = checkXattr(pfile->name)));	// check if file has any extended attributes ("@")
+		getMode(pfile->mode_str, pfile->mode);			 // find the basic mode string ("drwxr-xr-x")
+		setLen(FI_xat_acl,
+			(pfile->has_acl =	checkACL(pfile->name)) + // check if file has an access control list ("+")
+			(pfile->has_xat = checkXattr(pfile->name))	 // check if file has any extended attributes ("@")
+		);
 	}
 
-	checkLengths(pfile, true); // calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
+	// calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
+	checkLengths(pfile, true);
 
 	if (is_incomplete) {
 		if (do_inum()) processInum(pfile->inum);
@@ -102,7 +105,8 @@ void parseFile(FileStat *const pfile) {
 
 	if (!S_ISDIR(pstat->st_mode) && pstat->st_nlink > 1) pfsf->do_link_hl = true;
 
-	checkLengths(pfile, false); // calculate the lengths of all numerical fields (i.e., non-string fields)
+	// calculate the lengths of all numerical fields (i.e., non-string fields)
+	checkLengths(pfile, false);
 
 	/* ————————————————————————————————————————————————————————— */
 

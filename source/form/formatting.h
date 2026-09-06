@@ -17,8 +17,12 @@ typedef struct {
 
 extern field_t fields[];
 
+/// @brief n/a
+#define NA X
+
+/* note: left is `%-*x`, right is `%*x` */
 #define FIELDS_TABLE \
-	/* field	 header		 fmt  L/R	*/\
+	/* field	 header		 fmt  L/R  */ \
 	X(name		, "Name"	, s	, left	) \
 	X(nlink		, "Links"	, d	, right	) \
 	X(dev_no	, "Dev No"	, d	, right	) \
@@ -43,8 +47,7 @@ extern field_t fields[];
 	X(ctime_str	, "Changed"	, s	, right	) \
 	X(btime_str	, "Birth"	, s	, right	) \
 	\
-	X(acl		, ""		, c	, left	) \
-	X(xat		, ""		, c	, left	) \
+	X(xat_acl	, ""		, NA, left	) \
 /**/
 
 #define X(fld, hdr, fms, lor) FI_##fld,
