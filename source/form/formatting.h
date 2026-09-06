@@ -12,6 +12,7 @@ typedef struct {
 	const char fmt_p[12];
 	const char fmt_s[8];
 	size_t len;
+	uint8_t title_len;
 	bool is_right;
 } field_t;
 

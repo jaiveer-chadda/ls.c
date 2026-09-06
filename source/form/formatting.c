@@ -19,13 +19,14 @@
 #define GET_FMT_P(fmt, lor) "%" FMT_##lor "*" #fmt "%ls"
 
 /* initialise the array, and set all the elements' lengths to 0 */
-#define X(fld, hdr, fmt, lor)			\
-	[FI_##fld] = (field_t){				\
-		.title = hdr,					\
-		.fmt_s = GET_FMT_S(fmt, lor),	\
-		.fmt_p = GET_FMT_P(fmt, lor),	\
-		.len   = 0,						\
-	 .is_right = lor##_set				\
+#define X(fld, hdr, fmt, lor)				\
+	[FI_##fld] = (field_t){					\
+		.title		= hdr,					\
+		.fmt_s		= GET_FMT_S(fmt, lor),	\
+		.fmt_p		= GET_FMT_P(fmt, lor),	\
+		.len		= 0,					\
+		.is_right	= lor##_set,			\
+		.title_len	= sizeof(hdr) - 1,		\
 	},
 
 field_t fields[FI_COUNT] = { FIELDS_TABLE };

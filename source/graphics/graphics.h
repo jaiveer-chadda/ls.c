@@ -90,15 +90,17 @@
 
 /* —— General ——————————————————————————————————————————————————————————————— */
 
-#define HEADER_HL				"1;4;94"		// \e[94m
-
 #define IFCOLOUR(str)				(DO_COLOUR() ? (str) : "")
 #define IFELSECOLOUR(col, ncol)		(DO_COLOUR() ? (col) : (ncol))
 
 #define ANSI_IFCOL(str)				(DO_COLOUR() ? ANSI(str) : "")
 #define ANSI_IFELSECOL(col, ncol)	(DO_COLOUR() ? ANSI(col) : ncol)
 
-/* —————————————————————————————————————————————————————————————————————————— */
+/* —— Headers ——————————————————————————————————————————————————————————————— */
+
+#define HEADER_COLOUR		toColour( .style = G_BOLD | G_UNDER, .fg = G_BBLU )
+#define HEADER_ANSI			ANSI_IFCOL( "1;4;94" ) // \e[94m
+
 /* —— Empty Dirs / Errors ——————————————————————————————————————————————————— */
 
 #define EMPTY_DIR_MSG		"empty"

@@ -7,20 +7,35 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define print_header_base(cond, fi_field)						\
-	if (cond) {													\
-		printf(fields[fi_field].is_right ? "%*s%ls" : "%-*s%ls",\
-			getLen(fi_field), fields[fi_field].title,			\
-			FIELD_PAD											\
-		);														\
-	}
+#define HDR_FMT_RIGHT "%*s" "%s%s%s"		"%ls"
+#define HDR_FMT_LEFT		"%s%s%s" "%*s"	"%ls"
 
-#define print_header(field) print_header_base(do_##field(), FI_##field)
+// I really don't know how to simplify this without introducing some ridiculous ternary operators
+#define print_header_base(condition, fi_field) do {					\
+	if (condition) {												\
+		if (fields[fi_field].is_right) {							\
+			printf(HDR_FMT_RIGHT,									\
+				getLen(fi_field) - fields[fi_field].title_len, "",	\
+				HEADER_ANSI, fields[fi_field].title, RESET,			\
+				FIELD_PAD											\
+			);														\
+		} else {													\
+			printf(HDR_FMT_LEFT,									\
+				HEADER_ANSI, fields[fi_field].title, RESET,			\
+				getLen(fi_field) - fields[fi_field].title_len, "",	\
+				FIELD_PAD											\
+			);														\
+		}															\
+	} \
+} while (0)
+
+#define print_header(field) \
+	print_header_base(do_##field(), FI_##field)
 
 #define print_time_header(type)									\
 	if (do_time_t(type)) {										\
-		print_header_base(do_time(), timeField(type))			\
-		print_header_base(do_time_str(), timeFieldStr(type))	\
+		print_header_base(do_time(), timeField(type));			\
+		print_header_base(do_time_str(), timeFieldStr(type));	\
 	}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
