@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <assert.h>
 #include <string.h>
 
 #include "malloc.h"
@@ -39,6 +40,9 @@ static inline const char *getPath(FileStat *const file) {
 		return file->name;
 	}
 
+	// neither of their lengths should be 0 or -1
+	assert(file->name_len >= 1 && parent->name_len >= 1);
+
 	/* —————————————————————————————————————————————————————— */
 
 	// allocate memory for this file's path, then copy the parent dir's path into the buffer - recurse if needed
@@ -69,8 +73,6 @@ static inline const char *getPath(FileStat *const file) {
 	/* —————————————————————————————————————————————————————— */
 
 	file->name = &path[getPathLen(parent)] + 1;
-	file->name_len = full_size - (path - file->name);
-
 	return path;
 }
 
@@ -98,6 +100,9 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 	memcpy(pFS_child->name, pDT_child->d_name, pDT_child->d_namlen + 1);
 
 	/* —— get path to child ——————————————————————————————————————— */
+
+	// none of these files should be parentless - its pretty much impossible
+	assert(pFS_child->parent != NULL);
 
 	if (( pFS_child->path = getPath(pFS_child) ) == NULL) return;
 
@@ -153,11 +158,6 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 	}
 
 	/* —— Set up `children` Array ————————————————————————————————— */
-
-	// bite the bullet and use `strlen` to calculate the dir's length now,
-	//	bc we're going to need it to get the path to the children in a moment
-	const int16_t dirpath_len = (int16_t)strlen(dirpath);
-	pFS_dir->name_len = dirpath_len;
 
 	// allocate some memory for an arbitrary number of children, with the intention that
 	//	we'll realloc if we need more memory later
@@ -307,10 +307,16 @@ FileStat *processInput(char *const path) {
 
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
 	//	then there's nothing else to do at this stage - send it off for parsing
-	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES())
+	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES()) {
 		return pfilestat;
+	}
 
+	/* —— If Input is Dir ————————————————————————————————————————— */
 	// if the input was a directory, however, we need to find & process its children
+
+	// bite the bullet and use `strlen` to calculate the dir's length now,
+	//	bc we're going to need it to get the path to the children in a moment
+	pfilestat->name_len = (namlen_t)strlen(path);
 	return processDir(pfilestat, 1);
 }
 
