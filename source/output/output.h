@@ -3,7 +3,7 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-#include "model/types.h"
+#include "model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -12,6 +12,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printHeaders(void);
+void escapeName(char *const output, const char *const input, const namlen_t inp_len, const Colour colour);
 
 void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_last, const lines_t lines);
 void print_tree(lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last);

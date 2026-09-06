@@ -8,6 +8,7 @@
 
 #include "debugging.h"
 #include "icons/icons.h"
+#include "output/output.h"
 #include "options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -111,15 +112,21 @@ int getDirPath(path_t out_path, const path_t path) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_name(const FileStat *const pFS) {
-	const char *const name_or_path = (DO_PATH() && pFS->path != NULL) ? pFS->path : pFS->name;
-
 	fputs(PRE_ICON_PAD, stdout);
 	printIcon(pFS->icon, pFS->file_col);
+
+	const bool do_path = DO_PATH() && pFS->path != NULL;
+
+	const char *const name_or_path = do_path ? pFS->path : pFS->name;
+	const namlen_t name_path_len = do_path ? getPathLen(pFS) : pFS->name_len;
+
+	char escaped_name[512];
+	escapeName(escaped_name, name_or_path, name_path_len, file_colour_esc[pFS->file_col]);
 
 	printf("%s" "%s" "%s" "%s",
 		PRE_NAME_PAD,
 		getcol(file_colour_esc[pFS->file_col]),
-		name_or_path,
+		escaped_name,
 		getcol(RESET_ALL)
 	);
 }
