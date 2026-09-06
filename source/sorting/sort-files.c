@@ -9,21 +9,17 @@
 #include "options/options.h"
 #include "features/features.h"
 
-#include "debugging.h"
-
-#ifndef NEW
-
 /// The multiplier which will be applied to a sort if the `--reverse-sort` option is enabled.
-static int REVERSE;
+static int8_t REVERSE;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define SORT_FILES_BY(field) qsort(arr, *arr_count, sizeof(FileInfo), (compare_ ## field ## s))
+#define SORT_FILES_BY(field) qsort(arr, *arr_count, sizeof(FileStat), (compare_ ## field ## s))
 
 /* ——————————————————————————————————————————————— */
 
 /// Get the specified `field` from either file_1 or file_2.
-#define GET_ATTR(n, field) (((const FileInfo *)file_ ## n)->field)
+#define GET_ATTR(n, field) (((const FileStat *)file_ ## n)->field)
 
 /// For all numerical fields, we can find out whether one if above or below another by subtracting boolean values.
 #define GET_ORDERING(field) ( \
@@ -132,45 +128,41 @@ static inline int compare_modes(const void *file_1, const void *file_2) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-DEFINE_COMPARE_FUNCTION(size  )
-DEFINE_COMPARE_FUNCTION(time  )
-DEFINE_COMPARE_FUNCTION(inode )
-DEFINE_COMPARE_FUNCTION(dev_no)
-DEFINE_COMPARE_FUNCTION(uid	  )
-DEFINE_COMPARE_FUNCTION(gid	  )
-DEFINE_COMPARE_FUNCTION(nlink )
-DEFINE_COMPARE_FUNCTION(flags )
+// DEFINE_COMPARE_FUNCTION(size)
+// DEFINE_COMPARE_FUNCTION(time)
+// DEFINE_COMPARE_FUNCTION(inode)
+// DEFINE_COMPARE_FUNCTION(dev_no)
+// DEFINE_COMPARE_FUNCTION(uid)
+// DEFINE_COMPARE_FUNCTION(gid)
+// DEFINE_COMPARE_FUNCTION(nlink)
+// DEFINE_COMPARE_FUNCTION(flags)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void sortFiles(FileInfo arr[], const int *arr_count) {
+void sortFiles(FileStat arr[], const int *const arr_count) {
 	/// The multiplier which will be applied to a sort if the `--reverse-sort` option is enabled.
 	REVERSE = DO_REVERSE_SORT() ? -1 : 1;
 
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wimplicit-fallthrough"
+
 	switch (SORT_BY()) {
+		case SB_DEFAULT	: /* sort by name by default*/
+		case SB_NAME	: SORT_FILES_BY(name); return;
+		case SB_MODE	: SORT_FILES_BY(mode); return;
+		case SB_SIZE	: return;
+		case SB_TIME	: return;
+		case SB_INODE	: return;
+		case SB_DEVNO	: return;
+		case SB_UID		: return;
+		case SB_GID		: return;
+		case SB_NLINK	: return;
+		case SB_FLAGS	: return;
 
-		#pragma clang diagnostic push
-		#pragma clang diagnostic ignored "-Wimplicit-fallthrough"
-
-		case SB_DEFAULT:
-		case SB_NAME : SORT_FILES_BY(name)	; return; // custom function
-
-		#pragma clang diagnostic pop
-
-		case SB_MODE : SORT_FILES_BY(mode)	; return; // custom function
-		case SB_SIZE : SORT_FILES_BY(size)	; return;
-		case SB_TIME : SORT_FILES_BY(time)	; return;
-		case SB_INODE: SORT_FILES_BY(inode)	; return;
-		case SB_DEVNO: SORT_FILES_BY(dev_no); return;
-		case SB_UID  : SORT_FILES_BY(uid)	; return;
-		case SB_GID  : SORT_FILES_BY(gid)	; return;
-		case SB_NLINK: SORT_FILES_BY(nlink)	; return;
-		case SB_FLAGS: SORT_FILES_BY(flags)	; return;
-
-		case SB_NONE : ;
+		case SB_NONE	: ;
 	}
+
+	#pragma clang diagnostic pop
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#endif /* !NEW */

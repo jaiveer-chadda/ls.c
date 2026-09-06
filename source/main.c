@@ -12,6 +12,7 @@
 #include "debugging.h" // initDebugging(), debug()
 
 #include "model/global.h" // argv0
+#include "sorting/sort.h" // sortFiles()
 #include "output/output.h" // printFile()
 #include "form/formatting.h" // initFormatting()
 #include "options/options.h" // setOptions(), DO_CLEAR()
@@ -77,7 +78,19 @@ int main(const int argc, char *argv[]) {
 	// if none of the inputs were valid, don't bother with even trying to print them - just return failure
 	if (!any_valid_input) return EXIT_FAILURE;
 
-	/// @todo figure out a way to sort the inputs before they're printed
+	/* —— Sort Files ————————————————————————————————————————————————————————————————————————————— */
+
+	for (int i = 0; i < file_count; i++) {
+		if (inputs[i]->f->child_count <= 1) continue;
+
+		sortFiles(
+			(inputs[i]->f->children),
+			&inputs[i]->f->child_count
+		);
+	}
+
+	/// @todo implement `--sort-input`/`DO_SORT_INPUT`
+	/* if (DO_SORT_INPUTS()) */ sortFiles(*inputs, &file_count);
 
 	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
 

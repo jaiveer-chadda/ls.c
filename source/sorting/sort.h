@@ -1,10 +1,10 @@
-/// @file info/sorting/sort.h
+/// @file sorting/sort.h
 
-#ifndef SORTING_INITIALISED
-#define SORTING_INITIALISED
+#ifndef SORT_H
+#define SORT_H
 
 #include "model/stat-model.h"
 
-void sortFiles(FileStat arr[], const int *arr_count);
+void sortFiles(FileStat arr[], const int *const arr_count);
 
-#endif /* !SORTING_INITIALISED */
+#endif /* !SORT_H */
