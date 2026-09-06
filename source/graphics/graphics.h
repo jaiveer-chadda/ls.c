@@ -154,6 +154,17 @@
 #define LINK_PATH_COLOUR		"96"			// \e[96m
 #define INVALID_LINK_COLOUR		"2;97"			// \e[90m [kinda]
 
+/* —— Inode Number —————————————————————————————————————————————————————————— */
+
+#define INUM_COLOURS		\
+	toColour( .fg = 193 ),	\
+	toColour( .fg = 157 ),	\
+	toColour( .fg = 115 ),	\
+	toColour( .fg = 116 ),	\
+	toColour( .fg =  81 ),	\
+	toColour( .fg =  37 ),	\
+/**/
+
 /* —— NLink ————————————————————————————————————————————————————————————————— */
 
 #define LN_COL_DIR				"1;96"			// \e[96m

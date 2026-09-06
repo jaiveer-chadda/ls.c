@@ -14,16 +14,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static const Colour INUM_COLOURS[] = {
-	toColour( .fg = 193 ),
-	toColour( .fg = 157 ),
-	toColour( .fg = 115 ),
-	toColour( .fg = 116 ),
-	toColour( .fg =  81 ),
-	toColour( .fg =  37 ),
-};
-
-static const size_t INUM_COLOURS_LEN = sizeof(INUM_COLOURS) / sizeof(INUM_COLOURS[0]);
+static const Colour INUM_COLOURS_S[] = { INUM_COLOURS };
+static const size_t INUM_COLOURS_LEN = sizeof(INUM_COLOURS_S) / sizeof(INUM_COLOURS_S[0]);
 
 static bool
 	inited = false,
@@ -74,7 +66,7 @@ void print_inum(const FileStat *const pFS) {
 	const uint64_t idx = elem != NULL ? elem - all_inums : 0llu;
 
 	printf("%s" "%*llu" "%s",
-		getcol(INUM_COLOURS[(idx * INUM_COLOURS_LEN) / inum_store_count]),
+		getcol(INUM_COLOURS_S[(idx * INUM_COLOURS_LEN) / inum_store_count]),
 		getLen(FI_inum),
 		pFS->inum,
 		FIELD_PAD
