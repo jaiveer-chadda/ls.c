@@ -66,32 +66,28 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 /// Note: this version of the `print_field` macro is temporary - original version above.
 #define print_field(field) do { if (do_##field()) print_##field(pFS); colprint(RESET_ALL); } while (0)
 
-#define print_time(type) if (do_time_t(type)) { \
-	if (do_time		()) print_time_raw(pFS, (type)); \
-	if (do_time_str	()) print_time_str(pFS, (type)); \
-}
+#define print_time(type) \
+	if (do_time_t(type)) { \
+		if (do_time		()) print_time_raw(pFS, (type)); \
+		if (do_time_str	()) print_time_str(pFS, (type)); \
+	}
 
 /* ——————————————————————————————————————————————————— */
 
 static inline void printFields(const FileStat *const pFS) {
-	print_field(inum	);
-	print_field(dev_no	);
-	print_field(mode	);
-	print_field(mode_str);
-	print_field(nlink	);
-	print_field(size	);
-	print_field(size_str);
-	print_field(uid		);
-	print_field(usr_name);
-	print_field(gid		);
-	print_field(grp_name);
-	print_field(flags	);
-	print_field(flag_str);
+	print_field(inum ); print_field(dev_no	);
+	print_field(mode ); print_field(mode_str);
+	print_field(nlink);
+	print_field(size ); print_field(size_str);
+	print_field(uid	 ); print_field(usr_name);
+	print_field(gid	 ); print_field(grp_name);
+	print_field(flags); print_field(flag_str);
 
-	print_time(A_TIME);
-	print_time(M_TIME);
-	print_time(C_TIME);
-	print_time(B_TIME);
+	print_time(A_TIME); print_time(M_TIME);
+	print_time(C_TIME); print_time(B_TIME);
+
+	// then:
+	//	tree, icon, name, link, mount
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
