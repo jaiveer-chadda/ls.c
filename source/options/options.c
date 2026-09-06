@@ -131,18 +131,31 @@ int setOptions(const int argc, const char *argv[]) {
 		/* —— Check for `--option=value` ————————————————————————————————— */
 
 		bool did_malloc = false;
+
+		// find the the first equals sign in the string
 		const char *const equal_arg = strchr(opt, '=');
 
+		// if there wasn't an equals sign, then just continue as usual
 		if (equal_arg != NULL) {
+			// set the charater after the equals sign to be the new start of the argument
 			optarg = equal_arg + 1;
 
+			// since all options-checking statements below track whether they've been passed an argument (in order to
+			//	accurately track where the filenames begin), we need to let them know that even though they see an
+			//	argument, we shouldn't increment the flag counter - hence we decrement it here with `UN_CONSUME_ARG`
 			UN_CONSUME_ARG;
+
+			// catch inputs like `--option=` (without any arg after the equals)
 			if (strlen(optarg) == 0) ERR_EMPTY_ARG();
 
 			const int option_len = equal_arg - opt;
+
+			// allocate memory for the new option
 			char *const adj_opt = emalloc(option_len + 1);
+			// and note down that we should free the memory later
 			did_malloc = true;
 
+			// finally, make sure that `opt` has the correct information, and is null-terminated
 			strncpy(adj_opt, opt, option_len);
 			adj_opt[option_len] = '\0';
 
