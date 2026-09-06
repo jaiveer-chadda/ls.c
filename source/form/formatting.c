@@ -9,21 +9,23 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define right_set true
+#define left_set false
+
 #define FMT_left "-"
 #define FMT_right ""
 
 #define GET_FMT_S(fmt, lor) "%" FMT_##lor	  #fmt
-#define GET_FMT_L(fmt, lor) "%" FMT_##lor "*" #fmt
-#define GET_FMT_P(fmt, lor) GET_FMT_L(fmt, lor) "%ls"
+#define GET_FMT_P(fmt, lor) "%" FMT_##lor "*" #fmt "%ls"
 
 /* initialise the array, and set all the elements' lengths to 0 */
 #define X(fld, hdr, fmt, lor)			\
 	[FI_##fld] = (field_t){				\
 		.title = hdr,					\
 		.fmt_s = GET_FMT_S(fmt, lor),	\
-		.fmt_l = GET_FMT_L(fmt, lor),	\
 		.fmt_p = GET_FMT_P(fmt, lor),	\
-		.len   = 0						\
+		.len   = 0,						\
+	 .is_right = lor##_set				\
 	},
 
 field_t fields[FI_COUNT] = { FIELDS_TABLE };

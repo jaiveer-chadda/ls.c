@@ -102,6 +102,8 @@ int main(const int argc, char *argv[]) {
 		dump(inputs[0]);
 	#endif
 
+	if (DO_HEADER()) printHeaders();
+
 	// print each of the inputs in the order they were given
 	// `printFile` will recurse into the file and print as many levels as was specified
 	for (int i = 0; i < file_count; i++) {
