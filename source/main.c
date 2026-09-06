@@ -38,7 +38,7 @@ int main(const int argc, char *argv[]) {
 
 	// parse the user's inputted options, and find where the options end (& where the files start)
 	//	e.g. if the program is run as `lk --clear --sort name ~/.config/options`, then `files_start` will be 4
-	const int opt_count = setOptions(argc, (const char**)argv);
+	const int opt_count = setOptions(argc, argv);
 	initFormatting();
 
 	/* —— Determine Input Paths —————————————————————————————————————————————————————————————————— */

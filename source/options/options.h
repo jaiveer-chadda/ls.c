@@ -7,9 +7,9 @@
 
 #include "model/stat-model.h"
 
-void usage(const int exit_code);
 bool doColourAuto(void);
-int setOptions(const int argc, const char *argv[]);
+void usage(const int exit_code);
+int setOptions(const int argc, char *argv[]);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -68,7 +68,7 @@ typedef struct {
 	char long_flags[MAX_OPT_FLAG_NUM][MAX_OPT_FLAG_LEN];
 } BinaryOption;
 
-typedef char test_flag_t[MAX_OPT_FLAG_LEN + 5];
+typedef char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")];
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

@@ -6,12 +6,9 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "strings.h"
 #include "options.h"
 #include "model/global.h"
-#include "utils/malloc.h"
-#include "utils/strings.h"
-
-#include "debugging.h"
 
 #ifndef t
 #define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug that my error checker has */
@@ -33,8 +30,6 @@ BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 
 #define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] != '-'))
 #define HAS_ARG		(optarg != NULL && optarg[0] != '\0')
-
-#define CONTINUE goto label_continue
 
 #define CONSUME_ARG i++
 #define UN_CONSUME_ARG i--
@@ -59,13 +54,13 @@ BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 
 #define VALUE_OF(option) (BINARY_OPTS[(BO_ ## option)].value)
 
-#define CHECK_LONG_FLAG(prefix, bool_val) do {				\
-	sprintf(flag_buf, (prefix "%s"), base_flag);			\
-	if (OPTION_IS(flag_buf)) {								\
-		if ((equal_arg != NULL) && HAS_ARG) ERR_NO_ARGS();	\
-		bin_opt->value = (bool_val);						\
-		CONTINUE;											\
-	}														\
+#define CHECK_LONG_FLAG(prefix, bool_val) do {							\
+	snprintf(flag_buf, sizeof(CLIFlag_t), (prefix "%s"), base_flag);	\
+	if (OPTION_IS(flag_buf)) {											\
+		if ((equal_arg != NULL) && HAS_ARG) ERR_NO_ARGS();				\
+		bin_opt->value = (bool_val);									\
+		goto label_continue;											\
+	}																	\
 } while (0)
 
 /* —— Error Macros ——————————————————————————————————————————————————— */
@@ -108,7 +103,7 @@ static inline void allFieldsOn(void) {
 
 /* ── ── setOptions() ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
-int setOptions(const int argc, const char *argv[]) {
+int setOptions(const int argc, char *argv[]) {
 	if (argv0[0] == 'c') VALUE_OF(DO_CLEAR) = true;
 
 	/// True if the colour should be determined automatically by the program.
@@ -119,21 +114,19 @@ int setOptions(const int argc, const char *argv[]) {
 	for (i = 1; i < argc; i++) {
 
 		/// The option to be parsed, including the leading `--`.
-		const char *opt		= (char *)argv[i];
-		/// The argument given to an option either as `--opt arg`, or `--opt=arg`. An empty string if no arg was passed.
-		const char *optarg	= ARG_EXISTS ? (char *)argv[i + 1] : "";
+		const char *opt		= argv[i];
+		/// The argument given to an option either as `--opt arg`, or `--opt=arg`. An empty string if no arg is passed.
+		const char *optarg	= ARG_EXISTS ? argv[i + 1] : (char *){0};
 
 		/* —— End Option Parsing ————————————————————————————————————————— */
 
 		if (opt[0] != '-' && opt[0] != '+') break;
 		if (OPTION_IS("--")) { CONSUME_ARG; break; }
 
-		/* —— Check for `--option=value` ————————————————————————————————— */
-
-		bool did_malloc = false;
+		/* —— Check for `--option=arg` ——————————————————————————————————— */
 
 		// find the the first equals sign in the string
-		const char *const equal_arg = strchr(opt, '=');
+		char *const equal_arg = strchr(opt, '=');
 
 		// if there wasn't an equals sign, then just continue as usual
 		if (equal_arg != NULL) {
@@ -145,21 +138,12 @@ int setOptions(const int argc, const char *argv[]) {
 			//	argument, we shouldn't increment the flag counter - hence we decrement it here with `UN_CONSUME_ARG`
 			UN_CONSUME_ARG;
 
-			// catch inputs like `--option=` (without any arg after the equals)
-			if (strlen(optarg) == 0) ERR_EMPTY_ARG();
+			// catch inputs like `--option=`, which don't have any argument after the equals
+			if (optarg[0] == '\0') ERR_EMPTY_ARG();
 
-			const int option_len = equal_arg - opt;
-
-			// allocate memory for the new option
-			char *const adj_opt = emalloc(option_len + 1);
-			// and note down that we should free the memory later
-			did_malloc = true;
-
-			// finally, make sure that `opt` has the correct information, and is null-terminated
-			strncpy(adj_opt, opt, option_len);
-			adj_opt[option_len] = '\0';
-
-			opt = adj_opt;
+			// convert the equals sign into a nullbyte, so `opt` is now separated from `optarg`, while still using the
+			//	same memory, and so both variables can work as standard c-strings
+			*equal_arg = '\0';
 		}
 
 		/* —— --help ————————————————————————————————————————————————————— */
@@ -168,10 +152,7 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— --sort-by —————————————————————————————————————————————————— */
 
-		if (OPTION_IS("--no-sort")) {
-			U_SORT_BY = SB_NONE;
-			CONTINUE;
-		}
+		if (OPTION_IS("--no-sort")) { U_SORT_BY = SB_NONE; continue; }
 
 		if (OPTION_IS("--sort", "--sort-by", "--rsort")) {
 			// if the sort should be reversed, flip the boolean representing the sorting order
@@ -199,7 +180,7 @@ int setOptions(const int argc, const char *argv[]) {
 			else ERR_TAKES_ARG();
 
 			CONSUME_ARG;
-			CONTINUE;
+			continue;
 		}
 
 		/* —— --colour ——————————————————————————————————————————————————— */
@@ -207,34 +188,34 @@ int setOptions(const int argc, const char *argv[]) {
 		// just providing an easier way to turn colour off
 		if (OPTION_IS("--no-colour", "--no-color")) {
 			colour_auto = false, U_DO_COLOUR = false;
-			CONTINUE;
+			continue;
 		}
 
 		if (OPTION_IS("--colour", "--color")) {
 			// if the option is `--colour`, assume that the user passed `always` or `never` as an argument,
 			//	and set `colour_auto` to false
 			colour_auto = false;
-			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; CONSUME_ARG; CONTINUE; }
-			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; CONSUME_ARG; CONTINUE; }
-			if (OPTARG_IS("auto"  )) { colour_auto = true ; CONSUME_ARG; CONTINUE; }
+			if (OPTARG_IS("always")) { U_DO_COLOUR = true ; CONSUME_ARG; continue; }
+			if (OPTARG_IS("never" )) { U_DO_COLOUR = false; CONSUME_ARG; continue; }
+			if (OPTARG_IS("auto"  )) { colour_auto = true ; CONSUME_ARG; continue; }
 			// ↑ only if they passed `auto`, should we set `colour_auto` back to true
 			if (HAS_ARG) ERR_BAD_ARG("always, never, auto");
 
 			// if no argument is given, then, like `ls`, assume `--colour` means `--colour always`
 			U_DO_COLOUR = true;
-			CONTINUE;
+			continue;
 		}
 
 		/* —— --flags ———————————————————————————————————————————————————— */
 
 		if (OPTION_IS("--flags")) {
-			if (OPTARG_IS("long" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = false; CONSUME_ARG; CONTINUE; }
-			if (OPTARG_IS("short")) { U_DO_SHORT_FLAGS = true , U_DO_TINY_FLAGS = false; CONSUME_ARG; CONTINUE; }
-			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; CONSUME_ARG; CONTINUE; }
+			if (OPTARG_IS("long" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = false; CONSUME_ARG; continue; }
+			if (OPTARG_IS("short")) { U_DO_SHORT_FLAGS = true , U_DO_TINY_FLAGS = false; CONSUME_ARG; continue; }
+			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; CONSUME_ARG; continue; }
 			if (HAS_ARG) ERR_BAD_ARG("long, short, tiny");
 			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
 			//	this is similar to `--colour`, except that it changes a binary field instead
-			VALUE_OF(do_flags) = true; CONTINUE;
+			VALUE_OF(do_flags) = true; continue;
 		}
 
 		/* —— --depth ———————————————————————————————————————————————————— */
@@ -251,7 +232,7 @@ int setOptions(const int argc, const char *argv[]) {
 				// then set it as the globally available depth (and convert it down to an unsigned char)
 				U_DEPTH = (uint8_t)int_arg;
 				CONSUME_ARG;
-				CONTINUE;
+				continue;
 			}
 
 			if (HAS_ARG) ERR_DEPTH();
@@ -260,12 +241,12 @@ int setOptions(const int argc, const char *argv[]) {
 
 		/* —— All Fields ————————————————————————————————————————————————— */
 
-		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  CONTINUE; }
-		if (OPTION_IS("--all"))			{ allFieldsOn(); allOptsOn(); CONTINUE; }
+		if (OPTION_IS("--all-fields"))	{ allFieldsOn();			  continue; }
+		if (OPTION_IS("--all"))			{ allFieldsOn(); allOptsOn(); continue; }
 
 		/* —— Binary Options ————————————————————————————————————————————— */
 
-		test_flag_t flag_buf;
+		CLIFlag_t flag_buf;
 
 		// iterate through the binary options and check them one at a time
 		for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
@@ -287,10 +268,10 @@ int setOptions(const int argc, const char *argv[]) {
 		// any input that hasn't been matched above should be treated as an invalid option
 		ERR_INVALID_OPT();
 
-		/* —— `goto label_continue` Target ——————————————————————————————— */
+		/* —— `label_continue` ——————————————————————————————————————————— */
 
+		// this label is used to break out of nested loops, like the one above that parses binary opts
 		label_continue:
-			if (did_malloc) efree((void*)opt);
 			continue;
 	}
 
