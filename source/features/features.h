@@ -37,6 +37,10 @@ void print_time_raw(const FileStat *const pFS, const TimeType type);
 
 char *parseFlags(const flag_t raw_flags);
 
+/* —— inum.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void processInum(ino_t inum);
+
 /* —— links.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 link_t getLink(const path_t link_path);

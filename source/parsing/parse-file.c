@@ -67,7 +67,7 @@ void parseFile(FileStat *const pfile) {
 		// `mode` is always transferred over, since its needed to parse other fields
 		pfile->mode = pstat->st_mode;
 		// however, `inum` is being transferred conditionally, since its only use is to be printed
-		if (do_inum()) pfile->inum = pstat->st_ino;
+		if (do_inum()) processInum(( pfile->inum = pstat->st_ino ));
 	}
 
 	// make sure to keep calculating the maximum name length
@@ -85,6 +85,7 @@ void parseFile(FileStat *const pfile) {
 	checkLengths(pfile, true); // calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
 
 	if (is_incomplete) {
+		if (do_inum()) processInum(pfile->inum);
 		if (DO_COLOUR()) pfile->file_col = setFileColour(pfile->name, pfile->mode, 0U, false);
 		return;
 	}

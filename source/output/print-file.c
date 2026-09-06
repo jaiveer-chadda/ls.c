@@ -71,6 +71,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 static inline void printFields(const FileStat *const pFS) {
 	print_field(inum	);
+	colprint(RESET_ALL); // temp
 	print_field(dev_no	);
 	print_field(mode	);
 	print_field(mode_str);
