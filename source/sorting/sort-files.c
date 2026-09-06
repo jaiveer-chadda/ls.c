@@ -6,7 +6,8 @@
 #include <string.h>
 
 #include "sort.h"
-#include "utils/strings.h"
+#include "strings.h"
+
 #include "options/options.h"
 #include "features/features.h"
 
@@ -15,9 +16,12 @@ static int8_t REVERSE;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define SORT_FILES_BY(field) qsort(arr, *arr_count, sizeof(FileStat), (compare_ ## field ## s))
+#define SORT_FILES_BY(field) \
+	qsort(arr, *arr_count, sizeof(FileStat), (compare_ ## field ## s))
 
-/* ——————————————————————————————————————————————— */
+/* ——————————————————————————————————————————————————————————————————— */
+
+#define IS_DIR(n) S_ISDIR(GET_ATTR(n, mode))
 
 /// Get the specified `field` from either file_1 or file_2.
 #define GET_ATTR(n, field) \
@@ -29,12 +33,21 @@ static int8_t REVERSE;
 		(GET_ATTR(1, field) < GET_ATTR(2, field))	\
 	)
 
+/* ——————————————————————————————————————————————————————————————————— */
+
 /// Define a function that can be passed into `qsort` (by the `SORT_FILES_BY` macro).
-#define DEFINE_COMPARE_FUNCTION(name, field) \
-	static inline int compare_ ## name ## s(const void *file_1, const void *file_2) { \
-		const int8_t result = GET_ORDERING(field) * REVERSE;		\
-		/* in the case of a tie, sort the files by name */			\
-		return result != 0 ? result : compare_names(file_1, file_2);\
+#define DEFINE_COMPARE_FUNCTION(funcname, field) \
+	static inline int compare_ ## funcname ## s(const void *file_1, const void *file_2) {	\
+		if (SORT_DIRS_FIRST()) {															\
+			/* if one file is a directory and the other isn't, sort the directory first */	\
+			/*	note: we don't reverse the ordering of this sort - dirs are always first */	\
+			if (IS_DIR(1) && !IS_DIR(2)) return -1;											\
+			if (IS_DIR(2) && !IS_DIR(1)) return	 1;											\
+		}																					\
+		const int8_t result = GET_ORDERING(field) * REVERSE;								\
+		/**/																				\
+		/* in the case of a tie, sort the files by name */									\
+		return result != 0 ? result : compare_names(file_1, file_2);						\
 	}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -42,11 +55,16 @@ static int8_t REVERSE;
 #define IS_DIGIT(chr) ('0' <= (chr) && (chr) <= '9')
 #define xor !=
 
-/* ——————————————————————————————————————————————— */
+/* ——————————————————————————————————————————————————————————————————— */
 
 // Note: I know this function's name goes against convention, but I'm doing some macro magic ot make this all easier,
 //	so it's been done for a reason (see the `SORT_FILES_BY` macro)
 static inline int compare_names(const void *file_1, const void *file_2) {
+	if (SORT_DIRS_FIRST()) {
+		if (IS_DIR(1) && !IS_DIR(2)) return -1;
+		if (IS_DIR(2) && !IS_DIR(1)) return	 1;
+	}
+
 	const char *const inp_name_1 = GET_ATTR(1, name);
 	const char *const inp_name_2 = GET_ATTR(2, name);
 
