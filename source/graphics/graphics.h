@@ -134,6 +134,7 @@
 /* —— Punctuation ——————————————————————————————————————————————————————————— */
 
 #define PUNCT					toColour( .fg = G_BRT_BLACK )	// \e[90m
+#define PUNCT_ANSI				ANSI_IFCOL( "90" )	// \e[90m
 
 /* —— Escape Characters ————————————————————————————————————————————————————— */
 
@@ -154,7 +155,7 @@
 #define LINK_PATH_COLOUR		"96"			// \e[96m
 #define INVALID_LINK_COLOUR		"2;97"			// \e[90m [kinda]
 
-/* —— Inode Number —————————————————————————————————————————————————————————— */
+/* —— Inum/Devnum ——————————————————————————————————————————————————————————— */
 
 #define INUM_COLOURS		\
 	toColour( .fg = 193 ),	\
@@ -164,6 +165,12 @@
 	toColour( .fg =  81 ),	\
 	toColour( .fg =  37 ),	\
 /**/
+
+#define DEVNO_MAJ_COLOUR	toColour( .fg = 223 )
+#define DEVNO_COLOUR		toColour( .fg = 153 )
+
+#define DEVNO_MAJ_ANSI		ANSI_IFCOL( "38;5;223" )
+#define DEVNO_ANSI			ANSI_IFCOL( "38;5;153" )
 
 /* —— NLink ————————————————————————————————————————————————————————————————— */
 

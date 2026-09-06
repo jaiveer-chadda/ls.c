@@ -61,7 +61,11 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 // note: to use the `print_field` macro, a function must have the following signature:
 //	`void print_[field_name](const FileStat *const pFS)`
-#define print_field(field)  if (do_##field()) print_##field(pFS)
+
+// #define print_field(field)  if (do_##field()) print_##field(pFS)
+/// Note: this version of the `print_field` macro is temporary - original version above.
+#define print_field(field) do { if (do_##field()) print_##field(pFS); colprint(RESET_ALL); } while (0)
+
 #define print_time(type) if (do_time_t(type)) { \
 	if (do_time		()) print_time_raw(pFS, (type)); \
 	if (do_time_str	()) print_time_str(pFS, (type)); \
@@ -71,7 +75,6 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 static inline void printFields(const FileStat *const pFS) {
 	print_field(inum	);
-	colprint(RESET_ALL); // temp
 	print_field(dev_no	);
 	print_field(mode	);
 	print_field(mode_str);
