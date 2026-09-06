@@ -31,11 +31,11 @@ typedef struct {
 void d__stacktrace(void);
 void d__debug(
 	const LogLevelIdx level_,
-	const char *const time, const int lineno, const char *const file,
+	const char *const time, const int lineno,
+	const char *const file, const char *const func,
 	const char *const fmt, ...
 );
 void d__dump(const FileStat *const fs);
-void d__func(const char *func);
 void d__line(void);
 
 #ifdef DEBUG_MODE
@@ -43,8 +43,7 @@ void d__line(void);
 #	define IF_DEBUG(expr) expr
 
 #	define stacktrace() d__stacktrace()
-#	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __VA_ARGS__)
-#	define dfunc(func) d__func(#func)
+#	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __func__, __VA_ARGS__)
 #	define dump(fs) d__dump(fs)
 #	define dline() d__line()
 
@@ -66,7 +65,6 @@ void d__line(void);
 #	define IF_DEBUG(expr)
 #	define stacktrace()
 #	define debug(log_level, ...)
-#	define dfunc(func)
 #	define dump(fs)
 #	define dline()
 #	define initDebugging(argv1)
