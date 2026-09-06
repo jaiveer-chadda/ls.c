@@ -14,7 +14,7 @@
 
 #define GET_FMT_S(fmt, lor) "%" FMT_##lor	  #fmt
 #define GET_FMT_L(fmt, lor) "%" FMT_##lor "*" #fmt
-#define GET_FMT_P(fmt, lor) GET_FMT_L(fmt, lor) "%s"
+#define GET_FMT_P(fmt, lor) GET_FMT_L(fmt, lor) "%ls"
 
 /* initialise the array, and set all the elements' lengths to 0 */
 #define X(fld, hdr, fmt, lor)			\
@@ -93,43 +93,43 @@ inline void checkLengths(const FileStat *const pfile, const bool do_basic) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static int total_len = 0;
+#define DEFAULT_LEN -1
+
+#define CALCULATE_LEN(field)			(do_##field()	  * (getLen(FI_##field)			 + padlen))
+#define CALCULATE_LEN_TIME(field)		(do_time_t(field) * (getLen(timeField(field))	 + padlen))
+#define CALCULATE_LEN_TIMESTR(field)	(do_time_t(field) * (getLen(timeFieldStr(field)) + padlen))
+
+static int total_len = DEFAULT_LEN;
 
 // yes this is awful - i don't care
 int getTotalLen(void) {
-	if (total_len != 0) return total_len;
+	if (total_len != DEFAULT_LEN) return total_len;
 
 	const int padlen = (sizeof(FIELD_PAD) / sizeof(FIELD_PAD[0])) - 1;
 
 	return (total_len = (int)(
 		(getLen(FI_xat_acl)) +
 
-		(do_nlink	() * (getLen(FI_nlink	) + padlen)) +
-		(do_dev_no	() * (getLen(FI_dev_no	) + padlen)) +
-		(do_inum	() * (getLen(FI_inum	) + padlen)) +
-		(do_flags	() * (getLen(FI_flags	) + padlen)) +
-		(do_flag_str() * (getLen(FI_flag_str) + padlen)) +
-		(do_mode	() * (getLen(FI_mode	) + padlen)) +
-		(do_mode_str() * (getLen(FI_mode_str) + padlen)) +
-		(do_size	() * (getLen(FI_size	) + padlen)) +
-		(do_size_str() * (getLen(FI_size_str) + padlen)) +
-		(do_uid		() * (getLen(FI_uid		) + padlen)) +
-		(do_usr_name() * (getLen(FI_usr_name) + padlen)) +
-		(do_gid		() * (getLen(FI_gid		) + padlen)) +
-		(do_grp_name() * (getLen(FI_grp_name) + padlen)) +
+		CALCULATE_LEN(inum	) + CALCULATE_LEN(dev_no  ) +
+		CALCULATE_LEN(nlink	) +
+		CALCULATE_LEN(mode	) + CALCULATE_LEN(mode_str) +
+		CALCULATE_LEN(size	) + CALCULATE_LEN(size_str) +
+		CALCULATE_LEN(uid	) + CALCULATE_LEN(usr_name) +
+		CALCULATE_LEN(gid	) + CALCULATE_LEN(grp_name) +
+		CALCULATE_LEN(flags	) + CALCULATE_LEN(flag_str) +
 
 		(do_time()) * (
-			(do_time_t(A_TIME) * (getLen(FI_atime) + padlen)) +
-			(do_time_t(M_TIME) * (getLen(FI_mtime) + padlen)) +
-			(do_time_t(C_TIME) * (getLen(FI_ctime) + padlen)) +
-			(do_time_t(B_TIME) * (getLen(FI_btime) + padlen))
+			CALCULATE_LEN_TIME(A_TIME) +
+			CALCULATE_LEN_TIME(M_TIME) +
+			CALCULATE_LEN_TIME(C_TIME) +
+			CALCULATE_LEN_TIME(B_TIME)
 		) +
 
 		(do_time_str()) * (
-			(do_time_t(A_TIME) * (getLen(FI_atime_str) + padlen)) +
-			(do_time_t(M_TIME) * (getLen(FI_mtime_str) + padlen)) +
-			(do_time_t(C_TIME) * (getLen(FI_ctime_str) + padlen)) +
-			(do_time_t(B_TIME) * (getLen(FI_btime_str) + padlen))
+			CALCULATE_LEN_TIMESTR(A_TIME) +
+			CALCULATE_LEN_TIMESTR(M_TIME) +
+			CALCULATE_LEN_TIMESTR(C_TIME) +
+			CALCULATE_LEN_TIMESTR(B_TIME)
 		)
 	));
 }
