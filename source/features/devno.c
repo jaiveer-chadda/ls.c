@@ -11,8 +11,13 @@
 void print_dev_no(const FileStat *const pFS) {
 	const bool valid = pFS->s != NULL;
 
-	if (!valid || !DO_DEVNO_MAJMIN()) {
-		printf("%*c%s", getLen(FI_dev_no), valid ? pFS->s->st_dev : '-', FIELD_PAD);
+	if (!valid) {
+		printf("%*c%s", getLen(FI_dev_no), '-', FIELD_PAD);
+		return;
+	}
+
+	if (!DO_DEVNO_MAJMIN()) {
+		printf(fields[FI_inum].fmt_p, getLen(FI_dev_no), pFS->s->st_dev, FIELD_PAD);
 		return;
 	}
 
