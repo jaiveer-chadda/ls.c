@@ -9,9 +9,9 @@
 
 typedef struct {
 	const char title[12];
-	const char fmt_s[6];
-	const char fmt_l[6];
-	const char fmt_p[8];
+	const char fmt_p[12];
+	const char fmt_l[8];
+	const char fmt_s[8];
 	size_t len;
 } field_t;
 

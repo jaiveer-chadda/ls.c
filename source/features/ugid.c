@@ -49,7 +49,7 @@ void print_grp_name(const FileStat *const pFS) {
 	void print_##ugid(const FileStat *const pFS) {		\
 		const bool valid = pFS->s != NULL;				\
 		printf(											\
-			valid ? fields[FI_##ugid].fmt_p : "%*c%s",	\
+			valid ? fields[FI_##ugid].fmt_p : "%*c%ls",	\
 			getLen(FI_##ugid),							\
 			valid ? pFS->s->st_##ugid : '-',			\
 			FIELD_PAD									\

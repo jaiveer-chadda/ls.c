@@ -99,7 +99,7 @@ static int total_len = 0;
 int getTotalLen(void) {
 	if (total_len != 0) return total_len;
 
-	const int padlen = (int)(sizeof(FIELD_PAD) - 1);
+	const int padlen = (sizeof(FIELD_PAD) / sizeof(FIELD_PAD[0])) - 1;
 
 	return (total_len = (int)(
 		(getLen(FI_xat_acl)) +

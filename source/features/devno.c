@@ -12,14 +12,14 @@ void print_dev_no(const FileStat *const pFS) {
 	/* —— invalid ——————————————————————————————————————— */
 
 	if (!valid) {
-		printf("%s%*c%s", getcol(PUNCT), getLen(FI_dev_no), '-', FIELD_PAD);
+		printf("%s%*c%ls", getcol(PUNCT), getLen(FI_dev_no), '-', FIELD_PAD);
 		return;
 	}
 
 	/* —— regular ——————————————————————————————————————— */
 
 	if (!DO_DEVNO_MAJMIN()) {
-		printf("%s%*d%s", getcol(DEVNO_COLOUR), getLen(FI_dev_no), pFS->s->st_dev, FIELD_PAD);
+		printf("%s%*d%ls", getcol(DEVNO_COLOUR), getLen(FI_dev_no), pFS->s->st_dev, FIELD_PAD);
 		return;
 	}
 
@@ -30,7 +30,7 @@ void print_dev_no(const FileStat *const pFS) {
 	// print the maj,min string into a buffer, and then align that string to the max length
 	const int majmin_size = snprintf(NULL, 0, "%d,%d", maj, min);
 
-	printf("%*s" "%s%d" "%s," "%s%d" "%s",
+	printf("%*s" "%s%d" "%s," "%s%d" "%ls",
 		getLen(FI_dev_no) - majmin_size, "", // alignment
 		DEVNO_MAJ_ANSI, maj,	// major size
 		PUNCT_ANSI,				// comma

@@ -9,7 +9,7 @@
 
 /* —— —— Chars & Strings —— ————————————————————————————————————————————————— */
 
-#define FIELD_PAD	 " " /// The spacing between each of the fields/columns listed in long (`-l`) mode.
+#define FIELD_PAD	L" " /// The spacing between each of the fields/columns listed in long (`-l`) mode.
 #define PRE_ICON_PAD " " /// The extra spacing that should be printed before the icon is printed.
 #define PRE_NAME_PAD " " /// The extra spacing that should be printed before the filename column.
 
@@ -394,7 +394,6 @@
 typedef enum { FILE_COLOUR_TABLE FC_COUNT } FileColour;
 typedef enum { PERM_COLOUR_TABLE PC_COUNT } PermColour;
 typedef enum { SIZE_COLOUR_TABLE SC_COUNT } SizeColour;
-
 typedef enum { TIME_COLOUR_TABLE TC_COUNT } TimeColour;
 #undef X
 

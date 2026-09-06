@@ -65,7 +65,7 @@ void print_inum(const FileStat *const pFS) {
 	const ino_t *elem = bsearch(&(pFS->inum), all_inums, inum_store_count, sizeof(ino_t), compareInums);
 	const uint64_t idx = elem != NULL ? elem - all_inums : 0llu;
 
-	printf("%s" "%*llu" "%s",
+	printf("%s" "%*llu" "%ls",
 		getcol(INUM_COLOURS_S[(idx * INUM_COLOURS_LEN) / inum_store_count]),
 		getLen(FI_inum),
 		pFS->inum,

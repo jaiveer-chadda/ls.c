@@ -108,7 +108,7 @@ bool checkXattr(const path_t path) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_mode(const FileStat *const pFS) {
-	printf("%0*o%s", getLen(FI_mode), pFS->mode, FIELD_PAD);
+	printf("%0*o%ls", getLen(FI_mode), pFS->mode, FIELD_PAD);
 }
 
 void print_mode_str(const FileStat *const pFS) {
@@ -119,7 +119,7 @@ void print_mode_str(const FileStat *const pFS) {
 		if (pFS->has_xat) xa_buf[xa_len++] = XATTR_CHAR;
 		if (pFS->has_acl) xa_buf[xa_len	 ] = ACL_CHAR;
 
-		printf("%s" "%-*s" "%s", pFS->mode_str, getLen(FI_xat_acl), xa_buf, FIELD_PAD);
+		printf("%s" "%-*s" "%ls", pFS->mode_str, getLen(FI_xat_acl), xa_buf, FIELD_PAD);
 	}
 }
 

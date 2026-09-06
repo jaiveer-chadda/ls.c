@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <wchar.h>
 #include <string.h>
 #include <sys/types.h>
 
@@ -80,7 +81,7 @@ char *parseSize(unit_t *const size_unit, const off_t size, const dev_t rdev) {
 void print_size(const FileStat *const pFS) {
 	const bool valid = pFS->s != NULL;
 	printf(
-		valid ? fields[FI_size].fmt_p : "%*c%s",
+		valid ? fields[FI_size].fmt_p : "%*c%ls",
 		getLen(FI_size),
 		valid ? pFS->s->st_size : '-',
 		FIELD_PAD
@@ -103,7 +104,7 @@ void print_size_str(const FileStat *const pFS) {
 		);
 	}
 
-	fputs(FIELD_PAD, stdout);
+	fputws(FIELD_PAD, stdout);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
