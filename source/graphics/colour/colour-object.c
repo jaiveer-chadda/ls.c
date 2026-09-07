@@ -1,8 +1,8 @@
 /// @file graphics/colour/colour-object.c
 
-#include <assert.h>
 #include <stdio.h>
 #include <errno.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
@@ -64,9 +64,6 @@ void setActive(const Colour input) {
 /* ── ── `getcol()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 // note: this function isn't threadsafe, but that should be fine I think, since its only really used for printing
-
-#define getcol(input_col)		c__getcol(input_col, true)
-#define getcol_noset(input_col)	c__getcol(input_col, false)
 
 char *c__getcol(const Colour input_col, const bool set_active) {
 	// this is a nice and simple way to make sure that nothing's printed when colour output is turned off
