@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -36,8 +37,8 @@ BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 
 /* —— Option/Optarg Macros ——————————————————————————————————————————— */
 
-#define OPTARG_IS(str) (strcmp(optarg, (str)) == 0)
-#define IS_OPTION(str) (strcmp(opt,	   (str)) == 0)
+#define OPTARG_IS(str) (optarg != NULL && strcmp(optarg, (str)) == 0)
+#define IS_OPTION(str) (strcmp(opt, (str)) == 0)
 
 #define OPT_1(a)			IS_OPTION(a)
 #define OPT_2(a, b)			IS_OPTION(a) || IS_OPTION(b)
@@ -114,9 +115,11 @@ int setOptions(const int argc, char *argv[]) {
 	for (i = 1; i < argc; i++) {
 
 		/// The option to be parsed, including the leading `--`.
-		const char *opt		= argv[i];
+		const char *opt = argv[i];
 		/// The argument given to an option either as `--opt arg`, or `--opt=arg`. An empty string if no arg is passed.
-		const char *optarg	= ARG_EXISTS ? argv[i + 1] : (char *){0};
+		const char *optarg = ARG_EXISTS ? argv[i + 1] : (char *){0};
+
+		assert(opt != NULL);
 
 		/* —— End Option Parsing ————————————————————————————————————————— */
 
