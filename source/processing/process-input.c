@@ -190,10 +190,11 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 
 		/* —— check for ignored files ————————————————————————————————— */
 
-		// with the output structure I'm building, I don't think it makes sense to show `..`
-		//	if I want to add an option to keep it later, I can just add it to this condition
-		if (strcmp(pDT_child->d_name, "..") == 0) continue;
-		/// @todo when I add the `-a` and `-A` options later, this is where I'll add a check for them
+		// if we're ignoring dotfiles (and dirs), then check for dotfiles, and ignore them
+		if ((!DO_DOTFILES() && pDT_child->d_name[0] == '.')
+			// and always ignore `..` - with the output structure I'm building, it doesn't make sense to show it
+			|| strcmp(pDT_child->d_name, "..") == 0
+		) continue;
 
 		#ifdef DEBUG_MODE
 		if (strcmp(pDT_child->d_name, ".git") == 0) continue;

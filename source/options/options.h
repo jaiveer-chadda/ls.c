@@ -23,6 +23,7 @@ int setOptions(const int argc, char *argv[]);
 	X(DO_PATH			, false	, false	, NSF, { "path"			, "full-path"				}) \
 	X(DO_CLEAR			, false	, false	, 'c', { "clear"									}) \
 	X(DO_HEADER			, false	, false	, 'H', { "header"		, "headers"					}) \
+	X(DO_DOTFILES		, true	, false	, 'A', { "all"			, "almost-all"				}) \
 	X(DO_DIVIDERS		, true	, false	, '_', { "divider"		, "dividers"				}) \
 	X(DO_MOUNTDEV		, true	, false	, 'M', { "mount"		, "mounts"					}) \
 	X(DIRS_AS_FILES		, false	, false	, 'd', { "dirs-as-files", "no-recurse-dirs"			}) \
