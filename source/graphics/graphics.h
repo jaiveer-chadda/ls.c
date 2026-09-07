@@ -96,6 +96,8 @@
 #define ANSI_IFCOL(str)				(DO_COLOUR() ? ANSI(str) : "")
 #define ANSI_IFELSECOL(col, ncol)	(DO_COLOUR() ? ANSI(col) : ncol)
 
+#define RESET_IFCOL			IFCOLOUR(RESET)
+
 /* —— Headers ——————————————————————————————————————————————————————————————— */
 
 #define HEADER_COLOUR		toColour( .style = G_BOLD | G_UNDER, .fg = G_BBLU )
@@ -135,12 +137,18 @@
 
 /* —— Punctuation ——————————————————————————————————————————————————————————— */
 
-#define PUNCT					toColour( .fg = G_BRT_BLACK )	// \e[90m
-#define PUNCT_ANSI				ANSI_IFCOL( "90" )	// \e[90m
+#define PUNCT					toColour( .fg = G_BRT_BLACK ) // \e[90m
+#define PUNCT_ANSI				ANSI_IFCOL( "90" )
 
 /* —— Escape Characters ————————————————————————————————————————————————————— */
 
-#define ESC_CHAR_COLOUR			"8;5;125"		// #BD0060
+#define ESC_CHAR_BASE			125
+
+#define ESC_CHAR_FG_COLOUR		toColour( .fg = ESC_CHAR_BASE ) // #BD0060
+#define ESC_CHAR_BG_COLOUR		toColour( .bg = ESC_CHAR_BASE, .fg = G_WHT )
+
+#define ESC_CHAR_FG_ANSI		ANSI_IFCOL( "38;5;125"		 )
+#define ESC_CHAR_BG_ANSI		ANSI_IFCOL( "48;5;125" ";37" )
 
 /* —— Links ————————————————————————————————————————————————————————————————— */
 

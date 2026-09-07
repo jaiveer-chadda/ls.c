@@ -1,15 +1,10 @@
 /// @file output/escape-name.c
 
 #include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
 
+#include "malloc.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
-
-#include "output.h"
-#include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -18,7 +13,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define copy_and_return(dst, src) memcpy((dst), (src), sizeof(src)); return (sizeof(src) - 1)
+#define copy_and_return(fmt, src) \
+	return sprintf(esc, ("%s\\" fmt "%s"), IFCOLOUR(char_ansi), (src), IFCOLOUR(file_ansi))
 
 /**
  * @brief Find the appropriate escape sequence for an inputted character.
@@ -27,22 +23,26 @@
  * @param orig_char[in] The character to be escaped.
  * @return `true` if the inputted character was escaped, `false` otherwise.
  */
-static inline bool escapeCharacter(char *esc, const char inp) {
+static inline uint8_t escapeCharacter(
+	char *esc, const char inp,
+	const char *const file_ansi,
+	const char *const char_ansi
+) {
 	switch (inp) {
-		case '\\'	: copy_and_return(esc, "\\\\");
-		case '\a'	: copy_and_return(esc, "\\a" );
-		case '\b'	: copy_and_return(esc, "\\b" );
-		case '\t'	: copy_and_return(esc, "\\t" );
-		case '\n'	: copy_and_return(esc, "\\n" );
-		case '\v'	: copy_and_return(esc, "\\v" );
-		case '\f'	: copy_and_return(esc, "\\f" );
-		case '\r'	: copy_and_return(esc, "\\r" );
-		case '\x1b'	: copy_and_return(esc, "\\e" );
-		default		: break;
+		case '\\' : copy_and_return("%c", '\\');
+		case '\a' : copy_and_return("%c", 'a' );
+		case '\b' : copy_and_return("%c", 'b' );
+		case '\t' : copy_and_return("%c", 't' );
+		case '\n' : copy_and_return("%c", 'n' );
+		case '\v' : copy_and_return("%c", 'v' );
+		case '\f' : copy_and_return("%c", 'f' );
+		case '\r' : copy_and_return("%c", 'r' );
+		case '\33': copy_and_return("%c", 'e' );
+		default	  : break;
 	}
 
-	if DO_OCT_ESC(inp) return sprintf(esc, "\\%hu"  , (uint8_t)inp);
-	if DO_HEX_ESC(inp) return sprintf(esc, "\\x%02X", (uint8_t)inp);
+	if DO_OCT_ESC(inp) copy_and_return("%hu"  , (uint8_t)inp);
+	if DO_HEX_ESC(inp) copy_and_return("x%02X", (uint8_t)inp);
 
 	*esc = inp;
 	return 1;
@@ -50,15 +50,26 @@ static inline bool escapeCharacter(char *esc, const char inp) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void escapeName(char *const output, const char *const input, const namlen_t inp_len, const Colour colour) {
-	assert(input != NULL && output != NULL);
-	(void)colour;
+char *escapeName(const char *const name, const namlen_t name_len, const Colour colour) {
+	// if the colour has a background, use the background escape instead
+	const char *const esc_ansi = colour.has_bg() ? ESC_CHAR_BG_ANSI	  : ESC_CHAR_FG_ANSI;
+	const Colour	esc_colour = colour.has_bg() ? ESC_CHAR_BG_COLOUR : ESC_CHAR_FG_COLOUR;
 
-	const char *inp_ptr; char *out_ptr;
+	const Colour save_colour = getActive();
+	setActive(esc_colour);
+	const char *const file_ansi = getcol_noset(colour);
+	setActive(save_colour);
 
-	for (inp_ptr = input, out_ptr = output; inp_ptr < input + inp_len; inp_ptr++) {
-		out_ptr += escapeCharacter(out_ptr, *inp_ptr);
+	// the exact size is temporary for now - it'll be determined dynamically later
+	char *const output = emalloc(name_len + 1024);
+	char *out_ptr = output;
+
+	for (const char *inp_ptr = name; *inp_ptr != '\0'; inp_ptr++) {
+		out_ptr += escapeCharacter(out_ptr, *inp_ptr, file_ansi, esc_ansi);
 	}
+
+	*out_ptr = '\0';
+	return output;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

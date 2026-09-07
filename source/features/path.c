@@ -6,6 +6,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "malloc.h"
 #include "debugging.h"
 #include "icons/icons.h"
 #include "output/output.h"
@@ -120,17 +121,19 @@ void print_name(const FileStat *const pFS) {
 	const char *const name_or_path = do_path ? pFS->path : pFS->name;
 	const namlen_t name_path_len = do_path ? getPathLen(pFS) : pFS->name_len;
 
-	char escaped_name[512];
-	escapeName(escaped_name, name_or_path, name_path_len, file_colour_esc[pFS->file_col]);
+	char *const escd_name = escapeName(name_or_path, name_path_len, file_colour_esc[pFS->file_col]);
 
 	printf("%s" "%s" "%s" "%s",
 		PRE_NAME_PAD,
 		getcol(file_colour_esc[pFS->file_col]),
-		escaped_name,
-		getcol(RESET_ALL)
+		escd_name,
+		IFCOLOUR(RESET)
 	);
+
+	setActive(RESET_ALL);
+	efree(escd_name);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// spell:ignoreRegexp /(?<!\w)-W(\w+)/g
+// spell:ignoreRegexp /(?<!\w)-W(\w+)|escd/g
