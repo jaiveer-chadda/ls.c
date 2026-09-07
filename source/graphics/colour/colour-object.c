@@ -65,7 +65,10 @@ void setActive(const Colour input) {
 
 // note: this function isn't threadsafe, but that should be fine I think, since its only really used for printing
 
-char *getcol(const Colour input_col) {
+#define getcol(input_col)		c__getcol(input_col, true)
+#define getcol_noset(input_col)	c__getcol(input_col, false)
+
+char *c__getcol(const Colour input_col, const bool set_active) {
 	// this is a nice and simple way to make sure that nothing's printed when colour output is turned off
 	if (!DO_COLOUR()) return "";
 
@@ -96,8 +99,8 @@ char *getcol(const Colour input_col) {
 
 	// UNDER/DUNDER will always overwrite each other,
 	//	so there's no point resetting one just to replace it with the other
-	if (has_under ) active.rem_style(G_DUNDER);
-	if (has_dunder) active.rem_style(G_UNDER );
+	if (set_active && has_under ) active.rem_style(G_DUNDER);
+	if (set_active && has_dunder) active.rem_style(G_UNDER );
 
 	// additionally, having both is also redundant, so, since DUNDER takes priority, remove UNDER from `colour`
 	if (has_under && has_dunder) colour.rem_style(G_UNDER);
@@ -109,7 +112,7 @@ char *getcol(const Colour input_col) {
 	// if we're gonna remove BOLD and DIM from `active`, then pretend that `active`
 	//	doesn't have one of them in the first place.
 	//	- this way we won't have to reset both of them, which causes extra chars to be printed
-	if (!do_add && // (when we're adding, we won't be removing anything, so this check is unnecessary)
+	if (!do_add && set_active && // (when we're adding, we won't be removing anything, so this check is unnecessary)
 		!(colour.has_style(G_BOLD)) && (active.has_style(G_BOLD)) && 
 		!(colour.has_style(G_DIM) ) && (active.has_style(G_DIM) )
 	) active.rem_style(G_BOLD);
@@ -135,13 +138,13 @@ char *getcol(const Colour input_col) {
 			// but only print the style if the previous style differs
 			if (col_has_st && !act_has_st) {
 				has_st = true;
-				active.add_style(style_i); // turn the style on
+				if (set_active) active.add_style(style_i); // turn the style on
 				APPEND_TO_STYLE(stylelookup(style_i, ON));
 
 			// however, if the style isn't set in `colour`, but is active, then we need to turn it off
 			} else if (!col_has_st && act_has_st && !do_add) { // that is, unless we're just adding
 				has_st = true;
-				active.rem_style(style_i); // turn the style off
+				if (set_active) active.rem_style(style_i); // turn the style off
 				APPEND_TO_STYLE(stylelookup(style_i, OFF));
 
 				// since the codes to reset bold & dim are identical,

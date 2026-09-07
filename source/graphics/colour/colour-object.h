@@ -94,8 +94,16 @@ typedef struct {
 
 /* —— Function Declarations ———————————————————————————————————————————————————————————————————————————————————————— */
 
+#ifndef bool
+#	define bool _Bool
+#endif
+
 void setActive(const Colour input);
-char *getcol(const Colour input_col);
+char *c__getcol(const Colour input_col, const bool set_active);
+
+#define getcol(input_col)		c__getcol(input_col, true)
+#define getcol_noset(input_col)	c__getcol(input_col, false)
+
 #define colprint(input_col) fputs(getcol((input_col)), stdout)
 
 /* —— Helper Macros ———————————————————————————————————————————————————————————————————————————————————————————————— */
