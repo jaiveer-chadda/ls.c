@@ -55,7 +55,7 @@ function -- () {
     ( prod  ) optimisation=3 ;;
   }
 
-  local -ra CFLAGS=( O$optimisation )
+  CFLAGS+=( O$optimisation )
 
   # ———————————————————————————————————————————————————— #
 
@@ -100,6 +100,11 @@ function -- () {
   local -ra FRAMEWORKS=( CoreFoundation )
 
   local -a SANITISE=( address undefined )
+  local -a ASAN_OPTS=(
+    print_legend=0
+    stack_trace_format=$'"  %n\t%f\t\t%S"'
+  )
+
   if [[ "$mode" == prod ]] SANITISE=()
 
   # ————————————————————————————————————————————————————————————————————————— #
@@ -139,7 +144,8 @@ function -- () {
   "$CC" "${(@)BUILD_ARGS}" \
     && {                   \
       (( run_cmd ))        \
-        && "${(@)CMD}"     \
+        && ASAN_OPTIONS="${(j.:.)ASAN_OPTS}" \
+          "${(@)CMD}"      \
         || true;           \
     }                      \
     && cp "$TARGET" "$HOME/bin/${TARGET##*/}"
@@ -148,4 +154,4 @@ function -- () {
 
 # ——————————————————————————————————————————————————————————————————————————— #
 
-# spell:ignoreRegExp /(?<!-)[-_]\w+|\w+(?=\|)/g
+# spell:ignoreRegExp /(?<!-)[-_]\w+|\w+(?=\|)|asan/gi
