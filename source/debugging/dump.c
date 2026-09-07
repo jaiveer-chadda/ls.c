@@ -1,7 +1,10 @@
 /// @file debugging/dump.c
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+
 #include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -74,19 +77,19 @@ void d__dump(const FileStat *const fs) {
 
 	err(V(FileStat) S"fs"E PTR, ptr(fs));
 	if (fs == NULL) { ERR(" "O  null); return; }
-	err(T     CHAR  "    "S"name  "E STR      , str(fs->name)     );
-	err(T" "V(icon_t)"    icon    "E LCR      , fs->icon          );
-	err(T" "V(suff_t)"    suffix  "E CHR      , fs->suffix        );
+	err(T     CHAR"   "  S"name    "E STR      , str(fs->name)     );
+	err(T" "V(icon_t)"     icon    "E LCR      , fs->icon          );
+	err(T" "V(suff_t)"     suffix  "E CHR      , fs->suffix        );
 	ERR(I);
-	err(T" "V(FileStat)   S"parent"E PTR      , ptr(fs->parent)   );
-	err(T" "V(ino_t)"     inum    "E NUM(%llu), fs->inum          );
-	err(T" "V(namlen_t)"  name_len"E NUM(%hd) , fs->name_len      );
-	err(T" "V(FileColour)"file_col"E NUM(%u)  , fs->file_col      );
+	err(T" "V(FileStat)  S"parent  "E PTR      , ptr(fs->parent)   );
+	err(T" "V(namlen_t)"   name_len"E NUM(%hd) , fs->name_len      );
+	err(T" "V(ino_t)"      inum    "E NUM(%llu), fs->inum          );
+	err(T" "V(FileColour)" file_col"E NUM(%u)  , fs->file_col      );
 	ERR(I);
-	err(T" "V(mode_t)"    mode    "E OCT(%06o), fs->mode          );
-	err(T" "V(modestr)"   mode_str"E STR      , str(fs->mode_str) );
-	err(T     BOOL  "     has_xat "E"%s"      , pbool(fs->has_xat));
-	err(T     BOOL  "     has_acl "E"%s"      , pbool(fs->has_acl));
+	err(T" "V(mode_t)"     mode    "E OCT(%06o), fs->mode          );
+	err(T" "V(modestr)"    mode_str"E STR      , str(fs->mode_str) );
+	err(T     BOOL  "      has_xat "E"%s"      , pbool(fs->has_xat));
+	err(T     BOOL  "      has_acl "E"%s"      , pbool(fs->has_acl));
 	ERR(I);
 
 	err(T STRUCT V(stat) S"s"E PTR, ptr(fsf));
