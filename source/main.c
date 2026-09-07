@@ -60,7 +60,7 @@ int main(const int argc, char *argv[]) {
 	// unfortunately, this has to be allocated on the heap, since wah wah, variable-size arrays are bad
 	//	boo hoo, and I want to be a good programmer, so I don't use them. bollocks >:(
 	/// An array of pointers to FileStat objects, each representing the inputted files/dirs.
-	FileStat **inputs = ecalloc(file_count, sizeof(FileStat*));
+	FileStat **const inputs = ecalloc(file_count, sizeof(FileStat*));
 
 	// iterate through each input, and get a pointer to the input's `FileStat` object to add to the array
 	for (int i = 0; i < file_count; i++) {
@@ -80,17 +80,23 @@ int main(const int argc, char *argv[]) {
 
 	/* —— Sort Files ————————————————————————————————————————————————————————————————————————————— */
 
-	for (int i = 0; i < file_count; i++) {
-		if (inputs[i]->f->child_count <= 1) continue;
+	if (MAX_DEPTH != 0) {
+		for (int i = 0; i < file_count; i++) {
+			if (!S_ISDIR(inputs[i]->mode)	||
+				DIRS_AS_FILES()				||
+				inputs[i]->f == NULL		||
+				inputs[i]->f->child_count < 2
+			) continue;
 
-		sortFiles(
-			(inputs[i]->f->children),
-			&inputs[i]->f->child_count
-		);
+			sortFiles(1,
+				(inputs[i]->f->children),
+				&inputs[i]->f->child_count
+			);
+		}
 	}
 
 	/// @todo implement `--sort-input`/`DO_SORT_INPUT`
-	/* if (DO_SORT_INPUTS()) */ sortFiles(*inputs, &file_count);
+	/* if (DO_SORT_INPUTS()) */ sortFiles(0, *inputs, &file_count);
 
 	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
 

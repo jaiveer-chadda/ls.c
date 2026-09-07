@@ -149,7 +149,7 @@ DEFINE_COMPARE_FUNCTION(time , s->st_mtime	) /** @todo make this work for other 
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void sortFiles(FileStat arr[], const int *const arr_count) {
+void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_count) {
 	/// The multiplier which will be applied to a sort if the `--reverse-sort` option is enabled.
 	REVERSE = DO_REVERSE_SORT() ? -1 : 1;
 
@@ -158,20 +158,39 @@ void sortFiles(FileStat arr[], const int *const arr_count) {
 
 	switch (SORT_BY()) {
 		case SB_DEFAULT	: /* sort by name by default*/
-		case SB_NAME	: SORT_FILES_BY(name ); return;
-		case SB_MODE	: SORT_FILES_BY(mode ); return;
-		case SB_SIZE	: SORT_FILES_BY(size ); return;
-		case SB_INODE	: SORT_FILES_BY(inode); return;
-		case SB_DEVNO	: SORT_FILES_BY(devno); return;
-		case SB_UID		: SORT_FILES_BY(uid	 ); return;
-		case SB_GID		: SORT_FILES_BY(gid	 ); return;
-		case SB_NLINK	: SORT_FILES_BY(nlink); return;
-		case SB_FLAGS	: SORT_FILES_BY(flags); return;
-		case SB_TIME	: SORT_FILES_BY(time ); return; // note: not fully implemented
+		case SB_NAME	: SORT_FILES_BY(name ); break;
+		case SB_MODE	: SORT_FILES_BY(mode ); break;
+		case SB_SIZE	: SORT_FILES_BY(size ); break;
+		case SB_INODE	: SORT_FILES_BY(inode); break;
+		case SB_DEVNO	: SORT_FILES_BY(devno); break;
+		case SB_UID		: SORT_FILES_BY(uid	 ); break;
+		case SB_GID		: SORT_FILES_BY(gid	 ); break;
+		case SB_NLINK	: SORT_FILES_BY(nlink); break;
+		case SB_FLAGS	: SORT_FILES_BY(flags); break;
+		case SB_TIME	: SORT_FILES_BY(time ); break; // note: not fully implemented
 		case SB_NONE	: ;
 	}
 
 	#pragma clang diagnostic pop
+
+	// this is a special case, since the decision to sort inputs is taken seperately to whether to sort children
+	if (depth == 0) return;
+	if (depth + 1 > MAX_DEPTH) return;
+
+	for (int i = 0; i < *arr_count; i++) {
+		if (!S_ISDIR(arr[i].mode)	||
+			DIRS_AS_FILES()			||
+			arr[i].f == NULL		||
+			arr[i].f->child_count < 2
+		) continue;
+
+		puts("reached");
+
+		sortFiles(depth + 1,
+			(arr[i].f->children),
+			&arr[i].f->child_count
+		);
+	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
