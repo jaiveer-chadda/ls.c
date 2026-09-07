@@ -240,6 +240,8 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 		processDir(pFS_child, depth + 1);
 	}
 
+	assert(pFS_dir->name_len != 0);
+
 	closedir(p_dir);
 	return pFS_dir;
 }
@@ -263,9 +265,9 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
  *	I don't have when given just the input.
  *
  * @param path[in] A string containing the path to the input file.
- * @return `FileStat*`: A pointer to the `FileStat` object generated from the input file. `NULL` on failure.
+ * @return `FileStat`: The `FileStat` object generated from the input file. An empty object on failure.
  */
-FileStat *processInput(char *const path) {
+FileStat processInput(char *const path) {
 	struct stat statobj = {0};
 
 	/* —— `stat` input file ——————————————————————————————————————— */
@@ -279,20 +281,14 @@ FileStat *processInput(char *const path) {
 
 		printError(path);
 		// set the pointer to this input to NULL, so we know not to process/print it later
-		return NULL;
+		return (FileStat){0};
 	}
 
-	/* —— alloc FileStat for Input ———————————————————————————————— */
+	/* —— assign basic info to input —————————————————————————————— */
 	// since we successfully got the `stat` information, we can start building the `FileStat` object
 
-	// allocate memory for this file's `FileStat` object, and zero the memory
-	// and add its pointer to the input array
-	FileStat *const pfilestat = ecalloc(1, sizeof(FileStat));
-
-	/* —— assign basic info to input —————————————————————————————— */
-
-	*pfilestat = (FileStat){
-		// since `path` comes from `file_paths`, which comes from `argv`, the memory containing `pfilestat->name`
+	FileStat file = (FileStat){
+		// since `path` comes from `file_paths`, which comes from `argv`, the memory containing `file->name`
 		//	doesn't need to be allocated, since pointers to `argv` exist through the lifetime of the program
 		.name = path,
 		// we don't know the name's length, so set it to -1 for now, and we can calculate it later if needed
@@ -304,15 +300,16 @@ FileStat *processInput(char *const path) {
 		.f = ecalloc(1, sizeof(FileStatFields)),
 	};
 
-	// copy `statobj` from the stack into the newly-allocated heap memory at `FileStat::s pfilestat->s`
-	memcpy(pfilestat->s, &statobj, sizeof(struct stat));
+	// copy `statobj` from the stack into the newly-allocated heap memory at `FileStat::s file->s`
+	memcpy(file.s, &statobj, sizeof(struct stat));
 
 	/* —— Check if Input is Dir ——————————————————————————————————— */
 
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
 	//	then there's nothing else to do at this stage - send it off for parsing
 	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES()) {
-		return pfilestat;
+		assert(file.name_len != 0);
+		return file;
 	}
 
 	/* —— If Input is Dir ————————————————————————————————————————— */
@@ -320,8 +317,8 @@ FileStat *processInput(char *const path) {
 
 	// bite the bullet and use `strlen` to calculate the dir's length now,
 	//	bc we're going to need it to get the path to the children in a moment
-	pfilestat->name_len = (namlen_t)strlen(path);
-	return processDir(pfilestat, 1);
+	file.name_len = (namlen_t)strlen(path);
+	return *processDir(&file, 1);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
