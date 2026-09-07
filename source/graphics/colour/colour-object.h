@@ -98,11 +98,14 @@ typedef struct {
 #	define bool _Bool
 #endif
 
+Colour getActive(void);
 void setActive(const Colour input);
-char *c__getcol(const Colour input_col, const bool set_active);
+char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const collen);
 
-#define getcol(input_col)		c__getcol(input_col, true)
-#define getcol_noset(input_col)	c__getcol(input_col, false)
+#define getcol(input_col)					c__getcol(input_col, true , NULL	)
+#define getcol_noset(input_col)				c__getcol(input_col, false, NULL	)
+#define getcollen(input_col, p_collen)		c__getcol(input_col, true , p_collen)
+#define getcol_ns_len(input_col, p_collen)	c__getcol(input_col, false, p_collen)
 
 #define colprint(input_col) fputs(getcol((input_col)), stdout)
 

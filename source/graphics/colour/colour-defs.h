@@ -139,6 +139,7 @@
 		( COLOUR_24_MIN <= colour.fgbg && colour.fgbg <= COLOUR_24_MAX))	\
 	) {																		\
 		colour.fgbg = abs(colour.fgbg) % COLOUR_8_MAX;						\
+		RETURN_LEN(0);														\
 		return "";															\
 	}																		\
 } while(0)

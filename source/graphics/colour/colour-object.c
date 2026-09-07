@@ -40,7 +40,7 @@ static Colour active = RESET_ALL;
 static char output_buffer[OUTPUT_BUFSIZE] = CSI;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ── ── `setActive()` ── ────────────────────────────────────────────────────────────────────────────────────────── */
+/* ── ── `set/getActive()` ── ────────────────────────────────────────────────────────────────────────────────────── */
 
 /**
  * @fn setActive
@@ -54,20 +54,26 @@ static char output_buffer[OUTPUT_BUFSIZE] = CSI;
  */
 void setActive(const Colour input) {
 	if (!DO_COLOUR()) return;
-
 	active.fg	 = input.fg,
 	active.bg	 = input.bg,
 	active.style = input.style;
 }
+
+Colour getActive(void) { return active; }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── `getcol()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 // note: this function isn't threadsafe, but that should be fine I think, since its only really used for printing
 
-char *c__getcol(const Colour input_col, const bool set_active) {
+#define RETURN_LEN(len) do { if (collen != NULL) (*collen = ((uint8_t)(len))); } while (0)
+
+char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const collen) {
 	// this is a nice and simple way to make sure that nothing's printed when colour output is turned off
-	if (!DO_COLOUR()) return "";
+	if (!DO_COLOUR()) {
+		RETURN_LEN(0);
+		return "";
+	}
 
 	/// A working copy of the inputted colour object, which we can mutate if needed.
 	Colour colour = input_col;
@@ -87,7 +93,10 @@ char *c__getcol(const Colour input_col, const bool set_active) {
 	if (colour.fg	 == active.fg &&
 		colour.bg	 == active.bg &&
 		colour.style == active.style
-	) return "";
+	) {
+		RETURN_LEN(0);
+		return "";
+	}
 
 	/* ── Process Colour::style ───────────────────────────────────────── */
 
@@ -165,13 +174,19 @@ char *c__getcol(const Colour input_col, const bool set_active) {
 
 	// if everything is set to 0, then there's no point individually
 	//	resetting everything, so we can just print `\e[m` instead.
-	if (active.style + active.fg + active.bg == 0) return CSI END;
+	if (active.style + active.fg + active.bg == 0) {
+		RETURN_LEN(sizeof(CSI END) - 1);
+		return CSI END;
+	}
 
 	/* ── Check for Nothing-ness ──────────────────────────────────────── */
 
 	// if we're adding to the colours/styles, but there's nothing to add,
 	//	then don't output anything
-	if (do_add && !(has_st || has_fg || has_bg)) return "";
+	if (do_add && !(has_st || has_fg || has_bg)) {
+		RETURN_LEN(0);
+		return "";
+	}
 
 	/* ── Clean Up Semicolons ─────────────────────────────────────────── */
 
@@ -185,11 +200,17 @@ char *c__getcol(const Colour input_col, const bool set_active) {
 
 	/* ── Set Buffer & Return ─────────────────────────────────────────── */
 
-	if (snprintf(output_buffer, OUTPUT_BUFSIZE,
+	const int output_len = snprintf(output_buffer, OUTPUT_BUFSIZE,
 		ANSI("%s%s" "%s" "%s"),
 		style, fg, do_fg_sc ? ";" : "", bg
-	) >= OUTPUT_BUFSIZE) return "";
+	);
 
+	if (output_len >= OUTPUT_BUFSIZE) {
+		RETURN_LEN(0);
+		return "";
+	}
+
+	RETURN_LEN(output_len);
 	return output_buffer;
 }
 
