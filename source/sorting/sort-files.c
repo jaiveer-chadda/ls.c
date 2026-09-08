@@ -184,8 +184,6 @@ void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_co
 			arr[i].f->child_count < 2
 		) continue;
 
-		puts("reached");
-
 		sortFiles(depth + 1,
 			(arr[i].f->children),
 			&arr[i].f->child_count

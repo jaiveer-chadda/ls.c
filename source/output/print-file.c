@@ -13,57 +13,39 @@
 
 static inline void print_suff(const FileStat *const pFS);
 static inline void printFields(const FileStat *const pFS);
-
-#define stopRecursing(pfilestat, depth_) \
-	(!S_ISDIR((pfilestat)->mode) || DIRS_AS_FILES() || (depth_) + 1 > MAX_DEPTH)
+static inline bool stopRecursing(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines);
 
 /* —— printFile() —————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_last, const lines_t lines) {
-	// if an file's `FileStat` pointer points to `NULL`, we weren't able to be `stat` it in the first place
-	if (pFS == NULL) return;
-
+	// if we weren't able to `stat` the file in the first place, then there'll be nothing to print
+	if (pFS->name_len == 0) return;
+	// set up the array that'll be used to track which tree branches need to be printed
 	lines_t new_lines = {0};
 
 	/* —— print fields ———————————————————————————————————————————————————————————————————————————————— */
 
-	// make sure we're not starting the line with any colour leaking
-	colprint(RESET_ALL);
+	printFields(pFS); // print all "feature" fields (i.e. fields which are defined in `features.h`)
 
-	// print all of the main feature fields
-	printFields(pFS);
-
-	// after all the fields, print the tree branches, then the file's icon, name, and suffix
+	// after the fields, print the tree stucture
 	print_tree(new_lines, lines, depth, is_last);
-	print_icon(pFS);
-	print_name(pFS);
-	print_suff(pFS);
+	// then print the file's icon, name, and suffix
+	print_icon(pFS); print_name(pFS); print_suff(pFS);
 
 	/// @todo print targets of links
 	/// @todo print info about mount devices
 
-	// finally, end this entry's output by printing a newline
-	putchar('\n');
-
-	/* —— recursion checking —————————————————————————————————————————————————————————————————————————— */
-
-	assert(pFS->f == NULL ? pFS->err_no != 0 : true);  // if `pFS->f` is NULL, errno should always be set
-	assert(depth + 1 < RECURSION_LIMIT);  // there shouldn't be a way to go over the recursion limit
-
-	// catch trying to print a file which raised an error while parsing/processing it
-	if (fileError(pFS, depth, new_lines)) return;
-
-	// if this isn't a directory (or we're not treating it as one), or we've reached the recursion limit, then return
-	if (stopRecursing(pFS, depth)) return;
-
-	// catch trying to recurse into an empty directory
-	if (dirEmpty(pFS, depth, new_lines)) return;
+	putchar('\n'); // finally, end this entry's output by printing a newline
 
 	/* —— recurse ————————————————————————————————————————————————————————————————————————————————————— */
 
-	// if we made it through the checks, then iterate through this dir's children, and recursively print them
-	for (int i = 0; i < pFS->f->child_count; i++) {
-		printFile(&pFS->f->children[i], depth + 1, i == pFS->f->child_count - 1, new_lines);
+	// if there's no reason we shouldn't recurse
+	if (!stopRecursing(pFS, depth, new_lines)) {
+		// then iterate through this directory's children, and recursively print them
+		for (int i = 0; i < pFS->f->child_count; i++) {
+			const bool is_last_child = (i == pFS->f->child_count - 1);
+			printFile(&pFS->f->children[i], depth + 1, is_last_child, new_lines);
+		}
 	}
 }
 
@@ -77,18 +59,13 @@ static inline void print_suff(const FileStat *const pFS) {
 
 /* —— printFields() ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// note: to use the `print_field` macro, a function must have the following signature:
-//	`void print_[field_name](const FileStat *const pFS)`
-
 // #define print_field(field)  if (do_##field()) print_##field(pFS)
-/// Note: this version of the `print_field` macro is temporary - original version above.
 #define print_field(field) do { if (do_##field()) print_##field(pFS); colprint(RESET_ALL); } while (0)
 
-#define print_time(type) \
-	if (do_time_t(type)) { \
-		if (do_time		()) print_time_raw(pFS, (type)); \
-		if (do_time_str	()) print_time_str(pFS, (type)); \
-	}
+#define print_time(type) if (do_time_t(type)) { \
+	if (do_time	   ()) print_time_raw(pFS, (type)); \
+	if (do_time_str()) print_time_str(pFS, (type)); \
+}
 
 /* ——————————————————————————————————————————————————— */
 
@@ -103,9 +80,21 @@ static inline void printFields(const FileStat *const pFS) {
 
 	print_time(A_TIME); print_time(M_TIME);
 	print_time(C_TIME); print_time(B_TIME);
+}
 
-	// then:
-	//	tree, icon, name, link, mount
+/* —— stopRecursing() ————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline bool stopRecursing(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines) {
+	assert(pFS->f == NULL ? pFS->err_no != 0 : true);  // if `pFS->f` is NULL, errno should always be set
+	assert(depth + 1 < RECURSION_LIMIT);  // there shouldn't be a way to ever go over the maximum recursion limit
+
+	return ( // stop recursing if ...
+		fileError(pFS, depth, new_lines)	// the file raised an error while parsing/processing,
+		|| !S_ISDIR(pFS->mode)				// the file isn't a directory,
+		|| DIRS_AS_FILES()					//	(or it is a directory, but we're not treating it as one)
+		|| (depth) + 1 > MAX_DEPTH			// we've reached the user's chosen recursion level,
+		|| dirEmpty(pFS, depth, new_lines)	// we're trying to recurse into an empty directory
+	);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
