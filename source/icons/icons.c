@@ -79,11 +79,12 @@ icon_t getIcon(const char *filename, const bool is_dir) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void printIcon(const icon_t icon, const FileColour file_col) {
-	if (icon == L'\0') { putchar(' '); return; }
+void print_icon(const FileStat *const pFS) {
+	/// @todo implement the `DO_ICON` option
+	// if (!DO_ICON()) return;
 
 	if (DO_COLOUR()) {
-		Colour colour = file_colour_esc[file_col];
+		Colour colour = file_colour_esc[pFS->file_col];
 
 		// if the colour has a background, then set its forground to the background colour
 		if (colour.has_bg()) {
@@ -94,7 +95,10 @@ void printIcon(const icon_t icon, const FileColour file_col) {
 		colprint(colour);
 	}
 
-	PRINTF_CHECK_ERROR("%lc", icon);
+	PRINTF_CHECK_ERROR("%s" "%lc",
+		PRE_ICON_PAD,
+		(pFS->icon == NO_ICON) ? IC_ERROR : pFS->icon
+	);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

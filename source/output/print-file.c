@@ -5,10 +5,17 @@
 #include <assert.h>
 
 #include "output.h"
+#include "icons/icons.h"
 #include "options/options.h"
 #include "features/features.h"
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline void print_suff(const FileStat *const pFS);
 static inline void printFields(const FileStat *const pFS);
+
+#define stopRecursing(pfilestat, depth_) \
+	(!S_ISDIR((pfilestat)->mode) || DIRS_AS_FILES() || (depth_) + 1 > MAX_DEPTH)
 
 /* —— printFile() —————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -26,16 +33,19 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	// print all of the main feature fields
 	printFields(pFS);
 
-	// print the tree branches before the name
+	// after all the fields, print the tree branches, then the file's icon, name, and suffix
 	print_tree(new_lines, lines, depth, is_last);
-	// print the file's icon and name
+	print_icon(pFS);
 	print_name(pFS);
+	print_suff(pFS);
 
-	// finally, print the file's suffix and end the file's output by outputting a newline
-	if (do_suffix() && pFS->suffix != '\0') putchar(pFS->suffix);
+	/// @todo print targets of links
+	/// @todo print info about mount devices
+
+	// finally, end this entry's output by printing a newline
 	putchar('\n');
 
-	/* —— error checking —————————————————————————————————————————————————————————————————————————————— */
+	/* —— recursion checking —————————————————————————————————————————————————————————————————————————— */
 
 	assert(pFS->f == NULL ? pFS->err_no != 0 : true);  // if `pFS->f` is NULL, errno should always be set
 	assert(depth + 1 < RECURSION_LIMIT);  // there shouldn't be a way to go over the recursion limit
@@ -44,7 +54,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	if (fileError(pFS, depth, new_lines)) return;
 
 	// if this isn't a directory (or we're not treating it as one), or we've reached the recursion limit, then return
-	if (!S_ISDIR(pFS->mode) || DIRS_AS_FILES() || depth + 1 > MAX_DEPTH) return;
+	if (stopRecursing(pFS, depth)) return;
 
 	// catch trying to recurse into an empty directory
 	if (dirEmpty(pFS, depth, new_lines)) return;
@@ -55,6 +65,14 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	for (int i = 0; i < pFS->f->child_count; i++) {
 		printFile(&pFS->f->children[i], depth + 1, i == pFS->f->child_count - 1, new_lines);
 	}
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— print_suff() ————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline void print_suff(const FileStat *const pFS) {
+	if (!do_suffix() || pFS->suffix == '\0') return;
+	printf("%s%c", getcol(RESET_ALL), pFS->suffix);
 }
 
 /* —— printFields() ———————————————————————————————————————————————————————————————————————————————————————————————— */

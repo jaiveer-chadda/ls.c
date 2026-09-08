@@ -113,9 +113,6 @@ int getDirPath(path_t out_path, const path_t path) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_name(const FileStat *const pFS) {
-	fputs(PRE_ICON_PAD, stdout);
-	printIcon(pFS->icon, pFS->file_col);
-
 	const bool do_path = DO_PATH() && pFS->path != NULL;
 
 	const char *const name_or_path = do_path ? pFS->path : pFS->name;
