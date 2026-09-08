@@ -85,7 +85,7 @@ function -- () {
   if (( do_clear )) CMD+=( --clear )
   CMD+=( "$@" )
 
-  if (( do_time  )) CMD=( zsh -c "time ${(@q)CMD}" )
+  if (( do_time )) CMD=( zsh -c "time ${(@q)CMD}" )
 
   # ———————————————————————————————————————————————————— #
 
@@ -124,6 +124,11 @@ function -- () {
 
   # always add the target file
   BUILD_ARGS+=( --output "$TARGET" )
+
+  # ———————————————————————————————————————————————————— #
+
+  if [[ "$mode" == debug ]] && (( run_cmd || print_cmd )) \
+    echo "${(r:COLUMNS::─:)}"
 
   # ———————————————————————————————————————————————————— #
 
