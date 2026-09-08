@@ -83,7 +83,7 @@
 #define HL_READ			toColour( .style = 0		, .fg = G_BRT_GREEN				) // \e[92m
 #define HL_W_USRGRP		toColour( .style = 0		, .fg = G_BRT_YELLOW			) // \e[93m
 #define HL_W_OTHER		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_GREEN	) // \e[42m
-#define HL_X_REG		toColour( .style = 0		, .fg = G_RED					) // \e[31m
+#define HL_X_REG		toColour( .style = G_BOLD	, .fg = G_RED					) // \e[31m
 #define HL_X_NREG		toColour( .style = 0		, .fg = G_BRT_RED				) // \e[91m
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -208,7 +208,7 @@
 #define ACL_CHAR				'+'
 
 #define READ_BIT_CHAR			'r'
-#define WRITE_BIT_CHAR			'w'
+#define WRIT_BIT_CHAR			'w'
 #define EXEC_BIT_CHAR			'x'
 
 #define SUGID_X_BIT_CHAR		's'
@@ -315,8 +315,8 @@
 
 /* —— Permission Colours ———————————————————————————————————————————————————— */
 
-#define XATTR_COLOUR  ";38;5;147"
-#define ACL_COLOUR	  ";38;5;39"
+#define XATTR_COLOUR  toColour( .fg = 147	)
+#define ACL_COLOUR	  toColour( .fg = 39	)
 
 #define PERM_COLOUR_TABLE \
 	X(PC_NONE		, PUNCT			) /* \e[90m  */ \

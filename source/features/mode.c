@@ -19,8 +19,6 @@
 #define GRP_MASK S_IRWXG	/// A mask to get the group octal permissions.
 #define OTH_MASK S_IRWXO	/// A mask to get the other octal permissions.
 
-#define DO_NOTHING 0
-
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
 #define SET_EXT_BIT(str, chr) /* exec == lowercase, non-exec == uppercase */ \
@@ -34,9 +32,9 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void getPermStr(char *perm_str, const mode_t oct_digit) {
-	perm_str[0] = oct_digit & 04 ? READ_BIT_CHAR  : NO_PERM_CHAR;
-	perm_str[1] = oct_digit & 02 ? WRITE_BIT_CHAR : NO_PERM_CHAR;
-	perm_str[2] = oct_digit & 01 ? EXEC_BIT_CHAR  : NO_PERM_CHAR;
+	perm_str[0] = oct_digit & 04 ? READ_BIT_CHAR : NO_PERM_CHAR;
+	perm_str[1] = oct_digit & 02 ? WRIT_BIT_CHAR : NO_PERM_CHAR;
+	perm_str[2] = oct_digit & 01 ? EXEC_BIT_CHAR : NO_PERM_CHAR;
 	perm_str[3] = '\0';
 }
 
@@ -111,16 +109,111 @@ void print_mode(const FileStat *const pFS) {
 	printf("%0*o%ls", getLen(FI_mode), pFS->mode, FIELD_PAD);
 }
 
-void print_mode_str(const FileStat *const pFS) {
-	if (!DO_COLOUR() /* for debugging */ || true /**/) {
-		char xa_buf[3] = {0};
-		uint8_t xa_len = 0;
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline FileColour getTypeColour(const char type_char) {
+	switch (type_char) {
+		case REGULAR_CHAR	: return FC_REGULAR	;
+		case DIR_CHAR		: return FC_DIRECT	;
+		case SYMLINK_CHAR	: return FC_SYMLINK	;
+		case PIPE_CHAR		: return FC_PIPE	;
+		case SOCKET_CHAR	: return FC_SOCKET	;
+		case CHRDEV_CHAR	: return FC_CHR_DEV	;
+		case BLKDEV_CHAR	: return FC_BLK_DEV	;
+		case WHITEOUT_CHAR	: return FC_WHITEOUT;
+		default				: return FC_REGULAR	;
+	}
+}
+
+#define IS_REG() (mode_str[0] == REGULAR_CHAR)	/// Whether the file is a regular file or not.
+#define IS_UID() (idx == 3) /// `3` is the index of the SUID bit in the mode string.
+#define IS_OWR() (idx == 8) /// `8` is the index of the `other-writable` bit in the mode string.
+
+static inline char getPermColour(const char *mode_str, const int idx) {
+	switch (mode_str[idx]) {
+		case NO_PERM_CHAR: return PC_NONE; // this permission bit isn't set
+
+		case READ_BIT_CHAR: return PC_READ; // any of the 3 `read` bits
+		case WRIT_BIT_CHAR: return IS_OWR() ? PC_W_OTHER : PC_W_USRGRP; // make the `OW` bit a distinct colour
+		case EXEC_BIT_CHAR: return IS_REG() ? PC_X_REG	 : PC_X_NREG;
+		// colour the UID and GID bits based on whether they're executable or not
+		//	`IS_UID()` determines if we're currently looking at the usr or group bit
+		case SUGID_X_BIT_CHAR: return IS_UID() ? PC_SUID_X : PC_SGID_X;
+		case SUGID_N_BIT_CHAR: return IS_UID() ? PC_SUID_N : PC_SGID_N;
+
+		// colour the sticky bit based on whether the files are executables or not
+		case STICKY_X_BIT_CHAR: return PC_STICKY_X;
+		case STICKY_N_BIT_CHAR: return PC_STICKY_N;
+	}
+
+	return PC_NONE;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void print_mode_str(const FileStat *const pFS) {
+	char xa_buf[32] = {0};
+	uint8_t xa_len = 0;
+
+	if (!DO_COLOUR()) {
 		if (pFS->has_xat) xa_buf[xa_len++] = XATTR_CHAR;
 		if (pFS->has_acl) xa_buf[xa_len	 ] = ACL_CHAR;
 
 		printf("%s" "%-*s" "%ls", pFS->mode_str, getLen(FI_xat_acl), xa_buf, FIELD_PAD);
+		return;
 	}
+
+	char output[256] = {0};
+	char *out_ptr = output;
+	const char *colour;
+	uint8_t col_len = 0;
+
+	colour = getcollen(file_colour_esc[getTypeColour(pFS->mode_str[0])], &col_len);
+	memcpy(out_ptr, colour, col_len);
+	out_ptr += col_len;
+
+	*out_ptr++ = pFS->mode_str[0];
+
+	PermColour last_esc, esc = PC_COUNT;
+
+	for (int i = 1; i < 1 + (3 * 3); i++) {
+		last_esc = esc;
+		esc = getPermColour(pFS->mode_str, i);
+
+		if (esc != last_esc) {
+			colour = getcollen(perm_colour_esc[esc], &col_len);
+			memcpy(out_ptr, colour, col_len);
+			out_ptr += col_len;
+		}
+
+		*out_ptr++ = pFS->mode_str[i];
+	}
+
+	const int pure_xa_len = pFS->has_xat + pFS->has_acl;
+	const bool do_reset = pure_xa_len == 0 && perm_colour_esc[esc].has_bg();
+
+	if (pFS->has_xat) {
+		colour = getcollen(XATTR_COLOUR, &col_len);
+		memcpy(&xa_buf[xa_len], colour, col_len);
+		xa_len += col_len;
+
+		xa_buf[xa_len++] = XATTR_CHAR;
+	}
+
+	if (pFS->has_acl) {
+		colour = getcollen(ACL_COLOUR, &col_len);
+		memcpy(&xa_buf[xa_len], colour, col_len);
+		xa_len += col_len;
+
+		xa_buf[xa_len++] = ACL_CHAR;
+	}
+
+	printf("%s" "%s%*s" "%s" "%ls",
+		output,
+		xa_buf, getLen(FI_xat_acl) - pure_xa_len, "", 
+		do_reset ? getcol(RESET_ALL) : "",
+		FIELD_PAD
+	);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
