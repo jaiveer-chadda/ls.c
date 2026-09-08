@@ -121,17 +121,7 @@ void print_name(const FileStat *const pFS) {
 	const char *const name_or_path = do_path ? pFS->path : pFS->name;
 	const namlen_t name_path_len = do_path ? getPathLen(pFS) : pFS->name_len;
 
-	char *const escd_name = escapeName(name_or_path, name_path_len, file_colour_esc[pFS->file_col]);
-
-	printf("%s" "%s" "%s" "%s",
-		PRE_NAME_PAD,
-		getcol(file_colour_esc[pFS->file_col]),
-		escd_name,
-		IFCOLOUR(RESET)
-	);
-
-	setActive(RESET_ALL);
-	efree(escd_name);
+	printEscapedName(name_or_path, name_path_len, file_colour_esc[pFS->file_col]);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

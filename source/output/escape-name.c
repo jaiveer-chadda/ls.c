@@ -1,6 +1,7 @@
 /// @file output/escape-name.c
 
 #include <stdio.h>
+#include <string.h>
 
 #include "malloc.h"
 #include "options/options.h"
@@ -50,26 +51,35 @@ static inline uint8_t escapeCharacter(
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-char *escapeName(const char *const name, const namlen_t name_len, const Colour colour) {
+void printEscapedName(const char *const name, const namlen_t name_len, const Colour colour) {
 	// if the colour has a background, use the background escape instead
 	const char *const esc_ansi = colour.has_bg() ? ESC_CHAR_BG_ANSI	  : ESC_CHAR_FG_ANSI;
 	const Colour	esc_colour = colour.has_bg() ? ESC_CHAR_BG_COLOUR : ESC_CHAR_FG_COLOUR;
 
 	const Colour save_colour = getActive();
 	setActive(esc_colour);
-	const char *const file_ansi = getcol_noset(colour);
+
+	uint8_t file_ansi_len = 0;
+	const char *const file_ansi = getcol_ns_len(colour, &file_ansi_len);
 	setActive(save_colour);
 
 	// the exact size is temporary for now - it'll be determined dynamically later
 	char *const output = emalloc(name_len + 1024);
 	char *out_ptr = output;
 
+	memcpy(out_ptr, file_ansi, file_ansi_len);
+	out_ptr += file_ansi_len;
+
 	for (const char *inp_ptr = name; *inp_ptr != '\0'; inp_ptr++) {
 		out_ptr += escapeCharacter(out_ptr, *inp_ptr, file_ansi, esc_ansi);
 	}
 
-	*out_ptr = '\0';
-	return output;
+	if (DO_COLOUR()) memcpy(out_ptr, RESET, sizeof(RESET));
+
+	printf("%s%s", PRE_NAME_PAD, output);
+
+	setActive(RESET_ALL);
+	efree(output);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
