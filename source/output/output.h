@@ -12,7 +12,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printHeaders(void);
-void printEscdName(const char *const name, const namlen_t name_len, const Colour colour);
+void printEscdName(const char *const name, const Colour colour);
 
 void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_last, const lines_t lines);
 void print_tree(lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last);
