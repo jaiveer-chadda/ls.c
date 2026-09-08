@@ -61,6 +61,13 @@ void setActive(const Colour input) {
 
 Colour getActive(void) { return active; }
 
+bool areEqual(const Colour c1, const Colour c2) {
+	return
+		c1.fg	 == c2.fg &&
+		c1.bg	 == c2.bg &&
+		c1.style == c2.style;
+}
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── `getcol()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 

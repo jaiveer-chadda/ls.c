@@ -100,6 +100,8 @@ typedef struct {
 
 Colour getActive(void);
 void setActive(const Colour input);
+bool areEqual(const Colour c1, const Colour c2);
+
 char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const collen);
 
 #define getcol(input_col)					c__getcol(input_col, true , NULL	)

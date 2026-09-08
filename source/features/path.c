@@ -121,7 +121,7 @@ void print_name(const FileStat *const pFS) {
 	const char *const name_or_path = do_path ? pFS->path : pFS->name;
 	const namlen_t name_path_len = do_path ? getPathLen(pFS) : pFS->name_len;
 
-	printEscapedName(name_or_path, name_path_len, file_colour_esc[pFS->file_col]);
+	printEscdName(name_or_path, name_path_len, file_colour_esc[pFS->file_col]);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

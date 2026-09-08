@@ -51,7 +51,7 @@ static inline uint8_t escapeCharacter(
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void printEscapedName(const char *const name, const namlen_t name_len, const Colour colour) {
+void printEscdName(const char *const name, const namlen_t name_len, const Colour colour) {
 	// if the colour has a background, use the background escape instead
 	const char *const esc_ansi = colour.has_bg() ? ESC_CHAR_BG_ANSI	  : ESC_CHAR_FG_ANSI;
 	const Colour	esc_colour = colour.has_bg() ? ESC_CHAR_BG_COLOUR : ESC_CHAR_FG_COLOUR;
