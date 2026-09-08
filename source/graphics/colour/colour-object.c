@@ -87,12 +87,14 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	/* ── Bounds Checking ─────────────────────────────────────────────── */
 
-	// check that `colour.style` is <= STYLE_T_MAX
-	STYLE_BOUNDS_CHECK();
+	#ifdef DEBUG_MODE
+		// check that `colour.style` is <= STYLE_T_MAX
+		STYLE_BOUNDS_CHECK();
 
-	// check that fg and bg are between `COLOUR_T_MIN` and `COLOUR_T_MAX`
-	FGBG_BOUNDS_CHECK(fg);
-	FGBG_BOUNDS_CHECK(bg);
+		// check that fg and bg are between `COLOUR_T_MIN` and `COLOUR_T_MAX`
+		FGBG_BOUNDS_CHECK(fg);
+		FGBG_BOUNDS_CHECK(bg);
+	#endif
 
 	/* ── Check Identical Colours ─────────────────────────────────────── */
 
