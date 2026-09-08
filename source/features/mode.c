@@ -1,8 +1,6 @@
 /// @file features/mode/mode.c
 
 #include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/acl.h>
 #include <sys/xattr.h>
@@ -99,7 +97,7 @@ bool checkACL(const path_t path) {
 }
 
 bool checkXattr(const path_t path) {
-	return listxattr(path, NULL, 0, XATTR_NOFOLLOW) > 0;
+	return listxattr(path, NULL, 0, XATTR_NOFOLLOW | XATTR_NOFOLLOW_ANY) > 0;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -140,7 +138,6 @@ static inline char getPermColour(const char *mode_str, const int idx) {
 		//	`IS_UID()` determines if we're currently looking at the usr or group bit
 		case SUGID_X_BIT_CHAR: return IS_UID() ? PC_SUID_X : PC_SGID_X;
 		case SUGID_N_BIT_CHAR: return IS_UID() ? PC_SUID_N : PC_SGID_N;
-
 		// colour the sticky bit based on whether the files are executables or not
 		case STICKY_X_BIT_CHAR: return PC_STICKY_X;
 		case STICKY_N_BIT_CHAR: return PC_STICKY_N;
@@ -151,65 +148,66 @@ static inline char getPermColour(const char *mode_str, const int idx) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define ADD_COLOUR(src, dst_ptr) do {		\
+	colour = getcollen((src), &col_len);	\
+	memcpy((dst_ptr), colour, col_len);		\
+	(dst_ptr) += col_len;					\
+} while (0)
+
+/* ————————————————————————————————————————————————— */
+
 void print_mode_str(const FileStat *const pFS) {
 	char xa_buf[32] = {0};
-	uint8_t xa_len = 0;
+	char *xab_ptr = xa_buf;
 
 	if (!DO_COLOUR()) {
-		if (pFS->has_xat) xa_buf[xa_len++] = XATTR_CHAR;
-		if (pFS->has_acl) xa_buf[xa_len	 ] = ACL_CHAR;
+		// fill the buffer with the xat/acl chars, and keep track of the length
+		if (pFS->has_xat) *xab_ptr++ = XATTR_CHAR;
+		if (pFS->has_acl) *xab_ptr++ = ACL_CHAR;
 
 		printf("%s" "%-*s" "%ls", pFS->mode_str, getLen(FI_xat_acl), xa_buf, FIELD_PAD);
 		return;
 	}
 
+	/* ————————————————————————————————————————————————— */
+
 	char output[256] = {0};
 	char *out_ptr = output;
+
 	const char *colour;
 	uint8_t col_len = 0;
 
-	colour = getcollen(file_colour_esc[getTypeColour(pFS->mode_str[0])], &col_len);
-	memcpy(out_ptr, colour, col_len);
-	out_ptr += col_len;
-
+	// firstly, add the type's colour & character to the output string
+	ADD_COLOUR(file_colour_esc[getTypeColour(pFS->mode_str[0])], out_ptr);
 	*out_ptr++ = pFS->mode_str[0];
 
-	PermColour last_esc, esc = PC_COUNT;
+	/* ————————————————————————————————————————————————— */
 
+	// iterate through the permissions portion of the string, and add a colour & char for each of those
+	PermColour last_esc = PC_COUNT, esc;
 	for (int i = 1; i < 1 + (3 * 3); i++) {
-		last_esc = esc;
+		// get this char's colour
 		esc = getPermColour(pFS->mode_str, i);
-
-		if (esc != last_esc) {
-			colour = getcollen(perm_colour_esc[esc], &col_len);
-			memcpy(out_ptr, colour, col_len);
-			out_ptr += col_len;
-		}
+		// only add a colour if the last colour wasn't also the same
+		if (esc != last_esc) ADD_COLOUR(perm_colour_esc[esc], out_ptr);
 
 		*out_ptr++ = pFS->mode_str[i];
+		last_esc = esc;
 	}
+
+	/* ————————————————————————————————————————————————— */
+
+	// finally, find and add the xattr and acl colours/chars, if they exist
+	if (pFS->has_xat) { ADD_COLOUR(XATTR_COLOUR, xab_ptr); *xab_ptr++ = XATTR_CHAR; }
+	if (pFS->has_acl) { ADD_COLOUR(ACL_COLOUR  , xab_ptr); *xab_ptr++ = ACL_CHAR  ; }
 
 	const int pure_xa_len = pFS->has_xat + pFS->has_acl;
+	// only print a final reset sequence if there were no extra characters, and the final perm colour had a background
 	const bool do_reset = pure_xa_len == 0 && perm_colour_esc[esc].has_bg();
-
-	if (pFS->has_xat) {
-		colour = getcollen(XATTR_COLOUR, &col_len);
-		memcpy(&xa_buf[xa_len], colour, col_len);
-		xa_len += col_len;
-
-		xa_buf[xa_len++] = XATTR_CHAR;
-	}
-
-	if (pFS->has_acl) {
-		colour = getcollen(ACL_COLOUR, &col_len);
-		memcpy(&xa_buf[xa_len], colour, col_len);
-		xa_len += col_len;
-
-		xa_buf[xa_len++] = ACL_CHAR;
-	}
 
 	printf("%s" "%s%*s" "%s" "%ls",
 		output,
+		// print the xattr & acl chars, and pad appropriately
 		xa_buf, getLen(FI_xat_acl) - pure_xa_len, "", 
 		do_reset ? getcol(RESET_ALL) : "",
 		FIELD_PAD
