@@ -11,6 +11,7 @@ _*
 !_output/
 
 Icon?
+*_chrdv*
 
 resources/icons/icons.rs
 resources/POSIX/ls.html
