@@ -240,7 +240,7 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 		processDir(pFS_child, depth + 1);
 	}
 
-	assert(pFS_dir->name_len != 0);
+	assert(isValidFS(pFS_dir));
 
 	closedir(p_dir);
 	return pFS_dir;
@@ -277,7 +277,7 @@ FileStat processInput(char *const path) {
 	//	whether its a directory or not, so we might as well store the stat information if we have it
 	if (lstat(path, &statobj) == -1) {
 		// if it fails, print an error and move onto the next file
-		if (errno == ENOENT) { /* handle */ }
+		if (errno == ENOENT) { /** @todo handle */ }
 
 		printError(path);
 		// set the pointer to this input to NULL, so we know not to process/print it later
@@ -287,7 +287,7 @@ FileStat processInput(char *const path) {
 	/* —— assign basic info to input —————————————————————————————— */
 	// since we successfully got the `stat` information, we can start building the `FileStat` object
 
-	FileStat file = (FileStat){
+	FileStat file = {
 		// since `path` comes from `file_paths`, which comes from `argv`, the memory containing `file->name`
 		//	doesn't need to be allocated, since pointers to `argv` exist through the lifetime of the program
 		.name = path,
@@ -308,7 +308,7 @@ FileStat processInput(char *const path) {
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
 	//	then there's nothing else to do at this stage - send it off for parsing
 	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES()) {
-		assert(file.name_len != 0);
+		assert(isValidFS(&file));
 		return file;
 	}
 

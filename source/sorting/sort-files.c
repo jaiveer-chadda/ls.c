@@ -16,6 +16,9 @@ static int8_t REVERSE;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define FILE_1_FIRST -1
+#define FILE_2_FIRST  1
+
 #define SORT_FILES_BY(field) \
 	qsort(arr, *arr_count, sizeof(FileStat), (compare_ ## field ## s))
 
@@ -41,8 +44,8 @@ static int8_t REVERSE;
 		if (SORT_DIRS_FIRST()) {															\
 			/* if one file is a directory and the other isn't, sort the directory first */	\
 			/*	note: we don't reverse the ordering of this sort - dirs are always first */	\
-			if (IS_DIR(1) && !IS_DIR(2)) return -1;											\
-			if (IS_DIR(2) && !IS_DIR(1)) return	 1;											\
+			if ( IS_DIR(1) && !IS_DIR(2)) return FILE_1_FIRST;								\
+			if (!IS_DIR(1) &&  IS_DIR(2)) return FILE_2_FIRST;								\
 		}																					\
 		const int8_t result = GET_ORDERING(field) * REVERSE;								\
 		/**/																				\
@@ -60,9 +63,13 @@ static int8_t REVERSE;
 // Note: I know this function's name goes against convention, but I'm doing some macro magic ot make this all easier,
 //	so it's been done for a reason (see the `SORT_FILES_BY` macro)
 static inline int compare_names(const void *file_1, const void *file_2) {
+	// check for invalid files
+	if (!isValidFS(file_1)) return FILE_1_FIRST;
+	if (!isValidFS(file_2)) return FILE_2_FIRST;
+
 	if (SORT_DIRS_FIRST()) {
-		if (IS_DIR(1) && !IS_DIR(2)) return -1;
-		if (IS_DIR(2) && !IS_DIR(1)) return	 1;
+		if ( IS_DIR(1) && !IS_DIR(2)) return FILE_1_FIRST;
+		if (!IS_DIR(1) &&  IS_DIR(2)) return FILE_2_FIRST;
 	}
 
 	const char *const inp_name_1 = GET_ATTR(1, name);
@@ -77,8 +84,8 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 	while (name_1[i] != '\0' && name_2[j] != '\0') {
 		// make sure dotfiles always sort above non-dotfiles
 		if (name_1[i] != name_2[j]) {
-			if (name_1[i] == '.') return -1 * REVERSE;
-			if (name_2[j] == '.') return  1 * REVERSE;
+			if (name_1[i] == '.') return FILE_1_FIRST * REVERSE;
+			if (name_2[j] == '.') return FILE_2_FIRST * REVERSE;
 		}
 
 		// if both characters are digits
@@ -102,20 +109,20 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 				num_2 = atoi(buf_2);
 
 			// if the numbers differ, compare them, and sort the smaller one first
-			if (num_1 != num_2) return (num_1 < num_2 ? -1 : 1) * REVERSE;
+			if (num_1 != num_2) return (num_1 < num_2 ? FILE_1_FIRST : FILE_2_FIRST) * REVERSE;
 
 			// if the numbers are equal, keep checking
 
 		// if either character is a non-digit, return them in their regular ascii sorting order
 		} else if (name_1[i] != name_2[j]) {
-			return (name_1[i] < name_2[j] ? -1 : 1) * REVERSE;
+			return (name_1[i] < name_2[j] ? FILE_1_FIRST : FILE_2_FIRST) * REVERSE;
 
 		// if both characters are the same, then move onto the next character
 		} else i++; j++;
 	}
 
 	// if one of the names is a prefix of the other, sort the shorter name first
-	return (name_1[i] == '\0' ? -1 : 1) * REVERSE;
+	return (name_1[i] == '\0' ? FILE_1_FIRST : FILE_2_FIRST) * REVERSE;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

@@ -68,7 +68,7 @@ int main(const int argc, char *argv[]) {
 		inputs[i] = processInput(file_paths[i]);
 
 		// make sure we were actually able to get anything from `processInput()`
-		if (inputs[i].name_len == 0) continue;
+		if (!isValidFS(&inputs[i])) continue;
 		any_valid_input = true;
 
 		// then parse the file - i.e. go through and convert things from raw data into displayable output

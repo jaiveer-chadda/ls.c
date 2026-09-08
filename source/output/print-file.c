@@ -19,7 +19,7 @@ static inline bool stopRecursing(const FileStat *const pFS, const uint8_t depth,
 
 void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_last, const lines_t lines) {
 	// if we weren't able to `stat` the file in the first place, then there'll be nothing to print
-	if (pFS->name_len == 0) return;
+	if (!isValidFS(pFS)) return;
 	// set up the array that'll be used to track which tree branches need to be printed
 	lines_t new_lines = {0};
 

@@ -121,6 +121,9 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36b
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Helper Macros ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define isValidFS(p_fs) \
+	(((FileStat*)(p_fs)) != NULL && ((FileStat*)(p_fs))->name != NULL)
+
 #define getPathLen(p_fs) \
 	((namlen_t)(((p_fs)->path == NULL || (p_fs)->name == NULL) ? 0 \
 		: (((p_fs)->name - (p_fs)->path) + (p_fs)->name_len)))
