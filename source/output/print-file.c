@@ -35,6 +35,8 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	/// @todo print targets of links
 	/// @todo print info about mount devices
 
+	// make sure that no background colours leak past the end of the line
+	if (getActive().has_bg()) colprint(RESET_ALL);
 	putchar('\n'); // finally, end this entry's output by printing a newline
 
 	/* —— recurse ————————————————————————————————————————————————————————————————————————————————————— */
