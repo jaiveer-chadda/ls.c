@@ -152,15 +152,21 @@ static inline PermColour getExtColour(const mode_t mode) {
 
 #define DIG_TO_CHR(dig) ((char)('0' + (unsigned)(dig)))
 
-#define ADD_COLOUR(src, dst_ptr) do {		\
-	colour = getcollen((src), &col_len);	\
-	memcpy((dst_ptr), colour, col_len);		\
-	(dst_ptr) += col_len;					\
+#define ADD_COLOUR(src, dst_ptr) do {						\
+	uint8_t col_len = 0;									\
+	const char *const colour = getcollen((src), &col_len);	\
+	memcpy((dst_ptr), colour, col_len);						\
+	(dst_ptr) += col_len;									\
 } while (0)
 
 /* ————————————————————————————————————————————————— */
 
 void print_mode(const FileStat *const pFS) {
+	if (!DO_COLOUR()) {
+		printf("%06o%ls", pFS->mode, FIELD_PAD);
+		return;
+	}
+
 	const mode_t
 		type = (pFS->mode & TYPE_MASK) >> (LOG2_8 * 4), /** The two octal digits representing the file's type. */
 		ext	 = (pFS->mode & EXT_MASK ) >> (LOG2_8 * 3); /** The digit representing the file's extended permissions. */
@@ -170,11 +176,11 @@ void print_mode(const FileStat *const pFS) {
 
 	char output[96] = {0};
 	char *out_ptr = output;
-	const char *colour = "";
-	uint8_t col_len = 0;
 
 	ADD_COLOUR(file_colour_esc[file_col], out_ptr);
-	out_ptr += sprintf(out_ptr, "%02o", type);
+	// split the type section into two bits, and assign those to `out_ptr` directly
+	*out_ptr++ = DIG_TO_CHR((type & 010) >> LOG2_8);
+	*out_ptr++ = DIG_TO_CHR((type & 007));
 
 	ADD_COLOUR(perm_colour_esc[ext_col], out_ptr);
 	*out_ptr++ = DIG_TO_CHR(ext);
@@ -251,9 +257,6 @@ void print_mode_str(const FileStat *const pFS) {
 
 	char output[256] = {0};
 	char *out_ptr = output;
-
-	const char *colour;
-	uint8_t col_len = 0;
 
 	// firstly, add the type's colour & character to the output string
 	ADD_COLOUR(file_colour_esc[getTypeColour(pFS->mode_str[0])], out_ptr);
