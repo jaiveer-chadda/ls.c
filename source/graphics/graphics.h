@@ -394,8 +394,9 @@
 	|| (u) == '\0'				\
 	))
 
-#define MAJ_COL	"1;37"	// \e[37m
-#define MIN_COL	"36"	// \e[36m
+#define MAJ_COL_ANSI	ANSI_IFCOL( "37"	) // \e[37m
+#define MIN_COL_ANSI	ANSI_IFCOL( "36"	) // \e[36m
+#define MIN_COLOUR		toColour( .fg = G_CYAN ) // \e[36m
 
 #define SIZE_COLOUR_TABLE \
 	/* value */	\

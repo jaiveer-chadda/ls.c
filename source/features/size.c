@@ -2,13 +2,13 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <wchar.h>
 #include <string.h>
 #include <sys/types.h>
 
 #include "malloc.h"
 #include "debugging.h"
 #include "form/formatting.h"
+#include "options/options.h"
 
 #define CHECK_PRINTF_ERR() do {															\
 	if (str_len < 0 || (size_t)str_len >= sizeof(sizestr)) {							\
@@ -88,23 +88,66 @@ void print_size(const FileStat *const pFS) {
 	);
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline void printMajMinSize(const FileStat *const pFS) {
+	const dev_t maj = major(pFS->s->st_rdev), min = minor(pFS->s->st_rdev);
+	const size_t size_len = strlen(pFS->f->size_str);
+
+	printf("%*s" "%s%d" "%s," "%s%d" "%ls",
+		(getLen(FI_size_str) - (int)size_len), "",
+		MAJ_COL_ANSI, maj,
+		PUNCT_ANSI,
+		MIN_COL_ANSI, min,
+		FIELD_PAD
+	);
+
+	setActive(MIN_COLOUR);
+}
+
+/* ———————————————————————————————————————————————————————————————————— */
+
 void print_size_str(const FileStat *const pFS) {
-	const bool valid = pFS->f != NULL && pFS->f->size_str != NULL;
-	const bool do_unit = valid && DO_PRINT_SIZE_UNIT(pFS->f->size_unit);
+	const bool valid = (
+		pFS->f != NULL &&
+		pFS->f->size_str != NULL &&
+		pFS->f->size_unit != UNIT_ERROR
+	);
 
-	if (do_unit) {
-		printf("%*s%c",
-			getLen(FI_size_str) - 1, pFS->f->size_str,
-			pFS->f->size_unit
-		);
-
-	} else {
-		printf("%*s",
-			getLen(FI_size_str), valid ? pFS->f->size_str : NO_SIZE_STR
-		);
+	if (!valid) {
+		printf("%s" "%*s" "%ls", getcol(PUNCT), getLen(FI_size_str), NO_SIZE_STR, FIELD_PAD);
+		return;
 	}
 
-	fputws(FIELD_PAD, stdout);
+	const char *const str = pFS->f->size_str;
+	const unit_t unit = pFS->f->size_unit;
+
+	if (unit == UNIT_MAJ_MIN) { printMajMinSize(pFS); return; }
+
+	const bool do_unit = DO_PRINT_SIZE_UNIT(unit);
+	const int size_len = (int)strlen(str);
+	SizeColour size_col, unit_col;
+
+	switch (unit) {
+		case UNIT_BYTE: size_col = SC_BB, unit_col = SC_UB; break;
+		case UNIT_KILO: size_col = SC_BK, unit_col = SC_UK; break;
+		case UNIT_MEGA: size_col = SC_BM, unit_col = SC_UM; break;
+		case UNIT_GIGA: size_col = SC_BG, unit_col = SC_UG; break;
+		default		  : size_col = SC_BT, unit_col = SC_UT; break;
+	}
+
+	ansi_t size_col_ansi;
+	uint8_t size_col_len = 0;
+	char *const size_col_ptr = getcollen(size_colour_esc[size_col], &size_col_len);
+	memcpy(size_col_ansi, size_col_ptr, size_col_len);
+
+	printf("%*s" "%s%s" "%s%s" "%ls",
+		(getLen(FI_size_str) - size_len) - do_unit, "", // padding
+		size_col_ansi, str,
+		do_unit ? getcol(size_colour_esc[unit_col]) : "", do_unit ? (char[]){ unit, '\0' } : "",
+		FIELD_PAD
+	);
+
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

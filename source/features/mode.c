@@ -145,7 +145,7 @@ static inline PermColour getExtColour(const mode_t mode) {
 	if (mode & S_ISUID) return S_IXUSR & mode ? PC_SUID_X : PC_SUID_N;
 	if (mode & S_ISGID) return S_IXGRP & mode ? PC_SGID_X : PC_SGID_N;
 	if (mode & S_ISVTX) return S_IXOTH & mode ? PC_STIC_X : PC_STIC_N;
-	/**/				return PC_NON_EXT;
+	/**/				return PC_NONE;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
