@@ -67,11 +67,15 @@ static inline uid_t get_user_uid(void) {
 
 /* ———————————————————————————————————————————————————————— */
 
+#define get_uid_colour get_usr_colour
+
 static inline Colour get_usr_colour(const FileStat *const pFS) {
 	if (pFS->s->st_uid == get_user_uid()) return USR_YOU_COL;
 	if (pFS->s->st_uid == ROOT_USR_UID  ) return USR_ROOT_COL;
 	return USR_OTH_COL;
 }
+
+#define get_gid_colour get_grp_colour
 
 static inline Colour get_grp_colour(const FileStat *const pFS) {
 	const struct passwd *const pw = getpwuid(get_user_uid());
@@ -86,34 +90,18 @@ static inline Colour get_grp_colour(const FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void print_usr_name(const FileStat *const pFS) {
-	const bool valid = pFS->f != NULL && pFS->f->usr_name != NULL;
-	if (!valid) {
-		printf("%s%*s%ls", getcol(PUNCT), getLen(FI_usr_name), INV_FILE_USRNAME, FIELD_PAD);
-		return;
+#define print_ug_name(usgr)													\
+	void print_##usgr##_name(const FileStat *const pFS) {					\
+		const bool valid = pFS->f != NULL && pFS->f->usgr##_name != NULL;	\
+		printf("%s%-*s%ls",													\
+			getcol(get_##usgr##_colour(pFS)),								\
+			getLen(FI_##usgr##_name),										\
+			valid ? pFS->f->usgr##_name : "-",								\
+			FIELD_PAD														\
+		);																	\
 	}
-
-	const Colour col = get_usr_colour(pFS);
-	printf("%s" "%-*s" "%ls", getcol(col), getLen(FI_usr_name), pFS->f->usr_name, FIELD_PAD);
-}
 
 /* ———————————————————————————————————————————————————————— */
-
-void print_grp_name(const FileStat *const pFS) {
-	const bool valid = pFS->f != NULL && pFS->f->grp_name != NULL;
-	if (!valid) {
-		printf("%s%*s%ls", getcol(PUNCT), getLen(FI_grp_name), INV_FILE_GRPNAME, FIELD_PAD);
-		return;
-	}
-
-	Colour col = get_grp_colour(pFS);
-	printf("%s" "%-*s" "%ls", getcol(col), getLen(FI_grp_name), pFS->f->grp_name, FIELD_PAD);
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#define get_uid_colour get_usr_colour
-#define get_gid_colour get_grp_colour
 
 #define print_ugid(ugid)								\
 	void print_##ugid(const FileStat *const pFS) {		\
@@ -127,7 +115,14 @@ void print_grp_name(const FileStat *const pFS) {
 		);												\
 	}
 
+/* ———————————————————————————————————————————————————————— */
+
+print_ug_name(usr)
+print_ug_name(grp)
+
 print_ugid(uid)
 print_ugid(gid)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignore usgr
