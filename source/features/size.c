@@ -157,12 +157,15 @@ void print_size_str(const FileStat *const pFS) {
 	const char *const size_col_ptr = getcollen(size_colour_esc[size_col], &size_col_len);
 	memcpy(size_col_ansi, size_col_ptr, size_col_len);
 
-	printf("%*s" "%s%s" "%s%s" "%ls",
+	printf("%*s" "%s%s%s" "%s%s" "%s%ls",
 		(getLen(FI_size_str) - size_len) - do_unit, "", // padding
-		size_col_ansi, str,
+		S_ISDIR(pFS->mode) ? ANSI_IFCOL(DIM) : "", size_col_ansi, str,
 		do_unit ? getcol(size_colour_esc[unit_col]) : "", do_unit ? (char[]){ unit, '\0' } : "",
+		IFCOLOUR(RESET), 
 		FIELD_PAD
 	);
+
+	setActive(RESET_ALL);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
