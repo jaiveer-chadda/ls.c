@@ -22,12 +22,12 @@ void print_nlink(const FileStat *const pFS) {
 	}
 
 	const nlink_t nlink = pFS->s->st_nlink;
-	const int nlink_len = snprintf(NULL, 0, "%hu", nlink);
+	const int nlink_len = snprintf(NULL, 0, "%'hu", nlink);
 
 	const Colour col = getLinkColour(nlink, S_ISDIR(pFS->mode));
 	const char *const ansi_col = getcol(col);
 
-	printf("%*s" "%s%hu" "%s" "%ls",
+	printf("%*s" "%s%'hu" "%s" "%ls",
 		getLen(FI_nlink) - nlink_len, "",
 		ansi_col, nlink,
 		col.has_bg() ? getcol(RESET_ALL) : "",

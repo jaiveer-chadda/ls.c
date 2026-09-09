@@ -99,17 +99,17 @@ static inline void getSizeColours(const unit_t unit, SizeColour *const size_col,
 
 void print_size(const FileStat *const pFS) {
 	if (!SIZE_IS_VALID(pFS) || pFS->f->size_unit == UNIT_MAJ_MIN) {
-		printf("%s" "%*c" "%ls", getcol(PUNCT), getLen(FI_size_str), '-', FIELD_PAD);
+		printf("%s" "%*c" "%ls", getcol(PUNCT), getLen(FI_size), '-', FIELD_PAD);
 		return;
 	}
 
 	const off_t size = pFS->s->st_size;
-	const int size_len = snprintf(NULL, 0, "%lld", size);
+	const int size_len = snprintf(NULL, 0, "%'lld", size);
 
 	SizeColour size_col;
 	getSizeColours(pFS->f->size_unit, &size_col, NULL);
 
-	printf("%*s" "%s%lld" "%ls",
+	printf("%*s" "%s%'lld" "%ls",
 		getLen(FI_size) - size_len, "",
 		getcol(size_colour_esc[size_col]), size,
 		FIELD_PAD

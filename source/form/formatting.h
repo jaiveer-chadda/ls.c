@@ -19,39 +19,39 @@ typedef struct {
 extern field_t fields[];
 
 /// @brief n/a
-#define NA X
+#define NA ""
 
 /* note: left is `%-*x`, right is `%*x` */
 #define FIELDS_TABLE \
-	/* field	 header		 fmt  L/R  */ \
-	X(name		, "Name"	, s	, left	) \
-	X(nlink		, "Links"	, d	, right	) \
-	X(dev_no	, "Dev No"	, d	, right	) \
-	X(inum		, "Inode No", llu,right	) \
-	X(flags		, "Flags"	, x	, right	) \
-	X(flag_str	, "Flags"	, s	, left	) \
-	X(mode		, "Mode"	, o	, right	) \
-	X(mode_str	, "Perms"	, s	, left	) \
-	X(size		, "Size"	, zd, right	) \
-	X(size_str	, "Size"	, s	, right	) \
-	X(uid		, "UID"		, d	, right	) \
-	X(usr_name	, "User"	, s	, left	) \
-	X(gid		, "GID"		, d	, right	) \
-	X(grp_name	, "Group"	, s	, left	) \
+	/* field	  header	  fmt	 fmt+  L/R  */ \
+	X(name		, "Name"	, "s"	, NA , left	 ) \
+	X(nlink		, "Links"	, "d"	, "'", right ) \
+	X(dev_no	, "Dev No"	, "d"	, NA , right ) \
+	X(inum		, "Inode No", "llu"	, NA , right ) \
+	X(flags		, "Flags"	, "x"	, NA , right ) \
+	X(flag_str	, "Flags"	, "s"	, NA , left	 ) \
+	X(mode		, "Mode"	, "o"	, "0", right ) \
+	X(mode_str	, "Perms"	, "s"	, NA , left	 ) \
+	X(size		, "Size"	, "zd"	, "'", right ) \
+	X(size_str	, "Size"	, "s"	, NA , right ) \
+	X(uid		, "UID"		, "d"	, NA , right ) \
+	X(usr_name	, "User"	, "s"	, NA , left	 ) \
+	X(gid		, "GID"		, "d"	, NA , right ) \
+	X(grp_name	, "Group"	, "s"	, NA , left	 ) \
 	\
-	X(atime		, "ATime"	, ld, right	) \
-	X(mtime		, "MTime"	, ld, right	) \
-	X(ctime		, "CTime"	, ld, right	) \
-	X(btime		, "BTime"	, ld, right	) \
-	X(atime_str	, "Accessed", s	, right	) \
-	X(mtime_str	, "Modified", s	, right	) \
-	X(ctime_str	, "Changed"	, s	, right	) \
-	X(btime_str	, "Birth"	, s	, right	) \
+	X(atime		, "ATime"	, "ld"	, NA , right ) \
+	X(mtime		, "MTime"	, "ld"	, NA , right ) \
+	X(ctime		, "CTime"	, "ld"	, NA , right ) \
+	X(btime		, "BTime"	, "ld"	, NA , right ) \
+	X(atime_str	, "Accessed", "s"	, NA , right ) \
+	X(mtime_str	, "Modified", "s"	, NA , right ) \
+	X(ctime_str	, "Changed"	, "s"	, NA , right ) \
+	X(btime_str	, "Birth"	, "s"	, NA , right ) \
 	\
-	X(xat_acl	, ""		, NA, left	) \
+	X(xat_acl	, NA		, NA	, NA , left	 ) \
 /**/
 
-#define X(fld, hdr, fms, lor) FI_##fld,
+#define X(fld, hdr, fms, ext, lor) FI_##fld,
 typedef enum { FIELDS_TABLE FI_COUNT } FieldIdx;
 #undef X
 

@@ -15,18 +15,18 @@
 #define FMT_left "-"
 #define FMT_right ""
 
-#define GET_FMT_S(fmt, lor) "%" FMT_##lor	  #fmt
-#define GET_FMT_P(fmt, lor) "%" FMT_##lor "*" #fmt "%ls"
+#define GET_FMT_S(fmt, ext, lor) "%" ext FMT_##lor		fmt
+#define GET_FMT_P(fmt, ext, lor) "%" ext FMT_##lor "*"	fmt "%ls"
 
 /* initialise the array, and set all the elements' lengths to 0 */
-#define X(fld, hdr, fmt, lor)				\
-	[FI_##fld] = (field_t){					\
-		.title		= hdr,					\
-		.fmt_s		= GET_FMT_S(fmt, lor),	\
-		.fmt_p		= GET_FMT_P(fmt, lor),	\
-		.len		= 0,					\
-		.is_right	= lor##_set,			\
-		.title_len	= sizeof(hdr) - 1,		\
+#define X(fld, hdr, fms, ext, lor)				\
+	[FI_##fld] = (field_t){						\
+		.title		= hdr,						\
+		.fmt_s		= GET_FMT_S(fms, ext, lor),	\
+		.fmt_p		= GET_FMT_P(fms, ext, lor),	\
+		.len		= 0,						\
+		.is_right	= lor##_set,				\
+		.title_len	= sizeof(hdr) - 1,			\
 	},
 
 field_t fields[FI_COUNT] = { FIELDS_TABLE };
@@ -38,7 +38,7 @@ field_t fields[FI_COUNT] = { FIELDS_TABLE };
 inline void initFormatting(void) {
 	if (DO_HEADER()) {
 		// if we're printing a header, then set all field lengths to the lengths of their header strings
-		#define X(fld, hdr, fmt, lor) \
+		#define X(fld, hdr, fms, ext, lor) \
 			fields[FI_##fld].len = sizeof(hdr) - 1;
 
 		FIELDS_TABLE
