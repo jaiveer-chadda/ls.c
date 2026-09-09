@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+
 #include <sys/acl.h>
 #include <sys/xattr.h>
 
@@ -10,12 +11,18 @@
 #include "options/options.h"
 #include "graphics/graphics.h"
 
+static inline FileColour getTypeColour(const char type_char);
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define EXT_MASK 0007000	/// A mask to get the extended bits (4,2,1 = uid, gid, sticky) from octal permissions.
 #define USR_MASK S_IRWXU	/// A mask to get the user  octal permissions.
 #define GRP_MASK S_IRWXG	/// A mask to get the group octal permissions.
 #define OTH_MASK S_IRWXO	/// A mask to get the other octal permissions.
+
+#define UGO_RWX_MASK	(S_IRWXU | S_IRWXG | S_IRWXO)
+
+#define S_IFSOC S_IFSOCK
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
@@ -39,15 +46,15 @@ static inline void getPermStr(char *perm_str, const mode_t oct_digit) {
 /// @brief Gets the character representing the filetype specified by an octal type integer.
 static inline char getModeType(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
-		case S_IFIFO:	return PIPE_CHAR	; // named pipe		'|' / 'p'
-		case S_IFCHR:	return CHRDEV_CHAR	; // char device	'c'
-		case S_IFDIR:	return DIR_CHAR		; // directory		'/'
-		case S_IFBLK:	return BLKDEV_CHAR	; // block device	'b'
-		case S_IFREG:	return REGULAR_CHAR	; // regular file	'.' / '-'
-		case S_IFLNK:	return SYMLINK_CHAR	; // symbolic link	'l'
-		case S_IFSOCK:	return SOCKET_CHAR	; // socket			'=' / 's'
-		case S_IFWHT:	return WHITEOUT_CHAR; // whiteout		'%' / 'w'
-		default:		return UNKNOWN_CHAR	; // unknown		'?'
+		case S_IFIFO: return PIPE_CHAR		; // named pipe		'|' / 'p'
+		case S_IFCHR: return CHRDEV_CHAR	; // char device	'c'
+		case S_IFDIR: return DIR_CHAR		; // directory		'/'
+		case S_IFBLK: return BLKDEV_CHAR	; // block device	'b'
+		case S_IFREG: return REGULAR_CHAR	; // regular file	'.' / '-'
+		case S_IFLNK: return SYMLINK_CHAR	; // symbolic link	'l'
+		case S_IFSOC: return SOCKET_CHAR	; // socket			'=' / 's'
+		case S_IFWHT: return WHITEOUT_CHAR	; // whiteout		'%' / 'w'
+		default:	  return UNKNOWN_CHAR	; // unknown		'?'
 	}
 }
 
@@ -55,14 +62,14 @@ static inline char getModeType(const mode_t mode) {
 
 inline char getTypeSuffix(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
-		case S_IFLNK:	return SYMLINK_SUFFIX;	// symlink		 '@'
-		case S_IFDIR:	return DIR_SUFFIX;		// directory	 '/'
-		case S_IFIFO:	return PIPE_CHAR;		// named pipe	 '|'
-		case S_IFSOCK:	return SOCKET_CHAR;		// socket		 '='
-		case S_IFWHT:	return WHITEOUT_CHAR;	// whiteout		 '%'
+		case S_IFLNK: return SYMLINK_SUFFIX	; // symlink	'@'
+		case S_IFDIR: return DIR_SUFFIX		; // directory	'/'
+		case S_IFIFO: return PIPE_CHAR		; // named pipe	'|'
+		case S_IFSOC: return SOCKET_CHAR	; // socket		'='
+		case S_IFWHT: return WHITEOUT_CHAR	; // whiteout	'%'
 	}
-	if (mode & EXEC_MASK) return EXEC_SUFFIX;	// executable	 '*'
-	return '\0';								// other/unknown
+	if (mode & EXEC_MASK) return EXEC_SUFFIX; // executable '*'
+	return '\0';							  // other/unknown
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -77,9 +84,9 @@ void getMode(modestr mode_str, const mode_t oct_mode) {
 
 	char usr_str[4], grp_str[4], oth_str[4];
 
-	PARSE_PERM(usr, 04,	  SUID_X_BIT_CHAR);
-	PARSE_PERM(grp, 02,	  SGID_X_BIT_CHAR);
-	PARSE_PERM(oth, 01,	STICKY_X_BIT_CHAR);
+	PARSE_PERM(usr, 04, SUID_X_BIT_CHAR);
+	PARSE_PERM(grp, 02, SGID_X_BIT_CHAR);
+	PARSE_PERM(oth, 01, STIC_X_BIT_CHAR);
 
 	setLen(FI_mode_str,
 		snprintf(mode_str, sizeof(modestr), "%c%s%s%s", getModeType(oct_mode), usr_str, grp_str, oth_str)
@@ -103,10 +110,61 @@ bool checkXattr(const path_t path) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define IFL_REG(tru, fal) ((pFS->mode & S_IFREG) ? (tru) : (fal))
+#define DIG_TO_CHR(dig) ((char)('0' + (int)(dig)))
+
 void print_mode(const FileStat *const pFS) {
-	printf("%0*o%ls", getLen(FI_mode), pFS->mode, FIELD_PAD);
+	const mode_t type = (pFS->mode & TYPE_MASK) >> (3 * 4);
+
+	colprint(file_colour_esc[getTypeColour(pFS->mode_str[0])]);
+	printf("%02o", type);
+
+	if		(pFS->mode & S_ISUID) colprint(perm_colour_esc[S_IXUSR & pFS->mode ? PC_SUID_X : PC_SUID_N]);
+	else if (pFS->mode & S_ISGID) colprint(perm_colour_esc[S_IXGRP & pFS->mode ? PC_SGID_X : PC_SGID_N]);
+	else if (pFS->mode & S_ISVTX) colprint(perm_colour_esc[S_IXOTH & pFS->mode ? PC_STIC_X : PC_STIC_N]);
+	else						  colprint(perm_colour_esc[PC_NON_EXT]);
+
+	putchar(DIG_TO_CHR((pFS->mode & EXT_MASK) >> (3 * 3)));
+	colprint(RESET_ALL);
+
+	mode_t sec_mode;
+	PermColour col;
+
+	for (int i = 0; i < 3; i++) {
+		sec_mode = (pFS->mode >> (3 * (2 - i))) & S_IRWXO;
+		col = PC_COUNT;
+
+		#define R S_IROTH
+		#define W S_IWOTH
+		#define X S_IXOTH
+
+		switch (sec_mode) {
+			case 0|0|0: col = PC_NONE	; break;
+
+			case 0|0|X: col = IFL_REG(PC_X_REG, PC_X_NRG); break;
+			case 0|W|0: col = PC_W_UG	; break;
+			case R|0|0: col = PC_READ	; break;
+
+			case 0|W|X: col = PC_WRT_EXE; break;
+			case R|0|X: col = PC_REA_EXE; break;
+			case R|W|0: col = PC_REA_WRT; break;
+			case R|W|X: col = PC_RWX_ALL; break;
+		}
+		if ((sec_mode & (0|W|0)) && (i == 2)) col = PC_W_OTH;
+
+		#undef R
+		#undef W
+		#undef X
+
+		colprint(col != PC_COUNT ? perm_colour_esc[col] : RESET_ALL);
+		putchar(DIG_TO_CHR(sec_mode));
+	}
+
+	colprint(RESET_ALL);
+	printf("%ls", FIELD_PAD);
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline FileColour getTypeColour(const char type_char) {
@@ -132,15 +190,15 @@ static inline char getPermColour(const char *mode_str, const int idx) {
 		case NO_PERM_CHAR: return PC_NONE; // this permission bit isn't set
 
 		case READ_BIT_CHAR: return PC_READ; // any of the 3 `read` bits
-		case WRIT_BIT_CHAR: return IS_OWR() ? PC_W_OTHER : PC_W_USRGRP; // make the `OW` bit a distinct colour
-		case EXEC_BIT_CHAR: return IS_REG() ? PC_X_REG	 : PC_X_NREG;
+		case WRIT_BIT_CHAR: return IS_OWR() ? PC_W_OTH : PC_W_UG ; // make the `OW` bit a distinct colour
+		case EXEC_BIT_CHAR: return IS_REG() ? PC_X_REG : PC_X_NRG; // reg files and other files have separate exec cols
 		// colour the UID and GID bits based on whether they're executable or not
 		//	`IS_UID()` determines if we're currently looking at the usr or group bit
-		case SUGID_X_BIT_CHAR: return IS_UID() ? PC_SUID_X : PC_SGID_X;
-		case SUGID_N_BIT_CHAR: return IS_UID() ? PC_SUID_N : PC_SGID_N;
+		case SUGI_X_BIT_CHAR: return IS_UID() ? PC_SUID_X : PC_SGID_X;
+		case SUGI_N_BIT_CHAR: return IS_UID() ? PC_SUID_N : PC_SGID_N;
 		// colour the sticky bit based on whether the files are executables or not
-		case STICKY_X_BIT_CHAR: return PC_STICKY_X;
-		case STICKY_N_BIT_CHAR: return PC_STICKY_N;
+		case STIC_X_BIT_CHAR: return PC_STIC_X;
+		case STIC_N_BIT_CHAR: return PC_STIC_N;
 	}
 
 	return PC_NONE;
@@ -214,3 +272,5 @@ void print_mode_str(const FileStat *const pFS) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignore ifsoc

@@ -34,9 +34,9 @@ static const char *ALL_TEMP_BACK_EXTS [] = {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define	GET_STICKY_COLOUR(mode) (((mode) & S_IXOTH) ? FC_STICKY_X : FC_STICKY_N	)
-#define	  GET_SUID_COLOUR(mode) (((mode) & S_IXUSR) ? FC_SUID_X	  : FC_SUID_N	)
-#define	  GET_SGID_COLOUR(mode) (((mode) & S_IXGRP) ? FC_SGID_X	  : FC_SGID_N	)
+#define	GET_STIC_COLOUR(mode) (((mode) & S_IXOTH) ? FC_STIC_X : FC_STIC_N )
+#define	GET_SUID_COLOUR(mode) (((mode) & S_IXUSR) ? FC_SUID_X : FC_SUID_N )
+#define	GET_SGID_COLOUR(mode) (((mode) & S_IXGRP) ? FC_SGID_X : FC_SGID_N )
 
 #define GET_ARR_LEN(array) (int)(sizeof(array) / sizeof((array)[0]))
 
@@ -80,10 +80,10 @@ FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flag
 		/* —— Permissions ——————————————————————————————————————— */
 
 		case S_IFDIR:						  // directories
-			if (mode & S_ISVTX)	return GET_STICKY_COLOUR(mode);	// directory w/ sticky bit set
-			if (mode & S_IWOTH)	return FC_OW_DIR;				// other-writeable directory
-			if (is_mount)		return FC_MOUNT;				// mount point
-			else				return FC_DIRECT;				// regular directory
+			if (mode & S_ISVTX)	return GET_STIC_COLOUR(mode);// directory w/ sticky bit set
+			if (mode & S_IWOTH)	return FC_OW_DIR;			// other-writeable directory
+			if (is_mount)		return FC_MOUNT;			// mount point
+			else				return FC_DIRECT;			// regular directory
 	}
 
 	// colour the file based on the suid/sgid bits

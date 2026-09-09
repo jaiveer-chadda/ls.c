@@ -68,8 +68,8 @@
 #define HL_SUID_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BRED	) // \e[101m
 #define HL_SGID_X		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_MAG	) // \e[45m
 #define HL_SGID_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BMAG	) // \e[105m
-#define HL_STICKY_X		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BLUE	) // \e[44m
-#define HL_STICKY_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BBLU	) // \e[104m
+#define HL_STIC_X		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BLUE	) // \e[44m
+#define HL_STIC_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BBLU	) // \e[104m
 #define HL_DATALESS		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_WHITE	) // \e[47m
 #define HL_WHITEOUT		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BWHT	) // \e[107m
 
@@ -81,10 +81,15 @@
 #define HL_TEMP_BACK	toColour( .style = 0		, .fg = G_BRT_BLACK				) // \e[90m
 
 #define HL_READ			toColour( .style = 0		, .fg = G_BRT_GREEN				) // \e[92m
-#define HL_W_USRGRP		toColour( .style = 0		, .fg = G_BRT_YELLOW			) // \e[93m
-#define HL_W_OTHER		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_GREEN	) // \e[42m
+#define HL_W_UG			toColour( .style = 0		, .fg = G_BRT_YELLOW			) // \e[93m
+#define HL_W_OTH		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_GREEN	) // \e[42m
 #define HL_X_REG		toColour( .style = G_BOLD	, .fg = G_RED					) // \e[31m
-#define HL_X_NREG		toColour( .style = 0		, .fg = G_BRT_RED				) // \e[91m
+#define HL_X_NRG		toColour( .style = 0		, .fg = G_BRT_RED				) // \e[91m
+
+#define HL_WRT_EXE		toColour( .style = 0		, .fg = 173						) // #E48256
+#define HL_REA_EXE		toColour( .style = 0		, .fg = 180						) // #DFAD81
+#define HL_REA_WRT		toColour( .style = 0		, .fg = G_BRT_BLUE				) // \e[94m
+#define HL_RWX_ALL		toColour( .style = 0		, .fg = G_BLUE					) // \e[34m
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -138,6 +143,7 @@
 /* —— Punctuation ——————————————————————————————————————————————————————————— */
 
 #define PUNCT					toColour( .fg = G_BRT_BLACK ) // \e[90m
+#define DARK_PUNCT				toColour( .fg = G_BLACK		) // \e[30m
 #define PUNCT_ANSI				ANSI_IFCOL( "90" )
 
 /* —— Escape Characters ————————————————————————————————————————————————————— */
@@ -211,17 +217,17 @@
 #define WRIT_BIT_CHAR			'w'
 #define EXEC_BIT_CHAR			'x'
 
-#define SUGID_X_BIT_CHAR		's'
-#define SUGID_N_BIT_CHAR		'S'
+#define SUGI_X_BIT_CHAR			's'
+#define SUGI_N_BIT_CHAR			'S'
 
-#define STICKY_X_BIT_CHAR		't'
-#define STICKY_N_BIT_CHAR		'T'
+#define STIC_X_BIT_CHAR			't'
+#define STIC_N_BIT_CHAR			'T'
 
-#define SUID_N_BIT_CHAR			SUGID_N_BIT_CHAR
-#define SUID_X_BIT_CHAR			SUGID_X_BIT_CHAR
+#define SUID_N_BIT_CHAR			SUGI_N_BIT_CHAR
+#define SUID_X_BIT_CHAR			SUGI_X_BIT_CHAR
 
-#define SGID_N_BIT_CHAR			SUGID_N_BIT_CHAR
-#define SGID_X_BIT_CHAR			SUGID_X_BIT_CHAR
+#define SGID_N_BIT_CHAR			SUGI_N_BIT_CHAR
+#define SGID_X_BIT_CHAR			SUGI_X_BIT_CHAR
 
 /* —— UID/GID ——————————————————————————————————————————————————————————————— */
 
@@ -301,8 +307,8 @@
 	X(FC_SUID_N		, HL_SUID_N		) /* \e[101m */ \
 	X(FC_SGID_X		, HL_SGID_X		) /* \e[45m  */ \
 	X(FC_SGID_N		, HL_SGID_N		) /* \e[105m */ \
-	X(FC_STICKY_X	, HL_STICKY_X	) /* \e[44m  */ \
-	X(FC_STICKY_N	, HL_STICKY_N	) /* \e[104m */ \
+	X(FC_STIC_X		, HL_STIC_X		) /* \e[44m  */ \
+	X(FC_STIC_N		, HL_STIC_N		) /* \e[104m */ \
 	/* Flags	   */ \
 	X(FC_DATALESS	, HL_DATALESS	) /* \e[47m  */ \
 	/* Extension   */ \
@@ -319,18 +325,26 @@
 #define ACL_COLOUR	  toColour( .fg = 39	)
 
 #define PERM_COLOUR_TABLE \
-	X(PC_NONE		, PUNCT			) /* \e[90m  */ \
-	X(PC_READ		, HL_READ		) /* \e[92m  */ \
-	X(PC_W_USRGRP	, HL_W_USRGRP	) /* \e[93m  */ \
-	X(PC_W_OTHER	, HL_W_OTHER	) /* \e[42m  */ \
-	X(PC_X_REG		, HL_X_REG		) /* \e[31m  */ \
-	X(PC_X_NREG		, HL_X_NREG		) /* \e[91m  */ \
-	X(PC_SUID_X		, HL_SUID_X		) /* \e[41m  */ \
-	X(PC_SUID_N		, HL_SUID_N		) /* \e[101m */ \
-	X(PC_SGID_X		, HL_SGID_X		) /* \e[45m  */ \
-	X(PC_SGID_N		, HL_SGID_N		) /* \e[105m */ \
-	X(PC_STICKY_X	, HL_STICKY_X	) /* \e[44m  */ \
-	X(PC_STICKY_N	, HL_STICKY_N	) /* \e[104m */
+	X(PC_NONE		, PUNCT			) /* 00 0000 .--------- \e[90m  */ \
+	\
+	X(PC_READ		, HL_READ		) /* 00 0000 .r--r--r-- \e[92m  */ \
+	X(PC_W_UG		, HL_W_UG		) /* 00 0000 .-w--w---- \e[93m  */ \
+	X(PC_W_OTH		, HL_W_OTH		) /* 00 0000 .------w-- \e[42m  */ \
+	X(PC_X_REG		, HL_X_REG		) /* 00 0000 .--x--x--x \e[31m  */ \
+	X(PC_X_NRG		, HL_X_NRG		) /* 00 0000 d--x--x--x \e[91m  */ \
+	\
+	X(PC_SUID_X		, HL_SUID_X		) /* 00 0000 .--s------ \e[41m  */ \
+	X(PC_SUID_N		, HL_SUID_N		) /* 00 0000 .--S------ \e[101m */ \
+	X(PC_SGID_X		, HL_SGID_X		) /* 00 0000 .-----s--- \e[45m  */ \
+	X(PC_SGID_N		, HL_SGID_N		) /* 00 0000 .-----S--- \e[105m */ \
+	X(PC_STIC_X		, HL_STIC_X		) /* 00 0000 .--------t \e[44m  */ \
+	X(PC_STIC_N		, HL_STIC_N		) /* 00 0000 .--------T \e[104m */ \
+	\
+	X(PC_NON_EXT 	, DARK_PUNCT	) /* 00 0000 .--------- \e[30m  */ \
+	X(PC_REA_EXE 	, HL_REA_EXE	) /* 00 0000 .r-xr-xr-x #E48256 */ \
+	X(PC_WRT_EXE 	, HL_WRT_EXE	) /* 00 0000 .-wx-wx--x #DFAD81 */ \
+	X(PC_REA_WRT 	, HL_REA_WRT	) /* 00 0000 .rw-rw-r-- \e[94m  */ \
+	X(PC_RWX_ALL 	, HL_RWX_ALL	) /* 00 0000 .rwxrwxr-x \e[34m  */ \
 
 /* —— Time —————————————————————————————————————————————————————————————————— */
 
@@ -431,6 +445,6 @@ FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flag
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// spell:ignoreRegexp /(?<=G_)\w+\b|nodim|strncol/gi
+// spell:ignoreRegexp /(?<=G_)\w+\b|nodim|\b[bcdlps]?[rw-x]+\b|strncol/gi
 
 #endif /* !GRAPHICS_INITIALIASED */
