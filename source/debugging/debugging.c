@@ -1,6 +1,7 @@
 /// @file debugging/debugging.c
 
 #include <stdio.h>
+#include <wchar.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
@@ -87,9 +88,9 @@ void d__debug(
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void d__line(void) {
+void d__line(const uint8_t len) {
 	toStderr("%s", DIM);
-	for (int i = 0; i < 150; i++) fputs("─", stderr);
+	for (uint8_t i = 0; i < len; i++) fputwc(L'─', stderr);
 	toStderr("%s\n", RESET);
 }
 

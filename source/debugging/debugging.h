@@ -36,7 +36,7 @@ void d__debug(
 	const char *const fmt, ...
 );
 void d__dump(const FileStat *const fs);
-void d__line(void);
+void d__line(const uint8_t len);
 
 #ifdef DEBUG_MODE
 #	define IN_DEBUG_MODE true
@@ -45,7 +45,16 @@ void d__line(void);
 #	define stacktrace() d__stacktrace()
 #	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __func__, __VA_ARGS__)
 #	define dump(fs) d__dump(fs)
-#	define dline() d__line()
+
+/* ————————————————————————————————————————————————————— */
+
+#	define arg1__dline(len)	d__line((uint8_t)(len))
+#	define arg0__dline()	d__line((uint8_t)(150))
+
+#	define dline__DISPATCH(_1, NAME, ...) NAME
+#	define dline(...) dline__DISPATCH(__VA_ARGS__ __VA_OPT__(,) arg1__dline, arg0__dline)(__VA_ARGS__)
+
+/* ————————————————————————————————————————————————————— */
 
 #	define initDebugging(argv) do {										\
 		/* this is a very crude way to check for the `--clear` flag, */	\
