@@ -84,7 +84,7 @@ void printEscdName(const char *const name, const Colour colour) {
 
 	uint8_t init_ansi_len, file_ansi_len;
 	const char *initcol_ptr;
-	char init_ansi[MAX_ANSI_SIZE];
+	ansi_t init_ansi;
 
 	// if the file's colour is different to the active colour, and the first char in the name isn't escaped,
 	//	then print some colour before the name

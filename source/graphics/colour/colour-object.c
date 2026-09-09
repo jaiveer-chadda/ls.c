@@ -37,7 +37,7 @@ static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
 static Colour active = RESET_ALL;
 
 // the initial `CSI` will always remain here; only chars after it will ever be changed
-static char output_buffer[MAX_ANSI_SIZE] = CSI;
+static ansi_t output_buffer = CSI;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── `set/getActive()` ── ────────────────────────────────────────────────────────────────────────────────────── */
@@ -209,12 +209,12 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	/* ── Set Buffer & Return ─────────────────────────────────────────── */
 
-	const int output_len = snprintf(output_buffer, MAX_ANSI_SIZE,
+	const size_t output_len = (size_t)snprintf(output_buffer, sizeof(ansi_t),
 		ANSI("%s%s" "%s" "%s"),
 		style, fg, do_fg_sc ? ";" : "", bg
 	);
 
-	if (output_len >= MAX_ANSI_SIZE) {
+	if (output_len >= sizeof(ansi_t)) {
 		RETURN_LEN(0);
 		return "";
 	}

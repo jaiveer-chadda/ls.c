@@ -5,12 +5,14 @@
 
 #include <inttypes.h>
 
-/* —— Styles ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Definitions —————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /**	The maximum number of characters needed to represent the longest ANSI supported code, including a null terminator.
  *	- This would be: `"\e[;22;23;24;25;27;28;29;38;2;255;255;255;48;2;255;255;255m\0"` (len = 60).
  *	- Rounded up to 64. */
 #define MAX_ANSI_SIZE 64
+
+typedef char ansi_t[MAX_ANSI_SIZE];
 
 /* —— Styles ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
