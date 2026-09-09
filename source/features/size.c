@@ -149,13 +149,15 @@ void print_size_str(const FileStat *const pFS) {
 	const bool do_unit = DO_PRINT_SIZE_UNIT(unit);
 	const int size_len = (int)strlen(str);
 	SizeColour size_col, unit_col;
+	ansi_t size_col_ansi = "";
 
 	getSizeColours(unit, &size_col, &unit_col);
 
-	ansi_t size_col_ansi;
-	uint8_t size_col_len = 0;
-	const char *const size_col_ptr = getcollen(size_colour_esc[size_col], &size_col_len);
-	memcpy(size_col_ansi, size_col_ptr, size_col_len);
+	if (DO_COLOUR()) {
+		uint8_t size_col_len = 0;
+		const char *const size_col_ptr = getcollen(size_colour_esc[size_col], &size_col_len);
+		memcpy(size_col_ansi, size_col_ptr, size_col_len);
+	}
 
 	printf("%*s" "%s%s%s" "%s%s" "%s%ls",
 		(getLen(FI_size_str) - size_len) - do_unit, "", // padding
