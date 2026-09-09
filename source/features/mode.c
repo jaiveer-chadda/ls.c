@@ -150,8 +150,15 @@ static inline PermColour getExtColour(const mode_t mode) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DIG_TO_CHR(dig) ((char)('0' + (int)(dig)))
-#define PRINT_PERM_COLOUR(colour) colprint(((colour) != PC_COUNT) ? perm_colour_esc[(colour)] : RESET_ALL)
+#define DIG_TO_CHR(dig) ((char)('0' + (unsigned)(dig)))
+
+#define ADD_COLOUR(src, dst_ptr) do {		\
+	colour = getcollen((src), &col_len);	\
+	memcpy((dst_ptr), colour, col_len);		\
+	(dst_ptr) += col_len;					\
+} while (0)
+
+/* ————————————————————————————————————————————————— */
 
 void print_mode(const FileStat *const pFS) {
 	const mode_t
@@ -161,11 +168,16 @@ void print_mode(const FileStat *const pFS) {
 	const FileColour file_col = getTypeColour(pFS->mode_str[0]);
 	const PermColour ext_col  = getExtColour(pFS->mode);
 
-	colprint(file_colour_esc[file_col]);
-	printf("%02o", type);
+	char output[96] = {0};
+	char *out_ptr = output;
+	const char *colour = "";
+	uint8_t col_len = 0;
 
-	PRINT_PERM_COLOUR(ext_col);
-	putchar(DIG_TO_CHR(ext));
+	ADD_COLOUR(file_colour_esc[file_col], out_ptr);
+	out_ptr += sprintf(out_ptr, "%02o", type);
+
+	ADD_COLOUR(perm_colour_esc[ext_col], out_ptr);
+	*out_ptr++ = DIG_TO_CHR(ext);
 
 	for (int i = 0; i < 3; i++) {
 		// shift each section of the mode over, so that the part we want to analyse is the least significant digit.
@@ -173,12 +185,11 @@ void print_mode(const FileStat *const pFS) {
 		const mode_t mode_dig = (pFS->mode >> (LOG2_8 * (2 - i))) & S_IRWXO;
 		const PermColour dig_col = getDigColour(mode_dig, /*is_oth*/(i == 2), /*is_reg*/(pFS->mode & S_IFREG));
 
-		PRINT_PERM_COLOUR(dig_col);
-		putchar(DIG_TO_CHR(mode_dig));
+		ADD_COLOUR(perm_colour_esc[dig_col], out_ptr);
+		*out_ptr++ = DIG_TO_CHR(mode_dig);
 	}
 
-	colprint(RESET_ALL);
-	printf("%ls", FIELD_PAD);
+	printf("%s%s%ls", output, getcol(RESET_ALL), FIELD_PAD);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -222,14 +233,6 @@ static inline char getPermColour(const char *mode_str, const int idx) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#define ADD_COLOUR(src, dst_ptr) do {		\
-	colour = getcollen((src), &col_len);	\
-	memcpy((dst_ptr), colour, col_len);		\
-	(dst_ptr) += col_len;					\
-} while (0)
-
-/* ————————————————————————————————————————————————— */
 
 void print_mode_str(const FileStat *const pFS) {
 	char xa_buf[32] = {0};
