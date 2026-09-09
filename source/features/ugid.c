@@ -67,13 +67,13 @@ static inline uid_t get_user_uid(void) {
 
 /* ———————————————————————————————————————————————————————— */
 
-static inline Colour get_uid_colour(const FileStat *const pFS) {
+static inline Colour get_usr_colour(const FileStat *const pFS) {
 	if (pFS->s->st_uid == get_user_uid()) return USR_YOU_COL;
 	if (pFS->s->st_uid == ROOT_USR_UID  ) return USR_ROOT_COL;
 	return USR_OTH_COL;
 }
 
-static inline Colour get_gid_colour(const FileStat *const pFS) {
+static inline Colour get_grp_colour(const FileStat *const pFS) {
 	const struct passwd *const pw = getpwuid(get_user_uid());
 
 	const bool in_user_grp = is_user_in_group(pw->pw_name, pw->pw_gid, pFS->f->grp_name, pFS->s->st_gid);
@@ -93,7 +93,7 @@ void print_usr_name(const FileStat *const pFS) {
 		return;
 	}
 
-	const Colour col = get_uid_colour(pFS);
+	const Colour col = get_usr_colour(pFS);
 	printf("%s" "%-*s" "%ls", getcol(col), getLen(FI_usr_name), pFS->f->usr_name, FIELD_PAD);
 }
 
@@ -106,17 +106,21 @@ void print_grp_name(const FileStat *const pFS) {
 		return;
 	}
 
-	Colour col = get_gid_colour(pFS);
+	Colour col = get_grp_colour(pFS);
 	printf("%s" "%-*s" "%ls", getcol(col), getLen(FI_grp_name), pFS->f->grp_name, FIELD_PAD);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define get_uid_colour get_usr_colour
+#define get_gid_colour get_grp_colour
+
 #define print_ugid(ugid)								\
 	void print_##ugid(const FileStat *const pFS) {		\
 		const bool valid = pFS->s != NULL;				\
 		printf(											\
-			valid ? fields[FI_##ugid].fmt_p : "%*c%ls",	\
+			valid ? "%s%*d%ls" : "%s%*c%ls",			\
+			getcol(get_##ugid##_colour(pFS)),			\
 			getLen(FI_##ugid),							\
 			valid ? pFS->s->st_##ugid : '-',			\
 			FIELD_PAD									\
