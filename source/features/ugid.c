@@ -10,14 +10,6 @@
 #include "model/types.h"
 #include "form/formatting.h"
 
-static long user_uid = -1;
-
-/// Just a small wrapper function to be able to cache the uid of the user running this program.
-static inline uid_t get_user_uid(void) {
-	if (user_uid != -1) return (uid_t)user_uid;
-	return (uid_t)( user_uid = (long)getuid() );
-}
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 char *getUser(const uid_t uid) {
@@ -63,6 +55,35 @@ static inline bool is_user_in_group(
 	return false;
 }
 
+/* ———————————————————————————————————————————————————————— */
+
+/// Just a small wrapper function to be able to cache the uid of the user running this program.
+static inline uid_t get_user_uid(void) {
+	static long user_uid = -1;
+
+	if (user_uid == -1) user_uid = (long)getuid();
+	return (uid_t)user_uid;
+}
+
+/* ———————————————————————————————————————————————————————— */
+
+static inline Colour get_uid_colour(const FileStat *const pFS) {
+	if (pFS->s->st_uid == get_user_uid()) return USR_YOU_COL;
+	if (pFS->s->st_uid == ROOT_USR_UID  ) return USR_ROOT_COL;
+	return USR_OTH_COL;
+}
+
+static inline Colour get_gid_colour(const FileStat *const pFS) {
+	const struct passwd *const pw = getpwuid(get_user_uid());
+
+	const bool in_user_grp = is_user_in_group(pw->pw_name, pw->pw_gid, pFS->f->grp_name, pFS->s->st_gid);
+	const bool in_root_grp = pFS->s->st_gid == ROOT_GRP_GID;
+
+	if (in_user_grp) return GRP_YOU_COL;
+	if (in_root_grp) return GRP_ROOT_COL;
+	return GRP_OTH_COL;
+}
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_usr_name(const FileStat *const pFS) {
@@ -72,12 +93,7 @@ void print_usr_name(const FileStat *const pFS) {
 		return;
 	}
 
-	const uid_t file_uid = pFS->s->st_uid;
-	Colour col = USR_OTH_COL;
-
-	if		(file_uid == get_user_uid()) col = USR_YOU_COL;
-	else if	(file_uid == ROOT_USR_UID  ) col = USR_ROOT_COL;
-
+	const Colour col = get_uid_colour(pFS);
 	printf("%s" "%-*s" "%ls", getcol(col), getLen(FI_usr_name), pFS->f->usr_name, FIELD_PAD);
 }
 
@@ -90,18 +106,7 @@ void print_grp_name(const FileStat *const pFS) {
 		return;
 	}
 
-	const struct passwd *const pw = getpwuid(get_user_uid());
-
-	/// The username of the user running this process.
-	const char *const usr_name = pw->pw_name;
-	const bool in_user_grp = is_user_in_group(usr_name, pw->pw_gid, pFS->f->grp_name, pFS->s->st_gid);
-	const bool in_root_grp = pFS->s->st_gid == ROOT_GRP_GID;
-
-	Colour col = GRP_OTH_COL;
-
-	if		(in_user_grp) col = GRP_YOU_COL;
-	else if	(in_root_grp) col = GRP_ROOT_COL;
-
+	Colour col = get_gid_colour(pFS);
 	printf("%s" "%-*s" "%ls", getcol(col), getLen(FI_grp_name), pFS->f->grp_name, FIELD_PAD);
 }
 
