@@ -238,13 +238,13 @@
 #define USR_INV_COL				PUNCT			// \e[90m
 #define GRP_INV_COL				PUNCT			// \e[90m
 
-#define USR_YOU_COL				"1;38;5;105"	// #807DED
-#define USR_ROOT_COL			"31"			// \e[31m
-#define USR_OTH_COL				"93"			// \e[93m
+#define USR_YOU_COL				toColour( .style = G_BOLD, .fg = 105	) // #807DED
+#define USR_ROOT_COL			toColour( .style = 0	 , .fg = G_RED	) // \e[31m
+#define USR_OTH_COL				toColour( .style = 0	 , .fg = G_YEL	) // \e[93m
 
-#define GRP_YOU_COL				"93"			// \e[93m
-#define GRP_ROOT_COL			"94"			// \e[94m
-#define GRP_OTH_COL				"91"			// \e[91m
+#define GRP_YOU_COL				toColour( .fg = G_YEL ) // \e[93m
+#define GRP_ROOT_COL			toColour( .fg = G_BLU ) // \e[94m
+#define GRP_OTH_COL				toColour( .fg = G_RED ) // \e[91m
 
 /* —— Flags ————————————————————————————————————————————————————————————————— */
 
