@@ -190,13 +190,14 @@
 
 /* —— NLink ————————————————————————————————————————————————————————————————— */
 
-#define LN_COL_DIR				"1;96"			// \e[96m
-#define LN_COL_DIR_EMPTY		"36"			// \e[36m
-#define LN_COL_REG_1			"2;96"			// \e[96m \e[2m
-#define LN_COL_REG_MORE			"1;30;105"		// \e[105m
-#define LN_COL_OTHER			"1;30;41"		// \e[41m
+#define LN_COL_DIR			toColour( .style = G_BOLD, .fg = G_BRT_CYAN	, .bg = 0		) // \e[96m
+#define LN_COL_DIR_EMPTY	toColour( .style = 0	 , .fg = G_CYAN		, .bg = 0		) // \e[36m
+#define LN_COL_REG_1		toColour( .style = G_DIM , .fg = G_BRT_CYAN	, .bg = 0		) // \e[96m \e[2m
+#define LN_COL_REG_MORE		toColour( .style = G_BOLD, .fg = G_BLACK	, .bg = G_BMAG	) // \e[105m
+#define LN_COL_OTHER		toColour( .style = G_BOLD, .fg = G_BLACK	, .bg = G_RED	) // \e[41m
 
-#define HARDLN_UNDERLINE		";21;58;5;13"	// \e[21m \e[95m
+#define HARDLN_UNDERLINE	toColour( .style = G_DUNDER					, .bg =	0		) // \e[21m \e[95m
+#define HARDLN_ANSI			ANSI_IFCOL( "21;58;5;13" )
 
 /* —— Mount Point ——————————————————————————————————————————————————————————— */
 
