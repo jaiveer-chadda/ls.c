@@ -78,12 +78,40 @@ char *parseSize(unit_t *const size_unit, const off_t size, const dev_t rdev) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline void getSizeColours(const unit_t unit, SizeColour *const size_col, SizeColour *const unit_col) {
+	const bool do_unit = unit_col != NULL;
+	switch (unit) {
+		case UNIT_BYTE: *size_col = SC_BB; if (do_unit) *unit_col = SC_UB; break;
+		case UNIT_KILO: *size_col = SC_BK; if (do_unit) *unit_col = SC_UK; break;
+		case UNIT_MEGA: *size_col = SC_BM; if (do_unit) *unit_col = SC_UM; break;
+		case UNIT_GIGA: *size_col = SC_BG; if (do_unit) *unit_col = SC_UG; break;
+		default		  : *size_col = SC_BT; if (do_unit) *unit_col = SC_UT; break;
+	}
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define SIZE_IS_VALID(pFS) (			\
+	(pFS)->f != NULL &&					\
+	(pFS)->f->size_str != NULL &&		\
+	(pFS)->f->size_unit != UNIT_ERROR	\
+)
+
 void print_size(const FileStat *const pFS) {
-	const bool valid = pFS->s != NULL && pFS->s->st_size != 0;
-	printf(
-		valid ? fields[FI_size].fmt_p : "%*c%ls",
-		getLen(FI_size),
-		valid ? pFS->s->st_size : '-',
+	if (!SIZE_IS_VALID(pFS) || pFS->f->size_unit == UNIT_MAJ_MIN) {
+		printf("%s" "%*c" "%ls", getcol(PUNCT), getLen(FI_size_str), '-', FIELD_PAD);
+		return;
+	}
+
+	const off_t size = pFS->s->st_size;
+	const int size_len = snprintf(NULL, 0, "%lld", size);
+
+	SizeColour size_col;
+	getSizeColours(pFS->f->size_unit, &size_col, NULL);
+
+	printf("%*s" "%s%lld" "%ls",
+		getLen(FI_size) - size_len, "",
+		getcol(size_colour_esc[size_col]), size,
 		FIELD_PAD
 	);
 }
@@ -108,13 +136,7 @@ static inline void printMajMinSize(const FileStat *const pFS) {
 /* ———————————————————————————————————————————————————————————————————— */
 
 void print_size_str(const FileStat *const pFS) {
-	const bool valid = (
-		pFS->f != NULL &&
-		pFS->f->size_str != NULL &&
-		pFS->f->size_unit != UNIT_ERROR
-	);
-
-	if (!valid) {
+	if (!SIZE_IS_VALID(pFS)) {
 		printf("%s" "%*s" "%ls", getcol(PUNCT), getLen(FI_size_str), NO_SIZE_STR, FIELD_PAD);
 		return;
 	}
@@ -128,17 +150,11 @@ void print_size_str(const FileStat *const pFS) {
 	const int size_len = (int)strlen(str);
 	SizeColour size_col, unit_col;
 
-	switch (unit) {
-		case UNIT_BYTE: size_col = SC_BB, unit_col = SC_UB; break;
-		case UNIT_KILO: size_col = SC_BK, unit_col = SC_UK; break;
-		case UNIT_MEGA: size_col = SC_BM, unit_col = SC_UM; break;
-		case UNIT_GIGA: size_col = SC_BG, unit_col = SC_UG; break;
-		default		  : size_col = SC_BT, unit_col = SC_UT; break;
-	}
+	getSizeColours(unit, &size_col, &unit_col);
 
 	ansi_t size_col_ansi;
 	uint8_t size_col_len = 0;
-	char *const size_col_ptr = getcollen(size_colour_esc[size_col], &size_col_len);
+	const char *const size_col_ptr = getcollen(size_colour_esc[size_col], &size_col_len);
 	memcpy(size_col_ansi, size_col_ptr, size_col_len);
 
 	printf("%*s" "%s%s" "%s%s" "%ls",
@@ -147,7 +163,6 @@ void print_size_str(const FileStat *const pFS) {
 		do_unit ? getcol(size_colour_esc[unit_col]) : "", do_unit ? (char[]){ unit, '\0' } : "",
 		FIELD_PAD
 	);
-
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
