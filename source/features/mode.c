@@ -11,7 +11,7 @@
 #include "options/options.h"
 #include "graphics/graphics.h"
 
-static inline FileColour getTypeColour(const char type_char);
+static inline FileColour getTypeColour(const char type_char); /** @todo move */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -23,6 +23,7 @@ static inline FileColour getTypeColour(const char type_char);
 #define UGO_RWX_MASK	(S_IRWXU | S_IRWXG | S_IRWXO)
 
 #define S_IFSOC S_IFSOCK
+#define LOG2_8 3 /** `log_2(8) = 3` (i.e., log base 2 of 8) */
 
 /* ———————————————————————————————————————————————————————————————————————————————— */
 
@@ -76,11 +77,11 @@ inline char getTypeSuffix(const mode_t mode) {
 
 void getMode(modestr mode_str, const mode_t oct_mode) {
 	// separate oct_mode by bit shifting it, leaving just one digit from 0-7 in each var
-	const mode_t // Note: 3 = log2(8)
-		ext_oct = (oct_mode & EXT_MASK) >> (3 * 3), // `d--s--s--t` == `7000`
-		usr_oct = (oct_mode & USR_MASK) >> (3 * 2), // `drwx------` == `0700`
-		grp_oct = (oct_mode & GRP_MASK) >> (3 * 1), // `d---rwx---` == `0070`
-		oth_oct = (oct_mode & OTH_MASK) >> (3 * 0); // `d------rwx` == `0007`
+	const mode_t
+		ext_oct = (oct_mode & EXT_MASK) >> (LOG2_8 * 3), // `d--s--s--t` == `7000`
+		usr_oct = (oct_mode & USR_MASK) >> (LOG2_8 * 2), // `drwx------` == `0700`
+		grp_oct = (oct_mode & GRP_MASK) >> (LOG2_8 * 1), // `d---rwx---` == `0070`
+		oth_oct = (oct_mode & OTH_MASK) >> (LOG2_8 * 0); // `d------rwx` == `0007`
 
 	char usr_str[4], grp_str[4], oth_str[4];
 
@@ -110,54 +111,70 @@ bool checkXattr(const path_t path) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define IFL_REG(tru, fal) ((pFS->mode & S_IFREG) ? (tru) : (fal))
+#define R S_IROTH
+#define W S_IWOTH
+#define X S_IXOTH
+
+static inline PermColour getDigColour(const mode_t mode_dig, const bool is_oth, const bool is_reg) {
+	switch (mode_dig) {
+		case 0|0|0: return PC_NONE;
+
+		case 0|0|X: return is_reg ? PC_X_REG : PC_X_NRG;
+		case 0|W|0: return PC_W_UG;
+		case R|0|0: return PC_READ;
+
+		case 0|W|X: return PC_WRT_EXE;
+		case R|0|X: return PC_REA_EXE;
+		case R|W|0: return PC_REA_WRT;
+		case R|W|X: return PC_RWX_ALL;
+	}
+
+	if ((mode_dig & (0|W|0)) && is_oth)
+		return PC_W_OTH;
+
+	return PC_NONE;
+}
+
+#undef R
+#undef W
+#undef X
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline PermColour getExtColour(const mode_t mode) {
+	if (mode & S_ISUID) return S_IXUSR & mode ? PC_SUID_X : PC_SUID_N;
+	if (mode & S_ISGID) return S_IXGRP & mode ? PC_SGID_X : PC_SGID_N;
+	if (mode & S_ISVTX) return S_IXOTH & mode ? PC_STIC_X : PC_STIC_N;
+	/**/				return PC_NON_EXT;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #define DIG_TO_CHR(dig) ((char)('0' + (int)(dig)))
+#define PRINT_PERM_COLOUR(colour) colprint(((colour) != PC_COUNT) ? perm_colour_esc[(colour)] : RESET_ALL)
 
 void print_mode(const FileStat *const pFS) {
-	const mode_t type = (pFS->mode & TYPE_MASK) >> (3 * 4);
+	const mode_t
+		type = (pFS->mode & TYPE_MASK) >> (LOG2_8 * 4), /** The two octal digits representing the file's type. */
+		ext	 = (pFS->mode & EXT_MASK ) >> (LOG2_8 * 3); /** The digit representing the file's extended permissions. */
 
-	colprint(file_colour_esc[getTypeColour(pFS->mode_str[0])]);
+	const FileColour file_col = getTypeColour(pFS->mode_str[0]);
+	const PermColour ext_col  = getExtColour(pFS->mode);
+
+	colprint(file_colour_esc[file_col]);
 	printf("%02o", type);
 
-	if		(pFS->mode & S_ISUID) colprint(perm_colour_esc[S_IXUSR & pFS->mode ? PC_SUID_X : PC_SUID_N]);
-	else if (pFS->mode & S_ISGID) colprint(perm_colour_esc[S_IXGRP & pFS->mode ? PC_SGID_X : PC_SGID_N]);
-	else if (pFS->mode & S_ISVTX) colprint(perm_colour_esc[S_IXOTH & pFS->mode ? PC_STIC_X : PC_STIC_N]);
-	else						  colprint(perm_colour_esc[PC_NON_EXT]);
-
-	putchar(DIG_TO_CHR((pFS->mode & EXT_MASK) >> (3 * 3)));
-	colprint(RESET_ALL);
-
-	mode_t sec_mode;
-	PermColour col;
+	PRINT_PERM_COLOUR(ext_col);
+	putchar(DIG_TO_CHR(ext));
 
 	for (int i = 0; i < 3; i++) {
-		sec_mode = (pFS->mode >> (3 * (2 - i))) & S_IRWXO;
-		col = PC_COUNT;
+		// shift each section of the mode over, so that the part we want to analyse is the least significant digit.
+		//	then apply a mask so only the least significant digit is left, and `mode_dig` is `0o00 <= mode_dig <= 0o07`
+		const mode_t mode_dig = (pFS->mode >> (LOG2_8 * (2 - i))) & S_IRWXO;
+		const PermColour dig_col = getDigColour(mode_dig, /*is_oth*/(i == 2), /*is_reg*/(pFS->mode & S_IFREG));
 
-		#define R S_IROTH
-		#define W S_IWOTH
-		#define X S_IXOTH
-
-		switch (sec_mode) {
-			case 0|0|0: col = PC_NONE	; break;
-
-			case 0|0|X: col = IFL_REG(PC_X_REG, PC_X_NRG); break;
-			case 0|W|0: col = PC_W_UG	; break;
-			case R|0|0: col = PC_READ	; break;
-
-			case 0|W|X: col = PC_WRT_EXE; break;
-			case R|0|X: col = PC_REA_EXE; break;
-			case R|W|0: col = PC_REA_WRT; break;
-			case R|W|X: col = PC_RWX_ALL; break;
-		}
-		if ((sec_mode & (0|W|0)) && (i == 2)) col = PC_W_OTH;
-
-		#undef R
-		#undef W
-		#undef X
-
-		colprint(col != PC_COUNT ? perm_colour_esc[col] : RESET_ALL);
-		putchar(DIG_TO_CHR(sec_mode));
+		PRINT_PERM_COLOUR(dig_col);
+		putchar(DIG_TO_CHR(mode_dig));
 	}
 
 	colprint(RESET_ALL);
