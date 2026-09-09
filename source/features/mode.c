@@ -205,11 +205,10 @@ void print_mode_str(const FileStat *const pFS) {
 	// only print a final reset sequence if there were no extra characters, and the final perm colour had a background
 	const bool do_reset = pure_xa_len == 0 && perm_colour_esc[esc].has_bg();
 
-	printf("%s" "%s%*s" "%s" "%ls",
-		output,
+	printf("%s%s" "%s%*s" "%ls",
+		output, do_reset ? getcol(RESET_ALL) : "",
 		// print the xattr & acl chars, and pad appropriately
 		xa_buf, getLen(FI_xat_acl) - pure_xa_len, "", 
-		do_reset ? getcol(RESET_ALL) : "",
 		FIELD_PAD
 	);
 }
