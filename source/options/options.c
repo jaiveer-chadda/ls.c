@@ -163,24 +163,25 @@ int setOptions(const int argc, char *argv[]) {
 				VALUE_OF(DO_REVERSE_SORT) = !VALUE_OF(DO_REVERSE_SORT);
 			}
 
-			if		(OPTARG_IS("none" )) U_SORT_BY = SB_NONE  ;
-			else if	(OPTARG_IS("name" )) U_SORT_BY = SB_NAME  ;
-			else if	(OPTARG_IS("size" )) U_SORT_BY = SB_SIZE  ;
-			else if	(OPTARG_IS("time" )) U_SORT_BY = SB_TIME  ;
-			else if	(OPTARG_IS("inode")) U_SORT_BY = SB_INODE ;
-			else if	(OPTARG_IS("devno")) U_SORT_BY = SB_DEVNO ;
-			else if	(OPTARG_IS("uid"  )) U_SORT_BY = SB_UID	  ;
-			else if	(OPTARG_IS("gid"  )) U_SORT_BY = SB_GID	  ;
-			else if	(OPTARG_IS("links")) U_SORT_BY = SB_NLINK ;
-			else if	(OPTARG_IS("flags")) U_SORT_BY = SB_FLAGS ;
-			else if	(OPTARG_IS("mode" )) U_SORT_BY = SB_MODE  ;
+			if		(OPTARG_IS("none" )						 ) U_SORT_BY = SB_NONE	;
+			else if	(OPTARG_IS("name" )						 ) U_SORT_BY = SB_NAME	;
+			else if	(OPTARG_IS("size" )						 ) U_SORT_BY = SB_SIZE	;
+			else if	(OPTARG_IS("time" )						 ) U_SORT_BY = SB_TIME	;
+			else if	(OPTARG_IS("inode")	|| OPTARG_IS("inum" )) U_SORT_BY = SB_INODE	;
+			else if	(OPTARG_IS("devno")						 ) U_SORT_BY = SB_DEVNO	;
+			else if	(OPTARG_IS("uid"  )	|| OPTARG_IS("user" )) U_SORT_BY = SB_UID	;
+			else if	(OPTARG_IS("gid"  )	|| OPTARG_IS("group")) U_SORT_BY = SB_GID	;
+			else if	(OPTARG_IS("links")	|| OPTARG_IS("nlink")) U_SORT_BY = SB_NLINK	;
+			else if	(OPTARG_IS("flags")						 ) U_SORT_BY = SB_FLAGS	;
+			else if	(OPTARG_IS("type" )						 ) U_SORT_BY = SB_TYPE	;
+			else if	(OPTARG_IS("mode" ) || OPTARG_IS("perms")) U_SORT_BY = SB_MODE	;
 
 			else if	(HAS_ARG) ERR_BAD_ARG(
 				"\n - name (default)"	  "\n - size"  "\n - time"
 				"\n - uid"   "\n - gid"   "\n - inode" "\n - devno"
 				"\n - links" "\n - flags" "\n - mode"  "\n - none"
 			);
-			else ERR_TAKES_ARG();
+			else /* if (!HAS_ARG) */ ERR_TAKES_ARG();
 
 			CONSUME_ARG;
 			continue;

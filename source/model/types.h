@@ -108,7 +108,7 @@ typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; // `(MAX_FLAG_LEN + 1) 
 /// @brief The fields by which outputs can be sorted, using the `--sort` flag.
 typedef enum {
 	SB_DEFAULT, SB_NONE,
-	SB_NAME, SB_SIZE, SB_TIME, SB_INODE, SB_DEVNO, SB_UID, SB_GID, SB_NLINK, SB_FLAGS, SB_MODE,
+	SB_NAME, SB_SIZE, SB_TIME, SB_INODE, SB_DEVNO, SB_UID, SB_GID, SB_NLINK, SB_FLAGS, SB_TYPE, SB_MODE,
 	/* SB_COUNT */
 } SortByField;
 

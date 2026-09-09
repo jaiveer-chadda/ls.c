@@ -36,17 +36,23 @@ static int8_t REVERSE;
 		(GET_ATTR(1, field) < GET_ATTR(2, field))	\
 	)
 
+#define CHECK_DIRS() \
+	if (SORT_DIRS_FIRST()) {															\
+		/* if one file is a directory and the other isn't, sort the directory first */	\
+		/*	note: we don't reverse the ordering of this sort - dirs are always first */	\
+		if ( IS_DIR(1) && !IS_DIR(2)) return FILE_1_FIRST;								\
+		if (!IS_DIR(1) &&  IS_DIR(2)) return FILE_2_FIRST;								\
+	}
+
 /* ——————————————————————————————————————————————————————————————————— */
+
+#define QSORT_PROTOTYPE(funcname) \
+	static inline int compare_ ## funcname ## s(const void *file_1, const void *file_2)
 
 /// Define a function that can be passed into `qsort` (by the `SORT_FILES_BY` macro).
 #define DEFINE_COMPARE_FUNCTION(funcname, field) \
-	static inline int compare_ ## funcname ## s(const void *file_1, const void *file_2) {	\
-		if (SORT_DIRS_FIRST()) {															\
-			/* if one file is a directory and the other isn't, sort the directory first */	\
-			/*	note: we don't reverse the ordering of this sort - dirs are always first */	\
-			if ( IS_DIR(1) && !IS_DIR(2)) return FILE_1_FIRST;								\
-			if (!IS_DIR(1) &&  IS_DIR(2)) return FILE_2_FIRST;								\
-		}																					\
+	QSORT_PROTOTYPE(funcname) {	\
+		CHECK_DIRS();																		\
 		const int8_t result = GET_ORDERING(field) * REVERSE;								\
 		/**/																				\
 		/* in the case of a tie, sort the files by name */									\
@@ -67,10 +73,7 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 	if (!isValidFS(file_1)) return FILE_1_FIRST;
 	if (!isValidFS(file_2)) return FILE_2_FIRST;
 
-	if (SORT_DIRS_FIRST()) {
-		if ( IS_DIR(1) && !IS_DIR(2)) return FILE_1_FIRST;
-		if (!IS_DIR(1) &&  IS_DIR(2)) return FILE_2_FIRST;
-	}
+	CHECK_DIRS();
 
 	const char *const inp_name_1 = GET_ATTR(1, name);
 	const char *const inp_name_2 = GET_ATTR(2, name);
@@ -127,10 +130,12 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline int compare_modes(const void *file_1, const void *file_2) {
+static inline int compare_modes_or_types(const void *file_1, const void *file_2, const uint16_t mask) {
+	CHECK_DIRS();
+
 	const mode_t // get rid of the type info, and keep just the permissions
-		mode_1 = GET_ATTR(1, mode) & PERM_MASK,
-		mode_2 = GET_ATTR(2, mode) & PERM_MASK;
+		mode_1 = (GET_ATTR(1, mode) & mask),
+		mode_2 = (GET_ATTR(2, mode) & mask);
 
 	const int result = (
 		(mode_1 > mode_2) -
@@ -138,9 +143,12 @@ static inline int compare_modes(const void *file_1, const void *file_2) {
 	) * REVERSE;
 
 	if (result != 0) return result;
-	// if the modes are the same, sort by name as backup
+	// in the case of a tie, sort the files by name
 	return compare_names(file_1, file_2);
 }
+
+QSORT_PROTOTYPE(mode) { return compare_modes_or_types(file_1, file_2, PERM_MASK); }
+QSORT_PROTOTYPE(type) { return compare_modes_or_types(file_1, file_2, TYPE_MASK); }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -151,7 +159,7 @@ DEFINE_COMPARE_FUNCTION(devno, s->st_dev	)
 DEFINE_COMPARE_FUNCTION(uid	 , s->st_uid	)
 DEFINE_COMPARE_FUNCTION(gid	 , s->st_gid	)
 DEFINE_COMPARE_FUNCTION(nlink, s->st_nlink	)
-DEFINE_COMPARE_FUNCTION(flags, s->st_flags	)
+DEFINE_COMPARE_FUNCTION(flag , s->st_flags	)
 DEFINE_COMPARE_FUNCTION(time , s->st_mtime	) /** @todo make this work for other times too */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -164,7 +172,7 @@ void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_co
 	#pragma clang diagnostic ignored "-Wimplicit-fallthrough"
 
 	switch (SORT_BY()) {
-		case SB_DEFAULT	: /* sort by name by default*/
+		case SB_DEFAULT	: /* [[fallthrough]]; */ /* sort by name by default*/
 		case SB_NAME	: SORT_FILES_BY(name ); break;
 		case SB_MODE	: SORT_FILES_BY(mode ); break;
 		case SB_SIZE	: SORT_FILES_BY(size ); break;
@@ -173,9 +181,10 @@ void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_co
 		case SB_UID		: SORT_FILES_BY(uid	 ); break;
 		case SB_GID		: SORT_FILES_BY(gid	 ); break;
 		case SB_NLINK	: SORT_FILES_BY(nlink); break;
-		case SB_FLAGS	: SORT_FILES_BY(flags); break;
+		case SB_FLAGS	: SORT_FILES_BY(flag ); break;
+		case SB_TYPE	: SORT_FILES_BY(type ); break;
 		case SB_TIME	: SORT_FILES_BY(time ); break; // note: not fully implemented
-		case SB_NONE	: ;
+		case SB_NONE	: return; // if we're not sorting this file, then we won't be sorting any of its children
 	}
 
 	#pragma clang diagnostic pop
