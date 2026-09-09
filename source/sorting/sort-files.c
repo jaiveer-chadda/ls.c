@@ -66,8 +66,6 @@ static int8_t REVERSE;
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-// Note: I know this function's name goes against convention, but I'm doing some macro magic ot make this all easier,
-//	so it's been done for a reason (see the `SORT_FILES_BY` macro)
 static inline int compare_names(const void *file_1, const void *file_2) {
 	// check for invalid files
 	if (!isValidFS(file_1)) return FILE_1_FIRST;
@@ -121,7 +119,7 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 			return (name_1[i] < name_2[j] ? FILE_1_FIRST : FILE_2_FIRST) * REVERSE;
 
 		// if both characters are the same, then move onto the next character
-		} else i++; j++;
+		} else i++, j++;
 	}
 
 	// if one of the names is a prefix of the other, sort the shorter name first
