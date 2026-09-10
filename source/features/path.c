@@ -24,11 +24,12 @@ static inline const char *formatPath(const char *path) {
 	char *adj_path = PWD;
 
 	const char *const HOME = getenv("HOME");
-	const size_t home_len = strlen(HOME);
+	const size_t home_len = strlen(HOME), path_len = strlen(adj_path);
 
-	if (HOME == NULL
-		|| home_len == 0
-		|| strncmp(HOME, adj_path, home_len) != 0
+	if (HOME == NULL		// make sure we actually
+		|| home_len == 0	//	got the $HOME var
+		|| path_len <= home_len		// check that `$PWD != $HOME`
+		|| strncmp(HOME, adj_path, home_len) != 0	// and make sure that we're actually in a subdir of $HOME
 	) return adj_path;
 
 	// replace `$HOME` with `~`

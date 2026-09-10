@@ -86,12 +86,13 @@ BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 /* —— all Opts/Fields On() ——————————————————————————————————————————— */
 
 static inline void allOptsOn(void) {
-	U_DO_TINY_FLAGS	 = false,
-	U_DO_SHORT_FLAGS = false;
-
 	for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
 		BINARY_OPTS[opt_i].value = true;
 	}
+
+	VALUE_OF(DIRS_AS_FILES) = false;
+	U_DO_TINY_FLAGS	 = false,
+	U_DO_SHORT_FLAGS = false;
 }
 
 static inline void allFieldsOn(void) {
