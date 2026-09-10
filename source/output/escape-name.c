@@ -16,7 +16,7 @@
 #define MULT_BY_1_5(var) \
 	((var) += (var) == 1 ? 1 : (var) >> 1)
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ———————————————————————————————————————————————————————— */
 
 #define DO_OCT_ESC(chr) ( 0 < (chr) && (chr) <= 7 ) /** 1 → 7 */
 #define DO_HEX_ESC(chr) ((7 < (chr) && (chr) <= 31) || (chr) == 127) /** 8 → 31, 127 */
@@ -25,7 +25,7 @@
 #define DO_ANY_ESC(chr) \
 	(DO_OCT_ESC(chr) || DO_HEX_ESC(chr) || (chr) == '\\')
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— escapeCharacter() ———————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define copy_and_return(fmt, src) \
 	return sprintf(esc, ("%s\\" fmt), IFCOLOUR(last_was_esc ? "" : chr_ansi), (src));
@@ -65,12 +65,15 @@ static inline uint8_t escapeCharacter(char *esc, const char chr, const char *con
 	return 1;	// length = 1
 }
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— printEscdName() —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /** Whether the last character parsed was an escaped character or not. */
 #define LAST_WAS_ESC() ((inp_ptr != name) && DO_ANY_ESC(*(inp_ptr - 1)))
 
 void printEscdName(const char *const name, const Colour colour) {
+
+	/* —— Colour Constants ———————————————————————————————————— */
+
 	/// The colour that was being displayed before this function was called.
 	const Colour active_col = getActive();
 	/// A `Colour` object representing the colour with which to highlight escaped characters.
@@ -80,7 +83,7 @@ void printEscdName(const char *const name, const Colour colour) {
 	/// The length of the string stored in `esc_ansi`. 
 	const size_t esc_ansi_len = sizeof(colour.has_bg() ? ESC_CHAR_BG_ANSI : ESC_CHAR_FG_ANSI) - 1;
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Colour Setup ———————————————————————————————————————— */
 
 	uint8_t init_ansi_len, file_ansi_len;
 	const char *initcol_ptr;
@@ -97,14 +100,12 @@ void printEscdName(const char *const name, const Colour colour) {
 		memcpy(init_ansi, initcol_ptr, init_ansi_len);
 	}
 
-	/* ———————————————————————————————————————————————————————— */
-
 	// make `getcol` think that it's printing after the escape character colour, and see what it returns
 	//	this will, naturally, be the sequence that's printed after an escape character
 	setActive(esc_colour);
 	const char *const file_ansi = getcol_ns_len(colour, &file_ansi_len);
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Alloc & Ouput Setup ————————————————————————————————— */
 
 	size_t alloc_size = INIT_ALLOC_LEN + sizeof(PRE_NAME_PAD) + (do_init_col ? init_ansi_len : 0);
 	#define output_size ((size_t)(out_ptr - output))
@@ -113,7 +114,7 @@ void printEscdName(const char *const name, const Colour colour) {
 	char *output = emalloc(alloc_size);
 	char *out_ptr = output;
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Add Padding & Colour ———————————————————————————————— */
 
 	// if we add the padding to the output buffer, we can use `fputs`, rather than `printf` when printing
 	memcpy(out_ptr, PRE_NAME_PAD, sizeof(PRE_NAME_PAD) - 1);
@@ -125,7 +126,7 @@ void printEscdName(const char *const name, const Colour colour) {
 		out_ptr += init_ansi_len;
 	}
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Escape & Add Each Char —————————————————————————————— */
 
 	/// The maximum that `output_size` can increase by each loop (+1 so we don't have to realloc before the nullbyte).
 	const size_t max_increase = esc_ansi_len + file_ansi_len + 4 + 1;
@@ -155,7 +156,7 @@ void printEscdName(const char *const name, const Colour colour) {
 
 	*out_ptr = '\0';
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Print, Free, & Cleanup —————————————————————————————— */
 
 	fputs(output, stdout);
 	efree(output);

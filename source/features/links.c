@@ -35,7 +35,7 @@ link_t getLink(const path_t link_path) {
 	// ReSharper disable once CppLocalVariableMayBeConst
 	link_t target_str = emalloc(sizeof(path_t));
 
-	abbrPath(target_str, target_path);
+	// abbrPath(target_str, target_path);
 	return target_str;
 }
 
