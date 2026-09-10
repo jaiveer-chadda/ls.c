@@ -242,9 +242,9 @@
 #define USR_ROOT_COL			toColour( .style = 0	 , .fg = G_RED	) // \e[31m
 #define USR_OTH_COL				toColour( .style = 0	 , .fg = G_YEL	) // \e[93m
 
-#define GRP_YOU_COL				toColour( .fg = G_YEL ) // \e[93m
-#define GRP_ROOT_COL			toColour( .fg = G_BLU ) // \e[94m
-#define GRP_OTH_COL				toColour( .fg = G_RED ) // \e[91m
+#define GRP_YOU_COL				toColour( .fg = G_BYEL ) // \e[93m
+#define GRP_ROOT_COL			toColour( .fg = G_BBLU ) // \e[94m
+#define GRP_OTH_COL				toColour( .fg = G_BRED ) // \e[91m
 
 /* —— Flags ————————————————————————————————————————————————————————————————— */
 
