@@ -83,8 +83,10 @@ void print_icon(const FileStat *const pFS) {
 	/// @todo implement the `DO_ICON` option
 	// if (!DO_ICON()) return;
 
+	Colour colour = {0};
+
 	if (DO_COLOUR()) {
-		Colour colour = file_colour_esc[pFS->file_col];
+		colour = file_colour_esc[pFS->file_col];
 
 		// if the colour has a background, then set its forground to the background colour
 		if (colour.has_bg()) {
@@ -92,11 +94,14 @@ void print_icon(const FileStat *const pFS) {
 			colour.bg = G_NO_BG;
 		}
 
-		colprint(colour);
+		// the icon also shouldn't have any underlining
+		if (colour.style & G_UNDER ) colour.style &= ~G_UNDER ;
+		if (colour.style & G_DUNDER) colour.style &= ~G_DUNDER;
 	}
 
-	PRINTF_CHECK_ERROR("%s" "%lc",
+	PRINTF_CHECK_ERROR("%s" "%s" "%lc",
 		PRE_ICON_PAD,
+		getcol(colour),
 		(pFS->icon == NO_ICON) ? IC_ERROR : pFS->icon
 	);
 }

@@ -106,7 +106,7 @@ void printEscdName(const char *const name, const Colour colour) {
 
 	/* ———————————————————————————————————————————————————————— */
 
-	size_t alloc_size = INIT_ALLOC_LEN + (do_init_col ? init_ansi_len : 0);
+	size_t alloc_size = INIT_ALLOC_LEN + sizeof(PRE_NAME_PAD) + (do_init_col ? init_ansi_len : 0);
 	#define output_size ((size_t)(out_ptr - output))
 
 	// allocate memory for the output, and setup the output pointer
@@ -114,6 +114,10 @@ void printEscdName(const char *const name, const Colour colour) {
 	char *out_ptr = output;
 
 	/* ———————————————————————————————————————————————————————— */
+
+	// if we add the padding to the output buffer, we can use `fputs`, rather than `printf` when printing
+	memcpy(out_ptr, PRE_NAME_PAD, sizeof(PRE_NAME_PAD) - 1);
+	out_ptr += sizeof(PRE_NAME_PAD) - 1;
 
 	if (do_init_col) {
 		// add the file's colour to the start of the output sequence
@@ -153,7 +157,7 @@ void printEscdName(const char *const name, const Colour colour) {
 
 	/* ———————————————————————————————————————————————————————— */
 
-	printf("%s%s", PRE_NAME_PAD, output);
+	fputs(output, stdout);
 	efree(output);
 
 	// let `getcol` know what the last colour used was
