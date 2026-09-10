@@ -86,17 +86,22 @@ char *parseFlags(const flag_t raw_flags) {
 
 void print_flags(const FileStat *const pFS) {
 	const bool valid = pFS->s != NULL && pFS->s->st_flags != 0;
-	printf(
-		valid ? fields[FI_flags].fmt_p : "%*c%ls",
-		getLen(FI_flags),
-		valid ? pFS->s->st_flags : '-',
-		FIELD_PAD
-	);
+	if (!valid) {
+		printf("%s%*c%ls", getcol(PUNCT), getLen(FI_flags), '-', FIELD_PAD);
+		return;
+	}
+
+	printf("%s%*x%ls", /* colour */"", getLen(FI_flags), pFS->s->st_flags, FIELD_PAD);
 }
 
 void print_flag_str(const FileStat *const pFS) {
 	const bool valid = pFS->f != NULL && pFS->f->flag_str != NULL;
-	printf(fields[FI_flag_str].fmt_p, getLen(FI_flag_str), valid ? pFS->f->flag_str : NO_FLAG_STR, FIELD_PAD);
+	if (!valid) {
+		printf("%s%-*c%ls", getcol(PUNCT), getLen(FI_flag_str), '-', FIELD_PAD);
+		return;
+	}
+
+	printf("%s%-*s%ls", /* colour */"", getLen(FI_flag_str), pFS->f->flag_str, FIELD_PAD);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
