@@ -135,7 +135,7 @@ function -- () {
   if (( print_cmd )) {
     bat -pp -lzsh <<< "${"${:-"$CC $BUILD_ARGS source/**/*.c \\
       && $CMD \\
-      && cp $TARGET ~/bin/${TARGET##*/}"}"//$_proj_root\//./}"
+      && cp $TARGET ~cs/bin/${TARGET##*/}"}"//$_proj_root\//./}"
   }
 
   # ———————————————————————————————————————————————————— #
@@ -153,7 +153,7 @@ function -- () {
           "${(@)CMD}"      \
         || true;           \
     }                      \
-    && cp "$TARGET" "$HOME/bin/${TARGET##*/}"
+    && cp "$TARGET" "$CS/bin/${TARGET##*/}"
 
 } "$@"
 
