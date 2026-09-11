@@ -16,6 +16,7 @@
 #include "output/output.h" // printFile()
 #include "form/formatting.h" // initFormatting()
 #include "options/options.h" // setOptions(), DO_CLEAR()
+#include "features/features.h" // freeFirmlinks()
 #include "parsing/parse-file.h" // parseFile()
 #include "processing/process-input.h" // processInput()
 
@@ -132,6 +133,7 @@ int main(const int argc, char *argv[]) {
 	}
 
 	efree(inputs);
+	freeFirmlinks();
 
 	/* —— Return ————————————————————————————————————————————————————————————————————————————————— */
 

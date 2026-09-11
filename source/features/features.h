@@ -36,6 +36,7 @@ void print_time_raw(const FileStat *const pFS, const TimeType type);
 /* —— flags.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 char *parseFlags(FileStat *const pFS);
+void freeFirmlinks(void);
 
 /* —— inum.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

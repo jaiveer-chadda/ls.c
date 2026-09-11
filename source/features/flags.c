@@ -62,19 +62,35 @@ const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline void checkFirmlink(FileStat *const pFS) {
-	// only directories can be firmlinks, so there's no point in checking anything else
-	if (!S_ISDIR(pFS->mode)) return;
+/// @brief Static pointer to the firmlink file.
+static FILE *p_flink = NULL;
 
-	// open the firmlink file for reading
-	FILE *p_flink = fopen(FIRMLINK_MAP_FILE, "r");
-	if (p_flink == NULL) return;
+/// @brief An array of strings containing all firmlinks listed in `/usr/share/firmlinks`
+static char **FIRMLINKS = NULL;
+static uint16_t fl_alloced = 0, fl_count = 0;
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline bool initFirmlinks(void) {
+	static bool did_init = false, success = false;
+
+	if (did_init) return success;
+	did_init = true;
 
 	/* ———————————————————————————————————————————————— */
+	// from here on, everything will only run once
 
-	// get the absolute path to the file we're checking, since that's how they're stored in the lookup file
-	path_t abs_path = {0};
-	if (realpath(pFS->name, abs_path) == NULL) return;
+	// open the firmlink file for reading
+	p_flink = fopen(FIRMLINK_MAP_FILE, "r");
+
+	// it's fine p_flink is NULL - we'll check this return value in the calling function,
+	//	which should return early every time from now on
+	if (p_flink == NULL) return ( success = false );
+
+	// initialise the main firmlink array
+	FIRMLINKS = emalloc(32 * sizeof(char*));
+
+	/* ———————————————————————————————————————————————— */
 
 	// allocate some memory in which the section parsed by `getdelim` will go
 	//	this has to be heap memory, since `getdelim` will realloc `sec_buf` to make sure it always has enough space
@@ -91,7 +107,7 @@ static inline void checkFirmlink(FileStat *const pFS) {
 	// we therefore read the file in system and data sections, and compare the system section with the file's realpath
 	char delim = SYST_MODE_DELIM;
 
-	while((sec_len = getdelim(&sec_buf, &sec_bufsize, delim, p_flink)) != EOF) {
+	while (( sec_len = getdelim(&sec_buf, &sec_bufsize, delim, p_flink) ) != EOF) {
 		// `getdelim` keeps the trailing delimiter, so remove it if it exists
 		if (sec_buf[sec_len - 1] == delim) sec_buf[sec_len - 1] = '\0';
 
@@ -101,16 +117,52 @@ static inline void checkFirmlink(FileStat *const pFS) {
 		//	since we don't care about the information in the data section, we can just continue
 		if (delim == SYST_MODE_DELIM) continue;
 
-		if (strcmp(sec_buf, abs_path) == 0) { // if the system section matches our file's path
-			pFS->s->st_flags |= SF_FIRMLINK; // then add the firmlink flag to the file's flags
-			break; // no more processing to be done
-		}
+		// allocate memory for this system path, and add it to the main firmlinks array
+		FIRMLINKS[fl_count++] = strdup(sec_buf);
 	}
+
+	(void)fl_alloced;
 
 	// if `getdelim` changes the pointer to `sec_buf` when calling `realloc`, it'll put the new pointer
 	//	back into `sec_buf`, so this should be safe to free
 	efree(sec_buf);
+	return ( success = true );
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void freeFirmlinks(void) {
+	if (p_flink == NULL) return;
 	fclose(p_flink);
+
+	if (FIRMLINKS == NULL) return;
+	for (uint16_t i = 0; i < fl_count; i++) {
+		if (FIRMLINKS[i] != NULL) efree(FIRMLINKS[i]);
+	}
+
+	efree(FIRMLINKS);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline void checkFirmlink(FileStat *const pFS) {
+	// only directories can be firmlinks, so there's no point in checking anything else
+	if (!S_ISDIR(pFS->mode)) return;
+
+	// make sure the firmlinks array is initialised
+	if (!initFirmlinks()) return; // if we weren't able to get all the the data we needed, return
+
+	// get the absolute path to the file we're checking, since that's how they're stored in the lookup file
+	path_t abs_path = {0};
+	if (realpath(pFS->name, abs_path) == NULL) return;
+
+	// iterate through each firmlink we've stored
+	for (uint16_t i = 0; i < fl_count; i++) {
+		if (strcmp(FIRMLINKS[i], abs_path) == 0) { // if the firmlink's path matches our file's path
+			pFS->s->st_flags |= SF_FIRMLINK; // then add the firmlink flag to the file's flags
+			break; // no more processing to be done
+		}
+	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
