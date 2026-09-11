@@ -19,7 +19,7 @@ void print_dev_no(const FileStat *const pFS) {
 	/* —— regular ——————————————————————————————————————— */
 
 	if (!DO_DEVNO_MAJMIN()) {
-		printf("%s%*d%ls", getcol(DEVNO_COLOUR), getLen(FI_dev_no), pFS->s->st_dev, FIELD_PAD);
+		printf("%s%*u%ls", getcol(DEVNO_COLOUR), getLen(FI_dev_no), (uint32_t)pFS->s->st_dev, FIELD_PAD);
 		return;
 	}
 
