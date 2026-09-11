@@ -55,11 +55,21 @@ BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 
 #define VALUE_OF(option) (BINARY_OPTS[(BO_ ## option)].value)
 
+#define CHECK_TIME_SETS()								\
+	switch (opt_i) {									\
+		case BO_do_atime: times[A_TIME] = true; break;	\
+		case BO_do_mtime: times[M_TIME] = true; break;	\
+		case BO_do_ctime: times[C_TIME] = true; break;	\
+		case BO_do_btime: times[B_TIME] = true; break;	\
+		default: break;									\
+	}
+
 #define CHECK_LONG_FLAG(prefix, bool_val) do {							\
 	snprintf(flag_buf, sizeof(CLIFlag_t), (prefix "%s"), base_flag);	\
 	if (OPTION_IS(flag_buf)) {											\
 		if ((equal_arg != NULL) && HAS_ARG) ERR_NO_ARGS();				\
 		bin_opt->value = (bool_val);									\
+		if (bool_val) CHECK_TIME_SETS();								\
 		goto label_continue;											\
 	}																	\
 } while (0)
@@ -111,6 +121,7 @@ int setOptions(const int argc, char *argv[]) {
 	/// True if the colour should be determined automatically by the program.
 	/// False if the user has specified either `--colour=always` or `--colour=never`.
 	bool colour_auto = true;
+	bool times[TT_COUNT] = {0};
 
 	int i;
 	for (i = 1; i < argc; i++) {
@@ -254,7 +265,7 @@ int setOptions(const int argc, char *argv[]) {
 		CLIFlag_t flag_buf;
 
 		// iterate through the binary options and check them one at a time
-		for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
+		for (BinOptIdx opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
 			BinaryOption *const bin_opt = &BINARY_OPTS[opt_i];
 
 			// then iterate through all the possible long flags for each bin opt, and check those
@@ -284,6 +295,20 @@ int setOptions(const int argc, char *argv[]) {
 
 	// if `--colour` wasn't set, or if `--colour=auto` was given, then determine whether colour should be used
 	if (colour_auto) U_DO_COLOUR = doColourAuto();
+
+	if (!(times[A_TIME] || times[M_TIME] || times[C_TIME] || times[B_TIME])) return i;
+	VALUE_OF(do_atime) = false; VALUE_OF(do_mtime) = false; VALUE_OF(do_ctime) = false; VALUE_OF(do_btime) = false;
+
+	for (TimeType type = 0; type < TT_COUNT; type++) {
+		if (!times[type]) continue;
+		switch (type) {
+			case A_TIME: VALUE_OF(do_atime) = true; break;
+			case M_TIME: VALUE_OF(do_mtime) = true; break;
+			case C_TIME: VALUE_OF(do_ctime) = true; break;
+			case B_TIME: VALUE_OF(do_btime) = true; break;
+			default: break;
+		}
+	}
 
 	// returns how many options were parsed, and therefore where the names of the files/directories start
 	return i;
