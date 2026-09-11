@@ -70,6 +70,8 @@ static inline uid_t get_user_uid(void) {
 #define get_uid_colour get_usr_colour
 
 static inline Colour get_usr_colour(const FileStat *const pFS) {
+	if (pFS->s == NULL) return PUNCT;
+
 	if (pFS->s->st_uid == get_user_uid()) return USR_YOU_COL;
 	if (pFS->s->st_uid == ROOT_USR_UID  ) return USR_ROOT_COL;
 	return USR_OTH_COL;
@@ -78,6 +80,8 @@ static inline Colour get_usr_colour(const FileStat *const pFS) {
 #define get_gid_colour get_grp_colour
 
 static inline Colour get_grp_colour(const FileStat *const pFS) {
+	if (pFS->s == NULL) return PUNCT;
+
 	const struct passwd *const pw = getpwuid(get_user_uid());
 
 	const bool in_user_grp = is_user_in_group(pw->pw_name, pw->pw_gid, pFS->f->grp_name, pFS->s->st_gid);
