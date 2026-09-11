@@ -31,7 +31,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline icon_t findIconMatch(const char *check_str, const Icon icon_arr[]) {
+static inline icon_t findIconMatch(const char *const check_str, const Icon icon_arr[]) {
 	Icon icon = icon_arr[0];
 	for (int i = 0; !REACHED_END_OF_ICONS(icon); icon = icon_arr[i++] ) {
 		if (strcmp(icon.pattern, check_str) == 0) return icon.icon;
@@ -40,31 +40,28 @@ static inline icon_t findIconMatch(const char *check_str, const Icon icon_arr[])
 }
 
 icon_t getIcon(const char *filename, const bool is_dir) {
-	name_t name;
-	char *make_lower = (char *)filename;
-	// // make the filename lowercase, so we can find more matches
-	// // if the filename is `.`, then get the basename of the actual path, and make that lowercase instead
-	// if (strcmp(filename, DOTDIR) == 0) {
-	// 	const char *basename = strrchr(G_DOTDIR_PATH, '/');
-	// 	if (basename != NULL) {
-	// 		make_lower = (char *)basename + 1;
-	// 	}
-	// }
-	toLower(name, make_lower);
+	path_t name_buf;
+	toLower(name_buf, filename);
 
-	const Icon *NAME_ARRAY = (Icon *)(is_dir ? &DIRNAME_ICONS : &FILENAME_ICONS);
+	// find the basename of the file, since that's the only part that needs to be matched
+	const char *name = strrchr(name_buf, '/');
+	// if there's no `/` in the name, then just revert to the normal name
+	if (name == NULL) name = name_buf;
+
+	// which array we should search in when looking for icons
+	const Icon *const NAME_ARRAY = (Icon *)(is_dir ? &DIRNAME_ICONS : &FILENAME_ICONS);
 	// see if the filename matches any of the names in `NAME_ARRAY`
 	icon_t icon = findIconMatch(name, NAME_ARRAY);
 	// if it matches, then it was a success - return that icon
 	if (icon != NO_ICON) return icon;
 
 	// if it didn't match any exact names, then check if it has an extension by finding the last full stop
-	char *extension = strrchr(name, '.');
+	const char *const extension = strrchr(name + 1, '.'); // the +1 stops it from trying to match dotfiles
 	// if it doesn't have an extension, return one of the default icons
 	if (extension == NULL) return is_dir ? DEFAULT_DIR_ICON : DEFAULT_FILE_ICON; //  / 
 
 	// once again, find the appropriate icon array for dirs/files
-	const Icon *EXT_ARRAY = (Icon *)(is_dir ? &DIR_EXT_ICONS : &FILE_EXT_ICONS);
+	const Icon *const EXT_ARRAY = (Icon *)(is_dir ? &DIR_EXT_ICONS : &FILE_EXT_ICONS);
 
 	// if it _does_ have an extension, check that extension for matches
 	icon = findIconMatch(extension + 1, EXT_ARRAY); // note: +1 so we don't include the literal '.'
