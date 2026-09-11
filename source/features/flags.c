@@ -53,12 +53,16 @@ const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 
 /** The longest firmlink len on my system is 62 chars long, so this should be enough memory.
  *	However, this is arbitrary, as `getdelim` will allocate as much memory as it needs to. */
-#define INIT_LN_BUFSIZE ((size_t)64)
+#define INIT_LN_BUFSIZE	((size_t)64)
+#define INIT_FLN_COUNT	((size_t)16)
 
 #define SYST_MODE_DELIM	'\t'
 #define DATA_MODE_DELIM	'\n'
 
 #define SWAP_DELIMS() ((delim == SYST_MODE_DELIM) ? DATA_MODE_DELIM : SYST_MODE_DELIM)
+
+/** Approximately multiplies a number by 1.5 */
+#define MULT_BY_1_5(var) ((var) += (var) == 1 ? 1 : (var) >> 1)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -67,7 +71,7 @@ static FILE *p_flink = NULL;
 
 /// @brief An array of strings containing all firmlinks listed in `/usr/share/firmlinks`
 static char **FIRMLINKS = NULL;
-static uint16_t fl_alloced = 0, fl_count = 0;
+static uint16_t fl_count = 0;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -87,8 +91,11 @@ static inline bool initFirmlinks(void) {
 	//	which should return early every time from now on
 	if (p_flink == NULL) return ( success = false );
 
+	/* ———————————————————————————————————————————————— */
+
 	// initialise the main firmlink array
-	FIRMLINKS = emalloc(32 * sizeof(char*));
+	uint16_t fl_alloced = INIT_FLN_COUNT;
+	FIRMLINKS = ecalloc((size_t)fl_alloced, sizeof(char*));
 
 	/* ———————————————————————————————————————————————— */
 
@@ -117,11 +124,17 @@ static inline bool initFirmlinks(void) {
 		//	since we don't care about the information in the data section, we can just continue
 		if (delim == SYST_MODE_DELIM) continue;
 
-		// allocate memory for this system path, and add it to the main firmlinks array
-		FIRMLINKS[fl_count++] = strdup(sec_buf);
-	}
+		// reallocate memory if we're about to go over what we've already allocated
+		if (fl_count + 1 > fl_alloced) {
+			FIRMLINKS = erealloc(FIRMLINKS, (size_t)MULT_BY_1_5(fl_alloced) * sizeof(char*));
+		}
 
-	(void)fl_alloced;
+		// since we already know `sec_len`, we don't have to use `strdup`, and can do everything manually instead:
+		//	- allocate memory for the firmlink (including the nullbyte),
+		//	- then copy `sec_buf` into the newly-allocated firmlink buffer,
+		//	- then add the firmlink_buf pointer to the main `FIRMLINKS` array
+		FIRMLINKS[fl_count++] = memcpy(emalloc(sec_len), sec_buf, sec_len);
+	}
 
 	// if `getdelim` changes the pointer to `sec_buf` when calling `realloc`, it'll put the new pointer
 	//	back into `sec_buf`, so this should be safe to free
