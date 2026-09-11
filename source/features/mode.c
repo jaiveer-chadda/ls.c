@@ -171,7 +171,7 @@ void print_mode(const FileStat *const pFS) {
 		type = (pFS->mode & TYPE_MASK) >> (LOG2_8 * 4), /** The two octal digits representing the file's type. */
 		ext	 = (pFS->mode & EXT_MASK ) >> (LOG2_8 * 3); /** The digit representing the file's extended permissions. */
 
-	const FileColour file_col = getTypeColour(pFS->mode_str[0]);
+	const FileColour file_col = getTypeColour(getModeType(pFS->mode));
 	const PermColour ext_col  = getExtColour(pFS->mode);
 
 	char output[96] = {0};
