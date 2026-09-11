@@ -95,34 +95,48 @@ void print_flags(const FileStat *const pFS) {
 }
 
 void print_flag_str(const FileStat *const pFS) {
-	const bool valid = pFS->f != NULL && pFS->f->flag_str != NULL;
-	if (!valid) {
-		printf("%s%-*c%ls", getcol(PUNCT), getLen(FI_flag_str), '-', FIELD_PAD);
+	if (pFS->s == NULL) {
+		printf("%s%-*s%ls", getcol(PUNCT), getLen(FI_flag_str), NO_FLAG_STR, FIELD_PAD);
 		return;
 	}
 
-	flagstr flag_name;
-	int chars_printed = 0;
+	char output[512] = {0};
+	char *out_ptr = output;
+	const char *flag, *colour;
+	uint8_t flag_len = 0, col_len = 0, flagstr_len = 0;
+
 	bool is_first = true;
 
 	for (int flag_i = 0; flag_i < MAX_FLAG_NUM; flag_i++) {
 		if (!(pFS->s->st_flags & ALL_FLAGS[flag_i].mask)) continue;
 
-		strcpy(flag_name, GET_FLAG_NAME(ALL_FLAGS[flag_i]));
+		flag = GET_FLAG_NAME(ALL_FLAGS[flag_i]);
+		flag_len = (uint8_t)strlen(flag);
 
 		if (!is_first) {
-			printf("%s%c", getcol(PUNCT), FLAG_SEP_CHR);
-			chars_printed++;
+			colour = getcollen(PUNCT, &col_len);
+			memcpy(out_ptr, colour, col_len);
+			out_ptr += col_len;
+
+			*out_ptr++ = FLAG_SEP_CHR;
+			flagstr_len++;
 		}
 
 		is_first = false;
 
-		printf("%s%s", getcol(ALL_FLAGS[flag_i].colour), flag_name);
-		chars_printed += (int)strlen(flag_name);
+		colour = getcollen(ALL_FLAGS[flag_i].colour, &col_len);
+		memcpy(out_ptr, colour, col_len);
+		out_ptr += col_len;
+
+		memcpy(out_ptr, flag, flag_len);
+		out_ptr += flag_len;
+		flagstr_len += flag_len;
 	}
 
-	const int spaces = (int)getLen(FI_flag_str) - chars_printed;
-	printf("%*s" "%ls", spaces, "", FIELD_PAD);
+	*out_ptr++ = '\0';
+
+	const int spaces = getLen(FI_flag_str) - (int)flagstr_len;
+	printf("%s%*s" "%ls", output, spaces, "", FIELD_PAD);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
