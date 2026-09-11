@@ -5,6 +5,15 @@
 
 #include <inttypes.h>
 
+/* —— Definitions —————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+/**	The maximum number of characters needed to represent the longest ANSI supported code, including a null terminator.
+ *	- This would be: `"\e[;22;23;24;25;27;28;29;38;2;255;255;255;48;2;255;255;255m\0"` (len = 60).
+ *	- Rounded up to 64. */
+#define MAX_ANSI_SIZE 64
+
+typedef char ansi_t[MAX_ANSI_SIZE];
+
 /* —— Styles ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // I only need 10 bits, but this is the smallest I can get it to
@@ -24,7 +33,7 @@ typedef uint16_t style_t; /** A bit record holding all styles that should be app
 #define G_INVERT	((style_t)0x0040) /**	64 - Invert fg & bg colours		(equivalent to `\e[7m`). */
 #define G_INVIS		((style_t)0x0080) /**  128 - Make text invisible		(equivalent to `\e[8m`). */
 #define G_STRIKE	((style_t)0x0100) /**  256 - Give text a strikethrough	(equivalent to `\e[9m`). */
-/** 									   512 - Double-underline text		(equivalent to `\e[21m`).
+/**										   512 - Double-underline text		(equivalent to `\e[21m`).
  *													Mutually exclusive with `G_UNDER`. `G_DUNDER` takes priority. */
 #define G_DUNDER	((style_t)0x0200)
 #define G_ALL		((style_t)0x03FF) /** 1023 - Set all styles (only really useful for debugging).  */
@@ -32,17 +41,21 @@ typedef uint16_t style_t; /** A bit record holding all styles that should be app
 /* —— Basic Colours ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// A value in `[-1, 255]`, representing an 8-bit ANSI colour code. I.e., `(colour_t)ID` = `\e[38;5;{ID}m`.
-typedef int16_t colour_t;
+typedef int32_t colour_t;
 
-#define COLOUR_T_MIN ((colour_t)-1)			/**  -1 */
-#define COLOUR_T_MAX ((colour_t)UINT8_MAX)	/** 255 */
+#define COLOUR_8_MIN  ((colour_t)-1)		 /**			-1 */
+#define COLOUR_8_MAX  ((colour_t)UINT8_MAX)	 /**		   255 */
+#define COLOUR_24_MIN ((colour_t)1E9)		 /** 1,000,000,000 */
+#define COLOUR_24_MAX ((colour_t)1255255255) /** 1,255,255,255 */
+
+#define IS_8B(val)	(COLOUR_8_MIN  <= (val) && (val) <= COLOUR_8_MAX )
+#define IS_24B(val)	(COLOUR_24_MIN <= (val) && (val) <= COLOUR_24_MAX)
 
 #define G_NO_FGBG ((colour_t)0)
 
 #define G_NO_FG	G_NO_FGBG /** Don't change the foreground colour. */
 #define G_NO_BG	G_NO_FGBG /** Don't change the background colour. */
 
-#define G_REG_START
 #define G_BLK	((colour_t)-1)	// \e[30m /** Black		*/
 #define G_RED	((colour_t)1)	// \e[31m /** Red		*/
 #define G_GRN	((colour_t)2)	// \e[32m /** Green		*/
@@ -88,12 +101,43 @@ typedef struct {
 	colour_t fg, bg;
 } Colour;
 
-#define RESET_ALL ((Colour){ .style = G_NONE, .fg = G_NO_FG, .bg = G_NO_BG }) /** Equivalent to `((Colour){0})`. */
-
 /* —— Function Declarations ———————————————————————————————————————————————————————————————————————————————————————— */
 
-int colprint(const Colour input_col);
+#ifndef bool
+#	define bool _Bool
+#endif
+
+Colour getActive(void);
+void setActive(const Colour input);
+bool areEqual(const Colour c1, const Colour c2);
+
+char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const collen);
+
+#define getcol(input_col)					c__getcol(input_col, true , NULL	)
+#define getcol_noset(input_col)				c__getcol(input_col, false, NULL	)
+#define getcollen(input_col, p_collen)		c__getcol(input_col, true , p_collen)
+#define getcol_ns_len(input_col, p_collen)	c__getcol(input_col, false, p_collen)
+
+#define colprint(input_col) fputs(getcol((input_col)), stdout)
+
+/* —— Helper Macros ———————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define ST style
+
+#define G_REV G_INVERT
+#define G_REVERSE G_INVERT
+
+#define RGB(r,g,b) ((colour_t)(COLOUR_24_MIN + ((r) * 1E6) + ((g) * 1E3) + (b)))
+#define toColour(...) ((Colour){ __VA_ARGS__ })
+
+#define has_fg() fg != G_NO_FG		/// To be used as: `(bool)(colour.has_fg())`.
+#define has_bg() bg != G_NO_BG		/// To be used as: `(bool)(colour.has_bg())`.
+#define has_style(st) style & (st)	/// To be used as: `(bool)(colour.has_style(G_STYLE))`.
+
+#define RESET_ALL ((Colour){ .style = G_NONE, .fg = G_NO_FG, .bg = G_NO_BG }) /** Equivalent to `((Colour){0})`. */
+#define NO_CHANGE ((Colour){ .style = G_ADD | G_NONE })			 /** Add nothing. Equivalent to `((Colour){1})`. */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+// spell:ignoreRegexp /(?<=G_)\w+\b/g
 
 #endif /* !COLOUR_OBJECTS_INITIALIASED */

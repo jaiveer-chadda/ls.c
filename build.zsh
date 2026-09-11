@@ -17,7 +17,7 @@ function -- () {
 
   # dev mode is supposed to be halfway between the debug and production modes
   local mode=dev
-  local -i 2 print_cmd=0 do_time=0
+  local -i 2 print_cmd=0 do_time=0 do_dump=0 run_cmd=1 do_clear=1
 
   while [[ -n "$1" ]] { #
     case "$1" {
@@ -25,7 +25,10 @@ function -- () {
       ( --debug(ging|)   ) mode=debug  ;;
       ( --prod(uction|)  ) mode=prod   ;;
       ( --dev(elopment|) ) mode=dev    ;;
+      ( --no-clear       ) do_clear=0  ;;
+      ( --no-run         ) run_cmd=0   ;;
       ( --time           ) do_time=1   ;;
+      ( --dump           ) do_dump=1   ;;
       ( -- ) shift ;&
       ( *  ) break ;;
     }
@@ -34,8 +37,12 @@ function -- () {
 
   # ————————————————————————————————————————————————————————————————————————— #
 
-  local -a DEFINITIONS
-  if [[ "$mode" == debug ]] DEFINITIONS+=( DEBUG_MODE )
+  # note: `NDEBUG` turns off assertion checking
+  local -a DEFINITIONS=( NEW )
+  if   [[ "$mode" == 'debug' ]] { DEFINITIONS+=( DEBUG_MODE ); } \
+  elif [[ "$mode" == 'prod'  ]] { DEFINITIONS+=( NDEBUG     ); }
+
+  if (( do_dump )) DEFINITIONS+=( DUMP );
 
   # ————————————————————————————————————————————————————————————————————————— #
 
@@ -48,12 +55,12 @@ function -- () {
     ( prod  ) optimisation=3 ;;
   }
 
-  local -ra CFLAGS=( O$optimisation )
+  CFLAGS+=( O$optimisation )
 
   # ———————————————————————————————————————————————————— #
 
   # all `-W...` warnings to enable
-  local -a WARNINGS=( all extra pedantic )
+  local -a WARNINGS=( all extra pedantic vla )
 
   # all `-W-no-...` warnings to disable
   local -ra NO_WARN=(
@@ -74,7 +81,10 @@ function -- () {
   local -r COPY_TO="$HOME/bin/lk"
 
   # the command that should be run after compilation
-  local -a CMD=( "$TARGET" --clear "$@" )
+  local -a CMD=( "$TARGET" )
+  if (( do_clear )) CMD+=( --clear )
+  CMD+=( "$@" )
+
   if (( do_time )) CMD=( zsh -c "time ${(@q)CMD}" )
 
   # ———————————————————————————————————————————————————— #
@@ -84,15 +94,17 @@ function -- () {
 
   # ———————————————————————————————————————————————————— #
 
-  # find where the `libmagic` library is stored, to be passed to the linker
-  local -r _lmagic_prefix="$( brew --prefix libmagic )"
-  local -ra LIBPATHS=( "$_lmagic_prefix/lib" )
-  local -ra INCLUDES=( "$_lmagic_prefix/include" "$_proj_root/source" )
-  local -ra   LDLIBS=( magic )
+  local -ra LIBPATHS=( ) LDLIBS=( )
+  local -ra INCLUDES=( "$_proj_root/source/"{utils,debugging,} )
 
   local -ra FRAMEWORKS=( CoreFoundation )
 
   local -a SANITISE=( address undefined )
+  local -a ASAN_OPTS=(
+    print_legend=0
+    stack_trace_format=$'"  %n\t%f\t\t%S"'
+  )
+
   if [[ "$mode" == prod ]] SANITISE=()
 
   # ————————————————————————————————————————————————————————————————————————— #
@@ -115,10 +127,15 @@ function -- () {
 
   # ———————————————————————————————————————————————————— #
 
+  if [[ "$mode" == debug ]] && (( run_cmd || print_cmd )) \
+    echo "${(r:COLUMNS - 2::─:)}"
+
+  # ———————————————————————————————————————————————————— #
+
   if (( print_cmd )) {
     bat -pp -lzsh <<< "${"${:-"$CC $BUILD_ARGS source/**/*.c \\
       && $CMD \\
-      && cp $TARGET ~/bin/${TARGET##*/}"}"//$_proj_root\//./}"
+      && cp $TARGET ~cs/bin/${TARGET##*/}"}"//$_proj_root\//./}"
   }
 
   # ———————————————————————————————————————————————————— #
@@ -130,11 +147,16 @@ function -- () {
   # then, if successful, execute the program
   # and if that _also_ works, make a copy of the binary available in `~/bin`
   "$CC" "${(@)BUILD_ARGS}" \
-    &&  "${(@)CMD}"         \
-    && cp "$TARGET" "$HOME/bin/${TARGET##*/}"
+    && {                   \
+      (( run_cmd ))        \
+        && ASAN_OPTIONS="${(j.:.)ASAN_OPTS}" \
+          "${(@)CMD}"      \
+        || true;           \
+    }                      \
+    && cp "$TARGET" "$CS/bin/${TARGET##*/}"
 
 } "$@"
 
 # ——————————————————————————————————————————————————————————————————————————— #
 
-# spell:ignoreRegExp /(?<!-)[-_]\w+|\w+(?=\|)/g
+# spell:ignoreRegExp /(?<!-)[-_]\w+|\w+(?=\|)|asan/gi

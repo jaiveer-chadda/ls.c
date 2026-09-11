@@ -3,27 +3,31 @@
 #ifndef GRAPHICS_INITIALIASED
 #define GRAPHICS_INITIALIASED
 
+#include "colour/colour-object.h"
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /* —— —— Chars & Strings —— ————————————————————————————————————————————————— */
 
-#define FIELD_PAD	 " " /// The spacing between each of the fields/columns listed in long (`-l`) mode.
+#define FIELD_PAD	L" " /// The spacing between each of the fields/columns listed in long (`-l`) mode.
+#define PRE_ICON_PAD " " /// The extra spacing that should be printed before the icon is printed.
 #define PRE_NAME_PAD " " /// The extra spacing that should be printed before the filename column.
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /* —— Base ANSI Definitions ————————————————————————————————————————————————— */
 
-#define CSI		"\033["	// \e[
-#define END		"m"		// m
+#ifndef CSI
+#	define CSI		 "\033[" // \e[
+#	define END		 "m"	 // m
+#	define ANSI(esc) CSI esc END
+#endif
 
-#define CSIR	CSI ";"	// \e[;	— Reset all ANSI highlighting before printing the subsequent escape sequence.
-#define RESET	CSI END	// \e[m	— Reset all ANSI highlighting.
+#define NO_COLOUR	""
+#define RESET		CSI END	/// \e[m /** Reset all ANSI highlighting. */
 
-#define NO_COLOUR ""
-
-#define ANSI(esc)  CSI	esc END
-#define ANSIR(esc) CSIR	esc END
+#define CSIR		CSI ";"	/// \e[; /** Reset all ANSI highlighting before printing the subsequent escape sequence. */
+#define ANSIR(esc)	CSIR	esc END
 
 /* —— ANSI Non-Colour ——————————————————————————————————————————————————————— */
 
@@ -46,57 +50,111 @@
 #define CSI_FG	CSI "3"
 #define CSI_BG	CSI "4"
 
-#define RGB(r,g,b)	"8;2;" #r ";" #g ";" #b
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /* —— [Internal] Filename Colour Definitions ——————————————————————————————————————————————————————————————————————— */
 
-#define HL_REG			NO_COLOUR	// \e[37m
-#define HL_DIR			"1;36"		// \e[36m
-#define HL_LINK			"35"		// \e[35m
-#define HL_EXEC			"31"		// \e[31m
-#define HL_PIPE			"33"		// \e[33m
-#define HL_SOCKET		"32"		// \e[32m
-#define HL_MOUNT		";1;4;34"	// \e[34m \e[4m
-#define HL_CHRDEV		";1;30;43"	// \e[43m
-#define HL_BLKDEV		";1;30;46"	// \e[46m
-#define HL_OW_DIR		";1;30;42"	// \e[42m
-#define HL_SUID_X		";1;30;41"	// \e[41m
-#define HL_SUID_N		";1;30;101"	// \e[101m
-#define HL_SGID_X		";1;30;45"	// \e[45m
-#define HL_SGID_N		";1;30;105"	// \e[105m
-#define HL_STICKY_X		";1;30;44"	// \e[44m
-#define HL_STICKY_N		";1;30;104"	// \e[104m
-#define HL_DATALESS		";1;30;47"	// \e[47m
-#define HL_WHITEOUT		";1;30;107"	// \e[107m
+#define HL_REG			toColour( 0 )												  // \e[37m
+#define HL_DIR			toColour( .style = G_BOLD	, .fg = G_CYAN					) // \e[36m
+#define HL_LINK			toColour( .style = 0		, .fg = G_MAGENTA				) // \e[35m
+#define HL_EXEC			toColour( .style = 0		, .fg = G_RED					) // \e[31m
+#define HL_PIPE			toColour( .style = 0		, .fg = G_YELLOW				) // \e[33m
+#define HL_SOCKET		toColour( .style = 0		, .fg = G_GREEN					) // \e[32m
+#define HL_MOUNT		toColour( .style = G_UNDER	, .fg = G_BLUE					) // \e[34m \e[4m
+#define HL_CHRDEV		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_YEL	) // \e[43m
+#define HL_BLKDEV		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_CYAN	) // \e[46m
+#define HL_OW_DIR		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_GREEN	) // \e[42m
+#define HL_SUID_X		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_RED	) // \e[41m
+#define HL_SUID_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BRED	) // \e[101m
+#define HL_SGID_X		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_MAG	) // \e[45m
+#define HL_SGID_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BMAG	) // \e[105m
+#define HL_STIC_X		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BLUE	) // \e[44m
+#define HL_STIC_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BBLU	) // \e[104m
+#define HL_DATALESS		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_WHITE	) // \e[47m
+#define HL_WHITEOUT		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BWHT	) // \e[107m
 
-#define HL_COMPRESSED	"38;5;137"	// #B68558
-#define HL_IMAGE		"95"		// \e[95m
-#define HL_VIDEO		"91"		// \e[91m
-#define HL_AUDIO_UNCM	"38;5;116"	// #6ADAD8
-#define HL_AUDIO_COMP	"92"		// \e[92m
-#define HL_TEMP_BACK	"90"		// \e[90m
+#define HL_COMPRESSED	toColour( .style = 0		, .fg = 137						) // #B68558
+#define HL_IMAGE		toColour( .style = 0		, .fg = G_BRT_MAGENTA			) // \e[95m
+#define HL_VIDEO		toColour( .style = 0		, .fg = G_BRT_RED				) // \e[91m
+#define HL_AUDIO_UNCM	toColour( .style = 0		, .fg = 116						) // #6ADAD8
+#define HL_AUDIO_COMP	toColour( .style = 0		, .fg = G_BRT_GREEN				) // \e[92m
+#define HL_TEMP_BACK	toColour( .style = 0		, .fg = G_BRT_BLACK				) // \e[90m
 
-#define HL_READ			"92"		// \e[92m
-#define HL_W_USRGRP		"93"		// \e[93m
-#define HL_W_OTHER		";1;30;42"	// \e[42m
-#define HL_X_REG		"1;31"		// \e[31m
-#define HL_X_NREG		"91"		// \e[91m
+#define HL_READ			toColour( .style = 0		, .fg = G_BRT_GREEN				) // \e[92m
+#define HL_W_UG			toColour( .style = 0		, .fg = G_BRT_YELLOW			) // \e[93m
+#define HL_W_OTH		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_GREEN	) // \e[42m
+#define HL_X_REG		toColour( .style = G_BOLD	, .fg = G_RED					) // \e[31m
+#define HL_X_NRG		toColour( .style = 0		, .fg = G_BRT_RED				) // \e[91m
+
+#define HL_WRT_EXE		toColour( .style = 0		, .fg = 173						) // #E48256
+#define HL_REA_EXE		toColour( .style = 0		, .fg = 180						) // #DFAD81
+#define HL_REA_WRT		toColour( .style = 0		, .fg = G_BRT_BLUE				) // \e[94m
+#define HL_RWX_ALL		toColour( .style = 0		, .fg = G_BLUE					) // \e[34m
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/* —— Header ———————————————————————————————————————————————————————————————— */
+/* —— General ——————————————————————————————————————————————————————————————— */
 
-#define HEADER_HL				"1;4;94"		// \e[94m
+#define IFCOLOUR(str)				(DO_COLOUR() ? (str) : "")
+#define IFELSECOLOUR(col, ncol)		(DO_COLOUR() ? (col) : (ncol))
+
+#define ANSI_IFCOL(str)				(DO_COLOUR() ? ANSI(str) : "")
+#define ANSI_IFELSECOL(col, ncol)	(DO_COLOUR() ? ANSI(col) : ncol)
+
+#define RESET_IFCOL			IFCOLOUR(RESET)
+
+/* —— Headers ——————————————————————————————————————————————————————————————— */
+
+#define HEADER_COLOUR		toColour( .style = G_BOLD | G_UNDER, .fg = G_BBLU )
+#define HEADER_ANSI			ANSI_IFCOL( "1;4;94" ) // \e[94m
+
+/* —— Empty Dirs / Errors ——————————————————————————————————————————————————— */
+
+#define EMPTY_DIR_MSG		"empty"
+
+#define EMPTY_DIR_BR_COL	toColour( .fg = G_WHT, .style = G_DIM )
+#define EMPTY_DIR_COL		toColour( .fg = G_WHT )
+
+#define EMPTY_DIR_BR_ANSI	ANSI_IFCOL(/*.fg =*/"37"/*.style =*/";2" ) // `\e[37m` `\e[2m`
+#define EMPTY_DIR_NB_ANSI	ANSI_IFCOL(				/*.style =*/ "2" ) //		   `\e[2m`
+#define EMPTY_DIR_ANSI		ANSI_IFCOL(				/*.style =*/"22" ) // `\e[37m`
+
+/* —————————————————————————————————————— */
+
+#define ERR_FILE_MSG		"error"
+
+#define ERR_FILE_BR_COL		toColour( .fg = G_RED, .style = G_DIM )
+#define ERR_FILE_COL		toColour( .fg = G_RED )
+
+#define ERR_FILE_BR_ANSI	ANSI_IFCOL(/*.fg =*/"31"/*.style =*/";2" ) // `\e[31m` `\e[2m`
+#define ERR_FILE_NB_ANSI	ANSI_IFCOL(				/*.style =*/ "2" ) //		   `\e[2m`
+#define ERR_FILE_ANSI		ANSI_IFCOL(				/*.style =*/"22" ) // `\e[31m`
+
+/* —— Tree Drawing —————————————————————————————————————————————————————————— */
+
+#define TREE_PAD				2
+#define TREE_LV1_PAD			1
+
+#define TREE_HORI				"─"
+#define TREE_VERT				"│"
+#define TREE_BRANCH				"├"
+#define TREE_CORNER				"└"
 
 /* —— Punctuation ——————————————————————————————————————————————————————————— */
 
-#define PUNCT					"90"			// \e[90m
+#define PUNCT					toColour( .fg = G_BRT_BLACK ) // \e[90m
+#define DARK_PUNCT				toColour( .fg = G_BLACK		) // \e[30m
+#define PUNCT_ANSI				ANSI_IFCOL( "90" )
 
 /* —— Escape Characters ————————————————————————————————————————————————————— */
 
-#define ESC_CHAR_COLOUR			"8;5;125"		// #BD0060
+#define ESC_CHAR_BASE			125
+
+#define ESC_CHAR_FG_COLOUR		toColour( .fg = ESC_CHAR_BASE ) // #BD0060
+#define ESC_CHAR_BG_COLOUR		toColour( .bg = ESC_CHAR_BASE, .fg = G_WHT )
+
+#define ESC_CHAR_FG_ANSI		ANSI_IFCOL( "38;5;125"		 )
+#define ESC_CHAR_BG_ANSI		ANSI_IFCOL( "48;5;125" ";37" )
 
 /* —— Links ————————————————————————————————————————————————————————————————— */
 
@@ -113,15 +171,33 @@
 #define LINK_PATH_COLOUR		"96"			// \e[96m
 #define INVALID_LINK_COLOUR		"2;97"			// \e[90m [kinda]
 
+/* —— Inum/Devnum ——————————————————————————————————————————————————————————— */
+
+#define INUM_COLOURS		\
+	toColour( .fg = 193 ),	\
+	toColour( .fg = 157 ),	\
+	toColour( .fg = 115 ),	\
+	toColour( .fg = 116 ),	\
+	toColour( .fg =  81 ),	\
+	toColour( .fg =  37 ),	\
+/**/
+
+#define DEVNO_MAJ_COLOUR	toColour( .fg = 223 )
+#define DEVNO_COLOUR		toColour( .fg = 153 )
+
+#define DEVNO_MAJ_ANSI		ANSI_IFCOL( "38;5;223" )
+#define DEVNO_ANSI			ANSI_IFCOL( "38;5;153" )
+
 /* —— NLink ————————————————————————————————————————————————————————————————— */
 
-#define LN_COL_DIR				"1;96"			// \e[96m
-#define LN_COL_DIR_EMPTY		"36"			// \e[36m
-#define LN_COL_REG_1			"2;96"			// \e[96m \e[2m
-#define LN_COL_REG_MORE			"1;30;105"		// \e[105m
-#define LN_COL_OTHER			"1;30;41"		// \e[41m
+#define LN_COL_DIR			toColour( .style = G_BOLD, .fg = G_BRT_CYAN	, .bg = 0		) // \e[96m
+#define LN_COL_DIR_EMPTY	toColour( .style = 0	 , .fg = G_CYAN		, .bg = 0		) // \e[36m
+#define LN_COL_REG_1		toColour( .style = G_DIM , .fg = G_BRT_CYAN	, .bg = 0		) // \e[96m \e[2m
+#define LN_COL_REG_MORE		toColour( .style = G_BOLD, .fg = G_BLACK	, .bg = G_BMAG	) // \e[105m
+#define LN_COL_OTHER		toColour( .style = G_BOLD, .fg = G_BLACK	, .bg = G_RED	) // \e[41m
 
-#define HARDLN_UNDERLINE		";21;58;5;13"	// \e[21m \e[95m
+#define HARDLN_UNDERLINE	toColour( .style = G_DUNDER					, .bg =	0		) // \e[21m \e[95m
+#define HARDLN_ANSI			ANSI_IFCOL( "21;58;5;13" )
 
 /* —— Mount Point ——————————————————————————————————————————————————————————— */
 
@@ -139,20 +215,20 @@
 #define ACL_CHAR				'+'
 
 #define READ_BIT_CHAR			'r'
-#define WRITE_BIT_CHAR			'w'
+#define WRIT_BIT_CHAR			'w'
 #define EXEC_BIT_CHAR			'x'
 
-#define SUGID_X_BIT_CHAR		's'
-#define SUGID_N_BIT_CHAR		'S'
+#define SUGI_X_BIT_CHAR			's'
+#define SUGI_N_BIT_CHAR			'S'
 
-#define STICKY_X_BIT_CHAR		't'
-#define STICKY_N_BIT_CHAR		'T'
+#define STIC_X_BIT_CHAR			't'
+#define STIC_N_BIT_CHAR			'T'
 
-#define SUID_N_BIT_CHAR			SUGID_N_BIT_CHAR
-#define SUID_X_BIT_CHAR			SUGID_X_BIT_CHAR
+#define SUID_N_BIT_CHAR			SUGI_N_BIT_CHAR
+#define SUID_X_BIT_CHAR			SUGI_X_BIT_CHAR
 
-#define SGID_N_BIT_CHAR			SUGID_N_BIT_CHAR
-#define SGID_X_BIT_CHAR			SUGID_X_BIT_CHAR
+#define SGID_N_BIT_CHAR			SUGI_N_BIT_CHAR
+#define SGID_X_BIT_CHAR			SUGI_X_BIT_CHAR
 
 /* —— UID/GID ——————————————————————————————————————————————————————————————— */
 
@@ -162,33 +238,34 @@
 #define USR_INV_COL				PUNCT			// \e[90m
 #define GRP_INV_COL				PUNCT			// \e[90m
 
-#define USR_YOU_COL				"1;38;5;105"	// #807DED
-#define USR_ROOT_COL			"31"			// \e[31m
-#define USR_OTH_COL				"93"			// \e[93m
+#define USR_YOU_COL				toColour( .style = G_BOLD, .fg = 105	) // #807DED
+#define USR_ROOT_COL			toColour( .style = 0	 , .fg = G_RED	) // \e[31m
+#define USR_OTH_COL				toColour( .style = 0	 , .fg = G_YEL	) // \e[93m
 
-#define GRP_YOU_COL				"93"			// \e[93m
-#define GRP_ROOT_COL			"94"			// \e[94m
-#define GRP_OTH_COL				"91"			// \e[91m
+#define GRP_YOU_COL				toColour( .fg = G_BYEL ) // \e[93m
+#define GRP_ROOT_COL			toColour( .fg = G_BBLU ) // \e[94m
+#define GRP_OTH_COL				toColour( .fg = G_BRED ) // \e[91m
 
 /* —— Flags ————————————————————————————————————————————————————————————————— */
 
 #define NO_FLAG_STR				"-"			/// The string to display if the file doesn't have any flags.
-#define FLAG_SEP_STR			","			/// The string to display between a file's flags.
+#define FLAG_SEP_CHR			','			/// The character to display between a file's flags.
 
-#define FL_U_NODUMP				"92"		// \e[92m
-#define FL_U_IMMUTABLE			"94"		// \e[94m
-#define FL_U_APPEND				"93"		// \e[93m
-#define FL_U_OPAQUE				"97"		// \e[97m
-#define FL_U_COMPRESSED			"95"		// \e[95m
-#define FL_U_TRACKED			"91"		// \e[91m
-#define FL_U_DATAVAULT			"1;7"		// \e[07m
-#define FL_U_HIDDEN				"2"			// \e[02m
-#define FL_S_ARCHIVED			"32"		// \e[32m
-#define FL_S_IMMUTABLE			"34"		// \e[34m
-#define FL_S_APPEND				"33"		// \e[33m
-#define FL_S_RESTRICTED			"31"		// \e[31m
-#define FL_S_NOUNLINK			"36"		// \e[36m
-#define FL_S_DATALESS			HL_DATALESS	// \e[47m
+#define FL_U_NODUMP				toColour( .fg = G_BRT_GREEN		) // \e[92m
+#define FL_U_IMMUTABLE			toColour( .fg = G_BRT_BLUE		) // \e[94m
+#define FL_U_APPEND				toColour( .fg = G_BRT_YELLOW	) // \e[93m
+#define FL_U_OPAQUE				toColour( .fg = G_BRT_WHITE		) // \e[97m
+#define FL_U_COMPRESSED			toColour( .fg = G_BRT_MAGENTA	) // \e[95m
+#define FL_U_TRACKED			toColour( .fg = G_BRT_RED		) // \e[91m
+#define FL_U_DATAVAULT			toColour( .ST = G_BOLD | G_REV	) // \e[07m
+#define FL_U_HIDDEN				toColour( .ST = G_DIM			) // \e[02m
+#define FL_S_ARCHIVED			toColour( .fg = G_GREEN			) // \e[32m
+#define FL_S_IMMUTABLE			toColour( .fg = G_BLUE			) // \e[34m
+#define FL_S_APPEND				toColour( .fg = G_YELLOW		) // \e[33m
+#define FL_S_RESTRICTED			toColour( .fg = G_RED			) // \e[31m
+#define FL_S_NOUNLINK			toColour( .fg = G_CYAN			) // \e[36m
+#define FL_S_FIRMLINK			toColour( .fg = G_MAGENTA		) // \e[35m
+#define FL_S_DATALESS			HL_DATALESS						  // \e[47m
 
 /* —— Filetypes ————————————————————————————————————————————————————————————— */
 
@@ -232,8 +309,8 @@
 	X(FC_SUID_N		, HL_SUID_N		) /* \e[101m */ \
 	X(FC_SGID_X		, HL_SGID_X		) /* \e[45m  */ \
 	X(FC_SGID_N		, HL_SGID_N		) /* \e[105m */ \
-	X(FC_STICKY_X	, HL_STICKY_X	) /* \e[44m  */ \
-	X(FC_STICKY_N	, HL_STICKY_N	) /* \e[104m */ \
+	X(FC_STIC_X		, HL_STIC_X		) /* \e[44m  */ \
+	X(FC_STIC_N		, HL_STIC_N		) /* \e[104m */ \
 	/* Flags	   */ \
 	X(FC_DATALESS	, HL_DATALESS	) /* \e[47m  */ \
 	/* Extension   */ \
@@ -246,22 +323,30 @@
 
 /* —— Permission Colours ———————————————————————————————————————————————————— */
 
-#define XATTR_COLOUR  ";38;5;147"
-#define ACL_COLOUR	  ";38;5;39"
+#define XATTR_COLOUR  toColour( .fg = 147	)
+#define ACL_COLOUR	  toColour( .fg = 39	)
 
 #define PERM_COLOUR_TABLE \
-	X(PC_NONE		, PUNCT			) /* \e[90m  */ \
-	X(PC_READ		, HL_READ		) /* \e[92m  */ \
-	X(PC_W_USRGRP	, HL_W_USRGRP	) /* \e[93m  */ \
-	X(PC_W_OTHER	, HL_W_OTHER	) /* \e[42m  */ \
-	X(PC_X_REG		, HL_X_REG		) /* \e[31m  */ \
-	X(PC_X_NREG		, HL_X_NREG		) /* \e[91m  */ \
-	X(PC_SUID_X		, HL_SUID_X		) /* \e[41m  */ \
-	X(PC_SUID_N		, HL_SUID_N		) /* \e[101m */ \
-	X(PC_SGID_X		, HL_SGID_X		) /* \e[45m  */ \
-	X(PC_SGID_N		, HL_SGID_N		) /* \e[105m */ \
-	X(PC_STICKY_X	, HL_STICKY_X	) /* \e[44m  */ \
-	X(PC_STICKY_N	, HL_STICKY_N	) /* \e[104m */
+	X(PC_NONE		, PUNCT			) /* 00 0000 .--------- \e[90m  */ \
+	\
+	X(PC_READ		, HL_READ		) /* 00 0000 .r--r--r-- \e[92m  */ \
+	X(PC_W_UG		, HL_W_UG		) /* 00 0000 .-w--w---- \e[93m  */ \
+	X(PC_W_OTH		, HL_W_OTH		) /* 00 0000 .------w-- \e[42m  */ \
+	X(PC_X_REG		, HL_X_REG		) /* 00 0000 .--x--x--x \e[31m  */ \
+	X(PC_X_NRG		, HL_X_NRG		) /* 00 0000 d--x--x--x \e[91m  */ \
+	\
+	X(PC_SUID_X		, HL_SUID_X		) /* 00 0000 .--s------ \e[41m  */ \
+	X(PC_SUID_N		, HL_SUID_N		) /* 00 0000 .--S------ \e[101m */ \
+	X(PC_SGID_X		, HL_SGID_X		) /* 00 0000 .-----s--- \e[45m  */ \
+	X(PC_SGID_N		, HL_SGID_N		) /* 00 0000 .-----S--- \e[105m */ \
+	X(PC_STIC_X		, HL_STIC_X		) /* 00 0000 .--------t \e[44m  */ \
+	X(PC_STIC_N		, HL_STIC_N		) /* 00 0000 .--------T \e[104m */ \
+	\
+	X(PC_NON_EXT 	, DARK_PUNCT	) /* 00 0000 .--------- \e[30m  */ \
+	X(PC_REA_EXE 	, HL_REA_EXE	) /* 00 0000 .r-xr-xr-x #E48256 */ \
+	X(PC_WRT_EXE 	, HL_WRT_EXE	) /* 00 0000 .-wx-wx--x #DFAD81 */ \
+	X(PC_REA_WRT 	, HL_REA_WRT	) /* 00 0000 .rw-rw-r-- \e[94m  */ \
+	X(PC_RWX_ALL 	, HL_RWX_ALL	) /* 00 0000 .rwxrwxr-x \e[34m  */ \
 
 /* —— Time —————————————————————————————————————————————————————————————————— */
 
@@ -272,75 +357,97 @@
 #define TIME_FMT		DATETIME_SPACE "%R"
 
 #define TIME_COLOUR_TABLE \
-	X(TC_NOW	, RGB(203, 210, 242) ";1"	) \
-	X(TC_MIN	, RGB(200, 208, 241)		) \
-	X(TC_TODAY	, RGB(165, 183, 236)		) \
-	X(TC_YESTD	, RGB(133, 161, 228)		) \
-	X(TC_2DAYS	, RGB(100, 145, 225)		) \
-	X(TC_THIS_MO, RGB( 70, 132, 230)		) \
-	X(TC_THIS_YR, RGB( 35, 106, 204)		) \
-	X(TC_OTHER	, RGB(  4,  65, 145)		)
+	X(TC_NOW	, toColour( .fg = RGB(203, 210, 242), .style = G_BOLD	)) \
+	X(TC_MIN	, toColour( .fg = RGB(200, 208, 241)					)) \
+	X(TC_TODAY	, toColour( .fg = RGB(165, 183, 236)					)) \
+	X(TC_YESTD	, toColour( .fg = RGB(133, 161, 228)					)) \
+	X(TC_2DAYS	, toColour( .fg = RGB(100, 145, 225)					)) \
+	X(TC_THIS_MO, toColour( .fg = RGB( 70, 132, 230)					)) \
+	X(TC_THIS_YR, toColour( .fg = RGB( 35, 106, 204)					)) \
+	X(TC_OTHER	, toColour( .fg = RGB(  4,  65, 145)					))
 
 /* —— File Sizes ———————————————————————————————————————————————————————————— */
 
 #define NO_SIZE_STR		"-"
 #define MAJ_MIN_SEP		","
 
-#define UNIT_MAJ_MIN	','
-#define UNIT_ZERO		'-'
+#define UNIT_MAJ_MIN	((unit_t)',')
+#define UNIT_ZERO		((unit_t)'-')
+#define UNIT_ERROR		((unit_t)'x')
 
-#define UNIT_BYTE		'\0'
-#define UNIT_KILO		'k'
-#define UNIT_MEGA		'M'
-#define UNIT_GIGA		'G'
-#define UNIT_TERA		'T'
-#define UNIT_PETA		'P'
-#define UNIT_EXA		'E'
-#define UNIT_ZETA		'Z'
-#define UNIT_YOTTA		'Y'
-#define UNIT_RONNA		'R'
-#define UNIT_QUETTA		'Q'
+#define UNIT_BYTE		((unit_t)'b')
+#define UNIT_KILO		((unit_t)'k')
+#define UNIT_MEGA		((unit_t)'M')
+#define UNIT_GIGA		((unit_t)'G')
+#define UNIT_TERA		((unit_t)'T')
+#define UNIT_PETA		((unit_t)'P')
+#define UNIT_EXA		((unit_t)'E')
+#define UNIT_ZETA		((unit_t)'Z')
+#define UNIT_YOTTA		((unit_t)'Y')
+#define UNIT_RONNA		((unit_t)'R')
+#define UNIT_QUETTA		((unit_t)'Q')
 
-#define MAJ_COL	"1;37"	// \e[37m
-#define MIN_COL	"36"	// \e[36m
+#define DO_PRINT_SIZE_UNIT(u)	\
+	(!((u) == UNIT_MAJ_MIN		\
+	|| (u) == UNIT_ERROR		\
+	|| (u) == UNIT_ZERO			\
+	|| (u) == UNIT_BYTE			\
+	|| (u) == '\0'				\
+	))
+
+#define MAJ_COL_ANSI	ANSI_IFCOL( "37"	) // \e[37m
+#define MIN_COL_ANSI	ANSI_IFCOL( "36"	) // \e[36m
+#define MIN_COLOUR		toColour( .fg = G_CYAN ) // \e[36m
 
 #define SIZE_COLOUR_TABLE \
 	/* value */	\
-	X(SC_BB, "92"		) /* \e[102m */ \
-	X(SC_BK, "93"		) /* \e[103m */ \
-	X(SC_BM, "38;5;216"	) /* #FFAB81 */ \
-	X(SC_BG, "91"		) /* \e[101m */ \
-	X(SC_BT, "38;5;168"	) /* #E85587 */ \
+	X(SC_BB, toColour( .fg = G_BRT_GREEN	)) /* \e[102m */ \
+	X(SC_BK, toColour( .fg = G_BRT_YELLOW	)) /* \e[103m */ \
+	X(SC_BM, toColour( .fg = 216			)) /* #FFAB81 */ \
+	X(SC_BG, toColour( .fg = G_BRT_RED		)) /* \e[101m */ \
+	X(SC_BT, toColour( .fg = 168			)) /* #E85587 */ \
 	/* units */	\
-	X(SC_UB, "32"		) /* \e[42m  */ \
-	X(SC_UK, "33"		) /* \e[43m  */ \
-	X(SC_UM, "38;5;208"	) /* #FF8400 */ \
-	X(SC_UG, "31"		) /* \e[41m  */ \
-	X(SC_UT, "38;5;125"	) /* #BD0060 */
+	X(SC_UB, toColour( .fg = G_GREEN		)) /* \e[42m  */ \
+	X(SC_UK, toColour( .fg = G_YELLOW		)) /* \e[43m  */ \
+	X(SC_UM, toColour( .fg = 208			)) /* #FF8400 */ \
+	X(SC_UG, toColour( .fg = G_RED			)) /* \e[41m  */ \
+	X(SC_UT, toColour( .fg = 125			)) /* #BD0060 */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /* —— —— Type Definitions —— ——————————————————————————————————————————————————————————————————————————————————————— */
 
-#define X(name, esc) name,	// only unpack the names
+#define X(name, esc) name, // only unpack the names
 typedef enum { FILE_COLOUR_TABLE FC_COUNT } FileColour;
 typedef enum { PERM_COLOUR_TABLE PC_COUNT } PermColour;
-typedef enum { TIME_COLOUR_TABLE TC_COUNT } TimeColour;
 typedef enum { SIZE_COLOUR_TABLE SC_COUNT } SizeColour;
+typedef enum { TIME_COLOUR_TABLE TC_COUNT } TimeColour;
 #undef X
 
 /* —— —— Colour Enum Declarations —— ——————————————————————————————————————————————————————————————————————————————— */
 
-extern const char *const file_colour_esc[FC_COUNT];
-extern const char *const perm_colour_esc[PC_COUNT];
-extern const char *const time_colour_esc[TC_COUNT];
-extern const char *const size_colour_esc[SC_COUNT];
+const Colour file_colour_esc[FC_COUNT];
+const Colour perm_colour_esc[PC_COUNT];
+const Colour size_colour_esc[SC_COUNT];
+const Colour time_colour_esc[TC_COUNT];
 
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 
 #include "model/types.h"
-void setFileColour(FileColour *colour, const name_t name, const mode_t mode, const flag_t flags, const bool is_mount);
+FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flags, const bool is_mount);
+
+#ifdef DEBUG_MODE
+#	define clearScreen()
+#else
+#	define clearScreen() do {									\
+		if (DO_CLEAR()) {										\
+			fputs(CLEAR_SCREEN, DO_COLOUR() ? stdout : stderr);	\
+		}														\
+	} while (0)
+#endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignoreRegexp /(?<=G_)\w+\b|nodim|\b[bcdlps]?[rw-x]+\b|strncol/gi
 
 #endif /* !GRAPHICS_INITIALIASED */

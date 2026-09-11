@@ -7,9 +7,7 @@
 
 #include "icons.h"
 
-#include "info/info.h"
-#include "utils/string.h"
-#include "output/output.h"
+#include "utils/strings.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
 
@@ -21,14 +19,14 @@
 
 #ifdef DEBUG_MODE
 #	include "debugging/debugging.h"
-#	define PRINTF_ERROR(...) do {											\
+#	define PRINTF_CHECK_ERROR(...) do {										\
 		if (printf(__VA_ARGS__) == EOF) {									\
 			const int printf_errno = errno;									\
 			debug(ERROR, "printIcon: printf: %s", strerror(printf_errno));	\
 		}																	\
 	} while (0)
 #else
-#	define PRINTF_ERROR(...) printf(__VA_ARGS__)
+#	define PRINTF_CHECK_ERROR(...) printf(__VA_ARGS__)
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -44,14 +42,14 @@ static inline icon_t findIconMatch(const char *check_str, const Icon icon_arr[])
 icon_t getIcon(const char *filename, const bool is_dir) {
 	name_t name;
 	char *make_lower = (char *)filename;
-	// make the filename lowercase, so we can find more matches
-	// if the filename is `.`, then get the basename of the actual path, and make that lowercase instead
-	if (strcmp(filename, DOTDIR) == 0) {
-		const char *basename = strrchr(G_DOTDIR_PATH, '/');
-		if (basename != NULL) {
-			make_lower = (char *)basename + 1;
-		}
-	}
+	// // make the filename lowercase, so we can find more matches
+	// // if the filename is `.`, then get the basename of the actual path, and make that lowercase instead
+	// if (strcmp(filename, DOTDIR) == 0) {
+	// 	const char *basename = strrchr(G_DOTDIR_PATH, '/');
+	// 	if (basename != NULL) {
+	// 		make_lower = (char *)basename + 1;
+	// 	}
+	// }
 	toLower(name, make_lower);
 
 	const Icon *NAME_ARRAY = (Icon *)(is_dir ? &DIRNAME_ICONS : &FILENAME_ICONS);
@@ -81,18 +79,30 @@ icon_t getIcon(const char *filename, const bool is_dir) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void printIcon(const icon_t icon, const FileColour file_col) {
-	if (!DO_COLOUR()) {
-		PRINTF_ERROR("%lc", icon);
-		return;
+void print_icon(const FileStat *const pFS) {
+	/// @todo implement the `DO_ICON` option
+	// if (!DO_ICON()) return;
+
+	Colour colour = {0};
+
+	if (DO_COLOUR()) {
+		colour = file_colour_esc[pFS->file_col];
+
+		// if the colour has a background, then set its forground to the background colour
+		if (colour.has_bg()) {
+			colour.fg = colour.bg;
+			colour.bg = G_NO_BG;
+		}
+
+		// the icon also shouldn't have any underlining
+		if (colour.style & G_UNDER ) colour.style &= ~G_UNDER ;
+		if (colour.style & G_DUNDER) colour.style &= ~G_DUNDER;
 	}
 
-	// FIXME: this is an impoerfect solution, but it's fine for now
-	const char *const colour_str = file_colour_esc[file_col];
-	const bool sets_bg = doesSetBackground(colour_str);
-
-	PRINTF_ERROR("%s%s%s%s" "%lc" "%s",
-		CSI, colour_str, sets_bg ? ";7" : "", END, icon, RESET
+	PRINTF_CHECK_ERROR("%s" "%s" "%lc",
+		PRE_ICON_PAD,
+		getcol(colour),
+		(pFS->icon == NO_ICON) ? IC_ERROR : pFS->icon
 	);
 }
 

@@ -3,111 +3,153 @@
  * @file main.c
  */
 
-#include <errno.h>
-#include <stdio.h>
-#include <locale.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h> // printf()
+#include <string.h> // strrchr()
+#include <locale.h> // setlocale()
 
-#include "main/process-dir.h"
+#include "malloc.h" // efree()
+#include "strings.h" // strends()
+#include "debugging.h" // initDebugging(), debug()
 
-#include "utils/malloc.h"
-#include "utils/string.h"
-#include "options/options.h"
-#include "features/time/time.h"
+#include "model/global.h" // argv0
+#include "sorting/sort.h" // sortFiles()
+#include "output/output.h" // printFile()
+#include "form/formatting.h" // initFormatting()
+#include "options/options.h" // setOptions(), DO_CLEAR()
+#include "features/features.h" // freeFirmlinks()
+#include "parsing/parse-file.h" // parseFile()
+#include "processing/process-input.h" // processInput()
 
-#include "debugging/debugging.h"
+/* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
-/// [TEMP] The maximum number of directories that can be passed to the function.
-#define MAX_INPUTS 128
-
-path_t G_DOTDIR_PATH;
+static inline const char *getArgv0(const int argc, char *restrict argv[]);
 const char *argv0;
 
-int main(const int argc, const char *argv[]) {
-	initDebugging(argv);
+/* ── ── main() ── ───────────────────────────────────────────────────────────────────────────────────────────────── */
 
-	// Set the locale to the system default (it'll check the env vars)
+int main(const int argc, char *argv[]) {
+	// set the locale to the system default (it'll check the env vars)
 	//	(this is to ensure that multibyte characters can be printed as file icons)
-	const char *locale = setlocale(LC_ALL, "");
+	const char *const locale = setlocale(LC_ALL, "");
 	if(!strends(locale, "UTF-8")) debug(WARNING, "Non-UTF-8 locale - locale is '%s'", locale);
 
-	argv0 = argc >= 1 && argv[0] != NULL && strlen(argv[0]) > 0
-		? argv[0]
-		: PROGRAM_NAME;
+	argv0 = getArgv0(argc, argv);
+	initDebugging(argv);
 
 	/* —— Parse User Options ————————————————————————————————————————————————————————————————————— */
 
-	// Parse the user's inputted options, and find where the options end (& where the files start)
+	// parse the user's inputted options, and find where the options end (& where the files start)
 	//	e.g. if the program is run as `lk --clear --sort name ~/.config/options`, then `files_start` will be 4
-	const int files_start = setOptions(argc, argv);
-	const int input_count = (argc == files_start) ? 1 : (argc - files_start);
+	const int opt_count = setOptions(argc, argv);
+	initFormatting();
 
-	/* —— Find Target Directories ———————————————————————————————————————————————————————————————— */
+	/* —— Determine Input Paths —————————————————————————————————————————————————————————————————— */
+
+	/// How many filepaths were entered after the options ended.
+	/// If there were no path entered, then assume there was just one path (`.`).
+	const int file_count = opt_count < argc ? argc - opt_count : 1;
 
 	/// The raw string paths inputted by the user.
-	char *input_paths[input_count];
+	char **const file_paths = argv + opt_count;
+	// if there were no paths entered, then assume the user inputted the path `.`
+	if (opt_count >= argc) file_paths[0] = DOTDIR;
 
-	bool do_free_path_0 = false;
+	/* —— Process & Parse Inputs ————————————————————————————————————————————————————————————————— */
 
-	// If there weren't any directory names passed, then default to as if the user had passed `.`
-	if (argc == files_start) {
-		// Since "." isn't stored anywhere, we have to alloc some memory for it
-		//	This memory is freed in `processDirectory()`
-		input_paths[0] = emalloc(sizeof(char *));
-		do_free_path_0 = true; // & then remember to free it
+	bool any_valid_input = false;
 
-		// Copy the string "." into input_paths[0]
-		strcpy(input_paths[0], DOTDIR);
+	// unfortunately, this has to be allocated on the heap, since wah wah, variable-size arrays are bad
+	//	boo hoo, and I want to be a good programmer, so I don't use them. bollocks >:(
+	/// An array of FileStat objects, each representing the inputted files/dirs.
+	FileStat *const inputs = ecalloc(file_count, sizeof(FileStat));
 
-	} else {
-		// Copy each of the arguments' addresses into `input_paths`
-		for (int i = 0; i < input_count; i++) {
-			input_paths[i] = (char *)argv[files_start + i];
+	// iterate through each input, and get the input's `FileStat` object to add to the array
+	for (int i = 0; i < file_count; i++) {
+		// firstly, process the input - i.e. extract the raw info that we can get from various syscalls
+		inputs[i] = processInput(file_paths[i]);
+
+		// make sure we were actually able to get anything from `processInput()`
+		if (!isValidFS(&inputs[i])) continue;
+		any_valid_input = true;
+
+		// then parse the file - i.e. go through and convert things from raw data into displayable output
+		parseFile(&inputs[i]);
+	}
+
+	// if none of the inputs were valid, don't bother with even trying to print them - just return failure
+	if (!any_valid_input) return EXIT_FAILURE;
+
+	/* —— Sort Files ————————————————————————————————————————————————————————————————————————————— */
+
+	if (MAX_DEPTH != 0) {
+		for (int i = 0; i < file_count; i++) {
+			if (!S_ISDIR(inputs[i].mode)	||
+				DIRS_AS_FILES()				||
+				inputs[i].f == NULL		||
+				inputs[i].f->child_count < 2
+			) continue;
+
+			sortFiles(1,
+				&inputs[i].f->children[0],
+				&inputs[i].f->child_count
+			);
 		}
 	}
 
-	/// Whether the user inputted at least one valid input into the function.
-	bool has_any_valid_input = false;
+	/// @todo implement `--sort-input`/`DO_SORT_INPUT`
+	if (/* DO_SORT_INPUTS() && */ file_count >= 2) sortFiles(0, &inputs[0], &file_count);
 
-	// Get a `DIR` pointer for each path passed in to the function
-	// (`DIR` being a "structure describing an open directory")
-	DIR *input_dirs[input_count];
+	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
 
-	for (int i = 0; i < input_count; i++) {
-		input_dirs[i] = opendir(input_paths[i]);
-		const int opendir_errno = errno;
+	// clear the screen after all the processing is done, but before we start printing
+	//	this should hopefully lead to the smoothest output
+	clearScreen();
 
-		// If we couldn't open the directory (usually cos it doesn't exist or
-		//	we don't have permissions for it), print an error
-		if (input_dirs[i] == NULL) {
-			fprintf(stderr, "%s: %s: %s\n", argv0, input_paths[i], strerror(opendir_errno));
-		} else {
-			// If at least one inputted directory is valid, then make sure we continue
-			has_any_valid_input = true;
-		}
+	#if defined(DEBUG_MODE) && defined(DUMP)
+		dump(&inputs[0]);
+	#endif
+
+	if (DO_HEADER()) printHeaders();
+
+	// print each of the inputs in the order they were given
+	// `printFile` will recurse into the file and print as many levels as was specified
+	for (int i = 0; i < file_count; i++) {
+		printFile(&inputs[i], /*level*/0, /*is_last*/i == file_count - 1, NO_LINES);
 	}
 
-	// If none the inputted directories are valid, exit with failure
-	if (!has_any_valid_input) return EXIT_FAILURE;
+	/* —— Cleanup ———————————————————————————————————————————————————————————————————————————————— */
 
-	/* —— Get Current Time ——————————————————————————————————————————————————————————————————————— */
-
-	// Find the current time and make it available globally
-	initTime();
-
-	/* —— Process All Directories ———————————————————————————————————————————————————————————————— */
-
-	for (int i = 0; i < input_count; i++) {
-		// Don't print invalid directories
-		if (input_dirs[i] == NULL) continue;
-
-		// Do the processing & print the details for each directory inputted
-		processDirectory(input_paths[i], input_dirs[i], do_free_path_0, i == 0);
-
-		// Print a newline between each directory listing (after each dir except the last)
-		if (i != input_count - 1) putchar('\n');
+	/// @todo move most of this into the printing section
+	for (int i = 0; i < file_count; i++) {
+		/* Memory Allocated
+		 * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+		 *	- `FileStat *inputs[]` - one for each input that was successfully statted (set to NULL on failure)
+		 *		- `struct stat    *FileStat::s` - same conditions as above
+		 *		- `FileStatFields *FileStat::f` - same conditions as above
+		 *			- `FileStat (*FileStatFields::children)[]` - allocated if input is a directory
+		 *				- `char        *FileStat::name` - allocated unconditionally for every child created
+		 *				- `struct stat *FileStat::s` - allocated if child was statted successfully (NULL otherwise)
+		 */
 	}
 
+	efree(inputs);
+	freeFirmlinks();
+
+	/* —— Return ————————————————————————————————————————————————————————————————————————————————— */
+
+	// checkMemLeak();
 	return EXIT_SUCCESS;
 }
+
+/* ── ── Helper Functions ── ─────────────────────────────────────────────────────────────────────────────────────── */
+
+static inline const char *getArgv0(const int argc, char *restrict argv[]) {
+	if ((argc < 1) || (argv[0] == NULL) || (argv[0][0] == '\0')) return PROGRAM_NAME;
+
+	const char *basename = strrchr(argv[0], '/');
+	if (basename != NULL) return basename + 1;
+
+	return argv[0];
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

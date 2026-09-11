@@ -5,6 +5,9 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#include <math.h> // used for some assertions
+#include "model/stat-model.h"
+
 #define LOG_LEVEL_TABLE \
 	X(TRACE		, 90) \
 	X(DEBUG		, 34) \
@@ -25,30 +28,53 @@ typedef struct {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void d__debug(const LogLevelIdx level_, const char *time, const int lineno, const char *file, const char *fmt, ...);
-void d__func(const char *func);
-void d__line(void);
+void d__stacktrace(void);
+void d__debug(
+	const LogLevelIdx level_,
+	const char *const time, const int lineno,
+	const char *const file, const char *const func,
+	const char *const fmt, ...
+);
+void d__dump(const FileStat *const fs);
+void d__line(const uint8_t len);
 
 #ifdef DEBUG_MODE
-#	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __VA_ARGS__)
-#	define dfunc(func) d__func(#func)
-#	define dline() d__line()
+#	define IN_DEBUG_MODE true
+#	define IF_DEBUG(expr) expr
+
+#	define stacktrace() d__stacktrace()
+#	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __func__, __VA_ARGS__)
+#	define dump(fs) d__dump(fs)
+
+/* ————————————————————————————————————————————————————— */
+
+#	define arg1__dline(len)	d__line((uint8_t)(len))
+#	define arg0__dline()	d__line((uint8_t)(150))
+
+#	define dline__DISPATCH(_1, NAME, ...) NAME
+#	define dline(...) dline__DISPATCH(__VA_ARGS__ __VA_OPT__(,) arg1__dline, arg0__dline)(__VA_ARGS__)
+
+/* ————————————————————————————————————————————————————— */
+
 #	define initDebugging(argv) do {										\
 		/* this is a very crude way to check for the `--clear` flag, */	\
 		/*	but it's only used for debugging, so it should be fine   */	\
 		if (argv[1] != NULL												\
-			&& ( strcmp(argv[1], "--clear") == 0)						\
-			|| (strends(argv[0], "clk"))								\
+			&& (strcmp(argv[1], "--clear") == 0)						\
+			|| (argv0[0] == 'c')										\
 		) {																\
-			printf("%s", CLEAR_SCREEN);									\
-			fflush(stdout);												\
+			fputs(CLEAR_SCREEN, stderr);								\
+			fflush(stderr);												\
 		}																\
-		debug(DEBUG, "────── DEBUGGING ──────");						\
 		dline();														\
 	} while (0)
+
 #else
+#	define IN_DEBUG_MODE false
+#	define IF_DEBUG(expr)
+#	define stacktrace()
 #	define debug(log_level, ...)
-#	define dfunc(func)
+#	define dump(fs)
 #	define dline()
 #	define initDebugging(argv1)
 #endif

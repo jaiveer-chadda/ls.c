@@ -1,23 +1,25 @@
 /// @file output/output.h
 
-#ifndef OUTPUT_INITIALIASED
-#define OUTPUT_INITIALIASED
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
 #include "model/stat-model.h"
 
-bool doesSetBackground(const char *colour);
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void  printHeader(void);
-void printFlagStr(const flag_t	 *flags																);
-void  printFields(const FileInfo *all_files	, const int		*count									);
-void   printNLink(const nlink_t	 *nlink		, const mode_t	*mode									);
-void printUsrName(const uid_t	 *uid		, const ugidstr	 usr_name, const bool		*is_valid	);
-void printGrpName(const gid_t	 *gid		, const ugidstr	 grp_name, const bool		*is_valid	);
-void printSizeStr(const sizestr	  size_str	, const char	*unit	 , const mode_t		*mode		);
-void printModeStr(const modestr	  str		, const bool	 has_acl , const bool		 has_xattr	);
-void printSymlink(		link_t p_target_path, const suff_t	 suffix	 , const FileColour	 link_col, const bool is_apple);
+#define NO_LINES ((const bool[RECURSION_LIMIT]){0})
 
-bool escapeName(char *escaped_name, const name_t orig_name, const char *colour_escape);
-void printName(const name_t name, const FileColour *colour, const bool *is_hln, const flag_t *flags, suff_t *suffix);
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#endif /* !OUTPUT_INITIALIASED */
+void printHeaders(void);
+void printEscdName(const char *const name, const Colour colour);
+
+void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_last, const lines_t lines);
+void print_tree(lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last);
+
+bool  dirEmpty(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines);
+bool fileError(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines);
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#endif /* !OUTPUT_H */

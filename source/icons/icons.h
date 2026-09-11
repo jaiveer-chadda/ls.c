@@ -24,16 +24,18 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 icon_t getIcon(const char *filename, const bool is_dir);
-void printIcon(const icon_t icon, const FileColour file_col);
+void print_icon(const FileStat *const pFS);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 typedef struct {
 	char *pattern;
-	wchar_t icon;
+	icon_t icon;
 } Icon;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define IC_ERROR L'󰟢' /** The icon displayed when the value of an icon is `NO_ICON`/`((icon_t)L'\0')`. */
 
 #define NO_PATTERN	 ((char *)NULL)
 #define NO_ICON		 ((icon_t)L'\0')
