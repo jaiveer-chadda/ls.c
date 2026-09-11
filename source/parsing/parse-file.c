@@ -98,7 +98,7 @@ void parseFile(FileStat *const pfile) {
 	if (do_usr_name()) pfsf->usr_name = getUser(pstat->st_uid);
 	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
-	if (do_flag_str()) pfsf->flag_str = parseFlags(pstat->st_flags);
+	if (do_flag_str()) pfsf->flag_str = parseFlags(pfile);
 	if (DO_MOUNTDEV()) pfsf->is_mount = isMountPoint(pstat->st_dev, pfile->path);
 	if (DO_COLOUR  ()) pfile->file_col = setFileColour(pfile->name, pfile->mode, pstat->st_flags, pfsf->is_mount);
 	if (do_time_str()) { parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); }

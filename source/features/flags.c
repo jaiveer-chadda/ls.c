@@ -1,6 +1,7 @@
 /// @file features/flags/flags.c
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "malloc.h"
@@ -36,19 +37,96 @@ const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 	{ SF_IMMUTABLE	, "simmutable"	, "simut", "si", FL_S_IMMUTABLE	 }, // file may not be changed
 	{ SF_APPEND		, "sappend"		, "sapnd", "sa", FL_S_APPEND	 }, // writes to file may only append
 	{ SF_RESTRICTED	, "restricted"	, "restr", "rs", FL_S_RESTRICTED }, // entitlement required for writing
-	{ SF_NOUNLINK	, "nounlink"	, "nouln", "nu", FL_S_NOUNLINK	 }, // may not be removed, renamed or mounted on
+	{ SF_NOUNLINK	, "snounlink"	, "sunln", "su", FL_S_NOUNLINK	 }, // may not be removed, renamed or mounted on
+	{ SF_FIRMLINK	, "firmlink"	, "firml", "fl", FL_S_FIRMLINK	 }, // directory is a firmlink
 	{ SF_DATALESS	, "dataless"	, "dtles", "dl", FL_S_DATALESS	 }, // file is dataless object
+
+	//UF_NOUNLINK	, "unounlink"	, "unoul", "uu", FL_U_NOUNLINK	 }, // [BSD only]
+	//SF_SNAPSHOT	, "dataless"	, "snaps", "sn", FL_S_SNAPSHOT	 }, // [BSD only]
 };
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+/** The file containing the mapping between `System` directories, and their firmlinked directories in `Data`. */
+#define FIRMLINK_MAP_FILE "/usr/share/firmlinks"
+
+/** The longest firmlink len on my system is 62 chars long, so this should be enough memory.
+ *	However, this is arbitrary, as `getdelim` will allocate as much memory as it needs to. */
+#define INIT_LN_BUFSIZE ((size_t)64)
+
+#define SYST_MODE_DELIM	'\t'
+#define DATA_MODE_DELIM	'\n'
+
+#define SWAP_DELIMS() ((delim == SYST_MODE_DELIM) ? DATA_MODE_DELIM : SYST_MODE_DELIM)
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline void checkFirmlink(FileStat *const pFS) {
+	// only directories can be firmlinks, so there's no point in checking anything else
+	if (!S_ISDIR(pFS->mode)) return;
+
+	// open the firmlink file for reading
+	FILE *p_flink = fopen(FIRMLINK_MAP_FILE, "r");
+	if (p_flink == NULL) return;
+
+	/* ———————————————————————————————————————————————— */
+
+	// get the absolute path to the file we're checking, since that's how they're stored in the lookup file
+	path_t abs_path = {0};
+	if (realpath(pFS->name, abs_path) == NULL) return;
+
+	// allocate some memory in which the section parsed by `getdelim` will go
+	//	this has to be heap memory, since `getdelim` will realloc `sec_buf` to make sure it always has enough space
+	size_t sec_bufsize = INIT_LN_BUFSIZE;
+	char *sec_buf = emalloc(sec_bufsize);
+
+	// initialise the section length to be `-1`, so if errors occur on the first iteration, they're caught correctly
+	ssize_t sec_len = EOF;
+
+	/* ———————————————————————————————————————————————— */
+
+	// the `/usr/share/firmlinks` file is mapped with a pair of system and data filepaths per line,
+	//	with the filepaths separated with a tab (`\t`), and the lines separated by newline (`\n`)
+	// we therefore read the file in system and data sections, and compare the system section with the file's realpath
+	char delim = SYST_MODE_DELIM;
+
+	while((sec_len = getdelim(&sec_buf, &sec_bufsize, delim, p_flink)) != EOF) {
+		// `getdelim` keeps the trailing delimiter, so remove it if it exists
+		if (sec_buf[sec_len - 1] == delim) sec_buf[sec_len - 1] = '\0';
+
+		delim = SWAP_DELIMS(); // swap the delimiters around for the next iteration
+
+		// if, after being swapped, the delimiter is in system mode, then we were in data mode before we swapped
+		//	since we don't care about the information in the data section, we can just continue
+		if (delim == SYST_MODE_DELIM) continue;
+
+		if (strcmp(sec_buf, abs_path) == 0) { // if the system section matches our file's path
+			pFS->s->st_flags |= SF_FIRMLINK; // then add the firmlink flag to the file's flags
+			break; // no more processing to be done
+		}
+	}
+
+	// if `getdelim` changes the pointer to `sec_buf` when calling `realloc`, it'll put the new pointer
+	//	back into `sec_buf`, so this should be safe to free
+	efree(sec_buf);
+	fclose(p_flink);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define DO_FIRMLINKS() /*temp*/ true
 
 #define GET_FLAG_NAME(flag) \
 	(DO_TINY_FLAGS() ? (flag).tiny_name : ( \
 		DO_SHORT_FLAGS() ? (flag).short_name : (flag).name \
 	))
 
-char *parseFlags(const flag_t raw_flags) {
-	if (raw_flags == 0) {
+char *parseFlags(FileStat *const pFS) {
+	/// @todo implement the `--check-firmlinks` option
+	if (DO_FIRMLINKS()) checkFirmlink(pFS);
+
+	if (pFS->s->st_flags == 0) {
 		// make sure that we note down the size of the string
 		//	which will be displayed if there aren't any flags
 		setLen(FI_flag_str, sizeof(NO_FLAG_STR) - 1);
@@ -65,7 +143,7 @@ char *parseFlags(const flag_t raw_flags) {
 	for (int i = 0; i < MAX_FLAG_NUM; i++) {
 		flag = ALL_FLAGS[i];
 
-		if (raw_flags & flag.mask) {
+		if (pFS->s->st_flags & flag.mask) {
 			if (!is_first) flag_str[str_len++] = FLAG_SEP_CHR;
 			is_first = false;
 
@@ -83,6 +161,7 @@ char *parseFlags(const flag_t raw_flags) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_flags(const FileStat *const pFS) {
 	const bool valid = pFS->s != NULL && pFS->s->st_flags != 0;
@@ -93,6 +172,8 @@ void print_flags(const FileStat *const pFS) {
 
 	printf("%s%*x%ls", /* colour */"", getLen(FI_flags), pFS->s->st_flags, FIELD_PAD);
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_flag_str(const FileStat *const pFS) {
 	if (pFS->s == NULL) {

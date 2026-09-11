@@ -264,6 +264,7 @@
 #define FL_S_APPEND				toColour( .fg = G_YELLOW		) // \e[33m
 #define FL_S_RESTRICTED			toColour( .fg = G_RED			) // \e[31m
 #define FL_S_NOUNLINK			toColour( .fg = G_CYAN			) // \e[36m
+#define FL_S_FIRMLINK			toColour( .fg = G_MAGENTA		) // \e[35m
 #define FL_S_DATALESS			HL_DATALESS						  // \e[47m
 
 /* —— Filetypes ————————————————————————————————————————————————————————————— */

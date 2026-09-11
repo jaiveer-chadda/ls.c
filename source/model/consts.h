@@ -37,7 +37,7 @@
 #define MAX_PATH_LEN __DARWIN_MAXPATHLEN
 
 /// @brief The maximum number of possible user and superuser flags on macOS.
-#define MAX_FLAG_NUM 14
+#define MAX_FLAG_NUM 15
 
 /// @brief The longest flag name on macOS ("uimmutable") + 1.
 #define MAX_FLAG_LEN 11
