@@ -23,7 +23,7 @@ typedef struct {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
+static const flagset ALL_FLAGS[] = {
 	{ UF_NODUMP		, "nodump"		, "nodmp", "nd", FL_U_NODUMP	 }, // do not dump file
 	{ UF_IMMUTABLE	, "uimmutable"	, "uimut", "ui", FL_U_IMMUTABLE	 }, // file may not be changed
 	{ UF_APPEND		, "uappend"		, "uapnd", "ua", FL_U_APPEND	 }, // writes to file may only append
@@ -44,6 +44,8 @@ const flagset ALL_FLAGS[MAX_FLAG_NUM] = {
 	//UF_NOUNLINK	, "unounlink"	, "unoul", "uu", FL_U_NOUNLINK	 }, // [BSD only]
 	//SF_SNAPSHOT	, "dataless"	, "snaps", "sn", FL_S_SNAPSHOT	 }, // [BSD only]
 };
+
+#define FLAG_COUNT ((int)(sizeof(ALL_FLAGS) / sizeof(ALL_FLAGS[0])))
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -228,6 +230,11 @@ char *parseFlags(FileStat *const pFS) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/// Rounds a number down to the nearest 4.
+#define ROUND_DOWN_TO_4(num) ((num) & ~3)
+/// Strip the trailing zeros from a hexadecimal number
+#define STRIP_TZ_HEX(num) (num) >> ROUND_DOWN_TO_4(__builtin_ctz((num)))
+
 void print_flags(const FileStat *const pFS) {
 	const bool valid = pFS->s != NULL && pFS->s->st_flags != 0;
 	if (!valid) {
@@ -235,13 +242,33 @@ void print_flags(const FileStat *const pFS) {
 		return;
 	}
 
-	printf("%s%*x%ls", /* colour */"", getLen(FI_flags), pFS->s->st_flags, FIELD_PAD);
+	flag_t hex_out[FLAG_COUNT] = {0};
+	Colour colours[FLAG_COUNT] = {0};
+
+	for (int i = 0; i < FLAG_COUNT; i++) {
+		const flag_t mask = ALL_FLAGS[i].mask;
+		if (!(pFS->s->st_flags & mask)) continue;
+
+		const int trailing_0s = ROUND_DOWN_TO_4(__builtin_ctz(mask));
+
+		hex_out[trailing_0s >> 2] += (mask >> trailing_0s);
+		colours[trailing_0s >> 2] =  (ALL_FLAGS[i].colour);
+	}
+
+	for (int i = FLAG_COUNT - getLen(FI_flags); i < FLAG_COUNT; i++) {
+		const int get_idx = FLAG_COUNT - (i + 1);
+
+		Colour colour = colours[get_idx];
+		if (!areEqual(colour, RESET_ALL)) colour.style |= G_BOLD;
+
+		printf("%s%x%ls", getcol(colour), hex_out[get_idx], (i + 1 == FLAG_COUNT) ? FIELD_PAD : L"");
+	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_flag_str(const FileStat *const pFS) {
-	if (pFS->s == NULL) {
+	if (pFS->s == NULL || pFS->s->st_flags == 0) {
 		printf("%s%-*s%ls", getcol(PUNCT), getLen(FI_flag_str), NO_FLAG_STR, FIELD_PAD);
 		return;
 	}
