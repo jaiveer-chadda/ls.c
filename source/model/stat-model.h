@@ -39,6 +39,7 @@ struct FileStat {
 	// the following fields are all taken directly from `struct dirent`.
 	char		*name	; // 8 /** A pointer to the place in `.path` where the file's name starts. */
 	const char	*path	; // 8 /** The absolute path to this file. */
+	const char	*display; // 8 /** The formatted path to be printed if this file is of level 0. NULL otherwise. */
 	ino_t		inum	; // 8 /** The inode number for this file. */
 	namlen_t	name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
@@ -53,7 +54,7 @@ struct FileStat {
 	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
 
 	modestr		mode_str; // 12 /** A string repr of the file's mode (type & permissions). */
-}; // 76 + 4 pad = 80b
+}; // 84 + 4 pad = 88b
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 

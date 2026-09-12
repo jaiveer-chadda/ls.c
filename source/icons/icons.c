@@ -39,14 +39,20 @@ static inline icon_t findIconMatch(const char *const check_str, const Icon icon_
 	return NO_ICON;
 }
 
-icon_t getIcon(const char *filename, const bool is_dir) {
-	path_t name_buf;
+icon_t getIcon(const FileStat *const pFS) {
+	// determine which name we'll be using to find the icon
+	const char *filename = pFS->display != NULL ? pFS->display : pFS->name;
+	const bool is_dir = S_ISDIR(pFS->mode);
+
+	path_t name_buf = {0};
 	toLower(name_buf, filename);
 
 	// find the basename of the file, since that's the only part that needs to be matched
 	const char *name = strrchr(name_buf, '/');
+
 	// if there's no `/` in the name, then just revert to the normal name
-	if (name == NULL) name = name_buf;
+	//	if there _is_ a `/`, then move the pointer over by one, so the `/` isn't included
+	name = (name != NULL) ? name + 1 : name_buf;
 
 	// which array we should search in when looking for icons
 	const Icon *const NAME_ARRAY = (Icon *)(is_dir ? &DIRNAME_ICONS : &FILENAME_ICONS);

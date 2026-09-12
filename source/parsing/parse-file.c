@@ -43,8 +43,9 @@
  * @param pfile[in/out] A pointer to a `FileStat` object, where the information for a given file is stored.
  */
 void parseFile(FileStat *const pfile) {
-	// all NULL `FileStat`s should have been filtered out by now
+	// all NULL and invalid objects should have been filtered out by now
 	assert(pfile != NULL);
+	assert(isValidFS(pfile));
 
 	const struct stat *const pstat = pfile->s;
 	FileStatFields *const pfsf = pfile->f;
@@ -58,6 +59,8 @@ void parseFile(FileStat *const pfile) {
 	const bool is_incomplete = (pstat == NULL) /* && (pfsf == NULL) */;
 
 	/* ————————————————————————————————————————————————————————— */
+
+	pfile->display = getDisplayPath(pfile);
 
 	// `FileStat::mode` and `FileStat::inum` are the two fields which are filled by both `dirent` and `stat`
 	if (!is_incomplete) {
@@ -73,7 +76,7 @@ void parseFile(FileStat *const pfile) {
 	// make sure to keep calculating the maximum name length
 	setLen(FI_name, pfile->name_len);
 
-	if (do_icon	 ()) pfile->icon   = getIcon(pfile->name, S_ISDIR(pfile->mode));
+	if (do_icon	 ()) pfile->icon   = getIcon(pfile);
 	if (do_suffix()) pfile->suffix = getTypeSuffix(pfile->mode);
 
 	if (do_mode_str()) {

@@ -10,17 +10,16 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// this is defined here so that it can safely be passed to `print_name`, and then on to `printEscdName`.
-static path_t path_buffer = {0};
+const char *getDisplayPath(FileStat *const pFS) {
+	// if the path has a parent, then we don't want to analyse it.
+	//	we only want the most root-level files
+	if (pFS->parent != NULL) return NULL;
 
-static inline const char *formatPath(const char *path) {
-	// if (path != ".")
-	if (path[0] != '.' || path[1] != '\0') return path;
-
+	path_t path_buffer = {0};
 	char *PWD = path_buffer;
 	PWD = getcwd(PWD, sizeof(path_buffer));
 
-	if (PWD == NULL) return path;
+	if (PWD == NULL) return NULL;
 	char *adj_path = PWD;
 
 	const char *const HOME = getenv("HOME");
@@ -30,24 +29,26 @@ static inline const char *formatPath(const char *path) {
 		|| home_len == 0	//	got the $HOME var
 		|| path_len <= home_len		// check that `$PWD != $HOME`
 		|| strncmp(HOME, adj_path, home_len) != 0	// and make sure that we're actually in a subdir of $HOME
-	) return adj_path;
+	) return strdup(adj_path);
 
 	// replace `$HOME` with `~`
 	adj_path[home_len - 1] = '~';
 	adj_path += home_len - 1;
 
-	return adj_path;
+	return strdup(adj_path);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline const char* choosePath(const FileStat *const pFS) {
+	if (pFS->display != NULL			 ) return pFS->display;
+	if (pFS->path	 != NULL && DO_PATH()) return pFS->path;
+
+	return pFS->name;
+}
+
 void print_name(const FileStat *const pFS) {
-	const bool do_path = DO_PATH() && pFS->path != NULL;
-	const char *name_or_path = do_path ? pFS->path : pFS->name;
-
-	/// @todo implement the `--pwd-as-path` option
-	name_or_path = formatPath(name_or_path);
-
+	const char *const name_or_path = choosePath(pFS);
 	printEscdName(name_or_path, file_colour_esc[pFS->file_col]);
 }
 

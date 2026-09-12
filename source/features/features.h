@@ -61,7 +61,7 @@ void printMountDevice(const name_t filename);
 
 /* —— path.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-int getDirPath(path_t out_path, const path_t path);
+const char *getDisplayPath(FileStat *const pFS);
 
 /* —— size.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
