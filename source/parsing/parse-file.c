@@ -98,6 +98,7 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
+	if (do_link_to ()) pfsf->target   = getLink(&pfile->err_no, pstat->st_mode, pfile->path);
 	if (do_usr_name()) pfsf->usr_name = getUser(pstat->st_uid);
 	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);

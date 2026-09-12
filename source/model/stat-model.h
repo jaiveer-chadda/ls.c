@@ -102,11 +102,11 @@ struct FileStatFields {
  * @var TargetInfo::is_apple Whether the source of this link is a symbolic link, or an Apple alias file.
  */
 struct TargetInfo {
-	const char	*path	; // 8 /** The contents of the link (usually the absolute path to the target file). */
+	path_t		path	; // 1024 /** The contents of the link (usually the absolute path to the target file). */
 	FileColour	colour	; // 4 /** The colour that the file should be displayed in. */
 	char		suffix	; // 1 /** The symbol to be shown after the target's name. */
 	bool		is_apple; // 1 /** Whether the link that pointed to this target was an apple alias (or a symlink). */
-}; // 14 + 2 pad = 16b
+}; // 1030 + 2 pad = 1032b
 
 /* —— TimeInfo ————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

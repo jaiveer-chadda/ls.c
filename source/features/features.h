@@ -18,6 +18,7 @@
 void print_uid(const FileStat *const pFS);
 void print_gid(const FileStat *const pFS);
 void print_inum(const FileStat *const pFS);
+void print_link(const FileStat *const pFS);
 void print_mode(const FileStat *const pFS);
 void print_name(const FileStat *const pFS);
 void print_size(const FileStat *const pFS);
@@ -44,7 +45,7 @@ void processInum(ino_t inum);
 
 /* —— links.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-link_t getLink(const path_t link_path);
+TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const link_path);
 bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t file_path);
 
 /* —— mode.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */

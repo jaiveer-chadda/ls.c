@@ -1,5 +1,6 @@
 /// @file features/links/links.c
 
+#include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
@@ -8,35 +9,38 @@
 #include "malloc.h"
 #include "debugging.h"
 
-#include "features.h" // abbrpath()
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const link_path) {
+	if (!S_ISLNK(mode)) return NULL;
+
+	path_t target_path = {0};
+	const ssize_t target_len = readlink(link_path, target_path, sizeof(path_t));
+
+	if (target_len == -1) { *err_no = errno; return NULL; }
+
+	// this memory is freed once the target is printed (in `printSymlink()`)
+	TargetInfo *tg_info = ecalloc(1, sizeof(TargetInfo));
+	memcpy(tg_info->path, target_path, target_len);
+
+	return tg_info;
+}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-link_t getLink(const path_t link_path) {
-	path_t target_path = "";
+void print_link(const FileStat *const pFS) {
+	if (!S_ISLNK(pFS->mode) || pFS->f == NULL) return;
 
-	const ssize_t target_path_len = readlink(link_path, target_path, sizeof(path_t));
-	const int readlink_errno = errno;
+	const TargetInfo *const tg_info = pFS->f->target;
 
-	if (target_path_len == -1) {
-		debug(WARNING, "%s: %s", link_path, strerror(readlink_errno));
-
-		switch (readlink_errno) {
-			case EACCES	: return NULL;
-			default		: target_path[0] = '\0';
-		}
-	} else {
-		target_path[target_path_len] = '\0';
+	if (tg_info == NULL) {
+		printf("%s[ %s ]", EACCES_ARROW, strerror(pFS->err_no));
+		return;
 	}
 
-	/* ————————————————————————————————————————————————————— */
+	printf("%s%s", SYMLINK_ARROW, tg_info->path);
 
-	// this memory is freed once the target is printed (in `printSymlink()`)
-	// ReSharper disable once CppLocalVariableMayBeConst
-	link_t target_str = emalloc(sizeof(path_t));
-
-	// abbrPath(target_str, target_path);
-	return target_str;
+	efree((void*)tg_info);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

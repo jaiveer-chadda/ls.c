@@ -19,6 +19,8 @@
 
 bool fileError(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines) {
 	if (pFS->err_no == 0) return false;
+	// if it has an error, but is also a link, then the error will have already been displayed
+	if (S_ISLNK(pFS->mode)) return true;
 
 	print_empty_tree();
 
