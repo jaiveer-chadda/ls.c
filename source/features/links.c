@@ -11,41 +11,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const link_path) {
-	if (!S_ISLNK(mode)) return NULL;
-
-	path_t target_path = {0};
-	const ssize_t target_len = readlink(link_path, target_path, sizeof(path_t));
-
-	if (target_len == -1) { *err_no = errno; return NULL; }
-
-	// this memory is freed once the target is printed (in `printSymlink()`)
-	TargetInfo *tg_info = ecalloc(1, sizeof(TargetInfo));
-	memcpy(tg_info->path, target_path, target_len);
-
-	return tg_info;
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-void print_link(const FileStat *const pFS) {
-	if (!S_ISLNK(pFS->mode) || pFS->f == NULL) return;
-
-	const TargetInfo *const tg_info = pFS->f->target;
-
-	if (tg_info == NULL) {
-		printf("%s[ %s ]", EACCES_ARROW, strerror(pFS->err_no));
-		return;
-	}
-
-	printf("%s%s", SYMLINK_ARROW, tg_info->path);
-
-	efree((void*)tg_info);
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
 #define FILE_EXISTS(path) (access((path), F_OK) == 0)
 
 #define DEFAULT_ALLOCATOR	NULL /** Also equivalent to `kCFAllocatorDefault`. */
@@ -68,7 +33,7 @@ void print_link(const FileStat *const pFS) {
  *
  * @return `true` if the file at `alias_path` is an Apple alias file, `false` otherwise.
  */
-bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t alias_path) {
+static inline bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t alias_path) {
 	*is_valid_alias = false;
 
 	/* ——————————————————————————————————————————————————————————— */
@@ -203,6 +168,41 @@ bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t 
 	return_1:
 		CFRelease(alias_string);
 		return FILE_IS_APPLE_ALIAS;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const link_path) {
+	if (!S_ISLNK(mode)) return NULL;
+
+	path_t target_path = {0};
+	const ssize_t target_len = readlink(link_path, target_path, sizeof(path_t));
+
+	if (target_len == -1) { *err_no = errno; return NULL; }
+
+	// this memory is freed once the target is printed (in `printSymlink()`)
+	TargetInfo *tg_info = ecalloc(1, sizeof(TargetInfo));
+	memcpy(tg_info->path, target_path, target_len);
+
+	return tg_info;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void print_link(const FileStat *const pFS) {
+	if (!S_ISLNK(pFS->mode) || pFS->f == NULL) return;
+
+	const TargetInfo *const tg_info = pFS->f->target;
+
+	if (tg_info == NULL) {
+		printf("%s[ %s ]", EACCES_ARROW, strerror(pFS->err_no));
+		return;
+	}
+
+	printf("%s%s", SYMLINK_ARROW, tg_info->path);
+
+	efree((void*)tg_info);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

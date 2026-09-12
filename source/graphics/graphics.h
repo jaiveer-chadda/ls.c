@@ -158,7 +158,7 @@
 
 /* —— Links ————————————————————————————————————————————————————————————————— */
 
-#define SYMLINK_ARROW			" -> "
+#define SYMLINK_ARROW			" --> "
 #define APPLE_ARROW				" —a→ "
 #define EACCES_ARROW			" —?→ "
 

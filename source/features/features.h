@@ -46,7 +46,6 @@ void processInum(ino_t inum);
 /* —— links.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const link_path);
-bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t file_path);
 
 /* —— mode.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
