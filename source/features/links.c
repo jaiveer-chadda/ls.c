@@ -33,8 +33,11 @@
  *
  * @return `true` if the file at `alias_path` is an Apple alias file, `false` otherwise.
  */
-static inline bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias, const path_t alias_path) {
-	*is_valid_alias = false;
+static inline bool resolveAppleAlias(
+	path_t target_buffer, ssize_t *const target_len,
+	bool *const is_valid_alias, const path_t alias_path
+) {
+	*is_valid_alias = false, *target_len = -1;
 
 	/* ——————————————————————————————————————————————————————————— */
 
@@ -92,6 +95,11 @@ static inline bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias,
 
 	/* ——————————————————————————————————————————————————————————— */
 
+	// one reason `CFStringGetFileSystemRepresentation` can fail, is because the provided buffer is
+	//	too small to hold the string that's supposed to be assigned to it
+	// ∴ find out how long the target length is, to see if that's the reason for failure, if there is an error
+	const CFIndex target_path_len = CFStringGetMaximumSizeOfFileSystemRepresentation(alias_string);
+
 	// convert the CF string into a C-string, and store it in `target_buffer`
 	const bool conversion_success = (bool)CFStringGetFileSystemRepresentation(
 		/* string	 */ alias_string,
@@ -108,11 +116,6 @@ static inline bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias,
 	}
 
 	/* ——————————————————————————————————————————————————————————— */
-
-	// one reason `CFStringGetFileSystemRepresentation` can fail, is because the provided buffer is
-	//	too small to hold the string that's supposed to be assigned to it
-	// ∴ find out how long the target length is, to see if that's the reason for failure
-	const CFIndex target_path_len = CFStringGetMaximumSizeOfFileSystemRepresentation(alias_string);
 
 	// check if the target path was too long to fit in the buffer
 	if (target_path_len <= (CFIndex)sizeof(path_t))
@@ -167,6 +170,7 @@ static inline bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias,
 		free(temp_t_path);
 	return_1:
 		CFRelease(alias_string);
+		*target_len = target_path_len;
 		return FILE_IS_APPLE_ALIAS;
 }
 
@@ -174,16 +178,34 @@ static inline bool resolveAppleAlias(path_t target_buffer, bool *is_valid_alias,
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const link_path) {
-	if (!S_ISLNK(mode)) return NULL;
+	// we're looking for symlinks or apple links (which can only be regular files), so ignore everything else
+	if (!S_ISLNK(mode) && !S_ISREG(mode)) return NULL;
 
 	path_t target_path = {0};
-	const ssize_t target_len = readlink(link_path, target_path, sizeof(path_t));
+	ssize_t target_len = 0;
+	bool is_valid = false, is_apple = false;
 
-	if (target_len == -1) { *err_no = errno; return NULL; }
+	if (S_ISLNK(mode)) {
+		// if the file is a symlink, then simply call `readlink` on it
+		if (( target_len = readlink(link_path, target_path, sizeof(path_t)) ) == -1) {
+			*err_no = errno;
+			return NULL;
+		}
 
-	// this memory is freed once the target is printed (in `printSymlink()`)
+		is_valid = FILE_EXISTS(target_path);
+
+	} else {
+		// if the file's a regular file, then check if it's an apple alias - if not, then return
+		if (!resolveAppleAlias(target_path, &target_len, &is_valid, link_path)) return NULL;
+		is_apple = true; // if we're here, we've successfully parsed the apple alias
+	}
+
+	// this memory is freed once the target is printed (in `print_link()`)
 	TargetInfo *tg_info = ecalloc(1, sizeof(TargetInfo));
 	memcpy(tg_info->path, target_path, target_len);
+
+	tg_info->is_apple = is_apple;
+	if (!is_valid) tg_info->suffix = INVALID_LINK;
 
 	return tg_info;
 }
@@ -191,7 +213,7 @@ TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_link(const FileStat *const pFS) {
-	if (!S_ISLNK(pFS->mode) || pFS->f == NULL) return;
+	if (pFS->f == NULL || pFS->f->target == NULL) return;
 
 	const TargetInfo *const tg_info = pFS->f->target;
 
