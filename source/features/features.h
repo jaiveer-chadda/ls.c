@@ -45,7 +45,7 @@ void processInum(ino_t inum);
 
 /* —— links.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const link_path);
+TargetInfo *getLink(FileStat *const pFS);
 
 /* —— mode.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

@@ -177,9 +177,14 @@ static inline bool resolveAppleAlias(
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const link_path) {
+TargetInfo *getLink(FileStat *const pFS) {
+	const mode_t mode = pFS->mode;
+
 	// we're looking for symlinks or apple links (which can only be regular files), so ignore everything else
-	if (!S_ISLNK(mode) && !S_ISREG(mode)) return NULL;
+	if (!(S_ISLNK(mode) || S_ISREG(mode))
+		// also ignore dataless files - we don't want to try and read them if they're not dowloaded locally
+		|| pFS->s == NULL || pFS->s->st_flags & SF_DATALESS
+	) return NULL;
 
 	path_t target_path = {0};
 	ssize_t target_len = 0;
@@ -187,8 +192,8 @@ TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const 
 
 	if (S_ISLNK(mode)) {
 		// if the file is a symlink, then simply call `readlink` on it
-		if (( target_len = readlink(link_path, target_path, sizeof(path_t)) ) == -1) {
-			*err_no = errno;
+		if (( target_len = readlink(pFS->path, target_path, sizeof(path_t)) ) == -1) {
+			pFS->err_no = errno;
 			return NULL;
 		}
 
@@ -196,7 +201,7 @@ TargetInfo *getLink(uint8_t *const err_no, const mode_t mode, const char *const 
 
 	} else {
 		// if the file's a regular file, then check if it's an apple alias - if not, then return
-		if (!resolveAppleAlias(target_path, &target_len, &is_valid, link_path)) return NULL;
+		if (!resolveAppleAlias(target_path, &target_len, &is_valid, pFS->path)) return NULL;
 		is_apple = true; // if we're here, we've successfully parsed the apple alias
 	}
 
