@@ -86,7 +86,7 @@ void print_icon(const FileStat *const pFS) {
 		colour = file_colour_esc[pFS->file_col];
 
 		// if the colour has a background, then set its forground to the background colour
-		if (colour.has_bg()) {
+		if (has_bg(colour)) {
 			colour.fg = colour.bg;
 			colour.bg = G_NO_BG;
 		}

@@ -309,7 +309,11 @@ void print_flag_str(const FileStat *const pFS) {
 	*out_ptr++ = '\0';
 
 	const int spaces = getLen(FI_flag_str) - (int)flagstr_len;
-	printf("%s%*s" "%ls", output, spaces, "", FIELD_PAD);
+	printf("%s%*s" "%s%ls",
+		output, spaces, "",
+		has_bg(ALL_FLAGS[MAX_FLAG_NUM - 1].colour) ? getcol(RESET_ALL) : "",
+		FIELD_PAD
+	);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

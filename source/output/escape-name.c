@@ -77,11 +77,11 @@ void printEscdName(const char *const name, const Colour colour) {
 	/// The colour that was being displayed before this function was called.
 	const Colour active_col = getActive();
 	/// A `Colour` object representing the colour with which to highlight escaped characters.
-	const Colour esc_colour = colour.has_bg() ? ESC_CHAR_BG_COLOUR : ESC_CHAR_FG_COLOUR;
+	const Colour esc_colour = has_bg(colour) ? ESC_CHAR_BG_COLOUR : ESC_CHAR_FG_COLOUR;
 	/// The raw ANSI string representing the colour with which to highlight escaped characters.
-	const char *const esc_ansi = colour.has_bg() ? ESC_CHAR_BG_ANSI : ESC_CHAR_FG_ANSI;
+	const char *const esc_ansi = has_bg(colour) ? ESC_CHAR_BG_ANSI : ESC_CHAR_FG_ANSI;
 	/// The length of the string stored in `esc_ansi`. 
-	const size_t esc_ansi_len = sizeof(colour.has_bg() ? ESC_CHAR_BG_ANSI : ESC_CHAR_FG_ANSI) - 1;
+	const size_t esc_ansi_len = sizeof(has_bg(colour) ? ESC_CHAR_BG_ANSI : ESC_CHAR_FG_ANSI) - 1;
 
 	/* —— Colour Setup ———————————————————————————————————————— */
 

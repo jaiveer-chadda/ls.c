@@ -130,8 +130,9 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 #define RGB(r,g,b) ((colour_t)(COLOUR_24_MIN + ((r) * 1E6) + ((g) * 1E3) + (b)))
 #define toColour(...) ((Colour){ __VA_ARGS__ })
 
+#define has_bg(col) (((col).bg != G_NO_BG) || ((col).style & G_REVERSE))
+
 #define has_fg() fg != G_NO_FG		/// To be used as: `(bool)(colour.has_fg())`.
-#define has_bg() bg != G_NO_BG		/// To be used as: `(bool)(colour.has_bg())`.
 #define has_style(st) style & (st)	/// To be used as: `(bool)(colour.has_style(G_STYLE))`.
 
 #define RESET_ALL ((Colour){ .style = G_NONE, .fg = G_NO_FG, .bg = G_NO_BG }) /** Equivalent to `((Colour){0})`. */

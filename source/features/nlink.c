@@ -30,7 +30,7 @@ void print_nlink(const FileStat *const pFS) {
 	printf("%*s" "%s%'hu" "%s" "%ls",
 		getLen(FI_nlink) - nlink_len, "",
 		ansi_col, nlink,
-		col.has_bg() ? getcol(RESET_ALL) : "",
+		has_bg(col) ? getcol(RESET_ALL) : "",
 		FIELD_PAD
 	);
 }

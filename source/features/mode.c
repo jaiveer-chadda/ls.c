@@ -284,7 +284,7 @@ void print_mode_str(const FileStat *const pFS) {
 
 	const int pure_xa_len = pFS->has_xat + pFS->has_acl;
 	// only print a final reset sequence if there were no extra characters, and the final perm colour had a background
-	const bool do_reset = pure_xa_len == 0 && perm_colour_esc[esc].has_bg();
+	const bool do_reset = pure_xa_len == 0 && has_bg(perm_colour_esc[esc]);
 
 	printf("%s%s" "%s%*s" "%ls",
 		output, do_reset ? getcol(RESET_ALL) : "",
