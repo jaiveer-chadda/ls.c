@@ -60,7 +60,9 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
-	pfile->display = getDisplayPath(pfile);
+	// if the path has a parent, then we don't want to analyse it.
+	//	we only want the most root-level files
+	if (pfile->parent == NULL) pfile->display = getDisplayPath(pfile->path, getPathLen(pfile));
 
 	// `FileStat::mode` and `FileStat::inum` are the two fields which are filled by both `dirent` and `stat`
 	if (!is_incomplete) {
