@@ -153,11 +153,16 @@ void print_size_str(const FileStat *const pFS) {
 	getSizeColours(unit, &size_col, &unit_col);
 
 	Colour size_col_obj = size_colour_esc[size_col];
-	if (S_ISDIR(pFS->mode)) size_col_obj.style |= G_DIM;
+	Colour unit_col_obj = size_colour_esc[unit_col];
+
+	if (S_ISDIR(pFS->mode)) {
+		size_col_obj.style |= G_DIM;
+		unit_col_obj.style |= G_DIM;
+	}
 
 	const char *const size_col_ansi	=			getcol(size_col_obj);
-	const char *const unit_col_ansi	= do_unit ?	getcol(size_colour_esc[unit_col]) : "";
-	const char *const unit_str		= do_unit ?	(char[]){ unit, '\0' }			  : "";
+	const char *const unit_col_ansi	= do_unit ?	getcol(unit_col_obj)	: "";
+	const char *const unit_str		= do_unit ?	(char[]){ unit, '\0' }	: "";
 
 	const int padding = getLen(FI_size_str) - (size_len + do_unit);
 
