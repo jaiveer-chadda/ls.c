@@ -62,6 +62,7 @@ static inline char *tostr(void *ptr) {
 #define ifn(q, do, else) ((q) == NULL ? (do) : (else))
 #define str(fld) ifn(fld,"","\""), ifn(fld, "\b" null, fld), ifn(fld,"","\"")
 
+#define ter(...) fprintf(stderr, __VA_ARGS__);
 #define err(fmt, ...) do { fprintf(stderr, (fmt "\n"), __VA_ARGS__); fflush(stderr); } while (0)
 #define ERR(str_) fputs(str_ "\n", stderr);
 #define pbool(val) ((val) ? "\33[32m✓ true\33[m" : "\33[31m× false\33[m")
@@ -69,19 +70,24 @@ static inline char *tostr(void *ptr) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void d__dump(const FileStat *const fs) {
-	struct stat		*pst = fs->s;
-	FileStatFields	*fsf = fs->f;
-	(void)pst; (void)fsf;
-
 	dline();
 
 	err(V(FileStat) S"fs"E PTR, ptr(fs));
 	if (fs == NULL) { ERR(" "O  null); return; }
+
+	struct stat		*pst = fs->s;
+	FileStatFields	*fsf = fs->f;
+
 	err(T     CHAR"   "  S"name    "E STR      , str(fs->name)     );
+	err(T     CHAR"   "  S"path    "E STR      , str(fs->path)     );
 	err(T" "V(icon_t)"     icon    "E LCR      , fs->icon          );
 	err(T" "V(suff_t)"     suffix  "E CHR      , fs->suffix        );
 	ERR(I);
-	err(T" "V(FileStat)  S"parent  "E PTR      , ptr(fs->parent)   );
+	ter(T" "V(FileStat)  S"parent  "E PTR      , ptr(fs->parent)   );
+	// if (fs->parent != NULL && fs->parent->name != NULL) ter(" ("STR")",str(fs->parent->name));
+	// fputc('\n', stderr);
+
+	// err(T" "V(FileStat)  S"parent  "E PTR      , ptr(fs->parent)   );
 	err(T" "V(namlen_t)"   name_len"E NUM(%hd) , fs->name_len      );
 	err(T" "V(ino_t)"      inum    "E NUM(%llu), fs->inum          );
 	err(T" "V(FileColour)" file_col"E NUM(%u)  , fs->file_col      );

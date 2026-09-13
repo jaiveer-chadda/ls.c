@@ -63,6 +63,32 @@ void d__line(const uint8_t len);
 
 /* ————————————————————————————————————————————————————— */
 
+#	define _stri ((int)*((char*)str + i))
+#	define seestr(str_, len) do {																				\
+		fflush(stdout);																							\
+		fflush(stderr);																							\
+		const void *str = str_;																					\
+		\
+		for (int i = 0; i < (int)len; i++) {																	\
+			switch (_stri) {																					\
+				case '\0' : fputs("\33[100m0\33[m",stderr); break;												\
+				case '\n' : fputs("\33[33mn\33[m", stderr); break;												\
+				case '\r' : fputs("\33[33mr\33[m", stderr); break;												\
+				case '\33': fputs("\33[34me\33[m", stderr); break;												\
+				default:																						\
+					if (0x01 <= _stri && _stri <= 0x09)	{ fprintf(stderr, "\33[91m\\%hu\33[m", _stri); break; }	\
+					if (0x0A <= _stri && _stri <= 0x1F)	{ fprintf(stderr, "\33[92m\\x%x\33[m", _stri); break; }	\
+					if (_stri & 128 /*(top bit set)*/ )	{ fprintf(stderr, "\33[95m\\x%x\33[m", _stri); break; }	\
+					fputc(_stri, stderr);																		\
+			}																									\
+		}																										\
+		\
+		fputc('\n', stderr);																					\
+		fflush(stderr);																							\
+	} while (0)
+
+/* ————————————————————————————————————————————————————— */
+
 #	define initDebugging(argv) do {										\
 		/* this is a very crude way to check for the `--clear` flag, */	\
 		/*	but it's only used for debugging, so it should be fine   */	\
@@ -83,6 +109,7 @@ void d__line(const uint8_t len);
 #	define debug(log_level, ...)
 #	define dump(fs)
 #	define dline(...)
+#	define seestr(str, len)
 #	define initDebugging(argv1)
 #endif
 
