@@ -3,21 +3,19 @@
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
-#include <stdlib.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 #include "colour-defs.h"
 #include "colour-object.h"
 
-#include "malloc.h"
 #include "debugging.h"
 #include "options/options.h"
 
 typedef struct { uint8_t r, g, b; } rgb_t;
 
-/* ── ── Function Defs ── ───────────────────────────────────────────────────────────────────────────────────——————— */
+/* ── ── Function Defs ── ────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline rgb_t toRGB_t(const colour_t raw);
 static inline int stylelookup(const style_t style, const bool turn_style);
@@ -33,29 +31,83 @@ static inline void simplify_fgbg(
 #	define SNPRINTF(str, size, ...) snprintf(str, size, __VA_ARGS__)
 #endif
 
-/* ── ── Static Variables ── ────────────────────────────────────────────────────────────────────────────────——————— */
+/* ── ── Static Variables ── ─────────────────────────────────────────────────────────────────────────────────────── */
 
 static const style_t G_STYLES[] = { G_BOLD, G_DIM, G_ITALIC, G_UNDER, G_BLINK, G_INVERT, G_INVIS, G_STRIKE, G_DUNDER };
 static const size_t GSTYLES_LEN = sizeof(G_STYLES)/sizeof(G_STYLES[0]);
 
 static Colour active = RESET_ALL;
 
-// the initial `CSI` will always remain here; only chars after it will ever be changed
-static ansi_t output_buffer = CSI;
+/* —————————————————————————————————————————————————————————————————— */
+
+/**
+ * @brief A heap-like buffer to store ANSI escape sequences to be printed.
+ *
+ *	  - Note: Actually stored on the stack.
+ *
+ * ---
+ * 
+ * A kilobyte (`MAX_ANSI_SIZE * COLHEAP_CAPACITY` == `64 * 16` == `1024 bytes`) of "heap" storage - enough to hold 16
+ *	maximum-size ANSI escape sequences.
+ *
+ * ---
+ *
+ * This heap replaces a single `output_buffer`, which held an ANSI escape sequence until it was printed.
+ *
+ * The issue with that solution, however, was that I could never use `getcol` twice in a single `printf` statement -
+ *	I would have to either copy the colour into a buffer, then print the buffer, or print the first colour(s) on
+ *	its/their own, and then print the final colour in the `printf`.
+ *
+ * This was causing all types of inefficiencies. `colheap` can help solve those by having more than `COLHEAP_CAPACITY`
+ *	automatically-managed buffers to store colours in before they're printed.
+ *
+ *	  - Although in practice, the last `MAX_ANSI_SIZE` worth of bytes will never be fully used, due to the way
+ *		`colheap` is rotated, so there are more like `COLHEAP_CAPACITY - 1` max-size buffers.
+ *
+ *	  - However, in reality, there are far more than `COLHEAP_CAPACITY` escape sequences worth of buffers, since most
+ *		escape sequences don't take up anywhere near as much as `MAX_ANSI_SIZE` bytes.
+ * 
+ * ---
+ *
+ * Note: `colheap` is initialised by being filled with nullbytes, which isn't strictly necessary, however, makes
+ *	debugging significantly easier, were something to go wrong.
+ */
+static char colheap[MAX_ANSI_SIZE * COLHEAP_CAPACITY] = {0};
+
+/** A pointer to the next available space on `colheap`. */
+static char *colheap_ptr = colheap;
+
+/** A constant pointer to the last addressable byte on `colheap`. */
+static const char *const colheap_end = colheap + sizeof(colheap) - 1;
+
+/* —————————————————————————————————————————————————————————————————— */
+
+static inline char *get_colheap_ptr(void) {
+	// if the next write to `colheap` has even the possibility of overflowing the heap,
+	//	then reset the buffer, and move the pointer back to the beginning of the heap
+	if (colheap_ptr + sizeof(ansi_t) >= colheap_end) {
+		#ifdef DEBUG_MODE
+			// turning everything back into nullbytes will make it much easier to debug if something goes wrong
+			colheap_ptr = memset(colheap, 0, sizeof(colheap));
+		#else
+			colheap_ptr = colheap;
+		#endif
+	}
+
+	return colheap_ptr;
+}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── `getcol()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 // note: this function isn't threadsafe, but that should be fine I think, since its only really used for printing
 
-#define RETURN_LEN(len) do { if (collen != NULL) (*collen = ((uint8_t)(len))); } while (0)
+#define RETURN_LEN(len)		do { if (collen != NULL) (*collen = ((uint8_t)(len)));	} while (0)
+#define RETURN_LITERAL(str)	do { RETURN_LEN(sizeof(str) - 1); return (str);			} while (0)
 
 char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const collen) {
-	// this is a nice and simple way to make sure that nothing's printed when colour output is turned off
-	if (!DO_COLOUR()) {
-		RETURN_LEN(0);
-		return "";
-	}
+	// simple way to make sure that nothing's printed when colour output is turned off
+	if (!DO_COLOUR()) RETURN_LITERAL("");
 
 	/// A working copy of the inputted colour object, which we can mutate if needed.
 	Colour colour = input_col;
@@ -77,10 +129,7 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 	if (colour.fg	 == active.fg &&
 		colour.bg	 == active.bg &&
 		colour.style == active.style
-	) {
-		RETURN_LEN(0);
-		return "";
-	}
+	) RETURN_LITERAL("");
 
 	/* ── Process Colour::style ───────────────────────────────────────── */
 
@@ -103,7 +152,7 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 	//	doesn't have one of them in the first place.
 	//	- this way we won't have to reset both of them, which causes extra chars to be printed
 	if (!do_add && set_active && // (when we're adding, we won't be removing anything, so this check is unnecessary)
-		!(colour.has_style(G_BOLD)) && (active.has_style(G_BOLD)) && 
+		!(colour.has_style(G_BOLD)) && (active.has_style(G_BOLD)) &&
 		!(colour.has_style(G_DIM) ) && (active.has_style(G_DIM) )
 	) active.rem_style(G_BOLD);
 
@@ -158,19 +207,13 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	// if everything is set to 0, then there's no point individually
 	//	resetting everything, so we can just print `\e[m` instead.
-	if (active.style + active.fg + active.bg == 0) {
-		RETURN_LEN(sizeof(CSI END) - 1);
-		return CSI END;
-	}
+	if (active.style + active.fg + active.bg == 0) RETURN_LITERAL(CSI END);
 
 	/* ── Check for Nothing-ness ──────────────────────────────────────── */
 
 	// if we're adding to the colours/styles, but there's nothing to add,
 	//	then don't output anything
-	if (do_add && !(has_st || has_fg || has_bg)) {
-		RETURN_LEN(0);
-		return "";
-	}
+	if (do_add && !(has_st || has_fg || has_bg)) RETURN_LITERAL("");
 
 	/* ── Clean Up Semicolons ─────────────────────────────────────────── */
 
@@ -184,18 +227,20 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	/* ── Set Buffer & Return ─────────────────────────────────────────── */
 
-	const size_t output_len = (size_t)snprintf(output_buffer, sizeof(ansi_t),
+	const size_t output_len = snprintf(
+		( colheap_ptr = get_colheap_ptr() ), sizeof(ansi_t),
 		ANSI("%s%s" "%s" "%s"),
 		style, fg, do_fg_sc ? ";" : "", bg
 	);
 
-	if (output_len >= sizeof(ansi_t)) {
-		RETURN_LEN(0);
-		return "";
-	}
+	if (output_len >= sizeof(ansi_t)) { WRITE_LEN_WARNING(); RETURN_LITERAL(""); }
+
+	// first save the pointer to the output colour, only then increment colheap_ptr to the next available space
+	char *const output_ptr = colheap_ptr;
+	colheap_ptr += output_len;
 
 	RETURN_LEN(output_len);
-	return output_buffer;
+	return output_ptr;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -237,25 +282,18 @@ static inline void simplify_fgbg(
 	char *const fgbg, colour_t *const act, int *const len, bool *const has_fgbg,
 	const colour_t col, const int code, const bool set_active, const bool do_add
 ) {
+	*len = 0;
 	if (IS_8B(col)) {
 		if		(col == *act || (col == G_NO_FGBG && (*act == G_NO_FGBG || do_add))) *len = 0;
-		else if	(col == G_NO_FGBG) *len = SET_FGBG(fgbg, false, code				   , ANSI_FGBG_OFF		 ); // 39
-		else if	(col == G_BLACK	 ) *len = SET_FGBG(fgbg, false, code				   , ANSI_BLACK			 ); // 30
-		else if	(col <= G_REG_END) *len = SET_FGBG(fgbg, false, code				   , col				 ); // 31
-		else if	(col <= G_BRT_END) *len = SET_FGBG(fgbg, false, code + ANSI_REG_BRT_MOD, col - G_REG_BRT_DIFF); // 92
-		else					   *len = SET_FGBG(fgbg, true , code				   , col				 ); // 38;5
+		else if	(col == G_NO_FGBG) *len = SET_FGBG(fgbg, false, code			  , ANSI_FGBG_OFF	); // 39
+		else if	(col == G_BLACK	 ) *len = SET_FGBG(fgbg, false, code			  , ANSI_BLACK		); // 30
+		else if	(col <= G_REG_END) *len = SET_FGBG(fgbg, false, code			  , col				); // 31
+		else if	(col <= G_BRT_END) *len = SET_FGBG(fgbg, false, code + ANSI_RB_MOD, col - G_RB_DIFF	); // 92
+		else					   *len = SET_FGBG(fgbg, true , code			  , col				); // 38;5
 
-	} else {
-		if (col == *act) {
-			*len = 0;
-
-		} else {
-			const rgb_t rgb = toRGB_t(col);
-			*len = SNPRINTF(fgbg, FGBG_BUFSIZE,
-				"%d8;2;%hu;%hu;%hu",
-				code, rgb.r, rgb.g, rgb.b
-			);
-		}
+	} else if (col != *act) {
+		const rgb_t rgb = toRGB_t(col);
+		*len = SNPRINTF(fgbg, FGBG_BUFSIZE, "%d8;2;%hu;%hu;%hu", code, rgb.r, rgb.g, rgb.b);
 	}
 
 	*has_fgbg = (*len > 0);

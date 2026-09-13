@@ -12,7 +12,10 @@
  *	- Rounded up to 64. */
 #define MAX_ANSI_SIZE 64
 
-typedef char ansi_t[MAX_ANSI_SIZE];
+/** The number of maximum-sized ANSI strings that `colheap` can store. */
+#define COLHEAP_CAPACITY 16
+
+typedef char ansi_t[MAX_ANSI_SIZE]; // `char[MAX_ANSI_SIZE] = 64`
 
 /* —— Styles ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -74,9 +77,9 @@ typedef int32_t colour_t;
 #define G_BCYN	((colour_t)14)	// \e[96m /** Bright Cyan	 */
 #define G_BWHT	((colour_t)15)	// \e[97m /** Bright White	 */
 
-#define G_REG_END		G_WHT	/** The last regular colour before the bright colours begin. */
-#define G_BRT_END		G_BWHT	/** The last bright colour before the 8-bit colours begin. */
-#define G_REG_BRT_DIFF (G_BRT_END - G_REG_END) /** The difference between equivalent regular and bright colours. */
+#define G_REG_END	 G_WHT					/** The last regular colour before the bright colours begin. */
+#define G_BRT_END	 G_BWHT					/** The last bright colour before the 8-bit colours begin. */
+#define G_RB_DIFF	(G_BRT_END - G_REG_END)	/** The difference between equivalent regular and bright colours. */
 
 #define G_BLACK			G_BLK
 #define G_GREEN			G_GRN
@@ -113,9 +116,9 @@ bool areEqual(const Colour c1, const Colour c2);
 
 char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const collen);
 
-#define getcol(input_col)					c__getcol(input_col, true , NULL	)
-#define getcol_noset(input_col)				c__getcol(input_col, false, NULL	)
-#define getcollen(input_col, p_collen)		c__getcol(input_col, true , p_collen)
+#define		   getcol(input_col)			c__getcol(input_col, true , NULL	)
+#define		getcollen(input_col, p_collen)	c__getcol(input_col, true , p_collen)
+#define	 getcol_noset(input_col)			c__getcol(input_col, false, NULL	)
 #define getcol_ns_len(input_col, p_collen)	c__getcol(input_col, false, p_collen)
 
 #define colprint(input_col) fputs(getcol((input_col)), stdout)

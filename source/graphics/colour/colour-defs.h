@@ -13,8 +13,8 @@
 #	define ANSI(esc) CSI esc END
 #endif
 
-#define ANSI_OFF_MOD	(+20) /** The modifier that turns (most) ANSI on-codes into off-codes. */
-#define ANSI_REG_BRT_MOD (+6) /** The modifier that turns ANSI colour codes from regular to bright. */
+#define ANSI_OFF_MOD (+20) /** The modifier that turns (most) ANSI on-codes into off-codes. */
+#define ANSI_RB_MOD	  (+6) /** The modifier that turns ANSI colour codes from regular to bright. */
 
 #define ANSI_fg_CODE	3 /** The number which regular colour fg codes begin with. E.g. `\e[35m` or `\e[38;5;255m`. */
 #define ANSI_bg_CODE	4 /** The number which regular colour fg codes begin with. E.g. `\e[44m` or `\e[48;5;128m`. */
@@ -102,6 +102,13 @@
 		(input_col.style), STYLE_T_MAX						\
 	)
 
+#define WRITE_LEN_WARNING() do {																					\
+	debug(WARNING, "write to `colheap` larger than `MAX_ANSI_SIZE` (%d).", MAX_ANSI_SIZE);							\
+	debug(WARNING, "write: `%s%s%s%s` (len = %zu)", MAX_ANSI_SIZE, style, fg, do_fg_sc ? ";" : "", bg, output_len);	\
+	debug(WARNING, "returned empty string (\"\")%s.", collen != NULL ? ", and colour len of 0" : "");				\
+	dline(100);																										\
+} while (0)
+
 /* —— Warning Msgs —————————————————————————————————————————————————— */
 
 #define FGBG_BOUNDS_CHECK(fgbg) do {										\
@@ -110,8 +117,7 @@
 	) {																		\
 		colour.fgbg = abs(colour.fgbg) % COLOUR_8_MAX;						\
 		FGBG_OOR_WARNING(fgbg);												\
-		RETURN_LEN(0);														\
-		return "";															\
+		RETURN_LITERAL("");													\
 	}																		\
 } while(0)
 
@@ -121,6 +127,10 @@
 		STYLE_OOR_WARNING();			\
 	}									\
 } while(0)
+
+/* —— Debugging ————————————————————————————————————————————————————— */
+
+#define printheap() for (size_t i = 0; i < sizeof(colheap); i++) putchar(colheap[i])
 
 /* —————————————————————————————————————————————————————————————————— */
 
