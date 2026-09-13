@@ -160,13 +160,13 @@
 
 #define SYMLINK_ARROW			" --> "
 #define APPLE_ARROW				" —a→ "
-#define EACCES_ARROW			" —?→ "
-
-#define EACCES_MSG_NO_COLOUR	"[permission denied]"
-#define EACCES_MSG_COLOUR		ANSI(DIM ";31") "[" ANSI(NODIM) "permission denied" ANSI(DIM) "]" RESET
+#define EACCES_ARROW			" —×→ "
 
 #define	  VALID_ARROW_COLOUR	PUNCT											// \e[90m
 #define INVALID_ARROW_COLOUR	toColour( .fg = G_RED )							// \e[31m
+
+#define LINK_ERR_MSG_COL		toColour( .fg = G_BRT_RED )						// \e[91m
+#define LINK_ERR_PUNCT_COL		toColour( .fg = G_BRT_RED, .style = G_DIM )		// \e[91m \e[2m
 
 #define LINK_PATH_COLOUR		toColour( .fg = G_BRT_CYAN )					// \e[96m
 #define INVALID_LINK_COLOUR		toColour( .fg = G_BRT_WHITE, .style = G_DIM )	// \e[90m [kinda]
@@ -287,11 +287,7 @@
 #define SYMLINK_SUFFIX			'@'
 #define EXEC_SUFFIX				'*'
 
-#define NOT_LINK				'{' /// An arbitrary value to indicate that this file isn't a symlink.
-#define INVALID_LINK			'}' /// An arbitrary value to indicate that this file is an invalid symlink.
-
-#define APPLE_LINK				'1' /// An arbitrary value to indicate that this file is an Apple alias file.
-#define INV_APPLE_LINK			'2' /// An arbitrary value to indicate that this file is an invalid Apple alias file.
+#define INVALID_LINK			'\1' /// An arbitrary value to indicate that this file is an invalid symlink.
 
 // use the macro `X`, on the expectation that it'll be defined later
 #define FILE_COLOUR_TABLE \

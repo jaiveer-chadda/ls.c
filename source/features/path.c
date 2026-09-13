@@ -99,7 +99,7 @@ static inline const char* choosePath(const FileStat *const pFS) {
 
 void print_name(const FileStat *const pFS) {
 	const char *const name_or_path = choosePath(pFS);
-	printEscdName(name_or_path, file_colour_esc[pFS->file_col]);
+	printEscdName(name_or_path, file_colour_esc[pFS->file_col], true);
 
 	if (pFS->display != NULL) efree((void*)pFS->display);
 }

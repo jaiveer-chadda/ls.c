@@ -9,6 +9,7 @@
 
 #include "malloc.h"
 #include "debugging.h"
+#include "output/output.h"
 #include "options/options.h"
 #include "features/features.h"
 
@@ -189,6 +190,8 @@ TargetInfo *getLink(FileStat *const pFS) {
 		|| pFS->s == NULL || pFS->s->st_flags & SF_DATALESS
 	) return NULL;
 
+	/* ———————————————————————————————————————————————————————— */
+
 	path_t target_path = {0};
 	ssize_t target_len = 0;
 	bool is_valid = false, is_apple = false;
@@ -208,12 +211,26 @@ TargetInfo *getLink(FileStat *const pFS) {
 		is_apple = true; // if we're here, we've successfully parsed the apple alias
 	}
 
+	/* ———————————————————————————————————————————————————————— */
+
 	// this memory is freed once the target is printed (in `print_link()`)
 	TargetInfo *tg_info = ecalloc(1, sizeof(TargetInfo));
 	memcpy(tg_info->path, target_path, target_len);
 
 	tg_info->is_apple = is_apple;
-	if (!is_valid) tg_info->suffix = INVALID_LINK;
+	if (!is_valid) {
+		tg_info->suffix = INVALID_LINK;
+		return tg_info;
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
+	struct stat tg_stat = {0};
+
+	if (lstat(tg_info->path, &tg_stat) == -1) return tg_info;
+
+	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_stat.st_flags, false);
+	tg_info->suffix = getTypeSuffix(tg_stat.st_mode);
 
 	return tg_info;
 }
@@ -225,22 +242,30 @@ void print_link(const FileStat *const pFS) {
 
 	const TargetInfo *const tg_info = pFS->f->target;
 
+	/* ———————————————————————————————————————————————————————— */
+
 	if (tg_info == NULL) {
 		const char *const arrow_ansi = getcol(INVALID_ARROW_COLOUR);
-		const char *const error_ansi = getcol(RESET_ALL);
+		const char *const punct_ansi = getcol(LINK_ERR_PUNCT_COL  );
+		const char *const error_ansi = getcol(LINK_ERR_MSG_COL	  );
 
-		printf("%s%s%s[ %s ]",
-			arrow_ansi, EACCES_ARROW,
-			error_ansi, strerror(pFS->err_no)
+		printf("%s%s%s[ "  "%serror %hu%s:"  "%s %s %s]",
+			arrow_ansi, EACCES_ARROW		 , punct_ansi,
+			error_ansi, pFS->err_no			 , punct_ansi,
+			error_ansi, strerror(pFS->err_no), punct_ansi
 		);
+
+		setActive(LINK_ERR_PUNCT_COL);
 		return;
 	}
 
-	const bool is_valid = tg_info->suffix != INVALID_LINK;
+	/* ———————————————————————————————————————————————————————— */
+
 	const char *const arrow = tg_info->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
 	const char *const path = getDisplayPath(tg_info->path, IS_LINK_TARGET);
 
-	if (!is_valid) {
+	// if this is an invalid link
+	if (tg_info->suffix == INVALID_LINK) {
 		const char *const arrow_ansi = getcol(INVALID_ARROW_COLOUR);
 		const char *const path_ansi	 = getcol(INVALID_LINK_COLOUR);
 
@@ -251,27 +276,31 @@ void print_link(const FileStat *const pFS) {
 		return;
 	}
 
-	const char	  *basename = strrchr(path, '/');
-	const bool has_basename = basename != NULL;
-	basename = has_basename ? basename + 1 : "";
+	/* ———————————————————————————————————————————————————————— */
 
-	// const char *const arrow_ansi	= "\33[90m";
-	// const char *const dirname_ansi	= has_basename ? "\33[96m" : "\33[33m";
-	// const char *const basename_ansi	= has_basename ? "\33[33m"	 : "";
+	const char *const basename = strrchr(path, '/');
 
-	const Colour basename_col		= toColour( .fg = G_YELLOW );
-	const char *const arrow_ansi	= getcol(VALID_ARROW_COLOUR);
-	const char *const dirname_ansi	= getcol(has_basename ? LINK_PATH_COLOUR : basename_col	);
-	const char *const basename_ansi	= getcol(has_basename ? basename_col	 : NO_CHANGE	);
+	// print the arrow - different based on whether it's an apple link or normal symlink
+	printf("%s%s", getcol(VALID_ARROW_COLOUR), arrow);
 
-	// only print the first `dirname_len` characters of `path`
-	const int dirname_len = has_basename ? basename - path : -1;
+	// if we found a basename, then print the dirname and basname sequentially
+	if (basename != NULL) {
+		// copy the path up to where the basename starts
+		path_t dirname = {0};
+		strncpy(dirname, path, (basename + 1) - path);
 
-	printf("%s%s" "%s%.*s" "%s%s",
-		arrow_ansi,		arrow,
-		dirname_ansi,	dirname_len, path,
-		basename_ansi,	basename
-	);
+		printEscdName(dirname, LINK_PATH_COLOUR, false);
+		printEscdName(basename + 1, file_colour_esc[tg_info->colour], false);
+
+	} else {
+		// if we didn't find a basename, then the path is relative, and we should just print it all at once
+		printEscdName(path, file_colour_esc[tg_info->colour], false);
+	}
+
+	// if the path should have a suffix, then reset colours and print the suffix
+	if (tg_info->suffix != '\0') printf("%s%c", getcol(RESET_ALL), tg_info->suffix);
+
+	/* ———————————————————————————————————————————————————————— */
 
 	efree((void*)tg_info);
 }

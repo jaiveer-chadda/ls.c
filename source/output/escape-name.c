@@ -70,7 +70,7 @@ static inline uint8_t escapeCharacter(char *esc, const char chr, const char *con
 /** Whether the last character parsed was an escaped character or not. */
 #define LAST_WAS_ESC() ((inp_ptr != name) && DO_ANY_ESC(*(inp_ptr - 1)))
 
-void printEscdName(const char *const name, const Colour colour) {
+void printEscdName(const char *const name, const Colour colour, const bool do_padding) {
 
 	/* —— Colour Constants ———————————————————————————————————— */
 
@@ -91,7 +91,7 @@ void printEscdName(const char *const name, const Colour colour) {
 
 	// if the file's colour is different to the active colour, and the first char in the name isn't escaped,
 	//	then print some colour before the name
-	const bool do_init_col = (!(areEqual(colour, active_col) || DO_ANY_ESC(name[0])));
+	const bool do_init_col = !areEqual(colour, active_col) && !DO_ANY_ESC(name[0]);
 
 	if (do_init_col) {
 		// since `getcol` returns the same pointer every time, we need to copy this ansi escape into a
@@ -107,18 +107,25 @@ void printEscdName(const char *const name, const Colour colour) {
 
 	/* —— Alloc & Ouput Setup ————————————————————————————————— */
 
-	size_t alloc_size = INIT_ALLOC_LEN + sizeof(PRE_NAME_PAD) + (do_init_col ? init_ansi_len : 0);
-	#define output_size ((size_t)(out_ptr - output))
+	size_t alloc_size =
+		INIT_ALLOC_LEN
+		+ (do_padding  ? sizeof(PRE_NAME_PAD) : 0)
+		+ (do_init_col ? init_ansi_len		  : 0)
+	;
 
 	// allocate memory for the output, and setup the output pointer
 	char *output = emalloc(alloc_size);
 	char *out_ptr = output;
 
+	#define output_size ((size_t)(out_ptr - output))
+
 	/* —— Add Padding & Colour ———————————————————————————————— */
 
-	// if we add the padding to the output buffer, we can use `fputs`, rather than `printf` when printing
-	memcpy(out_ptr, PRE_NAME_PAD, sizeof(PRE_NAME_PAD) - 1);
-	out_ptr += sizeof(PRE_NAME_PAD) - 1;
+	if (do_padding) {
+		// if we add the padding to the output buffer, we can use `fputs`, rather than `printf` when printing
+		memcpy(out_ptr, PRE_NAME_PAD, sizeof(PRE_NAME_PAD) - 1);
+		out_ptr += sizeof(PRE_NAME_PAD) - 1;
+	}
 
 	if (do_init_col) {
 		// add the file's colour to the start of the output sequence
