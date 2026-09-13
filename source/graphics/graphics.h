@@ -165,11 +165,14 @@
 #define EACCES_MSG_NO_COLOUR	"[permission denied]"
 #define EACCES_MSG_COLOUR		ANSI(DIM ";31") "[" ANSI(NODIM) "permission denied" ANSI(DIM) "]" RESET
 
-#define	  VALID_ARROW_COLOUR	PUNCT			// \e[90m
-#define INVALID_ARROW_COLOUR	"31"			// \e[31m
+#define	  VALID_ARROW_COLOUR	PUNCT											// \e[90m
+#define INVALID_ARROW_COLOUR	toColour( .fg = G_RED )							// \e[31m
 
-#define LINK_PATH_COLOUR		"96"			// \e[96m
-#define INVALID_LINK_COLOUR		"2;97"			// \e[90m [kinda]
+#define LINK_PATH_COLOUR		toColour( .fg = G_BRT_CYAN )					// \e[96m
+#define INVALID_LINK_COLOUR		toColour( .fg = G_BRT_WHITE, .style = G_DIM )	// \e[90m [kinda]
+
+#define LINK_PATH_ANSI			ANSI_IFCOL( "96"	)							// \e[96m
+#define INVALID_LINK_ANSI		ANSI_IFCOL( "2;97"	)							// \e[90m [kinda]
 
 /* —— Inum/Devnum ——————————————————————————————————————————————————————————— */
 

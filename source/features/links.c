@@ -4,10 +4,13 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <libgen.h>
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "malloc.h"
 #include "debugging.h"
+#include "options/options.h"
+#include "features/features.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -218,16 +221,42 @@ TargetInfo *getLink(FileStat *const pFS) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_link(const FileStat *const pFS) {
-	if (pFS->f == NULL || pFS->f->target == NULL) return;
+	if (pFS->f == NULL || (pFS->f->target == NULL && !S_ISLNK(pFS->mode))) return;
 
 	const TargetInfo *const tg_info = pFS->f->target;
 
 	if (tg_info == NULL) {
-		printf("%s[ %s ]", EACCES_ARROW, strerror(pFS->err_no));
+		printf("%s%s%s[ %s ]", getcol(INVALID_ARROW_COLOUR), EACCES_ARROW, IFCOLOUR("\33[m"), strerror(pFS->err_no));
 		return;
 	}
 
-	printf("%s%s", SYMLINK_ARROW, tg_info->path);
+	const bool is_valid = tg_info->suffix != INVALID_LINK;
+	const char *const arrow = tg_info->is_apple	? APPLE_ARROW : SYMLINK_ARROW;
+	const char *const path = getDisplayPath(tg_info->path, -1);
+
+	if (!is_valid) {
+		printf("%s%s" "%s%s",
+			IFCOLOUR("\33[31m"), arrow,
+			INVALID_LINK_ANSI, path
+		);
+		return;
+	}
+
+	char *base_name = strrchr(path, '/');
+	const bool has_basename = base_name != NULL;
+	base_name = has_basename ? base_name + 1 : "";
+
+	const int dir_name_len = has_basename ? base_name - path	: -1;
+	#define dirname_ansi	 has_basename ? LINK_PATH_ANSI		: IFCOLOUR("\33[33m")
+	#define basename_ansi	 has_basename ? IFCOLOUR("\33[33m")	: ""
+
+	printf("%s%s" "%s%.*s" "%s%s",
+		getcol(VALID_ARROW_COLOUR), arrow,
+		dirname_ansi,
+		dir_name_len, path,
+		basename_ansi,
+		base_name
+	);
 
 	efree((void*)tg_info);
 }
