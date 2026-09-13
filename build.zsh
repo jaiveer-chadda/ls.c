@@ -38,7 +38,7 @@ function -- () {
   # ————————————————————————————————————————————————————————————————————————— #
 
   # note: `NDEBUG` turns off assertion checking
-  local -a DEFINITIONS=( NEW )
+  local -a DEFINITIONS=( TTYCOLUMNS="$COLUMNS" )
   if   [[ "$mode" == 'debug' ]] { DEFINITIONS+=( DEBUG_MODE ); } \
   elif [[ "$mode" == 'prod'  ]] { DEFINITIONS+=( NDEBUG     ); }
 
@@ -124,11 +124,6 @@ function -- () {
 
   # always add the target file
   BUILD_ARGS+=( --output "$TARGET" )
-
-  # ———————————————————————————————————————————————————— #
-
-  if [[ "$mode" == debug ]] && (( run_cmd || print_cmd )) \
-    echo "${(r:COLUMNS - 2::─:)}"
 
   # ———————————————————————————————————————————————————— #
 
