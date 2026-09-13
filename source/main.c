@@ -72,6 +72,10 @@ int main(const int argc, char *argv[]) {
 		if (!isValidFS(&inputs[i])) continue;
 		any_valid_input = true;
 
+		for (int j = 0; j < inputs[i].f->child_count; j++) { // FIXME: !!
+			inputs[i].f->children[j].parent = &inputs[i];
+		}
+
 		// then parse the file - i.e. go through and convert things from raw data into displayable output
 		parseFile(&inputs[i]);
 	}
@@ -83,8 +87,8 @@ int main(const int argc, char *argv[]) {
 
 	if (MAX_DEPTH != 0) {
 		for (int i = 0; i < file_count; i++) {
-			if (!S_ISDIR(inputs[i].mode)	||
-				DIRS_AS_FILES()				||
+			if (!S_ISDIR(inputs[i].mode)||
+				DIRS_AS_FILES()			||
 				inputs[i].f == NULL		||
 				inputs[i].f->child_count < 2
 			) continue;
