@@ -62,7 +62,7 @@ static inline void print_suff(const FileStat *const pFS) {
 /* —— printFields() ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // #define print_field(field)  if (do_##field()) print_##field(pFS)
-#define print_field(field) do { if (do_##field()) print_##field(pFS); colprint(RESET_ALL); } while (0)
+#define print_field(field) if (do_##field()) { print_##field(pFS); colprint(RESET_ALL); }
 
 #define print_time(type) if (do_time_t(type)) { \
 	if (do_time	   ()) print_time_raw(pFS, (type)); \

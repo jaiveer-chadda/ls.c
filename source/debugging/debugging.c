@@ -110,8 +110,8 @@ void d__stacktrace(void) {
 		return;
 	}
 
-	printf("%s function call stack (depth: %d) %s\n", "────────", trace_size, "────────");
-	for (int i = 0; i < trace_size; i++) printf("[%d] %s\n", i, symbols[i]);
+	fprintf(stderr, "%s function call stack (depth: %d) %s\n", "────────", trace_size, "────────");
+	for (int i = 1; i < trace_size; i++) fprintf(stderr, "[%d] %s\n", i - 1, symbols[i]);
 	dline(); 
 
 	free(symbols);
