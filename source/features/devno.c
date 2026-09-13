@@ -29,14 +29,17 @@ void print_dev_no(const FileStat *const pFS) {
 
 	// print the maj,min string into a buffer, and then align that string to the max length
 	const int majmin_size = snprintf(NULL, 0, "%d,%d", maj, min);
+	const int padding = getLen(FI_dev_no) - majmin_size;
+
+	const char *const major_ansi = getcol(DEVNO_MAJ_COLOUR);
+	const char *const comma_ansi = getcol(PUNCT);
+	const char *const minor_ansi = getcol(DEVNO_COLOUR);
 
 	printf("%*s" "%s%d" "%s," "%s%d" "%ls",
-		getLen(FI_dev_no) - majmin_size, "", // alignment
-		DEVNO_MAJ_ANSI, maj,	// major size
-		PUNCT_ANSI,				// comma
-		DEVNO_ANSI, min,		// minor size
-		FIELD_PAD				// padding
+		padding , "",		// alignment
+		major_ansi, maj,	// major size
+		comma_ansi,			// comma
+		minor_ansi, min,	// minor size
+		FIELD_PAD			// field padding
 	);
-
-	setActive(DEVNO_COLOUR);
 }

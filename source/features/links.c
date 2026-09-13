@@ -226,36 +226,51 @@ void print_link(const FileStat *const pFS) {
 	const TargetInfo *const tg_info = pFS->f->target;
 
 	if (tg_info == NULL) {
-		printf("%s%s%s[ %s ]", getcol(INVALID_ARROW_COLOUR), EACCES_ARROW, IFCOLOUR("\33[m"), strerror(pFS->err_no));
-		return;
-	}
+		const char *const arrow_ansi = getcol(INVALID_ARROW_COLOUR);
+		const char *const error_ansi = getcol(RESET_ALL);
 
-	const bool is_valid = tg_info->suffix != INVALID_LINK;
-	const char *const arrow = tg_info->is_apple	? APPLE_ARROW : SYMLINK_ARROW;
-	const char *const path = getDisplayPath(tg_info->path, IS_LINK_TARGET);
-
-	if (!is_valid) {
-		printf("%s%s" "%s%s",
-			IFCOLOUR("\33[31m"), arrow,
-			INVALID_LINK_ANSI, path
+		printf("%s%s%s[ %s ]",
+			arrow_ansi, EACCES_ARROW,
+			error_ansi, strerror(pFS->err_no)
 		);
 		return;
 	}
 
-	char *base_name = strrchr(path, '/');
-	const bool has_basename = base_name != NULL;
-	base_name = has_basename ? base_name + 1 : "";
+	const bool is_valid = tg_info->suffix != INVALID_LINK;
+	const char *const arrow = tg_info->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
+	const char *const path = getDisplayPath(tg_info->path, IS_LINK_TARGET);
 
-	const int dir_name_len = has_basename ? base_name - path	: -1;
-	#define dirname_ansi	 has_basename ? LINK_PATH_ANSI		: IFCOLOUR("\33[33m")
-	#define basename_ansi	 has_basename ? IFCOLOUR("\33[33m")	: ""
+	if (!is_valid) {
+		const char *const arrow_ansi = getcol(INVALID_ARROW_COLOUR);
+		const char *const path_ansi	 = getcol(INVALID_LINK_COLOUR);
+
+		printf("%s%s" "%s%s",
+			arrow_ansi, arrow,
+			path_ansi, path
+		);
+		return;
+	}
+
+	const char	  *basename = strrchr(path, '/');
+	const bool has_basename = basename != NULL;
+	basename = has_basename ? basename + 1 : "";
+
+	// const char *const arrow_ansi	= "\33[90m";
+	// const char *const dirname_ansi	= has_basename ? "\33[96m" : "\33[33m";
+	// const char *const basename_ansi	= has_basename ? "\33[33m"	 : "";
+
+	const Colour basename_col		= toColour( .fg = G_YELLOW );
+	const char *const arrow_ansi	= getcol(VALID_ARROW_COLOUR);
+	const char *const dirname_ansi	= getcol(has_basename ? LINK_PATH_COLOUR : basename_col	);
+	const char *const basename_ansi	= getcol(has_basename ? basename_col	 : NO_CHANGE	);
+
+	// only print the first `dirname_len` characters of `path`
+	const int dirname_len = has_basename ? basename - path : -1;
 
 	printf("%s%s" "%s%.*s" "%s%s",
-		getcol(VALID_ARROW_COLOUR), arrow,
-		dirname_ansi,
-		dir_name_len, path,
-		basename_ansi,
-		base_name
+		arrow_ansi,		arrow,
+		dirname_ansi,	dirname_len, path,
+		basename_ansi,	basename
 	);
 
 	efree((void*)tg_info);

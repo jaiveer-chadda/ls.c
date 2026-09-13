@@ -24,13 +24,14 @@ void print_nlink(const FileStat *const pFS) {
 	const nlink_t nlink = pFS->s->st_nlink;
 	const int nlink_len = snprintf(NULL, 0, "%'hu", nlink);
 
-	const Colour col = getLinkColour(nlink, S_ISDIR(pFS->mode));
-	const char *const ansi_col = getcol(col);
+	const Colour nlink_col = getLinkColour(nlink, S_ISDIR(pFS->mode));
+	const char *const nlink_ansi = getcol(nlink_col);
+	const char *const reset_ansi = has_bg(nlink_col) ? getcol(RESET_ALL) : "";
 
 	printf("%*s" "%s%'hu" "%s" "%ls",
 		getLen(FI_nlink) - nlink_len, "",
-		ansi_col, nlink,
-		has_bg(col) ? getcol(RESET_ALL) : "",
+		nlink_ansi, nlink,
+		reset_ansi,
 		FIELD_PAD
 	);
 }

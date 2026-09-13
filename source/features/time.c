@@ -114,16 +114,16 @@ void print_time_raw(const FileStat *const pFS, const TimeType type) {
 /* —————————————————————————————————————————————————————————————— */
 
 void print_time_str(const FileStat *const pFS, const TimeType type) {
-	if (pFS->f != NULL && pFS->f->times[type] != NULL) {
-		printf("%s" "%*s" "%ls",
-			getcol(time_colour_esc[pFS->f->times[type]->colour]),
-			getLen(timeFieldStr(type)), pFS->f->times[type]->str,
-			FIELD_PAD
-		);
+	if (pFS->f == NULL || pFS->f->times[type] == NULL) {
+		printf("%s" "%*s" "%ls", getcol(PUNCT), getLen(timeFieldStr(type)), TIME_ERR_STR, FIELD_PAD);
 		return;
 	}
 
-	printf("%s" "%*s" "%ls", getcol(PUNCT), getLen(timeFieldStr(type)), TIME_ERR_STR, FIELD_PAD);
+	printf("%s" "%*s" "%ls",
+		getcol(time_colour_esc[pFS->f->times[type]->colour]),
+		getLen(timeFieldStr(type)), pFS->f->times[type]->str,
+		FIELD_PAD
+	);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

@@ -141,33 +141,33 @@ void print_size_str(const FileStat *const pFS) {
 		return;
 	}
 
-	const char *const str = pFS->f->size_str;
+	const char *const size_str = pFS->f->size_str;
 	const unit_t unit = pFS->f->size_unit;
 
 	if (unit == UNIT_MAJ_MIN) { printMajMinSize(pFS); return; }
 
 	const bool do_unit = DO_PRINT_SIZE_UNIT(unit);
-	const int size_len = (int)strlen(str);
-	SizeColour size_col, unit_col;
-	ansi_t size_col_ansi = "";
+	const int size_len = (int)strlen(size_str);
 
+	SizeColour size_col, unit_col;
 	getSizeColours(unit, &size_col, &unit_col);
 
-	if (DO_COLOUR()) {
-		uint8_t size_col_len = 0;
-		const char *const size_col_ptr = getcollen(size_colour_esc[size_col], &size_col_len);
-		memcpy(size_col_ansi, size_col_ptr, size_col_len);
-	}
+	Colour size_col_obj = size_colour_esc[size_col];
+	if (S_ISDIR(pFS->mode)) size_col_obj.style |= G_DIM;
 
-	printf("%*s" "%s%s%s" "%s%s" "%s%ls",
-		(getLen(FI_size_str) - size_len) - do_unit, "", // padding
-		S_ISDIR(pFS->mode) ? ANSI_IFCOL(DIM) : "", size_col_ansi, str,
-		do_unit ? getcol(size_colour_esc[unit_col]) : "", do_unit ? (char[]){ unit, '\0' } : "",
-		IFCOLOUR(RESET), 
+	const char *const size_col_ansi	=			getcol(size_col_obj);
+	const char *const unit_col_ansi	= do_unit ?	getcol(size_colour_esc[unit_col]) : "";
+	const char *const unit_str		= do_unit ?	(char[]){ unit, '\0' }			  : "";
+
+	const int padding = getLen(FI_size_str) - (size_len + do_unit);
+
+	printf("%*s" "%s%s" "%s%s" "%ls",
+		padding, "",
+		size_col_ansi, size_str,
+		unit_col_ansi, unit_str,
 		FIELD_PAD
 	);
 
-	setActive(RESET_ALL);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
