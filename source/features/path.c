@@ -15,54 +15,75 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define RETURN_PATH(path, len) (				 \
+	is_link_tg									 \
+		? path : memcpy(emalloc(len), path, len) \
+)
+
 const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 	assert(path != NULL);
 
-	path_t path_buffer = {0};
-	ssize_t pwd_len = -1;
-	char *adj_path, *PWD = path_buffer;
+	// path_len is being overloaded, so that it can track whether this function is being
+	//	called to create a display path for a main input file, or for the target of a symlink
 	const bool is_link_tg = (path_len == IS_LINK_TARGET);
 
+	path_t path_buffer = {0};
+	ssize_t adj_len = -1; // the length of the path after it's been adjusted
+	char *adj_path, *PWD = path_buffer;
+
+	// if this func is being called to create a path for a main input file ...
 	if (!is_link_tg) {
+		// ... then check if the path is the dot dir, i.e. `if (path == ".")`
 		if ((path[0] == '.' && path[1] == '\0')) {
-			// just a pointer to a string
+			// if `path` _is_ ".", then convert that into the full path to `$PWD`
+			// `getenv` returns a pointer to a string ...
 			PWD = getenv("PWD");
 
 			if (PWD != NULL) {
-				// fill the path buffer with the result of PWD
-				pwd_len = strlen(PWD);
-				memcpy(path_buffer, PWD, pwd_len);
+				// ... so we need to fill the path buffer with the result of `getenv`.
+				// note: since we're going to need the length of `PWD` later, we might as well get its `strlen` now
+				memcpy(path_buffer, PWD, ( adj_len = strlen(PWD) ));
 
-			} else {
-				// `getcwd` fills the path buffer
+			} else { // if `getenv` fails for some reason, then fall back to using `getcwd`
+				// unlike `getenv`, `getcwd` fills the path buffer directly
+				//	note: the reason we use `getenv("PWD")` first, is because the `$PWD` environment variable
+				//		preserves symlinks, whereas `getcwd` will resolve symlinks when getting `$PWD`
 				PWD = getcwd(PWD, sizeof(path_buffer));
+				// if `getcwd` also doesn't work, then there's nothing we can really do - return failure
 				if (PWD == NULL) return NULL;
-			}
-		} else {
-			assert(path_len == -1 || path_len >= 1);
 
+				// if `getcwd` succeeds, then to avoid really complex checks later, get its `strlen` now
+				adj_len = strlen(PWD);
+			}
+
+		} else { // if `path` isn't ".", then just copy `path` into `path_buffer`
+			assert(path_len >= 1);
 			// fill the path buffer with the inputted string
-			if (path_len == -1)	strcpy(path_buffer, path);
-			else				memcpy(path_buffer, path, path_len);
+			memcpy(path_buffer, path, ( adj_len = path_len ));
 		}
+		adj_path = path_buffer; // by this point, `path_buffer` is definitely full, so we can point `adj_path` to it
+
+	} else { // if we _are_ just making a link target, then `path` is mutable, so point `adj_path` to the input
+		adj_path = (char*)path;
+		adj_len = strlen(path);
 	}
 
-	adj_path = is_link_tg ? (char*)path : path_buffer;
-
+	// no matter which route we went down above, we need to try and replace `$HOME` with `~` - so find `$HOME`.
 	const char *const HOME = getenv("HOME");
-	const size_t home_len = strlen(HOME), adj_len = strlen(adj_path);
+	const ssize_t home_len = strlen(HOME); // and find its length too - this is unavoidable
 
-	if (HOME == NULL		// make sure we actually
-		|| home_len == 0	//	got the $HOME var
-		|| adj_len <= home_len		// check that `$PWD != $HOME`
+	if (HOME == NULL || home_len == 0				// make sure that we successfully got the `$HOME` var,
+		|| adj_len <= home_len						// that `$PWD != $HOME`, so we don't replace the bare path
 		|| strncmp(HOME, adj_path, home_len) != 0	// and make sure that we're actually in a subdir of $HOME
-	) return is_link_tg ? adj_path : strdup(adj_path);
+	) return RETURN_PATH(adj_path, adj_len); // if we can't replace `$HOME` with `~`, then return `adj_path` as-is
 
 	// replace `$HOME` with `~`
 	adj_path[home_len - 1] = '~';
 	adj_path += home_len - 1;
 
-	return is_link_tg ? adj_path : strdup(adj_path);
+	// if we're not creating a link target, allocate some memory for this newly created path
+	//	also note: I'm using `memcpy` & `malloc` instead of `strdup`, since I already know the path's length
+	return RETURN_PATH(adj_path, adj_len - (home_len - 1) + 1);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

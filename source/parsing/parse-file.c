@@ -1,6 +1,7 @@
 /// @file parsing/parse-file.c
 
 #include <assert.h>
+#include <string.h>
 
 #include "malloc.h"
 #include "debugging.h"
@@ -61,9 +62,15 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
-	// if the path has a parent, then we don't want to analyse it.
+	// if the path has a parent, then we don't want to analyse it for its display path.
 	//	we only want the most root-level files
-	if (pfile->parent == NULL) pfile->display = getDisplayPath(getPath(pfile), getPathLen(pfile));
+	if (pfile->parent == NULL) {
+		// calculate the name len if we don't already have it, since we're gonna need it for `getDisplayPath`
+		if (pfile->name_len <= 0) pfile->name_len = strlen(pfile->name);
+		// then make sure that the path is initialised, so `getPathLen` can work correctly
+		pfile->path = getPath(pfile);
+		pfile->display = getDisplayPath(pfile->path, getPathLen(pfile));
+	}
 
 	// `FileStat::mode` and `FileStat::inum` are the two fields which are filled by both `dirent` and `stat`
 	if (!is_incomplete) {
