@@ -75,15 +75,17 @@ const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 	if (HOME == NULL || home_len == 0				// make sure that we successfully got the `$HOME` var,
 		|| adj_len <= home_len						// that `$PWD != $HOME`, so we don't replace the bare path
 		|| strncmp(HOME, adj_path, home_len) != 0	// and make sure that we're actually in a subdir of $HOME
-	) return RETURN_PATH(adj_path, adj_len); // if we can't replace `$HOME` with `~`, then return `adj_path` as-is
+	) return RETURN_PATH(adj_path, adj_len + 1); // if we can't replace `$HOME` with `~`, then return `adj_path` as-is
 
 	// replace `$HOME` with `~`
 	adj_path[home_len - 1] = '~';
+
 	adj_path += home_len - 1;
+	adj_len  -= home_len - 1;
 
 	// if we're not creating a link target, allocate some memory for this newly created path
 	//	also note: I'm using `memcpy` & `malloc` instead of `strdup`, since I already know the path's length
-	return RETURN_PATH(adj_path, adj_len - (home_len - 1) + 1);
+	return RETURN_PATH(adj_path, adj_len + 1);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
