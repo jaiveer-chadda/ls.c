@@ -75,49 +75,18 @@
 #define SET(fgbg, is_8bit, mode, ansi_col)		\
 	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%d" : "%d%d"), (mode), (ansi_col))
 
-#define SIMPLIFY_FGBG(fgbg) do {				\
-	colour_t *const act	= &(active.fgbg);		\
-	const colour_t col	=  (colour.fgbg);		\
-	const int code		=  (ANSI_##fgbg##_CODE);\
-	int *const len		= &(fgbg##_len);		\
-	\
-	if (IS_8B(col)) {							\
-		if		(col == *act || (col == G_NO_FGBG && (*act == G_NO_FGBG || do_add))) *len = 0;	\
-		else if	(col == G_NO_FGBG) *len = SET(fgbg, false, code					  , ANSI_FGBG_OFF		); /* 39 */ \
-		else if	(col == G_BLACK	 ) *len = SET(fgbg, false, code					  , ANSI_BLACK			); /* 30 */ \
-		else if	(col <= G_REG_END) *len = SET(fgbg, false, code					  , col					); /* 31 */ \
-		else if	(col <= G_BRT_END) *len = SET(fgbg, false, code + ANSI_REG_BRT_MOD, col - G_REG_BRT_DIFF); /* 92 */ \
-		else					   *len = SET(fgbg, true , code					  , col					); /* 38;5*/\
-	\
-	} else {									\
-		if (col == *act) {						\
-			*len = 0;							\
-		\
-		} else {								\
-			const rgb_t rgb = toRGB_t(col);		\
-			*len = SNPRINTF(fgbg, FGBG_BUFSIZE,	\
-				"%d8;2;%hu;%hu;%hu",			\
-				code, rgb.r, rgb.g, rgb.b		\
-			);									\
-		}										\
-	}											\
-	\
-	has_##fgbg = (*len > 0);					\
-	if (set_active && has_##fgbg) *act = col;	\
-} while(0)
-
 /* —— Bounds Checks ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// #define FGBG_OOR_WARNING(fgbg)								\
-// 	fprintf(stderr,											\
-// 		"Warning: `Colour::"#fgbg"` is out of range: %hd.\n"\
-// 		"Valid range is: %d <= "#fgbg" <= %d.\n"			\
-// 		"`"#fgbg"` has been locally set as follows:\n"		\
-// 		"   abs(%hd) %% %d = %hd\n",						\
-// 		(input_col.fgbg),									\
-// 		COLOUR_8_MIN, COLOUR_8_MAX,							\
-// 		(input_col.fgbg), COLOUR_8_MAX, (colour.fgbg)		\
-// 	)
+#define FGBG_OOR_WARNING(fgbg)								\
+	fprintf(stderr,											\
+		"Warning: `Colour::"#fgbg"` is out of range: %hd.\n"\
+		"Valid range is: %d <= "#fgbg" <= %d.\n"			\
+		"`"#fgbg"` has been locally set as follows:\n"		\
+		"   abs(%hd) %% %d = %hd\n",						\
+		(input_col.fgbg),									\
+		COLOUR_8_MIN, COLOUR_8_MAX,							\
+		(input_col.fgbg), COLOUR_8_MAX, (colour.fgbg)		\
+	)
 
 #define STYLE_OOR_WARNING()									\
 	fprintf(stderr,											\
@@ -134,6 +103,7 @@
 		( COLOUR_24_MIN <= colour.fgbg && colour.fgbg <= COLOUR_24_MAX))	\
 	) {																		\
 		colour.fgbg = abs(colour.fgbg) % COLOUR_8_MAX;						\
+		FGBG_OOR_WARNING(fgbg);												\
 		RETURN_LEN(0);														\
 		return "";															\
 	}																		\
