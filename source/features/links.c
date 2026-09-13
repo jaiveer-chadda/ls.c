@@ -192,7 +192,9 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	/* ———————————————————————————————————————————————————————— */
 
-	path_t target_path = {0};
+	path_t abs_tg_path = {0};
+	char *target_path = abs_tg_path;
+
 	ssize_t target_len = 0;
 	bool is_valid = false, is_apple = false;
 
@@ -203,7 +205,27 @@ TargetInfo *getLink(FileStat *const pFS) {
 			return NULL;
 		}
 
-		is_valid = FILE_EXISTS(target_path);
+		// we need to have the absolute path to the link, so that we can access/parse links that aren't in $PWD
+		//	so we need to recreate the link's path step by step
+		if (target_path[0] != '/' && pFS->parent != NULL) {
+			const namlen_t parent_len = getPathLen(pFS->parent);
+
+			// move the link path over by enough to fit its parent's path before it
+			memmove(target_path + parent_len + 1, target_path, target_len);
+			// then copy its parent's path over
+			memcpy(target_path, pFS->parent->path, parent_len);
+			// then fill in the one-byte gap with the path separator
+			target_path[parent_len] = '/';
+
+			// finally, now that we have the absolute path to the target, check if it exists
+			is_valid = FILE_EXISTS(target_path);
+
+			// now move the `target_path` pointer back to where the original path starts
+			target_path += parent_len + 1;
+
+		} else {
+			is_valid = FILE_EXISTS(target_path);
+		}
 
 	} else {
 		// if the file's a regular file, then check if it's an apple alias - if not, then return
@@ -218,6 +240,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 	memcpy(tg_info->path, target_path, target_len);
 
 	tg_info->is_apple = is_apple;
+
 	if (!is_valid) {
 		tg_info->suffix = INVALID_LINK;
 		return tg_info;
@@ -226,8 +249,8 @@ TargetInfo *getLink(FileStat *const pFS) {
 	/* ———————————————————————————————————————————————————————— */
 
 	struct stat tg_stat = {0};
-
-	if (lstat(tg_info->path, &tg_stat) == -1) return tg_info;
+	// when statting the file, use the absolute path - we won't be able to guarantee the information otherwise
+	if (lstat(abs_tg_path, &tg_stat) == -1) return tg_info;
 
 	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_stat.st_flags, false);
 	tg_info->suffix = getTypeSuffix(tg_stat.st_mode);
