@@ -111,14 +111,12 @@
 
 /* —— Warning Msgs —————————————————————————————————————————————————— */
 
-#define FGBG_BOUNDS_CHECK(fgbg) do {										\
-	if (!((COLOUR_8_MIN <= colour.fgbg && colour.fgbg <=  COLOUR_8_MAX) ||	\
-		( COLOUR_24_MIN <= colour.fgbg && colour.fgbg <= COLOUR_24_MAX))	\
-	) {																		\
-		colour.fgbg = abs(colour.fgbg) % COLOUR_8_MAX;						\
-		FGBG_OOR_WARNING(fgbg);												\
-		RETURN_LITERAL("");													\
-	}																		\
+#define FGBG_BOUNDS_CHECK(fgbg) do {					\
+	if (!IS_8B(colour.fgbg) && !IS_24B(colour.fgbg)) {	\
+		colour.fgbg = abs(colour.fgbg) % COLOUR_8_MAX;	\
+		FGBG_OOR_WARNING(fgbg);							\
+		RETURN_LITERAL("");								\
+	}													\
 } while(0)
 
 #define STYLE_BOUNDS_CHECK() do {		\

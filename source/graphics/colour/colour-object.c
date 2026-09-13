@@ -109,7 +109,7 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 	// simple way to make sure that nothing's printed when colour output is turned off
 	if (!DO_COLOUR()) RETURN_LITERAL("");
 
-	/// A working copy of the inputted colour object, which we can mutate if needed.
+	/// A copy of the inputted colour object, which we can mutate if needed.
 	Colour colour = input_col;
 
 	/* ── Bounds Checking ─────────────────────────────────────────────── */
@@ -125,11 +125,8 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	/* ── Check Identical Colours ─────────────────────────────────────── */
 
-	// if everything is exactly the same as the last time we printed, then don't do anything
-	if (colour.fg	 == active.fg &&
-		colour.bg	 == active.bg &&
-		colour.style == active.style
-	) RETURN_LITERAL("");
+	// if everything is exactly the same as the last time we printed, or we dont want to print anything, return nothing
+	if (areEqual(colour, active) || areEqual(colour, NO_CHANGE)) RETURN_LITERAL("");
 
 	/* ── Process Colour::style ───────────────────────────────────────── */
 
@@ -237,7 +234,7 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	// first save the pointer to the output colour, only then increment colheap_ptr to the next available space
 	char *const output_ptr = colheap_ptr;
-	colheap_ptr += output_len;
+	colheap_ptr += output_len + 1; // +1 to include the nullbyte
 
 	RETURN_LEN(output_len);
 	return output_ptr;
