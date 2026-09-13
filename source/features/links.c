@@ -4,7 +4,6 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
-#include <libgen.h>
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "malloc.h"
@@ -289,12 +288,9 @@ void print_link(const FileStat *const pFS) {
 	// if this is an invalid link
 	if (tg_info->suffix == INVALID_LINK) {
 		const char *const arrow_ansi = getcol(INVALID_ARROW_COLOUR);
-		const char *const path_ansi	 = getcol(INVALID_LINK_COLOUR);
 
-		printf("%s%s" "%s%s",
-			arrow_ansi, arrow,
-			path_ansi, path
-		);
+		printf("%s%s", arrow_ansi, arrow);
+		printEscdName(path, INVALID_LINK_COLOUR, false);
 		return;
 	}
 
