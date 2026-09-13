@@ -232,7 +232,7 @@ void print_link(const FileStat *const pFS) {
 
 	const bool is_valid = tg_info->suffix != INVALID_LINK;
 	const char *const arrow = tg_info->is_apple	? APPLE_ARROW : SYMLINK_ARROW;
-	const char *const path = getDisplayPath(tg_info->path, -1);
+	const char *const path = getDisplayPath(tg_info->path, IS_LINK_TARGET);
 
 	if (!is_valid) {
 		printf("%s%s" "%s%s",

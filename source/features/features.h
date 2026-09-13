@@ -3,14 +3,7 @@
 #ifndef FEATURES_H
 #define FEATURES_H
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
 #include "model/types.h"
-
-#define TYPE_MASK S_IFMT  /// A mask to keep just the type information from the Unix octal mode - (`0o170000`).
-#define PERM_MASK 0007777 /// A mask to keep just the permission info. from the Unix octal mode - (`0o007777`).
-#define EXEC_MASK 0000111 /// A mask to tell whether a file is an executable or not - (`0o000111`).
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Field Printing Functions ————————————————————————————————————————————————————————————————————————————————————— */
@@ -49,6 +42,10 @@ TargetInfo *getLink(FileStat *const pFS);
 
 /* —— mode.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define TYPE_MASK S_IFMT  /// A mask to keep just the type information from the Unix octal mode - (`0o170000`).
+#define PERM_MASK 0007777 /// A mask to keep just the permission info. from the Unix octal mode - (`0o007777`).
+#define EXEC_MASK 0000111 /// A mask to tell whether a file is an executable or not - (`0o000111`).
+
 void getMode(modestr mode_str, const mode_t oct_mode);
 char getTypeSuffix(const mode_t mode);
 bool checkXattr(const path_t path);
@@ -60,6 +57,8 @@ bool isMountPoint(const dev_t dev_no, const path_t path);
 void printMountDevice(const name_t filename);
 
 /* —— path.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define IS_LINK_TARGET INT16_MIN
 
 const char *getDisplayPath(const char *const path, const namlen_t path_len);
 

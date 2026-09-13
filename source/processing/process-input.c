@@ -28,7 +28,7 @@
  * @fn getPath
  * @brief Get the path to the given file, relative to its most senior parent.
  */
-static inline const char *getPath(FileStat *const file) {
+const char *getPath(FileStat *const file) {
 	// if we've already found this path before, then just return a pointer to it
 	if (file->path != NULL) return file->path;
 

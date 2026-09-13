@@ -1,21 +1,27 @@
 /// @file features/path/path.c
 
 #include <stdio.h>
+#include <assert.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "malloc.h"
+#include "debugging.h"
+
+#include "features.h"
 #include "output/output.h"
 #include "options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 const char *getDisplayPath(const char *const path, const namlen_t path_len) {
+	assert(path != NULL);
+
 	path_t path_buffer = {0};
 	ssize_t pwd_len = -1;
 	char *adj_path, *PWD = path_buffer;
-	const bool is_link_tg = path_len == -1;
+	const bool is_link_tg = (path_len == IS_LINK_TARGET);
 
 	if (!is_link_tg) {
 		if ((path[0] == '.' && path[1] == '\0')) {
@@ -33,8 +39,11 @@ const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 				if (PWD == NULL) return NULL;
 			}
 		} else {
+			assert(path_len == -1 || path_len >= 1);
+
 			// fill the path buffer with the inputted string
-			memcpy(path_buffer, path, path_len);
+			if (path_len == -1)	strcpy(path_buffer, path);
+			else				memcpy(path_buffer, path, path_len);
 		}
 	}
 

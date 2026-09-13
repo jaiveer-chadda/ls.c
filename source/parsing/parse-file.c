@@ -12,6 +12,7 @@
 #include "icons/icons.h"
 #include "form/formatting.h"
 #include "features/features.h"
+#include "processing/process-input.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -62,7 +63,7 @@ void parseFile(FileStat *const pfile) {
 
 	// if the path has a parent, then we don't want to analyse it.
 	//	we only want the most root-level files
-	if (pfile->parent == NULL) pfile->display = getDisplayPath(pfile->path, getPathLen(pfile));
+	if (pfile->parent == NULL) pfile->display = getDisplayPath(getPath(pfile), getPathLen(pfile));
 
 	// `FileStat::mode` and `FileStat::inum` are the two fields which are filled by both `dirent` and `stat`
 	if (!is_incomplete) {
