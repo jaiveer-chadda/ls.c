@@ -46,9 +46,9 @@ static Colour active = RESET_ALL;
  *	  - Note: Actually stored on the stack.
  *
  * ---
- * 
- * A kilobyte (`MAX_ANSI_SIZE * COLHEAP_CAPACITY` == `64 * 16` == `1024 bytes`) of "heap" storage - enough to hold 16
- *	maximum-size ANSI escape sequences.
+ *
+ * Two kilobytes (`MAX_ANSI_SIZE * COLHEAP_CAPACITY` == `64 * 32` == `2048 bytes`) of "heap" storage - enough to hold
+ *	32 maximum-size ANSI escape sequences.
  *
  * ---
  *
@@ -66,7 +66,7 @@ static Colour active = RESET_ALL;
  *
  *	  - However, in reality, there are far more than `COLHEAP_CAPACITY` escape sequences worth of buffers, since most
  *		escape sequences don't take up anywhere near as much as `MAX_ANSI_SIZE` bytes.
- * 
+ *
  * ---
  *
  * Note: `colheap` is initialised by being filled with nullbytes, which isn't strictly necessary, however, makes

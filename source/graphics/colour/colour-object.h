@@ -13,7 +13,7 @@
 #define MAX_ANSI_SIZE 64
 
 /** The number of maximum-sized ANSI strings that `colheap` can store. */
-#define COLHEAP_CAPACITY 16
+#define COLHEAP_CAPACITY 32
 
 typedef char ansi_t[MAX_ANSI_SIZE]; // `char[MAX_ANSI_SIZE] = 64`
 
