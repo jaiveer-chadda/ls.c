@@ -75,6 +75,12 @@
 #define SET(fgbg, is_8bit, mode, ansi_col)		\
 	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%d" : "%d%d"), (mode), (ansi_col))
 
+#define SIMPLIFY_FGBG(fgbg) \
+	simplify_fgbg( \
+		fgbg, &active.fgbg, &fgbg##_len, &has_##fgbg, \
+		colour.fgbg, ANSI_##fgbg##_CODE, set_active, do_add \
+	)
+
 /* —— Bounds Checks ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define FGBG_OOR_WARNING(fgbg)								\

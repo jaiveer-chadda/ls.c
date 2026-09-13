@@ -21,6 +21,10 @@ typedef struct { uint8_t r, g, b; } rgb_t;
 
 static inline rgb_t toRGB_t(const colour_t raw);
 static inline int stylelookup(const style_t style, const bool turn_style);
+static inline void simplify_fgbg(
+	char *const fgbg, colour_t *const act, int *const len, bool *const has_fgbg,
+	const colour_t col, const int code, const bool set_active, const bool do_add
+);
 
 #ifdef DEBUG_MODE
 	static inline int d_snprintf(char *restrict str, size_t size, const char *restrict format, ...);
@@ -38,76 +42,6 @@ static Colour active = RESET_ALL;
 
 // the initial `CSI` will always remain here; only chars after it will ever be changed
 static ansi_t output_buffer = CSI;
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ── ── `set/getActive()` ── ────────────────────────────────────────────────────────────────────────────────────── */
-
-/**
- * @fn setActive
- * @brief Notify `getcol()` to what the active colour on screen is.
- *
- * Lets the the colour printing functions, `getcol()` or `colprint()`, know what the active colour on screen is,
- * in the case that a colour was printed manually.
- *
- * @param input[in] The colour which the active colour should be set.
- * @result Sets `static Colour active` to be equal to `input`.
- */
-void setActive(const Colour input) {
-	if (!DO_COLOUR()) return;
-	active.fg	 = input.fg,
-	active.bg	 = input.bg,
-	active.style = input.style;
-}
-
-Colour getActive(void) { return active; }
-
-bool areEqual(const Colour c1, const Colour c2) {
-	return
-		c1.fg	 == c2.fg &&
-		c1.bg	 == c2.bg &&
-		c1.style == c2.style;
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ── ── `simplify_fgbg()` ── ────────────────────────────────────────────────────────────────────────────────────── */
-
-#define SIMPLIFY_FGBG(fgbg) \
-	simplify_fgbg( \
-		fgbg, &active.fgbg, &fgbg##_len, &has_##fgbg, \
-		colour.fgbg, ANSI_##fgbg##_CODE, set_active, do_add \
-	)
-
-#define SET_FGBG(fgbg, is_8bit, mode, ansi_col) \
-	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%d" : "%d%d"), (mode), (ansi_col))
-
-static inline void simplify_fgbg(
-	char *const fgbg, colour_t *const act, int *const len, bool *const has_fgbg,
-	const colour_t col, const int code, const bool set_active, const bool do_add
-) {
-	if (IS_8B(col)) {
-		if		(col == *act || (col == G_NO_FGBG && (*act == G_NO_FGBG || do_add))) *len = 0;
-		else if	(col == G_NO_FGBG) *len = SET_FGBG(fgbg, false, code				   , ANSI_FGBG_OFF		 ); // 39
-		else if	(col == G_BLACK	 ) *len = SET_FGBG(fgbg, false, code				   , ANSI_BLACK			 ); // 30
-		else if	(col <= G_REG_END) *len = SET_FGBG(fgbg, false, code				   , col				 ); // 31
-		else if	(col <= G_BRT_END) *len = SET_FGBG(fgbg, false, code + ANSI_REG_BRT_MOD, col - G_REG_BRT_DIFF); // 92
-		else					   *len = SET_FGBG(fgbg, true , code				   , col				 ); // 38;5
-
-	} else {
-		if (col == *act) {
-			*len = 0;
-
-		} else {
-			const rgb_t rgb = toRGB_t(col);
-			*len = SNPRINTF(fgbg, FGBG_BUFSIZE,
-				"%d8;2;%hu;%hu;%hu",
-				code, rgb.r, rgb.g, rgb.b
-			);
-		}
-	}
-
-	*has_fgbg = (*len > 0);
-	if (set_active && *has_fgbg) *act = col;
-}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── `getcol()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
@@ -265,6 +199,69 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── Ext Helper Funcs ── ─────────────────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * @fn setActive
+ * @brief Notify `getcol()` to what the active colour on screen is.
+ *
+ * Lets the the colour printing functions, `getcol()` or `colprint()`, know what the active colour on screen is,
+ * in the case that a colour was printed manually.
+ *
+ * @param input[in] The colour which the active colour should be set.
+ * @result Sets `static Colour active` to be equal to `input`.
+ */
+void setActive(const Colour input) {
+	if (!DO_COLOUR()) return;
+	active.fg	 = input.fg,
+	active.bg	 = input.bg,
+	active.style = input.style;
+}
+
+Colour getActive(void) { return active; }
+
+bool areEqual(const Colour c1, const Colour c2) {
+	return
+		c1.fg	 == c2.fg &&
+		c1.bg	 == c2.bg &&
+		c1.style == c2.style;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── `simplify_fgbg()` ── ────────────────────────────────────────────────────────────────────────────────────── */
+
+#define SET_FGBG(fgbg, is_8bit, mode, ansi_col) \
+	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%d" : "%d%d"), (mode), (ansi_col))
+
+static inline void simplify_fgbg(
+	char *const fgbg, colour_t *const act, int *const len, bool *const has_fgbg,
+	const colour_t col, const int code, const bool set_active, const bool do_add
+) {
+	if (IS_8B(col)) {
+		if		(col == *act || (col == G_NO_FGBG && (*act == G_NO_FGBG || do_add))) *len = 0;
+		else if	(col == G_NO_FGBG) *len = SET_FGBG(fgbg, false, code				   , ANSI_FGBG_OFF		 ); // 39
+		else if	(col == G_BLACK	 ) *len = SET_FGBG(fgbg, false, code				   , ANSI_BLACK			 ); // 30
+		else if	(col <= G_REG_END) *len = SET_FGBG(fgbg, false, code				   , col				 ); // 31
+		else if	(col <= G_BRT_END) *len = SET_FGBG(fgbg, false, code + ANSI_REG_BRT_MOD, col - G_REG_BRT_DIFF); // 92
+		else					   *len = SET_FGBG(fgbg, true , code				   , col				 ); // 38;5
+
+	} else {
+		if (col == *act) {
+			*len = 0;
+
+		} else {
+			const rgb_t rgb = toRGB_t(col);
+			*len = SNPRINTF(fgbg, FGBG_BUFSIZE,
+				"%d8;2;%hu;%hu;%hu",
+				code, rgb.r, rgb.g, rgb.b
+			);
+		}
+	}
+
+	*has_fgbg = (*len > 0);
+	if (set_active && *has_fgbg) *act = col;
+}
+
 /* ── ── `toRGB_t()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline rgb_t toRGB_t(const colour_t raw) {
