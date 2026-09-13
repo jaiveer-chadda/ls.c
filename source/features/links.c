@@ -240,11 +240,9 @@ TargetInfo *getLink(FileStat *const pFS) {
 	memcpy(tg_info->path, target_path, target_len);
 
 	tg_info->is_apple = is_apple;
+	tg_info->suffix = INVALID_LINK;
 
-	if (!is_valid) {
-		tg_info->suffix = INVALID_LINK;
-		return tg_info;
-	}
+	if (!is_valid) return tg_info;
 
 	/* ———————————————————————————————————————————————————————— */
 
@@ -252,7 +250,8 @@ TargetInfo *getLink(FileStat *const pFS) {
 	// when statting the file, use the absolute path - we won't be able to guarantee the information otherwise
 	if (lstat(abs_tg_path, &tg_stat) == -1) return tg_info;
 
-	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_stat.st_flags, false);
+	const bool is_mount = isMountPoint(tg_stat.st_dev, abs_tg_path);
+	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_stat.st_flags, is_mount);
 	tg_info->suffix = getTypeSuffix(tg_stat.st_mode);
 
 	return tg_info;
