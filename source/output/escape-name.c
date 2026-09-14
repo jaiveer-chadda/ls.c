@@ -12,7 +12,7 @@
 /// How much memory we should allocate for each name, if we don't know the length of the original name
 #define INIT_ALLOC_LEN 16
 
-/* ———————————————————————————————————————————————————————— */
+/* ———————————————————————————————————————————————————————————— */
 
 #define DO_OCT_ESC(chr) ( 0 < (chr) && (chr) <= 7 ) /** 1 → 7 */
 #define DO_HEX_ESC(chr) ((7 < (chr) && (chr) <= 31) || (chr) == 127) /** 8 → 31, 127 */
@@ -63,6 +63,21 @@ static inline uint8_t escapeCharacter(char *esc, const char chr) {
 
 /* —— printEscdName() —————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define output_size ((size_t)(out_ptr - output))
+
+#define CHECK_MEM_ALLOC(max_increase) do {											\
+	if (output_size + (max_increase) + 1 <= alloc_size) break;						\
+	/* make sure we'll have enough allocated memory */								\
+	while (alloc_size < output_size + (max_increase) + 1) MULT_BY_1_5(alloc_size);	\
+	/* note down how much memory we've written to `output` already */				\
+	const size_t size = output_size;												\
+	output = erealloc(output, alloc_size);											\
+	/* move the output pointer to the new location of `output` */					\
+	out_ptr = output + size;														\
+} while (0)
+
+/* ———————————————————————————————————————————————————————————— */
+
 void printEscdName(const char *const name, const Colour colour, const bool do_padding) {
 
 	/* —— Colour Setup ———————————————————————————————————————— */
@@ -82,8 +97,7 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 	size_t alloc_size =
 		INIT_ALLOC_LEN
 		+ (do_padding  ? sizeof(PRE_NAME_PAD) : 0)
-		+ (do_init_col ? init_ansi_len		  : 0)
-	;
+		+ (do_init_col ? init_ansi_len		  : 0);
 
 	// allocate memory for the output, and setup the output pointer
 	char *output = emalloc(alloc_size);
@@ -109,20 +123,26 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 	while (*inp_ptr != '\0') {
 
 		if (DO_ANY_ESC(*inp_ptr)) {
+			CHECK_MEM_ALLOC(esc_ansi_len);
+
 			memcpy(out_ptr, esc_ansi, esc_ansi_len);
 			out_ptr += esc_ansi_len;
 
 			while (DO_ANY_ESC(*inp_ptr)) {
+				CHECK_MEM_ALLOC(4); // 4 is the maximum length of a character's escape sequence (`\x7F`)
 				out_ptr += escapeCharacter(out_ptr, *inp_ptr++);
 			}
 
 		} else {
 			if (inp_ptr != name) {
+				CHECK_MEM_ALLOC(file_ansi_len);
+
 				memcpy(out_ptr, file_ansi, file_ansi_len);
 				out_ptr += file_ansi_len;
 			}
 
 			while (*inp_ptr != '\0' && !DO_ANY_ESC(*inp_ptr)) {
+				CHECK_MEM_ALLOC(1);
 				*out_ptr++ = *inp_ptr++;
 			}
 		}
