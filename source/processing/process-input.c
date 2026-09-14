@@ -14,10 +14,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/// Approximately multiplies a number by 1.5
-#define MULT_BY_1_5(var) \
-	((var) += (var) == 1 ? 1 : (var) >> 1)
-
 #define printError(path_) \
 	fprintf(stderr, "\33[31m%s: %s: %s\33[m\n", argv0, path_, strerror(errno))
 

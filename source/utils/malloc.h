@@ -5,11 +5,21 @@
 
 #include <stdlib.h>
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 void* emalloc(size_t size);
 void* ecalloc(size_t count, size_t size);
 void* erealloc(void *ptr, size_t size);
 
 void efree(void *ptr);
+
+/* —————————————————————————————————————————————————————————— */
+
+/// Approximately multiplies a number by 1.5
+#define MULT_BY_1_5(var) \
+	((var) += (var) == 1 ? 1 : (var) >> 1)
+
+/* —————————————————————————————————————————————————————————— */
 
 #ifdef DEBUG_MODE
 	void e__checkMemLeak(void);
@@ -17,5 +27,7 @@ void efree(void *ptr);
 #else
 #	define checkMemLeak()
 #endif
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #endif /* !MALLOC_INITIALISED */

@@ -6,10 +6,6 @@
 #include "form/formatting.h"
 #include "graphics/graphics.h"
 
-/// Approximately multiplies a number by 1.5
-#define MULT_BY_1_5(var) \
-	((var) += (var) == 1 ? 1 : (var) >> 1)
-
 #define INIT_INUM_COUNT 8
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

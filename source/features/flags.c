@@ -63,9 +63,6 @@ static const flagset ALL_FLAGS[] = {
 
 #define SWAP_DELIMS() ((delim == SYST_MODE_DELIM) ? DATA_MODE_DELIM : SYST_MODE_DELIM)
 
-/** Approximately multiplies a number by 1.5 */
-#define MULT_BY_1_5(var) ((var) += (var) == 1 ? 1 : (var) >> 1)
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /// @brief Static pointer to the firmlink file.

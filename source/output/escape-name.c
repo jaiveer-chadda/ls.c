@@ -12,10 +12,6 @@
 /// How much memory we should allocate for each name, if we don't know the length of the original name
 #define INIT_ALLOC_LEN 16
 
-/// Approximately multiplies a number by 1.5
-#define MULT_BY_1_5(var) \
-	((var) += (var) == 1 ? 1 : (var) >> 1)
-
 /* ———————————————————————————————————————————————————————— */
 
 #define DO_OCT_ESC(chr) ( 0 < (chr) && (chr) <= 7 ) /** 1 → 7 */
