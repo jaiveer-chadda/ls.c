@@ -63,11 +63,13 @@ static inline char getModeType(const mode_t mode) {
 
 inline char getTypeSuffix(const mode_t mode) {
 	switch (mode & TYPE_MASK) {
-		case S_IFLNK: return SYMLINK_SUFFIX	; // symlink	'@'
-		case S_IFDIR: return DIR_SUFFIX		; // directory	'/'
 		case S_IFIFO: return PIPE_CHAR		; // named pipe	'|'
+		case S_IFCHR: return BLKDEV_SUFFIX	; // blk dev	'#'
+		case S_IFDIR: return DIR_SUFFIX		; // directory	'/'
+		case S_IFBLK: return CHRDEV_SUFFIX	; // chr dev	'%'
+		case S_IFLNK: return SYMLINK_SUFFIX	; // symlink	'@'
 		case S_IFSOC: return SOCKET_CHAR	; // socket		'='
-		case S_IFWHT: return WHITEOUT_CHAR	; // whiteout	'%'
+		case S_IFWHT: return WHITEOUT_CHAR	; // whiteout	'^'
 	}
 	if (mode & EXEC_MASK) return EXEC_SUFFIX; // executable '*'
 	return '\0';							  // other/unknown
