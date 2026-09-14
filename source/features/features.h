@@ -62,6 +62,7 @@ const MountInfo *getMountPoint(const char *const path, const bool is_dir);
 
 #define IS_LINK_TARGET INT16_MIN
 
+const char *getBasename(const char *const path);
 const char *getDisplayPath(const char *const path, const namlen_t path_len);
 
 /* —— size.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */

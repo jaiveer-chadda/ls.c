@@ -14,6 +14,25 @@
 #include "options/options.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+const char *getBasename(const char *const path) {
+	const char *definite = NULL, *running = NULL;
+
+	// iterate through the entire string - whenever you see a slash, update the `running` pointer, which tracks the
+	//	location of the last slash we've seen, no matter what.
+	// only move the `running` pointer into the `definite` variable if we've passed a character that isn't a slash.
+	//	this guarantees that the slash returned by the function will never be a trailing slash
+	for (const char *chr = path; *chr != '\0'; chr++) {
+		if (*chr == '/') running = chr;
+		else definite = running;
+	}
+
+	return definite;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define RETURN_PATH(path, len) (				 \
 	is_link_tg									 \
