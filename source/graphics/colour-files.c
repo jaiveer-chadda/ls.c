@@ -3,9 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "features/features.h"
-
 #include "graphics.h"
+#include "features/features.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -16,17 +15,21 @@ static const char *ALL_COMPRESSED_EXTS[] = {
 	"rz" , "sar", "swm", "t7z", "tar", "taz", "tbz", "tbz2", "tgz", "tlz" , "txz"  , "tz" , "tzo" , "tzst", "udeb",
 	"war", "whl", "wim", "xz" , "z"  , "zip", "zoo", "zst" , "dmg"
 };
-static const char *ALL_IMAGE_EXTS[] = {
+static const char *ALL_IMAGE_FILE_EXTS[] = {
 	"avif", "bmp", "gif", "jpeg", "jpg", "mjpeg", "mjpg", "png", "svg", "svgz", "tif", "tiff", "webm", "webp", "jxl",
 	"pbm" , "pgm", "ppm", "tga" , "xbm", "xpm"  , "mng" , "pcx", "xcf", "xwd" , "cgm", "emf"
 };
-static const char *ALL_VIDEO_EXTS[] = {
+static const char *ALL_VIDEO_FILE_EXTS[] = {
 	"m2v", "m4v", "mov", "mp4", "mp4v", "mpg", "mpeg", "ogm", "qt", "mkv", "vob", "nuv", "wmv", "asf", "rm", "rmvb",
 	"flc", "fli", "avi", "flv", "gl"  , "dl" , "yuv" , "ogv"
 };
-static const char *ALL_AUDIO_UNCM_EXTS[] = { "au" , "flac", "m4a", "mid", "midi", "mka", "wav" , "xspf"	  };
-static const char *ALL_AUDIO_COMP_EXTS[] = { "aac", "mp3" , "mpc", "oga", "ogg" , "ogx", "opus", "ra", "spx" };
-static const char *ALL_TEMP_BACK_EXTS [] = {
+static const char *ALL_AUDIO_UNCM_EXTS[] = {
+	"au" , "flac", "m4a", "mid", "midi", "mka", "wav" , "xspf"
+};
+static const char *ALL_AUDIO_COMP_EXTS[] = {
+	"aac", "mp3" , "mpc", "oga", "ogg" , "ogx", "opus", "ra", "spx"
+};
+static const char *ALL_TMP_BACKUP_EXTS[] = {
 	"tmp", "swp", "old" , "part"  , "rpmsave", "rpmorig", "dpkg-tmp", "ucf-dist", "dpkg-dist" ,
 	"rej", "bak", "orig", "rpmnew", "ucf-old", "ucf-new", "dpkg-old", "dpkg-new", "crdownload",
 };
@@ -34,9 +37,9 @@ static const char *ALL_TEMP_BACK_EXTS [] = {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define	GET_STIC_COLOUR(mode) (((mode) & S_IXOTH) ? FC_STIC_X : FC_STIC_N )
-#define	GET_SUID_COLOUR(mode) (((mode) & S_IXUSR) ? FC_SUID_X : FC_SUID_N )
-#define	GET_SGID_COLOUR(mode) (((mode) & S_IXGRP) ? FC_SGID_X : FC_SGID_N )
+#define	GET_STIC_COL(mode) (((mode) & S_IXOTH) ? FC_STIC_X : FC_STIC_N )
+#define	GET_SUID_COL(mode) (((mode) & S_IXUSR) ? FC_SUID_X : FC_SUID_N )
+#define	GET_SGID_COL(mode) (((mode) & S_IXGRP) ? FC_SGID_X : FC_SGID_N )
 
 #define GET_ARR_LEN(array) (int)(sizeof(array) / sizeof((array)[0]))
 
@@ -57,14 +60,16 @@ static inline bool strInArr(const char *string, const char *array[], const int a
 	return false;
 }
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── setFileColour() ── ──────────────────────────────────────────────────────────────────────────────────────── */
 
-FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flags, const MountInfo *const mount) {
+FileColour setFileColour(const char *const name, const mode_t mode,
+	const MountInfo *const mount, const struct stat *const pstat
+) {
 
 	/* —— Flags ————————————————————————————————————————————————— */
 
 	// dataless files have the highest priority, so if the file is dataless, colour it and return immediately
-	if (flags & SF_DATALESS) return FC_DATALESS;
+	if (pstat->st_flags & SF_DATALESS) return FC_DATALESS;
 
 	/* —— Type —————————————————————————————————————————————————— */
 
@@ -79,8 +84,8 @@ FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flag
 
 		/* —— Permissions ——————————————————————————————————————— */
 
-		case S_IFDIR:						  // directories
-			if (mode & S_ISVTX)	return GET_STIC_COLOUR(mode);// directory w/ sticky bit set
+		case S_IFDIR: // directories
+			if (mode & S_ISVTX)	return GET_STIC_COL(mode);	// directory w/ sticky bit set
 			if (mode & S_IWOTH)	return FC_OW_DIR;			// other-writeable directory
 			if (mount != NULL)	return FC_MOUNT;			// mount point
 			else				return FC_DIRECT;			// regular directory
@@ -88,8 +93,8 @@ FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flag
 
 	// colour the file based on the suid/sgid bits
 	// note: directories with the suid/sgid bit are intentionally not coloured by these suid/sgid colours
-	if (mode & S_ISUID) return GET_SUID_COLOUR(mode); // file w/ suid bit set
-	if (mode & S_ISGID) return GET_SGID_COLOUR(mode); // file w/ sgid bit set
+	if (mode & S_ISUID) return GET_SUID_COL(mode); // file w/ suid bit set
+	if (mode & S_ISGID) return GET_SGID_COL(mode); // file w/ sgid bit set
 
 	if (mode & EXEC_MASK) return FC_EXEC; // executable file
 
@@ -97,24 +102,22 @@ FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flag
 
 	if (name == NULL) return FC_REGULAR;
 
-	const size_t name_len = strlen(name);
-
 	// if a file ends with a `~` or `#`, then it's a temporary file
-	if (name[name_len] == '~' || name[name_len] == '#') {
-		return FC_TEMP_BACK;
-	}
+	const size_t name_len = strlen(name);
+	if (name[name_len] == '~' || name[name_len] == '#') return FC_TMP_BACKUP;
 
 	/* —— Extensions ———————————————————————————————————————————— */
 
-	const char *extension = strrchr(name, '.');
+	const char *const extension = strrchr(name, '.');
+	// don't try and colour files whose names start with a '.'
 	if (extension == name || extension == NULL) return FC_REGULAR;
 
 	CHECK_EXTENSION_TYPE(COMPRESSED);
-	CHECK_EXTENSION_TYPE(IMAGE);
-	CHECK_EXTENSION_TYPE(VIDEO);
+	CHECK_EXTENSION_TYPE(IMAGE_FILE);
+	CHECK_EXTENSION_TYPE(VIDEO_FILE);
 	CHECK_EXTENSION_TYPE(AUDIO_UNCM);
 	CHECK_EXTENSION_TYPE(AUDIO_COMP);
-	CHECK_EXTENSION_TYPE(TEMP_BACK);
+	CHECK_EXTENSION_TYPE(TMP_BACKUP);
 
 	return FC_REGULAR;
 }

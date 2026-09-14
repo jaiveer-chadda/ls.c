@@ -251,7 +251,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	tg_info->mount	= getMountPoint(abs_tg_path, S_ISDIR(tg_stat.st_mode));
 	tg_info->suffix = getTypeSuffix(tg_stat.st_mode);
-	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_stat.st_flags, tg_info->mount);
+	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_info->mount, &tg_stat);
 
 	return tg_info;
 }

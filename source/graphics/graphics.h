@@ -74,11 +74,11 @@
 #define HL_WHITEOUT		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_BWHT	) // \e[107m
 
 #define HL_COMPRESSED	toColour( .style = 0				, .fg = 137						) // #B68558
-#define HL_IMAGE		toColour( .style = 0				, .fg = G_BRT_MAGENTA			) // \e[95m
-#define HL_VIDEO		toColour( .style = 0				, .fg = G_BRT_RED				) // \e[91m
+#define HL_IMAGE_FILE	toColour( .style = 0				, .fg = G_BRT_MAGENTA			) // \e[95m
+#define HL_VIDEO_FILE	toColour( .style = 0				, .fg = G_BRT_RED				) // \e[91m
 #define HL_AUDIO_UNCM	toColour( .style = 0				, .fg = 116						) // #6ADAD8
 #define HL_AUDIO_COMP	toColour( .style = 0				, .fg = G_BRT_GREEN				) // \e[92m
-#define HL_TEMP_BACK	toColour( .style = 0				, .fg = G_BRT_BLACK				) // \e[90m
+#define HL_TMP_BACKUP	toColour( .style = 0				, .fg = G_BRT_BLACK				) // \e[90m
 
 #define HL_READ			toColour( .style = 0				, .fg = G_BRT_GREEN				) // \e[92m
 #define HL_W_UG			toColour( .style = 0				, .fg = G_BRT_YELLOW			) // \e[93m
@@ -318,11 +318,11 @@
 	X(FC_DATALESS	, HL_DATALESS	) /* \e[47m  */ \
 	/* Extension   */ \
 	X(FC_COMPRESSED	, HL_COMPRESSED	) /* #B68558 */ \
-	X(FC_IMAGE		, HL_IMAGE		) /* \e[95m  */ \
-	X(FC_VIDEO		, HL_VIDEO		) /* \e[91m  */ \
+	X(FC_IMAGE_FILE	, HL_IMAGE_FILE	) /* \e[95m  */ \
+	X(FC_VIDEO_FILE	, HL_VIDEO_FILE	) /* \e[91m  */ \
 	X(FC_AUDIO_UNCM	, HL_AUDIO_UNCM	) /* #6ADAD8 */ \
 	X(FC_AUDIO_COMP	, HL_AUDIO_COMP	) /* \e[92m  */ \
-	X(FC_TEMP_BACK	, HL_TEMP_BACK	) /* \e[90m  */
+	X(FC_TMP_BACKUP	, HL_TMP_BACKUP	) /* \e[90m  */
 
 /* —— Permission Colours ———————————————————————————————————————————————————— */
 
@@ -437,7 +437,9 @@ const Colour time_colour_esc[TC_COUNT];
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 
 #include "model/types.h"
-FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flags, const MountInfo *const mount);
+FileColour setFileColour(const char *const name, const mode_t mode,
+	const MountInfo *const mount, const struct stat *const pstat
+);
 
 #ifdef DEBUG_MODE
 #	define clearScreen()

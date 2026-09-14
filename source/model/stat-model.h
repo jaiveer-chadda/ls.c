@@ -82,10 +82,7 @@ struct FileStatFields {
 	FileStat	*children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
 	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
 	unit_t		size_unit	; // 1 /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
-
-	/// @todo amalgamate `do_link_hl` into `file_col`
-	bool		do_link_hl	; // 1 /** Whether this file is a hardlink, and should be highlighted as such. */
-}; // 94 + 2 pad = 96b
+}; // 93 + 3 pad = 96b
 
 /* —— TargetInfo ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 

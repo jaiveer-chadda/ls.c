@@ -102,7 +102,7 @@ void parseFile(FileStat *const pfile) {
 	if (is_incomplete) {
 		if (do_inum()) processInum(pfile->inum);
 		if (do_icon()) pfile->icon = getIcon(pfile);
-		if (DO_COLOUR()) pfile->file_col = setFileColour(pfile->name, pfile->mode, 0U, false);
+		if (DO_COLOUR()) pfile->file_col = setFileColour(pfile->name, pfile->mode, NULL, NULL);
 		return;
 	}
 
@@ -115,10 +115,8 @@ void parseFile(FileStat *const pfile) {
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
 	if (do_flag_str()) pfsf->flag_str = parseFlags(pfile);
 	if (do_icon	   ()) pfile->icon	  = getIcon(pfile);
-	if (DO_COLOUR  ()) pfile->file_col = setFileColour(pfile->name, pfile->mode, pstat->st_flags, pfsf->mount);
+	if (DO_COLOUR  ()) pfile->file_col = setFileColour(pfile->name, pfile->mode, pfsf->mount, pstat);
 	if (do_time_str()) { parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); }
-
-	if (!S_ISDIR(pstat->st_mode) && pstat->st_nlink > 1) pfsf->do_link_hl = true;
 
 	// calculate the lengths of all numerical fields (i.e., non-string fields)
 	checkLengths(pfile, false);
