@@ -6,10 +6,10 @@
 #include <string.h>
 
 #include "icons.h"
+#include "strings.h"
 
-#include "utils/strings.h"
 #include "options/options.h"
-#include "graphics/graphics.h"
+#include "features/features.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -42,13 +42,13 @@ static inline icon_t findIconMatch(const char *const check_str, const Icon icon_
 icon_t getIcon(const FileStat *const pFS) {
 	// determine which name we'll be using to find the icon
 	const char *filename = pFS->display != NULL ? pFS->display : pFS->name;
-	const bool is_dir = S_ISDIR(pFS->mode);
+	const bool is_dir = isFSDir(pFS);
 
 	path_t name_buf = {0};
 	toLower(name_buf, filename);
 
 	// find the basename of the file, since that's the only part that needs to be matched
-	const char *name = strrchr(name_buf, '/');
+	const char *name = getBasename(name_buf);
 
 	// if there's no `/` in the name, then just revert to the normal name
 	//	if there _is_ a `/`, then move the pointer over by one, so the `/` isn't included
@@ -83,8 +83,7 @@ icon_t getIcon(const FileStat *const pFS) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_icon(const FileStat *const pFS) {
-	/// @todo implement the `DO_ICON` option
-	// if (!DO_ICON()) return;
+	if (!do_icon()) return;
 
 	Colour colour = {0};
 

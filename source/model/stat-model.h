@@ -142,4 +142,14 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36b
 	((namlen_t)(((p_fs)->path == NULL || (p_fs)->name == NULL) ? 0 \
 		: (((p_fs)->name - (p_fs)->path) + (p_fs)->name_len)))
 
+#define isFSDir(p_fs) (							\
+	S_ISDIR((p_fs)->mode) || (					\
+		(p_fs)->f != NULL &&					\
+		(p_fs)->f->target != NULL &&			\
+		(p_fs)->f->target->suffix == DIR_SUFFIX	\
+	)											\
+)
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #endif /* !NEW_STAT_MODEL_H */

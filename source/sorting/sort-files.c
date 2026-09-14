@@ -24,7 +24,8 @@ static int8_t REVERSE;
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-#define IS_DIR(n) S_ISDIR(GET_ATTR(n, mode))
+#define IS_DIR(n) \
+	isFSDir((const FileStat *const)file_ ## n)
 
 /// Get the specified `field` from either file_1 or file_2.
 #define GET_ATTR(n, field) \
@@ -62,7 +63,6 @@ static int8_t REVERSE;
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define IS_DIGIT(chr) ('0' <= (chr) && (chr) <= '9')
-#define xor !=
 
 /* ——————————————————————————————————————————————————————————————————— */
 

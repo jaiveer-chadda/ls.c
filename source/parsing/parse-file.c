@@ -86,7 +86,6 @@ void parseFile(FileStat *const pfile) {
 	// make sure to keep calculating the maximum name length
 	setLen(FI_name, pfile->name_len);
 
-	if (do_icon	 ()) pfile->icon   = getIcon(pfile);
 	if (do_suffix()) pfile->suffix = getTypeSuffix(pfile->mode);
 
 	if (do_mode_str()) {
@@ -102,6 +101,7 @@ void parseFile(FileStat *const pfile) {
 
 	if (is_incomplete) {
 		if (do_inum()) processInum(pfile->inum);
+		if (do_icon()) pfile->icon = getIcon(pfile);
 		if (DO_COLOUR()) pfile->file_col = setFileColour(pfile->name, pfile->mode, 0U, false);
 		return;
 	}
@@ -114,6 +114,7 @@ void parseFile(FileStat *const pfile) {
 	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
 	if (do_flag_str()) pfsf->flag_str = parseFlags(pfile);
+	if (do_icon	   ()) pfile->icon	  = getIcon(pfile);
 	if (DO_COLOUR  ()) pfile->file_col = setFileColour(pfile->name, pfile->mode, pstat->st_flags, pfsf->mount);
 	if (do_time_str()) { parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); }
 
