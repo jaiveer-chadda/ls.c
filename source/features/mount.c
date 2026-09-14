@@ -14,7 +14,7 @@
 
 const MountInfo *getMountPoint(const char *const path, const bool is_dir) {
 	// this prevents us accidentally calling `realpath` on a dir, which would
-	if (!is_dir) return NULL;
+	if (!is_dir || !DO_MOUNTDEV()) return NULL;
 
 	// resolve the target path to a clean absolute path
 	path_t abs_path;
@@ -42,7 +42,7 @@ const MountInfo *getMountPoint(const char *const path, const bool is_dir) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_mount(const MountInfo *const mount) {
-	if (mount == NULL) return;
+	if (mount == NULL || !DO_MOUNTDEV()) return;
 	setActive(RESET_ALL);
 
 	const char *const punct_ansi	= getcol(PUNCT);
@@ -56,12 +56,12 @@ void print_mount(const MountInfo *const mount) {
 	printf(" %s[%s%s"" %s(%s%s%s)]%s",
 		punct_ansi, mt_from_ansi, mount->fromname,
 		punct_ansi, mt_type_ansi, mount->typename,
-		punct_ansi, DO_MOUNT_OWNER() ? "" : RESET
+		punct_ansi, DO_MOUNT_OWNER() || !DO_COLOUR() ? "" : RESET
 	);
 
 	// `[owner]`
 	if (DO_MOUNT_OWNER()) {
-		printf(" [%s%s%s]%s", username_ansi, username, punct_ansi, RESET);
+		printf(" [%s%s%s]%s", username_ansi, username, punct_ansi, IFCOLOUR(RESET));
 		efree((void*)username);
 	}
 
