@@ -60,29 +60,26 @@ static inline bool is_user_in_group(
 /// Just a small wrapper function to be able to cache the uid of the user running this program.
 static inline uid_t get_user_uid(void) {
 	static long user_uid = -1;
-
 	if (user_uid == -1) user_uid = (long)getuid();
+
 	return (uid_t)user_uid;
 }
 
 /* ———————————————————————————————————————————————————————— */
 
 #define get_uid_colour get_usr_colour
-
-static inline Colour get_usr_colour(const FileStat *const pFS) {
-	if (pFS->s == NULL) return PUNCT;
-
-	if (pFS->s->st_uid == get_user_uid()) return USR_YOU_COL;
-	if (pFS->s->st_uid == ROOT_USR_UID  ) return USR_ROOT_COL;
+Colour get_usr_colour(const uid_t uid) {
+	if (uid == ROOT_USR_UID  ) return USR_ROOT_COL;
+	if (uid == get_user_uid()) return USR_YOU_COL;
 	return USR_OTH_COL;
 }
 
 #define get_gid_colour get_grp_colour
-
 static inline Colour get_grp_colour(const FileStat *const pFS) {
 	if (pFS->s == NULL) return PUNCT;
 
-	const struct passwd *const pw = getpwuid(get_user_uid());
+	static const struct passwd *pw = NULL;
+	if (pw == NULL) pw = getpwuid(get_user_uid());
 
 	const bool in_user_grp = is_user_in_group(pw->pw_name, pw->pw_gid, pFS->f->grp_name, pFS->s->st_gid);
 	const bool in_root_grp = pFS->s->st_gid == ROOT_GRP_GID;
@@ -94,11 +91,11 @@ static inline Colour get_grp_colour(const FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define print_ug_name(usgr)													\
+#define print_ug_name(usgr, col_arg)										\
 	void print_##usgr##_name(const FileStat *const pFS) {					\
 		const bool valid = pFS->f != NULL && pFS->f->usgr##_name != NULL;	\
 		printf("%s%-*s%ls",													\
-			getcol(get_##usgr##_colour(pFS)),								\
+			getcol(pFS->s == NULL ? PUNCT : get_##usgr##_colour(col_arg)),	\
 			getLen(FI_##usgr##_name),										\
 			valid ? pFS->f->usgr##_name : "-",								\
 			FIELD_PAD														\
@@ -107,12 +104,13 @@ static inline Colour get_grp_colour(const FileStat *const pFS) {
 
 /* ———————————————————————————————————————————————————————— */
 
-#define print_ugid(ugid)								\
+#define print_ugid(ugid, col_arg)						\
 	void print_##ugid(const FileStat *const pFS) {		\
 		const bool valid = pFS->s != NULL;				\
 		printf(											\
 			valid ? "%s%*d%ls" : "%s%*c%ls",			\
-			getcol(get_##ugid##_colour(pFS)),			\
+			getcol(pFS->s == NULL ? PUNCT :				\
+				get_##ugid##_colour(col_arg)),			\
 			getLen(FI_##ugid),							\
 			valid ? pFS->s->st_##ugid : '-',			\
 			FIELD_PAD									\
@@ -121,11 +119,11 @@ static inline Colour get_grp_colour(const FileStat *const pFS) {
 
 /* ———————————————————————————————————————————————————————— */
 
-print_ug_name(usr)
-print_ug_name(grp)
+print_ug_name(usr, pFS->s->st_uid)
+print_ug_name(grp, pFS)
 
-print_ugid(uid)
-print_ugid(gid)
+print_ugid(uid, pFS->s->st_uid)
+print_ugid(gid, pFS)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

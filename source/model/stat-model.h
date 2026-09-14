@@ -116,10 +116,10 @@ struct TargetInfo {
 
 struct MountInfo {
 	path_t	fromname; // 1024	/** Where the filesystem is mounted from (usually `/dev/disk...`). */
-	ugidstr	ownname	; // 32		/** Name of the user that mounted the filesystem. */
 	mttyp_t	typename; // 16		/** Name of the type of filesystem. */
-	flag_t	flags	; // 4		/** Copy of mount-exported flags. */
-}; // 1076 + 0 pad = 1076b
+	uid_t	owneruid; // 4		/** UID of the user that mounted the filesystem. */
+	flag_t	flags	; // 4		/** [Unused] Copy of mount-exported flags. */
+}; // 1048 + 0 pad = 1048b
 
 /* —— TimeInfo ————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

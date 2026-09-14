@@ -31,6 +31,8 @@ const MountInfo *getMountPoint(const char *const path, const bool is_dir) {
 	MountInfo *const mt_info = ecalloc(1, sizeof(MountInfo));
 
 	mt_info->flags = mt_stat.f_flags;
+	mt_info->owneruid = mt_stat.f_owner;
+
 	strncpy(mt_info->typename, mt_stat.f_fstypename	, sizeof(mttyp_t));
 	strncpy(mt_info->fromname, mt_stat.f_mntfromname, sizeof(path_t	));
 
@@ -41,15 +43,28 @@ const MountInfo *getMountPoint(const char *const path, const bool is_dir) {
 
 void print_mount(const MountInfo *const mount) {
 	if (mount == NULL) return;
-
-	// `[source (type)]`
-	printf(" %s[%s%s"" %s(%s%s""%s)]%s",
-		PUNCT_ANSI, MT_FROM_ANSI, mount->fromname,
-		PUNCT_ANSI, MT_TYPE_ANSI, mount->typename,
-		PUNCT_ANSI, RESET
-	);
-
 	setActive(RESET_ALL);
 
+	const char *const punct_ansi	= getcol(PUNCT);
+	const char *const mt_from_ansi	= getcol(MT_FROM_COLOUR);
+	const char *const mt_type_ansi	= getcol(MT_TYPE_COLOUR);
+
+	const char *const username		= DO_MOUNT_OWNER() ? getUser(mount->owneruid) : NULL;
+	const char *const username_ansi	= DO_MOUNT_OWNER() ? getcol(get_usr_colour(mount->owneruid)) : NULL;
+
+	// `[source (type)]`
+	printf(" %s[%s%s"" %s(%s%s%s)]%s",
+		punct_ansi, mt_from_ansi, mount->fromname,
+		punct_ansi, mt_type_ansi, mount->typename,
+		punct_ansi, DO_MOUNT_OWNER() ? "" : RESET
+	);
+
+	// `[owner]`
+	if (DO_MOUNT_OWNER()) {
+		printf(" [%s%s%s]%s", username_ansi, username, punct_ansi, RESET);
+		efree((void*)username);
+	}
+
+	setActive(RESET_ALL);
 	efree((void*)mount);
 }

@@ -4,6 +4,7 @@
 #define FEATURES_H
 
 #include "model/types.h"
+#include "graphics/graphics.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Field Printing Functions ————————————————————————————————————————————————————————————————————————————————————— */
@@ -75,6 +76,7 @@ TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *con
 
 char  *getUser(const uid_t uid);
 char *getGroup(const gid_t gid);
+Colour get_usr_colour(const uid_t uid);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
