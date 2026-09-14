@@ -92,8 +92,8 @@ void parseFile(FileStat *const pfile) {
 	if (do_mode_str()) {
 		getMode(pfile->mode_str, pfile->mode);			 // find the basic mode string ("drwxr-xr-x")
 		setLen(FI_xat_acl,
-			(pfile->has_acl =	checkACL(pfile->name)) + // check if file has an access control list ("+")
-			(pfile->has_xat = checkXattr(pfile->name))	 // check if file has any extended attributes ("@")
+			(pfile->has_acl =	checkACL(pfile->path)) + // check if file has an access control list ("+")
+			(pfile->has_xat = checkXattr(pfile->path))	 // check if file has any extended attributes ("@")
 		);
 	}
 

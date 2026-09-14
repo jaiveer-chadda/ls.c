@@ -169,7 +169,7 @@ static inline void checkFirmlink(FileStat *const pFS) {
 
 	// get the absolute path to the file we're checking, since that's how they're stored in the lookup file
 	path_t abs_path = {0};
-	if (realpath(pFS->name, abs_path) == NULL) return;
+	if (realpath(pFS->path, abs_path) == NULL) return;
 
 	// iterate through each firmlink we've stored
 	for (uint16_t i = 0; i < fl_count; i++) {
