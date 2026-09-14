@@ -206,7 +206,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 		// we need to have the absolute path to the link, so that we can access/parse links that aren't in $PWD
 		//	so we need to recreate the link's path step by step
-		if (target_path[0] != '/' && pFS->parent != NULL) {
+		if (target_path[0] != '/' && target_path[0] != '\0' && pFS->parent != NULL) {
 			const namlen_t parent_len = getPathLen(pFS->parent);
 
 			// move the link path over by enough to fit its parent's path before it
@@ -258,6 +258,23 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline const char *getBasename(const char *const path) {
+	const char *definite = NULL, *running = NULL;
+
+	// iterate through the entire string - whenever you see a slash, update the `running` pointer, which tracks the
+	//	location of the last slash we've seen, no matter what.
+	// only move the `running` pointer into the `definite` variable if we've passed a character that isn't a slash.
+	//	this guarantees that the slash returned by the function will never be a trailing slash
+	for (const char *chr = path; *chr != '\0'; chr++) {
+		if (*chr == '/') running = chr;
+		else definite = running;
+	}
+
+	return definite;
+}
+
+/* ———————————————————————————————————————————————————— */
+
 void print_link(const FileStat *const pFS) {
 	if (pFS->f == NULL || (pFS->f->target == NULL && !S_ISLNK(pFS->mode))) return;
 
@@ -296,7 +313,7 @@ void print_link(const FileStat *const pFS) {
 
 	/* ———————————————————————————————————————————————————————— */
 
-	const char *const basename = strrchr(path, '/');
+	const char *const basename = getBasename(path);
 
 	// print the arrow - different based on whether it's an apple link or normal symlink
 	printf("%s%s", getcol(VALID_ARROW_COLOUR), arrow);
