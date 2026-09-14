@@ -26,6 +26,8 @@ void print_grp_name(const FileStat *const pFS);
 void print_time_str(const FileStat *const pFS, const TimeType type);
 void print_time_raw(const FileStat *const pFS, const TimeType type);
 
+void print_mount(const MountInfo *const mount);
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— flags.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -53,8 +55,7 @@ bool checkACL(const path_t path);
 
 /* —— mount.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-const MountInfo *getMountPoint(const char *const path);
-void printMountDevice(const name_t filename);
+const MountInfo *getMountPoint(const char *const path, const bool is_dir);
 
 /* —— path.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

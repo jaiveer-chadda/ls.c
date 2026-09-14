@@ -7,12 +7,15 @@
 #include <sys/mount.h>
 
 #include "malloc.h"
-#include "model/stat-model.h"
-#include "graphics/graphics.h"
+#include "options/options.h"
+#include "features/features.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-const MountInfo *getMountPoint(const char *const path) {
+const MountInfo *getMountPoint(const char *const path, const bool is_dir) {
+	// this prevents us accidentally calling `realpath` on a dir, which would
+	if (!is_dir) return NULL;
+
 	// resolve the target path to a clean absolute path
 	path_t abs_path;
 	if (realpath(path, abs_path) == NULL) return NULL;
@@ -25,33 +28,28 @@ const MountInfo *getMountPoint(const char *const path) {
 	// if the mount location _is_ the path, then the file's a mount point
 	if (strcmp(abs_path, mt_stat.f_mntonname) != 0) return NULL;
 
-	MountInfo *const mt_info = emalloc(sizeof(MountInfo));
+	MountInfo *const mt_info = ecalloc(1, sizeof(MountInfo));
 
-	*mt_info = (MountInfo){0};
+	mt_info->flags = mt_stat.f_flags;
+	strncpy(mt_info->typename, mt_stat.f_fstypename	, sizeof(mttyp_t));
+	strncpy(mt_info->fromname, mt_stat.f_mntfromname, sizeof(path_t	));
 
 	return mt_info;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void printMountDevice(const name_t filename) {
-	// get the absolute path to the filename
-	path_t abs_path;
-	if (realpath(filename, abs_path) == NULL) return;
+void print_mount(const MountInfo *const mount) {
+	if (mount == NULL) return;
 
-	// get filesystem stats for the path
-	struct statfs dev_info;
-	if (statfs(abs_path, &dev_info) != 0) return;
+	// `[source (type)]`
+	printf(" %s[%s%s"" %s(%s%s""%s)]%s",
+		PUNCT_ANSI, MT_FROM_ANSI, mount->fromname,
+		PUNCT_ANSI, MT_TYPE_ANSI, mount->typename,
+		PUNCT_ANSI, RESET
+	);
 
-	// /// FIXME:
-	// // recreating `eza`s format: `[source (filesystem)]`
-	// printf(" %s%s" "%s%s" " %s%s" "%s%s" "%s%s" "%s%s" "%s",
-	// 	ANSI(MTPT_COL_PUNC_1), "[",
-	// 	ANSI(MTPT_COL_FROM	), dev_info.f_mntfromname,
-	// 	ANSI(MTPT_COL_PUNC_2), "(",
-	// 	ANSI(MTPT_COL_TYPE	), dev_info.f_fstypename,
-	// 	ANSI(MTPT_COL_PUNC_2), ")",
-	// 	ANSI(MTPT_COL_PUNC_1), "]",
-	// 	RESET
-	// );
+	setActive(RESET_ALL);
+
+	efree((void*)mount);
 }

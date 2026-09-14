@@ -54,42 +54,42 @@
 
 /* —— [Internal] Filename Colour Definitions ——————————————————————————————————————————————————————————————————————— */
 
-#define HL_REG			toColour( 0 )												  // \e[37m
-#define HL_DIR			toColour( .style = G_BOLD	, .fg = G_CYAN					) // \e[36m
-#define HL_LINK			toColour( .style = 0		, .fg = G_MAGENTA				) // \e[35m
-#define HL_EXEC			toColour( .style = 0		, .fg = G_RED					) // \e[31m
-#define HL_PIPE			toColour( .style = 0		, .fg = G_YELLOW				) // \e[33m
-#define HL_SOCKET		toColour( .style = 0		, .fg = G_GREEN					) // \e[32m
-#define HL_MOUNT		toColour( .style = G_UNDER	, .fg = G_BLUE					) // \e[34m \e[4m
-#define HL_CHRDEV		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_YEL	) // \e[43m
-#define HL_BLKDEV		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_CYAN	) // \e[46m
-#define HL_OW_DIR		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_GREEN	) // \e[42m
-#define HL_SUID_X		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_RED	) // \e[41m
-#define HL_SUID_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BRED	) // \e[101m
-#define HL_SGID_X		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_MAG	) // \e[45m
-#define HL_SGID_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BMAG	) // \e[105m
-#define HL_STIC_X		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BLUE	) // \e[44m
-#define HL_STIC_N		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BBLU	) // \e[104m
-#define HL_DATALESS		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_WHITE	) // \e[47m
-#define HL_WHITEOUT		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_BWHT	) // \e[107m
+#define HL_REG			toColour( 0 )														  // \e[37m
+#define HL_DIR			toColour( .style = G_BOLD			, .fg = G_CYAN					) // \e[36m
+#define HL_LINK			toColour( .style = 0				, .fg = G_MAGENTA				) // \e[35m
+#define HL_EXEC			toColour( .style = 0				, .fg = G_RED					) // \e[31m
+#define HL_PIPE			toColour( .style = 0				, .fg = G_YELLOW				) // \e[33m
+#define HL_SOCKET		toColour( .style = 0				, .fg = G_GREEN					) // \e[32m
+#define HL_MOUNT		toColour( .style = G_BOLD | G_UNDER	, .fg = G_BLUE					) // \e[34m \e[4m
+#define HL_CHRDEV		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_YEL	) // \e[43m
+#define HL_BLKDEV		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_CYAN	) // \e[46m
+#define HL_OW_DIR		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_GREEN	) // \e[42m
+#define HL_SUID_X		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_RED	) // \e[41m
+#define HL_SUID_N		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_BRED	) // \e[101m
+#define HL_SGID_X		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_MAG	) // \e[45m
+#define HL_SGID_N		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_BMAG	) // \e[105m
+#define HL_STIC_X		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_BLUE	) // \e[44m
+#define HL_STIC_N		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_BBLU	) // \e[104m
+#define HL_DATALESS		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_WHITE	) // \e[47m
+#define HL_WHITEOUT		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_BWHT	) // \e[107m
 
-#define HL_COMPRESSED	toColour( .style = 0		, .fg = 137						) // #B68558
-#define HL_IMAGE		toColour( .style = 0		, .fg = G_BRT_MAGENTA			) // \e[95m
-#define HL_VIDEO		toColour( .style = 0		, .fg = G_BRT_RED				) // \e[91m
-#define HL_AUDIO_UNCM	toColour( .style = 0		, .fg = 116						) // #6ADAD8
-#define HL_AUDIO_COMP	toColour( .style = 0		, .fg = G_BRT_GREEN				) // \e[92m
-#define HL_TEMP_BACK	toColour( .style = 0		, .fg = G_BRT_BLACK				) // \e[90m
+#define HL_COMPRESSED	toColour( .style = 0				, .fg = 137						) // #B68558
+#define HL_IMAGE		toColour( .style = 0				, .fg = G_BRT_MAGENTA			) // \e[95m
+#define HL_VIDEO		toColour( .style = 0				, .fg = G_BRT_RED				) // \e[91m
+#define HL_AUDIO_UNCM	toColour( .style = 0				, .fg = 116						) // #6ADAD8
+#define HL_AUDIO_COMP	toColour( .style = 0				, .fg = G_BRT_GREEN				) // \e[92m
+#define HL_TEMP_BACK	toColour( .style = 0				, .fg = G_BRT_BLACK				) // \e[90m
 
-#define HL_READ			toColour( .style = 0		, .fg = G_BRT_GREEN				) // \e[92m
-#define HL_W_UG			toColour( .style = 0		, .fg = G_BRT_YELLOW			) // \e[93m
-#define HL_W_OTH		toColour( .style = G_BOLD	, .fg = G_BLACK	, .bg = G_GREEN	) // \e[42m
-#define HL_X_REG		toColour( .style = G_BOLD	, .fg = G_RED					) // \e[31m
-#define HL_X_NRG		toColour( .style = 0		, .fg = G_BRT_RED				) // \e[91m
+#define HL_READ			toColour( .style = 0				, .fg = G_BRT_GREEN				) // \e[92m
+#define HL_W_UG			toColour( .style = 0				, .fg = G_BRT_YELLOW			) // \e[93m
+#define HL_W_OTH		toColour( .style = G_BOLD			, .fg = G_BLACK	, .bg = G_GREEN	) // \e[42m
+#define HL_X_REG		toColour( .style = G_BOLD			, .fg = G_RED					) // \e[31m
+#define HL_X_NRG		toColour( .style = 0				, .fg = G_BRT_RED				) // \e[91m
 
-#define HL_WRT_EXE		toColour( .style = 0		, .fg = 173						) // #E48256
-#define HL_REA_EXE		toColour( .style = 0		, .fg = 180						) // #DFAD81
-#define HL_REA_WRT		toColour( .style = 0		, .fg = G_BRT_BLUE				) // \e[94m
-#define HL_RWX_ALL		toColour( .style = 0		, .fg = G_BLUE					) // \e[34m
+#define HL_WRT_EXE		toColour( .style = 0				, .fg = 173						) // #E48256
+#define HL_REA_EXE		toColour( .style = 0				, .fg = 180						) // #DFAD81
+#define HL_REA_WRT		toColour( .style = 0				, .fg = G_BRT_BLUE				) // \e[94m
+#define HL_RWX_ALL		toColour( .style = 0				, .fg = G_BLUE					) // \e[34m
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -98,8 +98,9 @@
 #define IFCOLOUR(str)				(DO_COLOUR() ? (str) : "")
 #define IFELSECOLOUR(col, ncol)		(DO_COLOUR() ? (col) : (ncol))
 
-#define ANSI_IFCOL(str)				(DO_COLOUR() ? ANSI(str) : "")
-#define ANSI_IFELSECOL(col, ncol)	(DO_COLOUR() ? ANSI(col) : ncol)
+#define ANSI_IFCOL(str)				(DO_COLOUR() ? ANSI (str) : "")
+#define ANSIR_IFCOL(str)			(DO_COLOUR() ? ANSIR(str) : "")
+#define ANSI_IFELSECOL(col, ncol)	(DO_COLOUR() ? ANSI (col) : ncol)
 
 #define RESET_IFCOL			IFCOLOUR(RESET)
 
@@ -205,10 +206,11 @@
 /* —— Mount Point ——————————————————————————————————————————————————————————— */
 
 // [/dev/disk3s1s1 (apfs)]
-#define MTPT_COL_FROM			toColour( .fg = 182 )	// /dev/disk3s1s1
-#define MTPT_COL_TYPE			toColour( .fg = 146 )	// apfs
-#define MTPT_COL_PUNC_1			PUNCT					// \e[90m
-#define MTPT_COL_PUNC_2			PUNCT					// \e[90m
+#define MT_FROM_COLOUR		toColour( .fg = 182 )	// /dev/disk3s1s1
+#define MT_TYPE_COLOUR		toColour( .fg = 146 )	// apfs
+
+#define MT_FROM_ANSI		ANSIR_IFCOL( "38;5;182" )	// /dev/disk3s1s1
+#define MT_TYPE_ANSI		ANSIR_IFCOL( "38;5;146" )	// apfs
 
 /* —— Mode / Permissions ———————————————————————————————————————————————————— */
 

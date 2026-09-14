@@ -108,7 +108,7 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
-	if (DO_MOUNTDEV()) pfsf->mount	  = getMountPoint(pfile->path);
+	if (DO_MOUNTDEV()) pfsf->mount	  = getMountPoint(pfile->path, S_ISDIR(pfile->mode));
 	if (do_link_to ()) pfsf->target   = getLink(pfile);
 	if (do_usr_name()) pfsf->usr_name = getUser(pstat->st_uid);
 	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);

@@ -249,7 +249,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 	// when statting the file, use the absolute path - we won't be able to guarantee the information otherwise
 	if (lstat(abs_tg_path, &tg_stat) == -1) return tg_info;
 
-	tg_info->mount	= getMountPoint(abs_tg_path);
+	tg_info->mount	= getMountPoint(abs_tg_path, S_ISDIR(tg_stat.st_mode));
 	tg_info->suffix = getTypeSuffix(tg_stat.st_mode);
 	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_stat.st_flags, tg_info->mount);
 
@@ -317,6 +317,9 @@ void print_link(const FileStat *const pFS) {
 
 	// if the path should have a suffix, then reset colours and print the suffix
 	if (tg_info->suffix != '\0') printf("%s%c", getcol(RESET_ALL), tg_info->suffix);
+
+	// print info about the target's mount device / mounted filesystems
+	print_mount(tg_info->mount);
 
 	/* ———————————————————————————————————————————————————————— */
 
