@@ -133,7 +133,7 @@ void d__dump(const FileStat *const fs) {
 		err("    "T" "V(unit_t)"    size_unit"E CHR    , fsf->size_unit        );
 		ERR("    "I);
 		err("    "T     BOOL  "    do_link_hl"E"%s"    , pbool(fsf->do_link_hl));
-		err("    "T     BOOL  "      is_mount"E"%s"    , pbool(fsf->is_mount)  );
+		err("    "T     BOOL  "      is_mount"E"%s"    , pbool(fsf->mount != 0));
 		ERR("    "I);
 
 		err("    "T" "V(TargetInfo) S"target"E PTR, ptr(fsf->target));

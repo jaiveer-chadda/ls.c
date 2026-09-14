@@ -53,7 +53,7 @@ bool checkACL(const path_t path);
 
 /* —— mount.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-bool isMountPoint(const dev_t dev_no, const path_t path);
+const MountInfo *getMountPoint(const char *const path);
 void printMountDevice(const name_t filename);
 
 /* —— path.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */

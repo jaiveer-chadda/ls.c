@@ -1,46 +1,35 @@
 /// @file features/mount/mount.c
 
 #include <stdio.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgen.h>
 #include <sys/mount.h>
 
+#include "malloc.h"
+#include "model/stat-model.h"
 #include "graphics/graphics.h"
-
-static inline dev_t getDevNo(const path_t path) {
-	struct stat file_info;
-	if (stat(path, &file_info) == -1) return -1;
-
-	return file_info.st_dev;
-}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// ReSharper disable once CppParameterNamesMismatch
-bool isMountPoint(const dev_t file_dev_no, const path_t path) {
+const MountInfo *getMountPoint(const char *const path) {
 	// resolve the target path to a clean absolute path
 	path_t abs_path;
-	if (realpath(path, abs_path) == NULL) return false;
+	if (realpath(path, abs_path) == NULL) return NULL;
 
 	// get filesystem stats for the path
-	struct statfs dev_info;
-	if (statfs(abs_path, &dev_info) != 0) return false;
+	struct statfs mt_stat;
+	if (statfs(abs_path, &mt_stat) != 0) return NULL;
 
 	// compare the requested absolute path to the filesystem's mount location
 	// if the mount location _is_ the path, then the file's a mount point
-	if (strcmp(abs_path, dev_info.f_mntonname) == 0) return true;
+	if (strcmp(abs_path, mt_stat.f_mntonname) != 0) return NULL;
 
-	/* —————————————————————————————————————————————— */
-	// otherwise, check whether the file has a different device number to its parent
+	MountInfo *const mt_info = emalloc(sizeof(MountInfo));
 
-	char *path_copy = strdup(abs_path);
-	if (path_copy == NULL) return false;
+	*mt_info = (MountInfo){0};
 
-	const char *parent_name = dirname(path_copy);
-	free(path_copy);
-
-	return getDevNo(parent_name) != file_dev_no;
+	return mt_info;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

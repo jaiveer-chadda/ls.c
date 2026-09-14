@@ -34,7 +34,10 @@
 #define MAX_NAME_LEN MAXNAMLEN
 
 /// @brief The maximum length a path can be on Darwin (macOS/some BSD) machines (1024 b).
-#define MAX_PATH_LEN __DARWIN_MAXPATHLEN
+#define MAX_PATH_LEN MAXPATHLEN
+
+/// @brief The maximum number of characters that a mount point's type can be
+#define MNT_TYPE_LEN MFSTYPENAMELEN
 
 /// @brief The maximum number of possible user and superuser flags on macOS.
 #define MAX_FLAG_NUM 15

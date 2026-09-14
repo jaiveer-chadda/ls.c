@@ -249,9 +249,9 @@ TargetInfo *getLink(FileStat *const pFS) {
 	// when statting the file, use the absolute path - we won't be able to guarantee the information otherwise
 	if (lstat(abs_tg_path, &tg_stat) == -1) return tg_info;
 
-	const bool is_mount = isMountPoint(tg_stat.st_dev, abs_tg_path);
-	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_stat.st_flags, is_mount);
+	tg_info->mount	= getMountPoint(abs_tg_path);
 	tg_info->suffix = getTypeSuffix(tg_stat.st_mode);
+	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_stat.st_flags, tg_info->mount);
 
 	return tg_info;
 }

@@ -3,15 +3,18 @@
 #ifndef NEW_STAT_MODEL_H
 #define NEW_STAT_MODEL_H
 
-#include <sys/stat.h>
-
 #include "types.h"
 #include "graphics/graphics.h"
 
 /* —— FileStat (main) —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #ifdef DEBUG_MODE
-#	define _FILESTAT_SIZE sizeof(FileStat) /* DO NOT USE IN ANY PRODUCTION CODE! */
+/*	DO NOT USE IN ANY PRODUCTION CODE! */
+#	define _FILESTAT_SIZE sizeof(FileStat)
+#	define _FSFIELDS_SIZE sizeof(FileStatFields)
+#	define _TARGINFO_SIZE sizeof(TargetInfo)
+#	define _MOUNTINF_SIZE sizeof(MountInfo)
+#	define _TIMEINFO_SIZE sizeof(TimeInfo)
 #endif
 
 /**
@@ -69,6 +72,7 @@ struct FileStatFields {
 	const TimeInfo *times[TT_COUNT]; // 32 /** Info about access, modification, change, and birth times of the file. */
 
 	const TargetInfo *target; // 8 /** Information about the target of a link, if one exists. */
+	const MountInfo	 *mount	; // 8 /** Information about a mount point. If file isn't a mount point, then NULL. */
 
 	const char	*size_str	; // 8 /** A string repr of the filesize. */
 	const char	*flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
@@ -81,8 +85,7 @@ struct FileStatFields {
 
 	/// @todo amalgamate `do_link_hl` into `file_col`
 	bool		do_link_hl	; // 1 /** Whether this file is a hardlink, and should be highlighted as such. */
-	bool		is_mount	; // 1 /** Whether this file is a mount point or not. */
-}; // 91 + 5 pad = 96b
+}; // 94 + 2 pad = 96b
 
 /* —— TargetInfo ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -102,11 +105,21 @@ struct FileStatFields {
  * @var TargetInfo::is_apple Whether the source of this link is a symbolic link, or an Apple alias file.
  */
 struct TargetInfo {
-	path_t		path	; // 1024 /** The contents of the link (usually the absolute path to the target file). */
-	FileColour	colour	; // 4 /** The colour that the file should be displayed in. */
-	char		suffix	; // 1 /** The symbol to be shown after the target's name. */
-	bool		is_apple; // 1 /** Whether the link that pointed to this target was an apple alias (or a symlink). */
-}; // 1030 + 2 pad = 1032b
+	path_t			path	; // 1024 /** The contents of the link (usually the absolute path to the target file). */
+	const MountInfo	*mount	; // 8 /** Information about a mount point. If target isn't a mount point, then NULL. */
+	FileColour		colour	; // 4 /** The colour that the file should be displayed in. */
+	char			suffix	; // 1 /** The symbol to be shown after the target's name. */
+	bool			is_apple; // 1 /** Whether the link that pointed to this target was an apple alias. */
+}; // 1038 + 2 pad = 1040b
+
+/* —— MountInfo ———————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+struct MountInfo {
+	path_t	fromname; // 1024	/** Where the filesystem is mounted from (usually `/dev/disk...`). */
+	ugidstr	ownname	; // 32		/** Name of the user that mounted the filesystem. */
+	mttyp_t	typename; // 16		/** Name of the type of filesystem. */
+	flag_t	flags	; // 4		/** Copy of mount-exported flags. */
+}; // 1076 + 0 pad = 1076b
 
 /* —— TimeInfo ————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

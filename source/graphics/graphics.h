@@ -205,10 +205,10 @@
 /* —— Mount Point ——————————————————————————————————————————————————————————— */
 
 // [/dev/disk3s1s1 (apfs)]
-#define MTPT_COL_FROM			"38;5;182"		// /dev/disk3s1s1
-#define MTPT_COL_TYPE			"38;5;146"		//  apfs
-#define MTPT_COL_PUNC_1			PUNCT			// \e[90m
-#define MTPT_COL_PUNC_2			PUNCT			// \e[90m
+#define MTPT_COL_FROM			toColour( .fg = 182 )	// /dev/disk3s1s1
+#define MTPT_COL_TYPE			toColour( .fg = 146 )	// apfs
+#define MTPT_COL_PUNC_1			PUNCT					// \e[90m
+#define MTPT_COL_PUNC_2			PUNCT					// \e[90m
 
 /* —— Mode / Permissions ———————————————————————————————————————————————————— */
 
@@ -435,16 +435,12 @@ const Colour time_colour_esc[TC_COUNT];
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 
 #include "model/types.h"
-FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flags, const bool is_mount);
+FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flags, const MountInfo *const mount);
 
 #ifdef DEBUG_MODE
 #	define clearScreen()
 #else
-#	define clearScreen() do {									\
-		if (DO_CLEAR()) {										\
-			fputs(CLEAR_SCREEN, DO_COLOUR() ? stdout : stderr);	\
-		}														\
-	} while (0)
+#	define clearScreen() do { if (DO_CLEAR()) fputs(CLEAR_SCREEN, DO_COLOUR() ? stdout : stderr); } while (0)
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

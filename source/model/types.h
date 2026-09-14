@@ -8,7 +8,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <inttypes.h>
+
 #include <sys/stat.h>
+#include <sys/mount.h>
 
 #include "consts.h"
 
@@ -57,6 +59,10 @@ typedef struct TimeInfo			TimeInfo;
  */
 typedef struct FileStat			FileStat;
 /**
+ *
+ */
+typedef struct MountInfo		MountInfo;
+/**
  * @struct TargetInfo
  * @brief Basic information about the target of a symlink.
  *
@@ -85,7 +91,7 @@ typedef struct FileStatFields	FileStatFields;
 
 // 2,147,483,647 files ≈ 2.1 Gb
 
-typedef bool lines_t[RECURSION_LIMIT]; // `bool[RECURSION_LIMIT] = 16`
+typedef bool lines_t[RECURSION_LIMIT]; // `bool[RECURSION_LIMIT]` = 16
 
 typedef wchar_t icon_t;
 typedef uint32_t flag_t;
@@ -99,9 +105,10 @@ typedef char  path_t[MAX_PATH_LEN]; // `char[MAX_PATH_LEN] = 1024`
 
 typedef char sizestr[MAX_SIZE_LEN]; // `char sizestr[MAX_SIZE_LEN]` = 10
 typedef char modestr[MODE_STR_LEN]; // `char modestr[MODE_STR_LEN]` = 12
+typedef char mttyp_t[MNT_TYPE_LEN]; // `char mttyp_t[MNT_TYPE_LEN]` = 16
 typedef char timestr[MAX_TIME_LEN]; // `char timestr[MAX_TIME_LEN]` = `(1 << 5)` = 32 
 typedef char ugidstr[MAX_UGID_LEN]; // `char ugidstr[MAX_UGID_LEN]` = `(1 << 5)` = 32
-typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; // `(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM` = 168
+typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; // `(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM` = 180
 
 /* ——————————————————————————————————————————————————— */
 

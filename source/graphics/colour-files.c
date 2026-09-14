@@ -59,7 +59,7 @@ static inline bool strInArr(const char *string, const char *array[], const int a
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flags, const bool is_mount) {
+FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flags, const MountInfo *const mount) {
 
 	/* —— Flags ————————————————————————————————————————————————— */
 
@@ -82,7 +82,7 @@ FileColour setFileColour(const name_t name, const mode_t mode, const flag_t flag
 		case S_IFDIR:						  // directories
 			if (mode & S_ISVTX)	return GET_STIC_COLOUR(mode);// directory w/ sticky bit set
 			if (mode & S_IWOTH)	return FC_OW_DIR;			// other-writeable directory
-			if (is_mount)		return FC_MOUNT;			// mount point
+			if (mount != NULL)	return FC_MOUNT;			// mount point
 			else				return FC_DIRECT;			// regular directory
 	}
 
