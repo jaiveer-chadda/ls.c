@@ -32,6 +32,8 @@ size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size)
 
 /* —— sb_addstr() ——————————————————————————————————— */
 
+#define sb_addlit(p_strb, src) b__addstr((StringBuilder)(p_strb), (const char *const)(src), sizeof(src) - 1)
+
 #define arg2__sb_addstr(p_strb, src		 ) b__addstr((StringBuilder)(p_strb), (const char *const)(src), (size_t)(0))
 #define arg3__sb_addstr(p_strb, src, size) b__addstr((StringBuilder)(p_strb), (const char *const)(src), (size_t)(size))
 
