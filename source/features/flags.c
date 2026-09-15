@@ -274,6 +274,7 @@ void print_flag_str(const FileStat *const pFS) {
 	char *out_ptr = output;
 	const char *flag, *colour;
 	uint8_t flag_len = 0, col_len = 0, flagstr_len = 0;
+	Colour last_colour;
 
 	bool is_first = true;
 
@@ -294,7 +295,7 @@ void print_flag_str(const FileStat *const pFS) {
 
 		is_first = false;
 
-		colour = getcollen(ALL_FLAGS[flag_i].colour, &col_len);
+		colour = getcollen(( last_colour = ALL_FLAGS[flag_i].colour ), &col_len);
 		memcpy(out_ptr, colour, col_len);
 		out_ptr += col_len;
 
@@ -303,14 +304,16 @@ void print_flag_str(const FileStat *const pFS) {
 		flagstr_len += flag_len;
 	}
 
+	if (has_bg(last_colour)) {
+		colour = getcollen(RESET_ALL, &col_len);
+		memcpy(out_ptr, colour, col_len);
+		out_ptr += col_len;
+	}
+
 	*out_ptr++ = '\0';
 
 	const int spaces = getLen(FI_flag_str) - (int)flagstr_len;
-	printf("%s%*s" "%s%ls",
-		output, spaces, "",
-		has_bg(ALL_FLAGS[MAX_FLAG_NUM - 1].colour) ? getcol(RESET_ALL) : "",
-		FIELD_PAD
-	);
+	printf("%s%*s" "%ls", output, spaces, "", FIELD_PAD);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
