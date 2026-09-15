@@ -7,11 +7,10 @@
 #include "options/options.h"
 
 void print_dev_no(const FileStat *const pFS) {
-	const bool valid = pFS->s != NULL;
 
 	/* —— invalid ——————————————————————————————————————— */
 
-	if (!valid) {
+	if (pFS->s == NULL) {
 		printf("%s%*c%ls", getcol(PUNCT), getLen(FI_dev_no), '-', FIELD_PAD);
 		return;
 	}
@@ -19,27 +18,27 @@ void print_dev_no(const FileStat *const pFS) {
 	/* —— regular ——————————————————————————————————————— */
 
 	if (!DO_DEVNO_MAJMIN()) {
-		printf("%s%*u%ls", getcol(DEVNO_COLOUR), getLen(FI_dev_no), (uint32_t)pFS->s->st_dev, FIELD_PAD);
+		printf("%s%*u%ls", getcol(DEVNO_COLOUR), getLen(FI_dev_no), pFS->s->st_dev, FIELD_PAD);
 		return;
 	}
 
 	/* —— maj,min ——————————————————————————————————————— */
 
-	const int32_t maj = major(pFS->s->st_dev), min = minor(pFS->s->st_dev);
+	const dev_t maj = major(pFS->s->st_dev), min = minor(pFS->s->st_dev);
 
 	// print the maj,min string into a buffer, and then align that string to the max length
 	const int majmin_size = snprintf(NULL, 0, "%d,%d", maj, min);
-	const int padding = getLen(FI_dev_no) - majmin_size;
+	const int front_pad = getLen(FI_dev_no) - majmin_size;
 
 	const char *const major_ansi = getcol(DEVNO_MAJ_COLOUR);
 	const char *const comma_ansi = getcol(PUNCT);
 	const char *const minor_ansi = getcol(DEVNO_COLOUR);
 
 	printf("%*s" "%s%d" "%s," "%s%d" "%ls",
-		padding , "",		// alignment
+		front_pad , "",		// field alignment
 		major_ansi, maj,	// major size
 		comma_ansi,			// comma
 		minor_ansi, min,	// minor size
-		FIELD_PAD			// field padding
+		FIELD_PAD			// end of field padding
 	);
 }
