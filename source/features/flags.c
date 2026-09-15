@@ -241,20 +241,20 @@ char *parseFlags(FileStat *const pFS) {
 
 /* ——————————————————————————————————————————————————————————— */
 
-#define ADD_TO_OUTPUT(str, len) do {						\
+#define ADD_STRING(str, len) do {							\
 	CHECK_MEM_ALLOC((len));									\
 	out_ptr = (char*)memcpy(out_ptr, (str), (len)) + (len);	\
-} while (0)
-
-#define ADD_HEX(hexdigit) do {			\
-	CHECK_MEM_ALLOC(1);					\
-	*out_ptr++ = INT_TO_HEX(hexdigit);	\
 } while (0)
 
 #define ADD_COLOUR(col) do {								\
 	uint8_t collen = 0;										\
 	const char *const colour = getcollen((col), &collen);	\
-	ADD_TO_OUTPUT((colour), (collen));						\
+	ADD_STRING((colour), (collen));							\
+} while (0)
+
+#define ADD_CHAR(chr) do {	\
+	CHECK_MEM_ALLOC(1);		\
+	*out_ptr++ = (chr);		\
 } while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -298,10 +298,10 @@ void print_flags(const FileStat *const pFS) {
 		if (!areEqual(flag_col, RESET_ALL)) flag_col.style |= G_BOLD;
 
 		ADD_COLOUR(flag_col);
-		ADD_HEX(hex_out[get_idx]);
+		ADD_CHAR(INT_TO_HEX(hex_out[get_idx]));
 	}
 
-	ADD_TO_OUTPUT(FIELD_PAD, sizeof(FIELD_PAD));
+	ADD_STRING(FIELD_PAD, sizeof(FIELD_PAD));
 
 	fputs(output, stdout);
 	efree(output);
@@ -309,34 +309,7 @@ void print_flags(const FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#ifdef ADD_TO_OUTPUT
-#undef ADD_TO_OUTPUT
-#endif
-#ifdef ADD_COLOUR
-#undef ADD_COLOUR
-#endif
-
 #define INIT_ALLOC_SIZE 8
-
-/* ——————————————————————————————————————————————————————————— */
-
-#define ADD_TO_OUTPUT(str, str_len, inc_flagstr) do {	\
-	CHECK_MEM_ALLOC((str_len));							\
-	memcpy(out_ptr, (str), (str_len));					\
-	out_ptr += (str_len);								\
-	if (inc_flagstr) flagstr_len += (str_len);			\
-} while (0)
-
-#define ADD_STRING(str, str_len) \
-	ADD_TO_OUTPUT(str, str_len, true);
-
-#define ADD_COLOUR(col) do {								\
-	uint8_t col_len = 0;									\
-	const char *const colour = getcollen((col), &col_len);	\
-	ADD_TO_OUTPUT(colour, col_len, false);					\
-} while (0)
-
-/* ——————————————————————————————————————————————————————————— */
 
 void print_flag_str(const FileStat *const pFS) {
 	if (pFS->s == NULL || pFS->s->st_flags == 0) {
@@ -345,8 +318,7 @@ void print_flag_str(const FileStat *const pFS) {
 	}
 
 	size_t alloc_size = INIT_ALLOC_SIZE;
-	char *output = emalloc(alloc_size);
-	char *out_ptr = output;
+	char *output = emalloc(alloc_size), *out_ptr = output;
 
 	uint8_t flagstr_len = 0;
 	Colour last_colour;
@@ -361,13 +333,15 @@ void print_flag_str(const FileStat *const pFS) {
 
 		if (!is_first) {
 			ADD_COLOUR(PUNCT);
-			ADD_STRING((char[]){ FLAG_SEP_CHR }, 1);
+			ADD_CHAR(FLAG_SEP_CHR);
+			flagstr_len++;
 		}
 
 		is_first = false;
 
 		ADD_COLOUR(( last_colour = ALL_FLAGS[i].colour ));
 		ADD_STRING(flag, flag_len);
+		flagstr_len += flag_len;
 	}
 
 	if (has_bg(last_colour)) ADD_COLOUR(RESET_ALL);
