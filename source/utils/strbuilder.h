@@ -15,6 +15,8 @@ typedef struct b__strbuilder *const StringBuilder;
 StringBuilder b__init(const size_t size);
 void sb_free(StringBuilder p_strb);
 
+size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free);
+
 size_t sb_addchr(StringBuilder p_strb, const char chr);
 size_t sb_addcol(StringBuilder p_strb, const Colour col);
 size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size);
@@ -34,6 +36,12 @@ size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size)
 
 #define sb_addstr__DISPATCH(_1, _2, _3, NAME, ...) NAME
 #define sb_addstr(...) sb_addstr__DISPATCH(__VA_ARGS__, arg3__sb_addstr, arg2__sb_addstr, DUMMY)(__VA_ARGS__)
+
+/* —— sb_fputsf() ——————————————————————————————————— */
+
+#define sb_fputs(p_strb, file) sb_fputsf((StringBuilder)(p_strb), (FILE *const)(file), false)
+#define sb_putsf(p_strb		 ) sb_fputsf((StringBuilder)(p_strb), stdout, true)
+#define  sb_puts(p_strb		 ) sb_fputsf((StringBuilder)(p_strb), stdout, false)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

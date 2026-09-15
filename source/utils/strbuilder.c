@@ -1,7 +1,7 @@
 /// @file utils/strbuilder.c
 
+#include <stdio.h>
 #include <assert.h>
-#include <stddef.h>
 #include <string.h>
 
 #include "malloc.h"
@@ -97,6 +97,21 @@ size_t sb_addcol(StringBuilder p_strb, const Colour col) {
 	const char *const ansi_str = getcollen(col, &col_size);
 
 	return sb_addstr(p_strb, ansi_str, col_size);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— sb_fputsf() —————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free) {
+	sb_realloc(p_strb, 1);
+	*p_strb->head = '\0';
+
+	fputs(p_strb->root, file);
+
+	const size_t len = length(p_strb);
+	if (do_free) sb_free(p_strb);
+
+	return len;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
