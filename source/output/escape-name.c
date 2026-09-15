@@ -87,10 +87,12 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 	// if the file's colour is different to the active colour, and the first char in the name isn't escaped,
 	//	then print some colour before the name
 	const bool do_init_col = !areEqual(colour, getActive()) && !DO_ANY_ESC(name[0]);
+	const Colour esc_colour = has_bg(colour) ? ESC_CHAR_BG_COLOUR : ESC_CHAR_FG_COLOUR;
 
-	const char *const init_ansi	= do_init_col ? getcollen(colour, &init_ansi_len) : NULL;
-	const char *const esc_ansi	= getcollen(has_bg(colour) ? ESC_CHAR_BG_COLOUR : ESC_CHAR_FG_COLOUR, &esc_ansi_len);
-	const char *const file_ansi	= getcollen(colour, &file_ansi_len);
+	const char
+		*const init_ansi = do_init_col ? getcollen(colour, &init_ansi_len) : NULL,
+		*const esc_ansi	 = getcollen(esc_colour, &esc_ansi_len),
+		*const file_ansi = getcollen(colour, &file_ansi_len);
 
 	/* —— Alloc & Ouput Setup ————————————————————————————————— */
 
@@ -155,6 +157,7 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 	fputs(output, stdout);
 	efree(output);
 
+	if (inp_ptr != name) setActive(DO_ANY_ESC(*(inp_ptr - 1)) ? esc_colour : colour);
 	return;
 }
 
