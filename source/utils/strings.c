@@ -85,3 +85,11 @@ bool strends(const char *inp, const char *end) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void fputspaces(const size_t n, FILE *const file) {
+	flockfile(file);
+	for (size_t i = 0; i < n; i++) putc_unlocked(' ', file);
+	funlockfile(file);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
