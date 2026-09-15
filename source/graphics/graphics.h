@@ -154,9 +154,6 @@
 #define ESC_CHAR_FG_COLOUR		toColour( .fg = ESC_CHAR_BASE ) // #BD0060
 #define ESC_CHAR_BG_COLOUR		toColour( .bg = ESC_CHAR_BASE, .fg = G_WHT )
 
-#define ESC_CHAR_FG_ANSI		ANSI_IFCOL( "38;5;125"		 )
-#define ESC_CHAR_BG_ANSI		ANSI_IFCOL( "48;5;125" ";37" )
-
 /* —— Links ————————————————————————————————————————————————————————————————— */
 
 #define SYMLINK_ARROW			" --> "
@@ -200,8 +197,8 @@
 #define LN_COL_REG_MORE		toColour( .style = G_BOLD, .fg = G_BLACK	, .bg = G_BMAG	) // \e[105m
 #define LN_COL_OTHER		toColour( .style = G_BOLD, .fg = G_BLACK	, .bg = G_RED	) // \e[41m
 
-#define HARDLN_UNDERLINE	toColour( .style = G_DUNDER					, .bg =	0		) // \e[21m \e[95m
-#define HARDLN_ANSI			ANSI_IFCOL( "21;58;5;13" )
+#define HARDLN_UNDERLINE	toColour( .style = G_HARDLINK				, .bg =	0		) // \e[21m \e[95m
+#define HARDLN_COLOUR_ANSI	"58;5;13" // \e[95m
 
 /* —— Mount Point ——————————————————————————————————————————————————————————— */
 
@@ -437,6 +434,9 @@ const Colour time_colour_esc[TC_COUNT];
 /* —— —— Function Declarations —— ——————————————————————————————————————————— */
 
 #include "model/types.h"
+
+bool doDimFile(const FileStat *const pFS);
+
 FileColour setFileColour(const char *const name, const mode_t mode,
 	const MountInfo *const mount, const struct stat *const pstat
 );

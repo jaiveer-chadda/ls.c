@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "graphics.h"
 #include "features/features.h"
+#include "model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -50,6 +50,18 @@ static const char *ALL_TMP_BACKUP_EXTS[] = {
 	) {										\
 		return FC_ ## type;					\
 	}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+bool doDimFile(const FileStat *const pFS) {
+	// don't dim files at level 0
+	if (pFS->parent == NULL) return false;
+	// dim files with the `UF_HIDDEN` flag
+	if (pFS->s != NULL && pFS->s->st_flags & UF_HIDDEN) return true;
+	// dim files that start w/ "." (dotfiles)
+	if (pFS->name[0] == '.') return true;
+	return false;
+}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

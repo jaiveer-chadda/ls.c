@@ -155,8 +155,6 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 	fputs(output, stdout);
 	efree(output);
 
-	// let `getcol` know what the last colour used was
-	// setActive(LAST_WAS_ESC() ? esc_colour : colour);
 	return;
 }
 

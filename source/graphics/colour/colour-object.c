@@ -47,8 +47,8 @@ static Colour active = RESET_ALL;
  *
  * ---
  *
- * Two kilobytes (`MAX_ANSI_SIZE * COLHEAP_CAPACITY` == `64 * 32` == `2048 bytes`) of "heap" storage - enough to hold
- *	32 maximum-size ANSI escape sequences.
+ * A kilobyte (`MAX_ANSI_SIZE * COLHEAP_CAPACITY` == `64 * 16` == `1024 bytes`) of "heap" storage - enough to hold
+ *	16 maximum-size ANSI escape sequences.
  *
  * ---
  *
@@ -85,15 +85,7 @@ static const char *const colheap_end = colheap + sizeof(colheap) - 1;
 static inline char *get_colheap_ptr(void) {
 	// if the next write to `colheap` has even the possibility of overflowing the heap,
 	//	then reset the buffer, and move the pointer back to the beginning of the heap
-	if (colheap_ptr + sizeof(ansi_t) >= colheap_end) {
-		#ifdef DEBUG_MODE
-			// turning everything back into nullbytes will make it much easier to debug if something goes wrong
-			colheap_ptr = memset(colheap, 0, sizeof(colheap));
-		#else
-			colheap_ptr = colheap;
-		#endif
-	}
-
+	if (colheap_ptr + sizeof(ansi_t) >= colheap_end) colheap_ptr = colheap;
 	return colheap_ptr;
 }
 
@@ -153,6 +145,10 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 		!(colour.has_style(G_DIM) ) && (active.has_style(G_DIM) )
 	) active.rem_style(G_BOLD);
 
+	// if there's no dunder already active, and the inputted colour has the hardlink style set, then add a dunder
+	const bool add_hardln = (colour.has_style(G_HARDLINK)) && !(active.has_style(G_HARDLINK));
+	if (add_hardln && !(active.has_style(G_DUNDER))) colour.add_style(G_DUNDER);
+
 	/* ———————————————————————————————————————————————— */
 
 	char style[STYLE_BUFSIZE] = "";
@@ -162,14 +158,11 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 	// if the current style is identical to the previous style, then nothing has to be printed
 	//	this check is technically redundant, but it saves having to do a check for each of the styles
 	if (colour.style != active.style) {
-		style_t style_i;
-		bool col_has_st, act_has_st;
-
 		// iterate through each style, and check if the style is included in `colour.style`
 		for (size_t i = 0; i < GSTYLES_LEN; i++) {
-			style_i = G_STYLES[i];
-			col_has_st = colour.has_style(style_i);
-			act_has_st = active.has_style(style_i);
+			const style_t style_i = G_STYLES[i];
+			const bool col_has_st = colour.has_style(style_i);
+			const bool act_has_st = active.has_style(style_i);
 
 			// but only print the style if the previous style differs
 			if (col_has_st && !act_has_st) {
@@ -189,6 +182,11 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 				if (style_i == G_DIM  && active.has_style(G_BOLD)) APPEND_TO_STYLE(ANSI_BOLD);
 			}
 		}
+	}
+
+	if (add_hardln) {
+		memcpy(style + st_len, HARDLN_COLOUR_ANSI ";", sizeof(HARDLN_COLOUR_ANSI ";") - 1);
+		st_len += sizeof(HARDLN_COLOUR_ANSI ";") - 1;
 	}
 
 	/* ── Process Colour::fg/bg ───────────────────────────────────────── */

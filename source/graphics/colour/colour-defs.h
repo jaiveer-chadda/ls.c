@@ -48,11 +48,11 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Buffer Sizes ————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/**	The number of characters needed to represent every style's reset sequence (usually longer),
- *	including a trailing semicolon and null terminator.
- *	- This would be: `"22;23;24;25;27;28;29;\0"` (len = 22).
- *	- Rounded up to 24. */
-#define STYLE_BUFSIZE 24
+/**	The number of characters needed to represent every style's reset sequence, and an 8-bit underline colour,
+ *	a trailing semicolon, and a null terminator.
+ *	- This would be: `"22;23;24;25;27;28;29;58;5;255\0"` (len = 30).
+ *	- Rounded up to 32. */
+#define STYLE_BUFSIZE 32
 
 /**	The maximum number of characters needed to represent an ANSI colour code, including a null terminator.
  *	- This would be: `"38;2;255;255;255\0"` (len = 17).
@@ -72,13 +72,13 @@
 
 /* —— FG/BG Handling ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define SET(fgbg, is_8bit, mode, ansi_col)		\
+#define SET(fgbg, is_8bit, mode, ansi_col) \
 	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%d" : "%d%d"), (mode), (ansi_col))
 
-#define SIMPLIFY_FGBG(fgbg) \
-	simplify_fgbg( \
-		fgbg, &active.fgbg, &fgbg##_len, &has_##fgbg, \
-		colour.fgbg, ANSI_##fgbg##_CODE, set_active, do_add \
+#define SIMPLIFY_FGBG(fgbg)									\
+	simplify_fgbg(											\
+		fgbg, &active.fgbg, &fgbg##_len, &has_##fgbg,		\
+		colour.fgbg, ANSI_##fgbg##_CODE, set_active, do_add	\
 	)
 
 /* —— Bounds Checks ———————————————————————————————————————————————————————————————————————————————————————————————— */

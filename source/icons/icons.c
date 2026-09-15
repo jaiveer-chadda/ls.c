@@ -96,6 +96,8 @@ void print_icon(const FileStat *const pFS) {
 			colour.bg = G_NO_BG;
 		}
 
+		if (doDimFile(pFS)) colour.style |= G_DIM;
+
 		// the icon also shouldn't have any underlining
 		if (colour.style & G_UNDER ) colour.style &= ~G_UNDER ;
 		if (colour.style & G_DUNDER) colour.style &= ~G_DUNDER;

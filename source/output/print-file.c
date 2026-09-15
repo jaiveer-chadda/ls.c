@@ -35,8 +35,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	print_link(pFS); // print targets of links
 	if (pFS->f != NULL) print_mount(pFS->f->mount); // print info about mounted filesystems
 
-	// make sure that no background colours leak past the end of the line
-	if (has_bg(getActive())) colprint(RESET_ALL);
+	colprint(RESET_ALL); // make sure that no colours leak past the end of the line
 	putchar('\n'); // finally, end this entry's output by printing a newline
 
 	/* —— recurse ————————————————————————————————————————————————————————————————————————————————————— */
@@ -56,7 +55,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 static inline void print_suff(const FileStat *const pFS) {
 	if (!do_suffix() || pFS->suffix == '\0') return;
-	printf("%s%c", getcol(RESET_ALL), pFS->suffix);
+	printf("%s%c", getcol(doDimFile(pFS) ? toColour(.style = G_DIM) : RESET_ALL), pFS->suffix);
 }
 
 /* —— printFields() ———————————————————————————————————————————————————————————————————————————————————————————————— */

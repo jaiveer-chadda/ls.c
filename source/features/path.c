@@ -109,17 +109,23 @@ const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define isFSHardlink(p_fs) \
+	((!S_ISDIR((p_fs)->mode)) && ((p_fs)->s != NULL) && ((p_fs)->s->st_nlink > 1))
+
 static inline const char* choosePath(const FileStat *const pFS) {
 	if (pFS->display != NULL			 ) return pFS->display;
 	if (pFS->path	 != NULL && DO_PATH()) return pFS->path;
-
 	return pFS->name;
 }
 
 void print_name(const FileStat *const pFS) {
 	const char *const name_or_path = choosePath(pFS);
-	printEscdName(name_or_path, file_colour_esc[pFS->file_col], true);
 
+	Colour colour = file_colour_esc[pFS->file_col];
+	if (isFSHardlink(pFS)) colour.style |= G_HARDLINK;
+	if (doDimFile	(pFS)) colour.style |= G_DIM;
+
+	printEscdName(name_or_path, colour, true);
 	if (pFS->display != NULL) efree((void*)pFS->display);
 }
 
