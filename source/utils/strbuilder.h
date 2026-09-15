@@ -7,9 +7,10 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-typedef struct b__strbuilder *StringBuilder;
+typedef struct b__strbuilder *const StringBuilder;
 
 StringBuilder b__init(const size_t size);
+void sb_free(StringBuilder str);
 
 #define arg0__sb_init()		b__init((size_t)(0UL))
 #define arg1__sb_init(len)	b__init((size_t)(len))
