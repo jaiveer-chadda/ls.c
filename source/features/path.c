@@ -123,7 +123,7 @@ void print_name(const FileStat *const pFS) {
 
 	Colour colour = file_colour_esc[pFS->file_col];
 	if (isFSHardlink(pFS)) colour.style |= G_HARDLINK;
-	if (doDimFile	(pFS)) colour.style |= G_DIM;
+	if (doDimFile(pFS) && !has_bg(colour)) colour.style |= G_DIM;
 
 	printEscdName(name_or_path, colour, true);
 	if (pFS->display != NULL) efree((void*)pFS->display);

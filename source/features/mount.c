@@ -43,7 +43,6 @@ const MountInfo *getMountPoint(const char *const path, const bool is_dir) {
 
 void print_mount(const MountInfo *const mount) {
 	if (mount == NULL || !DO_MOUNTDEV()) return;
-	setActive(RESET_ALL);
 
 	const char *const punct_ansi	= getcol(PUNCT);
 	const char *const mt_from_ansi	= getcol(MT_FROM_COLOUR);

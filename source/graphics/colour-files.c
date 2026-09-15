@@ -81,7 +81,7 @@ FileColour setFileColour(const char *const name, const mode_t mode,
 	/* —— Flags ————————————————————————————————————————————————— */
 
 	// dataless files have the highest priority, so if the file is dataless, colour it and return immediately
-	if (pstat->st_flags & SF_DATALESS) return FC_DATALESS;
+	if (pstat != NULL && pstat->st_flags & SF_DATALESS) return FC_DATALESS;
 
 	/* —— Type —————————————————————————————————————————————————— */
 
