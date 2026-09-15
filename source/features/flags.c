@@ -264,6 +264,23 @@ void print_flags(const FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define ADD_TO_OUTPUT(str, str_len, inc_flagstr) do {	\
+	memcpy(out_ptr, (str), (str_len));					\
+	out_ptr += (str_len);								\
+	if (inc_flagstr) flagstr_len += (str_len);			\
+} while (0)
+
+#define ADD_STRING(str, str_len) \
+	ADD_TO_OUTPUT(str, str_len, true);
+
+#define ADD_COLOUR(col) do {								\
+	uint8_t col_len = 0;									\
+	const char *const colour = getcollen((col), &col_len);	\
+	ADD_TO_OUTPUT(colour, col_len, false);					\
+} while (0)
+
+/* ——————————————————————————————————————————————————————————— */
+
 void print_flag_str(const FileStat *const pFS) {
 	if (pFS->s == NULL || pFS->s->st_flags == 0) {
 		printf("%s%-*s%ls", getcol(PUNCT), getLen(FI_flag_str), NO_FLAG_STR, FIELD_PAD);
@@ -272,45 +289,32 @@ void print_flag_str(const FileStat *const pFS) {
 
 	char output[512] = {0};
 	char *out_ptr = output;
-	const char *flag, *colour;
-	uint8_t flag_len = 0, col_len = 0, flagstr_len = 0;
+
+	uint8_t flagstr_len = 0;
 	Colour last_colour;
 
 	bool is_first = true;
 
-	for (int flag_i = 0; flag_i < MAX_FLAG_NUM; flag_i++) {
-		if (!(pFS->s->st_flags & ALL_FLAGS[flag_i].mask)) continue;
+	for (int i = 0; i < FLAG_COUNT; i++) {
+		if (!(pFS->s->st_flags & ALL_FLAGS[i].mask)) continue;
 
-		flag = GET_FLAG_NAME(ALL_FLAGS[flag_i]);
-		flag_len = (uint8_t)strlen(flag);
+		const char *const flag = GET_FLAG_NAME(ALL_FLAGS[i]);
+		const uint8_t flag_len = strlen(flag);
 
 		if (!is_first) {
-			colour = getcollen(PUNCT, &col_len);
-			memcpy(out_ptr, colour, col_len);
-			out_ptr += col_len;
-
-			*out_ptr++ = FLAG_SEP_CHR;
-			flagstr_len++;
+			ADD_COLOUR(PUNCT);
+			ADD_STRING((char[]){ FLAG_SEP_CHR }, 1);
 		}
 
 		is_first = false;
 
-		colour = getcollen(( last_colour = ALL_FLAGS[flag_i].colour ), &col_len);
-		memcpy(out_ptr, colour, col_len);
-		out_ptr += col_len;
-
-		memcpy(out_ptr, flag, flag_len);
-		out_ptr += flag_len;
-		flagstr_len += flag_len;
+		ADD_COLOUR(( last_colour = ALL_FLAGS[i].colour ));
+		ADD_STRING(flag, flag_len);
 	}
 
-	if (has_bg(last_colour)) {
-		colour = getcollen(RESET_ALL, &col_len);
-		memcpy(out_ptr, colour, col_len);
-		out_ptr += col_len;
-	}
+	if (has_bg(last_colour)) ADD_COLOUR(RESET_ALL);
 
-	*out_ptr++ = '\0';
+	*out_ptr = '\0';
 
 	const int spaces = getLen(FI_flag_str) - (int)flagstr_len;
 	printf("%s%*s" "%ls", output, spaces, "", FIELD_PAD);
