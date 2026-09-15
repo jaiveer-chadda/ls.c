@@ -229,39 +229,6 @@ char *parseFlags(FileStat *const pFS) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define OUTPUT_SIZE ((size_t)(out_ptr - output))
-
-#define CHECK_MEM_ALLOC(increase) do {											\
-	if (OUTPUT_SIZE + (increase) + 1 <= alloc_size) break;						\
-	/* make sure we'll have enough allocated memory */							\
-	while (alloc_size < OUTPUT_SIZE + (increase) + 1) MULT_BY_1_5(alloc_size);	\
-	/* note down how much memory we've written to `output` already */			\
-	const size_t size = OUTPUT_SIZE;											\
-	output = erealloc(output, alloc_size);										\
-	/* move the output pointer to the new location of `output` */				\
-	out_ptr = output + size;													\
-} while (0)
-
-/* ——————————————————————————————————————————————————————————— */
-
-#define ADD_STRING(str, len) do {							\
-	CHECK_MEM_ALLOC((len));									\
-	out_ptr = (char*)memcpy(out_ptr, (str), (len)) + (len);	\
-} while (0)
-
-#define ADD_COLOUR(col) do {								\
-	uint8_t collen = 0;										\
-	const char *const colour = getcollen((col), &collen);	\
-	ADD_STRING((colour), (collen));							\
-} while (0)
-
-#define ADD_CHAR(chr) do {	\
-	CHECK_MEM_ALLOC(1);		\
-	*out_ptr++ = (chr);		\
-} while (0)
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
 /// Rounds a number down to the nearest 4.
 #define ROUND_DOWN_TO_4(num) ((num) & ~3)
 /// Strip the trailing zeros from a hexadecimal number
@@ -274,6 +241,11 @@ char *parseFlags(FileStat *const pFS) {
 void print_flags(const FileStat *const pFS) {
 	if (pFS->s == NULL || pFS->s->st_flags == 0) {
 		printf("%s%*c%ls", getcol(PUNCT), getLen(FI_flags), '-', FIELD_PAD);
+		return;
+	}
+
+	if (!DO_COLOUR()) {
+		printf("%0*x%ls", getLen(FI_flags), pFS->s->st_flags, FIELD_PAD);
 		return;
 	}
 
@@ -290,8 +262,7 @@ void print_flags(const FileStat *const pFS) {
 		colours[trailing_0s >> 2] =  (ALL_FLAGS[i].colour);
 	}
 
-	size_t alloc_size = getLen(FI_flags);
-	char *output = emalloc(alloc_size), *out_ptr = output;
+	StringBuilder output = sb_init();
 
 	for (int i = FLAG_COUNT - getLen(FI_flags); i < FLAG_COUNT; i++) {
 		const int get_idx = FLAG_COUNT - (i + 1);
@@ -300,14 +271,12 @@ void print_flags(const FileStat *const pFS) {
 		Colour flag_col = colours[get_idx];
 		if (!areEqual(flag_col, RESET_ALL)) flag_col.style |= G_BOLD;
 
-		ADD_COLOUR(flag_col);
-		ADD_CHAR(INT_TO_HEX(hex_out[get_idx]));
+		sb_addcol(output, flag_col);
+		sb_addchr(output, INT_TO_HEX(hex_out[get_idx]));
 	}
 
-	ADD_STRING(FIELD_PAD, sizeof(FIELD_PAD));
-
-	fputs(output, stdout);
-	efree(output);
+	sb_addstr(output, FIELD_PAD, sizeof(FIELD_PAD) - 1);
+	sb_putsf(output);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -315,8 +284,13 @@ void print_flags(const FileStat *const pFS) {
 #define INIT_ALLOC_SIZE 8
 
 void print_flag_str(const FileStat *const pFS) {
-	if (pFS->s == NULL || pFS->s->st_flags == 0) {
+	if (pFS->s == NULL || pFS->s->st_flags == 0 || (!DO_COLOUR() && pFS->f->flag_str == NULL)) {
 		printf("%s%-*s%ls", getcol(PUNCT), getLen(FI_flag_str), NO_FLAG_STR, FIELD_PAD);
+		return;
+	}
+
+	if (!DO_COLOUR()) {
+		printf("%-*s%ls", getLen(FI_flag_str), pFS->f->flag_str, FIELD_PAD);
 		return;
 	}
 
