@@ -1,11 +1,14 @@
 /// @file features/flags/flags.c
 
+#include <wchar.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "malloc.h"
+#include "strings.h"
 #include "debugging.h"
+#include "strbuilder.h"
 
 #include "form/formatting.h"
 #include "options/options.h"
@@ -317,12 +320,10 @@ void print_flag_str(const FileStat *const pFS) {
 		return;
 	}
 
-	size_t alloc_size = INIT_ALLOC_SIZE;
-	char *output = emalloc(alloc_size), *out_ptr = output;
-
+	StringBuilder output = sb_init(INIT_ALLOC_SIZE);
 	uint8_t flagstr_len = 0;
-	Colour last_colour;
 
+	Colour last_colour;
 	bool is_first = true;
 
 	for (int i = 0; i < FLAG_COUNT; i++) {
@@ -332,26 +333,23 @@ void print_flag_str(const FileStat *const pFS) {
 		const uint8_t flag_len = strlen(flag);
 
 		if (!is_first) {
-			ADD_COLOUR(PUNCT);
-			ADD_CHAR(FLAG_SEP_CHR);
-			flagstr_len++;
+			sb_addcol(output, PUNCT);
+			flagstr_len += sb_addchr(output, FLAG_SEP_CHR);
 		}
 
 		is_first = false;
 
-		ADD_COLOUR(( last_colour = ALL_FLAGS[i].colour ));
-		ADD_STRING(flag, flag_len);
-		flagstr_len += flag_len;
+		sb_addcol(output, ( last_colour = ALL_FLAGS[i].colour ));
+		flagstr_len += sb_addstr(output, flag, flag_len);
 	}
 
-	if (has_bg(last_colour)) ADD_COLOUR(RESET_ALL);
-
-	*out_ptr = '\0';
+	if (has_bg(last_colour)) sb_addcol(output, RESET_ALL);
 
 	const int spaces = getLen(FI_flag_str) - (int)flagstr_len;
-	printf("%s%*s" "%ls", output, spaces, "", FIELD_PAD);
 
-	efree(output);
+	sb_putsf(output);			// print the flag string itself
+	putspaces(spaces);			// print the alignment padding
+	fputws(FIELD_PAD, stdout);	// print the field padding
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
