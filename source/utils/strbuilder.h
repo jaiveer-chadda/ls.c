@@ -10,15 +10,16 @@
 
 typedef struct b__strbuilder *const StringBuilder;
 
-/* —— function declarations ———————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Function Declarations ———————————————————————————————————————————————————————————————————————————————————————— */
 
 StringBuilder b__init(const size_t size);
 void sb_free(StringBuilder p_strb);
 
-size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free);
-
+char  *sb_strdup(StringBuilder p_strb);
+size_t sb_length(StringBuilder p_strb);
 size_t sb_addchr(StringBuilder p_strb, const char chr);
 size_t sb_addcol(StringBuilder p_strb, const Colour col);
+size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free);
 size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size);
 
 /* —— sb_init() ———————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -35,7 +36,7 @@ size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size)
 #define arg3__sb_addstr(p_strb, src, size) b__addstr((StringBuilder)(p_strb), (const char *const)(src), (size_t)(size))
 
 #define sb_addstr__DISPATCH(_1, _2, _3, NAME, ...) NAME
-#define sb_addstr(...) sb_addstr__DISPATCH(__VA_ARGS__, arg3__sb_addstr, arg2__sb_addstr, DUMMY)(__VA_ARGS__)
+#define sb_addstr(...) sb_addstr__DISPATCH(__VA_ARGS__, arg3__sb_addstr, arg2__sb_addstr)(__VA_ARGS__)
 
 /* —— sb_fputsf() ——————————————————————————————————— */
 
