@@ -7,7 +7,7 @@
 #include "malloc.h"
 #include "strbuilder.h"
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Definitions —————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 struct b__strbuilder {
 	char *root, *head;
@@ -15,6 +15,11 @@ struct b__strbuilder {
 };
 
 /* ——————————————————————————————————————————————————————————— */
+
+#if !__bool_true_false_are_defined
+#	define true 1
+#	define false 0
+#endif
 
 #ifdef MULT_BY_1_5
 #	undef MULT_BY_1_5
@@ -40,7 +45,7 @@ struct b__strbuilder {
 /** @brief Find the current strlen of the string stored at `p_sb` */
 #define length(p_sb) ((size_t)((p_sb)->head - (p_sb)->root))
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— sb_realloc() ————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void sb_realloc(StringBuilder p_strb, const size_t increase) {
 	// If we already have enough memory, dont try adding any more.
@@ -64,17 +69,38 @@ static inline void sb_realloc(StringBuilder p_strb, const size_t increase) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— sb_addstr() —————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size) {
 	const size_t size_ = size > 0 ? size : strlen(src);
-
 	sb_realloc(p_strb, size_);
 
-	p_strb->head = (char *)memcpy(p_strb->head, src, size_) + size_;
+	memcpy(p_strb->head, src, size_);
+	p_strb->head += size_;
+
 	return size_;
 }
 
+/* —— sb_addchr() —————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+size_t sb_addchr(StringBuilder p_strb, const char chr) {
+	sb_realloc(p_strb, 1);
+
+	*p_strb->head++ = chr;
+	return 1;
+}
+
+/* —— sb_addcol() —————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+size_t sb_addcol(StringBuilder p_strb, const Colour col) {
+	uint8_t col_size = 0;
+	const char *const ansi_str = getcollen(col, &col_size);
+
+	return sb_addstr(p_strb, ansi_str, col_size);
+}
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— sb_init() ———————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 StringBuilder b__init(const size_t size) {
 	StringBuilder p_strb = emalloc(sizeof(struct b__strbuilder));
@@ -88,13 +114,17 @@ StringBuilder b__init(const size_t size) {
 	return p_strb;
 }
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— sb_free() ———————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void sb_free(StringBuilder str) {
-	if (str->root != NULL) efree((void*)str->root);
-	efree((void*)str);
+void sb_free(StringBuilder p_strb) {
+	if (p_strb->root != NULL) {
+		efree((void*)p_strb->root);
+	}
+
+	efree((void*)p_strb);
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // spell:ignore strb
