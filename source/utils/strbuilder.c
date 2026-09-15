@@ -1,7 +1,8 @@
 /// @file utils/strbuilder.c
 
-#include <stddef.h>
 #include <assert.h>
+#include <stddef.h>
+#include <string.h>
 
 #include "malloc.h"
 #include "strbuilder.h"
@@ -60,6 +61,17 @@ static inline void sb_realloc(StringBuilder p_strb, const size_t increase) {
 
 	// Move the head of the string to the new location of `root`.
 	p_strb->head = p_strb->root + len;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size) {
+	const size_t size_ = size > 0 ? size : strlen(src);
+
+	sb_realloc(p_strb, size_);
+
+	p_strb->head = (char *)memcpy(p_strb->head, src, size_) + size_;
+	return size_;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
