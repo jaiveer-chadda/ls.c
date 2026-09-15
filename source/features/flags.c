@@ -264,7 +264,24 @@ void print_flags(const FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define INIT_ALLOC_SIZE 8
+#define OUTPUT_SIZE ((size_t)(out_ptr - output))
+
+#define CHECK_MEM_ALLOC(increase) do {											\
+	if (OUTPUT_SIZE + (increase) + 1 <= alloc_size) break;						\
+	/* make sure we'll have enough allocated memory */							\
+	while (alloc_size < OUTPUT_SIZE + (increase) + 1) MULT_BY_1_5(alloc_size);	\
+	/* note down how much memory we've written to `output` already */			\
+	const size_t size = OUTPUT_SIZE;											\
+	output = erealloc(output, alloc_size);										\
+	/* move the output pointer to the new location of `output` */				\
+	out_ptr = output + size;													\
+} while (0)
+
+/* ——————————————————————————————————————————————————————————— */
+
 #define ADD_TO_OUTPUT(str, str_len, inc_flagstr) do {	\
+	CHECK_MEM_ALLOC((str_len));							\
 	memcpy(out_ptr, (str), (str_len));					\
 	out_ptr += (str_len);								\
 	if (inc_flagstr) flagstr_len += (str_len);			\
@@ -287,7 +304,8 @@ void print_flag_str(const FileStat *const pFS) {
 		return;
 	}
 
-	char output[512] = {0};
+	size_t alloc_size = INIT_ALLOC_SIZE;
+	char *output = emalloc(alloc_size);
 	char *out_ptr = output;
 
 	uint8_t flagstr_len = 0;
@@ -318,6 +336,8 @@ void print_flag_str(const FileStat *const pFS) {
 
 	const int spaces = getLen(FI_flag_str) - (int)flagstr_len;
 	printf("%s%*s" "%ls", output, spaces, "", FIELD_PAD);
+
+	efree(output);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
