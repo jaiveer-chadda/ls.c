@@ -15,9 +15,13 @@ void efree(void *ptr);
 
 /* —————————————————————————————————————————————————————————— */
 
-/// Approximately multiplies a number by 1.5
+/// Approximately multiplies a number by 1.5, in place.
 #define MULT_BY_1_5(var) \
 	((var) += (var) == 1 ? 1 : (var) >> 1)
+
+/// Approximately multiplies a number by 1.5, and returns the result
+#define TIMES_1_5(var) \
+	((var) == 1 ? 1 : (var) >> 1)
 
 /* —————————————————————————————————————————————————————————— */
 
