@@ -200,30 +200,21 @@ char *parseFlags(FileStat *const pFS) {
 		return (char*)NULL;
 	}
 
-	flagstr flag_str = {0};
+	StringBuilder flag_str = sb_init();
 	bool is_first = true;
 
-	size_t flag_len, str_len = 0;
-	flagset flag;
-
 	for (int i = 0; i < MAX_FLAG_NUM; i++) {
-		flag = ALL_FLAGS[i];
+		const flagset flag = ALL_FLAGS[i];
 
-		if (pFS->s->st_flags & flag.mask) {
-			if (!is_first) flag_str[str_len++] = FLAG_SEP_CHR;
-			is_first = false;
+		if (!(pFS->s->st_flags & flag.mask)) continue;
+		if (!is_first) sb_addchr(flag_str, FLAG_SEP_CHR);
 
-			flag_len = strlen(GET_FLAG_NAME(flag));
-			memcpy(&flag_str[str_len], GET_FLAG_NAME(flag), flag_len);
-
-			str_len += flag_len;
-		}
+		is_first = false;
+		sb_addstr(flag_str, GET_FLAG_NAME(flag));
 	}
 
-	setLen(FI_flag_str, str_len);
-
-	flag_str[str_len++] = '\0';
-	return memcpy(emalloc(str_len), flag_str, str_len);
+	setLen(FI_flag_str, sb_length(flag_str));
+	return sb_strdup(flag_str);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
