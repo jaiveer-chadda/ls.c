@@ -200,8 +200,7 @@ char *parseFlags(FileStat *const pFS) {
 	flagstr flag_str = {0};
 	bool is_first = true;
 
-	uint8_t str_len = 0U;
-	size_t flag_len;
+	size_t flag_len, str_len = 0;
 	flagset flag;
 
 	for (int i = 0; i < MAX_FLAG_NUM; i++) {
@@ -227,14 +226,50 @@ char *parseFlags(FileStat *const pFS) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define OUTPUT_SIZE ((size_t)(out_ptr - output))
+
+#define CHECK_MEM_ALLOC(increase) do {											\
+	if (OUTPUT_SIZE + (increase) + 1 <= alloc_size) break;						\
+	/* make sure we'll have enough allocated memory */							\
+	while (alloc_size < OUTPUT_SIZE + (increase) + 1) MULT_BY_1_5(alloc_size);	\
+	/* note down how much memory we've written to `output` already */			\
+	const size_t size = OUTPUT_SIZE;											\
+	output = erealloc(output, alloc_size);										\
+	/* move the output pointer to the new location of `output` */				\
+	out_ptr = output + size;													\
+} while (0)
+
+/* ——————————————————————————————————————————————————————————— */
+
+#define ADD_TO_OUTPUT(str, len) do {						\
+	CHECK_MEM_ALLOC((len));									\
+	out_ptr = (char*)memcpy(out_ptr, (str), (len)) + (len);	\
+} while (0)
+
+#define ADD_HEX(hexdigit) do {			\
+	CHECK_MEM_ALLOC(1);					\
+	*out_ptr++ = INT_TO_HEX(hexdigit);	\
+} while (0)
+
+#define ADD_COLOUR(col) do {								\
+	uint8_t collen = 0;										\
+	const char *const colour = getcollen((col), &collen);	\
+	ADD_TO_OUTPUT((colour), (collen));						\
+} while (0)
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 /// Rounds a number down to the nearest 4.
 #define ROUND_DOWN_TO_4(num) ((num) & ~3)
 /// Strip the trailing zeros from a hexadecimal number
 #define STRIP_TZ_HEX(num) (num) >> ROUND_DOWN_TO_4(__builtin_ctz((num)))
+/// Get the hex digit representing the integer `n`, where `n` is in the range `0 ≤ n ≤ 15`.
+#define INT_TO_HEX(n) ((char)("0123456789ABCDEF"[(int)(n)]))
+
+/* ——————————————————————————————————————————————————————————— */
 
 void print_flags(const FileStat *const pFS) {
-	const bool valid = pFS->s != NULL && pFS->s->st_flags != 0;
-	if (!valid) {
+	if (pFS->s == NULL || pFS->s->st_flags == 0) {
 		printf("%s%*c%ls", getcol(PUNCT), getLen(FI_flags), '-', FIELD_PAD);
 		return;
 	}
@@ -252,31 +287,36 @@ void print_flags(const FileStat *const pFS) {
 		colours[trailing_0s >> 2] =  (ALL_FLAGS[i].colour);
 	}
 
+	size_t alloc_size = getLen(FI_flags);
+	char *output = emalloc(alloc_size), *out_ptr = output;
+
 	for (int i = FLAG_COUNT - getLen(FI_flags); i < FLAG_COUNT; i++) {
 		const int get_idx = FLAG_COUNT - (i + 1);
 
-		Colour colour = colours[get_idx];
-		if (!areEqual(colour, RESET_ALL)) colour.style |= G_BOLD;
+		// get the flag's colour - if it has a colour, then make it bold
+		Colour flag_col = colours[get_idx];
+		if (!areEqual(flag_col, RESET_ALL)) flag_col.style |= G_BOLD;
 
-		printf("%s%x%ls", getcol(colour), hex_out[get_idx], (i + 1 == FLAG_COUNT) ? FIELD_PAD : L"");
+		ADD_COLOUR(flag_col);
+		ADD_HEX(hex_out[get_idx]);
 	}
+
+	ADD_TO_OUTPUT(FIELD_PAD, sizeof(FIELD_PAD));
+
+	fputs(output, stdout);
+	efree(output);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define INIT_ALLOC_SIZE 8
-#define OUTPUT_SIZE ((size_t)(out_ptr - output))
+#ifdef ADD_TO_OUTPUT
+#undef ADD_TO_OUTPUT
+#endif
+#ifdef ADD_COLOUR
+#undef ADD_COLOUR
+#endif
 
-#define CHECK_MEM_ALLOC(increase) do {											\
-	if (OUTPUT_SIZE + (increase) + 1 <= alloc_size) break;						\
-	/* make sure we'll have enough allocated memory */							\
-	while (alloc_size < OUTPUT_SIZE + (increase) + 1) MULT_BY_1_5(alloc_size);	\
-	/* note down how much memory we've written to `output` already */			\
-	const size_t size = OUTPUT_SIZE;											\
-	output = erealloc(output, alloc_size);										\
-	/* move the output pointer to the new location of `output` */				\
-	out_ptr = output + size;													\
-} while (0)
+#define INIT_ALLOC_SIZE 8
 
 /* ——————————————————————————————————————————————————————————— */
 
