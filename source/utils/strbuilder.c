@@ -7,7 +7,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-struct sb__strbuilder {
+struct b__strbuilder {
 	char *root, *head;
 	size_t size;
 };
@@ -16,11 +16,11 @@ struct sb__strbuilder {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-StringBuilder sb_init(const size_t size) {
-	StringBuilder p_strb = emalloc(sizeof(struct sb__strbuilder));
-	char *const root = emalloc(size);
+StringBuilder b__init(const size_t size) {
+	StringBuilder p_strb = emalloc(sizeof(struct b__strbuilder));
+	char *const root = size != 0 ? emalloc(size) : NULL;
 
-	*p_strb = (struct sb__strbuilder){
+	*p_strb = (struct b__strbuilder){
 		.root = root, .head = root,
 		.size = size
 	};
