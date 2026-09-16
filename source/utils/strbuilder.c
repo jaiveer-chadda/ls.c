@@ -45,7 +45,8 @@ struct b__strbuilder {
 /** @brief Find the current strlen of the string stored at `p_sb` */
 #define length(p_sb) ((size_t)((p_sb)->head - (p_sb)->root))
 
-/* —— sb_realloc() ————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Static Functions ————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void sb_realloc(StringBuilder p_strb, const size_t increase) {
 	// If we already have enough memory, dont try adding any more.
@@ -69,53 +70,7 @@ static inline void sb_realloc(StringBuilder p_strb, const size_t increase) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* —— sb_addstr() —————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size) {
-	const size_t size_ = size > 0 ? size : strlen(src);
-	sb_realloc(p_strb, size_);
-
-	memcpy(p_strb->head, src, size_);
-	p_strb->head += size_;
-
-	return size_;
-}
-
-/* —— sb_addchr() —————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-size_t sb_addchr(StringBuilder p_strb, const char chr) {
-	sb_realloc(p_strb, 1);
-
-	*p_strb->head++ = chr;
-	return 1;
-}
-
-/* —— sb_addcol() —————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-size_t sb_addcol(StringBuilder p_strb, const Colour col) {
-	uint8_t col_size = 0;
-	const char *const ansi_str = getcollen(col, &col_size);
-
-	return sb_addstr(p_strb, ansi_str, col_size);
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* —— sb_fputsf() —————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free) {
-	sb_realloc(p_strb, 1);
-	*p_strb->head = '\0';
-
-	fputs(p_strb->root, file);
-
-	const size_t len = length(p_strb);
-	if (do_free) sb_free(p_strb);
-
-	return len;
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* —— sb_init() ———————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— sb_init() & sb_free() ———————————————————————————————————————————————————————————————————————————————————————— */
 
 StringBuilder b__init(const size_t size) {
 	StringBuilder p_strb = emalloc(sizeof(struct b__strbuilder));
@@ -129,7 +84,7 @@ StringBuilder b__init(const size_t size) {
 	return p_strb;
 }
 
-/* —— sb_free() ———————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ——————————————————————————————————————————————————— */
 
 void sb_free(StringBuilder p_strb) {
 	if (p_strb->root != NULL) {
@@ -140,7 +95,52 @@ void sb_free(StringBuilder p_strb) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* —— sb_strdup() —————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Adder Functions —————————————————————————————————————————————————————————————————————————————————————————————— */
+
+size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size) {
+	const size_t size_ = size > 0 ? size : strlen(src);
+	sb_realloc(p_strb, size_);
+
+	memcpy(p_strb->head, src, size_);
+	p_strb->head += size_;
+
+	return size_;
+}
+
+/* ——————————————————————————————————————————————————— */
+
+size_t sb_addchr(StringBuilder p_strb, const char chr) {
+	sb_realloc(p_strb, 1);
+
+	*p_strb->head++ = chr;
+	return 1;
+}
+
+/* ——————————————————————————————————————————————————— */
+
+size_t sb_addcol(StringBuilder p_strb, const Colour col) {
+	uint8_t col_size = 0;
+	const char *const ansi_str = getcollen(col, &col_size);
+
+	return sb_addstr(p_strb, ansi_str, col_size);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Output Functions ————————————————————————————————————————————————————————————————————————————————————————————— */
+
+size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free) {
+	sb_realloc(p_strb, 1);
+	*p_strb->head = '\0';
+
+	fputs(p_strb->root, file);
+
+	const size_t len = length(p_strb);
+	if (do_free) sb_free(p_strb);
+
+	return len;
+}
+
+/* ——————————————————————————————————————————————————— */
 
 char *sb_strdup(StringBuilder p_strb) {
 	sb_realloc(p_strb, 1);
@@ -153,7 +153,8 @@ char *sb_strdup(StringBuilder p_strb) {
 	return output;
 }
 
-/* —— sb_length() —————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Util Functions ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
 size_t sb_length(StringBuilder p_strb) { return length(p_strb); }
 
