@@ -86,6 +86,16 @@ bool strends(const char *inp, const char *end) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+const char *getspaces(const size_t n) {
+	static char SPACES[256] = {0};
+	static const size_t SP_COUNT = sizeof(SPACES) - 1;
+
+	if (SPACES[0] == '\0') memset(SPACES, ' ', SP_COUNT);
+
+	if (n <= SP_COUNT) return SPACES + SP_COUNT - n;
+	return NULL;
+}
+
 void fputspaces(const size_t n, FILE *const file) {
 	flockfile(file);
 	for (size_t i = 0; i < n; i++) putc_unlocked(' ', file);

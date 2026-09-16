@@ -266,9 +266,10 @@ void print_link(const FileStat *const pFS) {
 	/* ———————————————————————————————————————————————————————— */
 
 	if (tg_info == NULL) {
-		const char *const arrow_ansi = getcol(INVALID_ARROW_COLOUR);
-		const char *const punct_ansi = getcol(LINK_ERR_PUNCT_COL  );
-		const char *const error_ansi = getcol(LINK_ERR_MSG_COL	  );
+		const char
+			*const arrow_ansi = getcol(INVALID_ARROW_COLOUR	),
+			*const punct_ansi = getcol(LINK_ERR_PUNCT_COL	),
+			*const error_ansi = getcol(LINK_ERR_MSG_COL		);
 
 		printf("%s%s%s[ "  "%serror %hu%s:"  "%s %s %s]",
 			arrow_ansi, EACCES_ARROW		 , punct_ansi,

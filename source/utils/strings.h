@@ -11,6 +11,7 @@
 size_t cstrlen(const char *cstr);
 bool strends(const char *inp, const char *end);
 
+const char *getspaces(const size_t n);
 void fputspaces(const size_t n, FILE *const file);
 #define putspaces(n) fputspaces((n), stdout)
 

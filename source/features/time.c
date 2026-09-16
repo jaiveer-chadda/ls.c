@@ -54,16 +54,16 @@ void initTime(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define RETURN_ERROR() do {										\
+	debug(WARNING, "parseTime: %s", strerror(errno));			\
+	memcpy(timeobj->str, TIME_ERR_STR, sizeof(TIME_ERR_STR));	\
+	*b_writ = sizeof(TIME_ERR_STR);								\
+	return timeobj;												\
+} while (0)
+
 TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *const b_writ) {
 	if (!time_initialised) initTime();
-
-	if (file_time == 0) {
-		debug(WARNING, "parseTime: %s", strerror(errno));
-		memcpy(timeobj->str, TIME_ERR_STR, sizeof(TIME_ERR_STR));
-		*b_writ = sizeof(TIME_ERR_STR);
-
-		return timeobj;
-	}
+	if (file_time == 0) RETURN_ERROR();
 
 	/// How many seconds ago the file was modified.
 	const time_t t_diff = current_time - file_time;
@@ -85,12 +85,7 @@ TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *con
 	else if	(t_diff < diff_year	)			{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_THIS_YR	; }
 	else									{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_OTHER	; }
 
-	if ((int)*b_writ == -1 || *b_writ >= sizeof(timestr)) {
-		debug(WARNING, "parseTime: %s", strerror(errno));
-		memcpy(timeobj->str, TIME_ERR_STR, sizeof(TIME_ERR_STR));
-		*b_writ = sizeof(TIME_ERR_STR);
-	}
-
+	if ((int)*b_writ == -1 || *b_writ >= sizeof(timestr)) RETURN_ERROR();
 	return timeobj;
 }
 
@@ -109,8 +104,7 @@ void print_time_raw(const FileStat *const pFS, const TimeType type) {
 
 	printf("%s" "%*ld" "%ls",
 		getcol(time_colour_esc[pFS->f->times[type]->colour]),
-		getLen(timeField(type)),
-		times[type],
+		getLen(timeField(type)), times[type],
 		FIELD_PAD
 	);
 }

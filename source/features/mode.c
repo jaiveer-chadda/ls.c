@@ -6,7 +6,9 @@
 #include <sys/acl.h>
 #include <sys/xattr.h>
 
+#include "strings.h"
 #include "features.h"
+#include "strbuilder.h"
 #include "form/formatting.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
@@ -176,16 +178,15 @@ void print_mode(const FileStat *const pFS) {
 	const FileColour file_col = getTypeColour(getModeType(pFS->mode));
 	const PermColour ext_col  = getExtColour(pFS->mode);
 
-	char output[96] = {0};
-	char *out_ptr = output;
+	StringBuilder output = sb_init(10);
 
-	ADD_COLOUR(file_colour_esc[file_col], out_ptr);
+	sb_addcol(output, file_colour_esc[file_col]);
 	// split the type section into two bits, and assign those to `out_ptr` directly
-	*out_ptr++ = DIG_TO_CHR((type & 010) >> LOG2_8);
-	*out_ptr++ = DIG_TO_CHR((type & 007));
+	sb_addchr(output, DIG_TO_CHR((type & 010) >> LOG2_8));
+	sb_addchr(output, DIG_TO_CHR((type & 007)));
 
-	ADD_COLOUR(perm_colour_esc[ext_col], out_ptr);
-	*out_ptr++ = DIG_TO_CHR(ext);
+	sb_addcol(output, perm_colour_esc[ext_col]);
+	sb_addchr(output, DIG_TO_CHR(ext));
 
 	for (int i = 0; i < 3; i++) {
 		// shift each section of the mode over, so that the part we want to analyse is the least significant digit.
@@ -193,11 +194,14 @@ void print_mode(const FileStat *const pFS) {
 		const mode_t mode_dig = (pFS->mode >> (LOG2_8 * (2 - i))) & S_IRWXO;
 		const PermColour dig_col = getDigColour(mode_dig, /*is_oth*/(i == 2), /*is_reg*/(pFS->mode & S_IFREG));
 
-		ADD_COLOUR(perm_colour_esc[dig_col], out_ptr);
-		*out_ptr++ = DIG_TO_CHR(mode_dig);
+		sb_addcol(output, perm_colour_esc[dig_col]);
+		sb_addchr(output, DIG_TO_CHR(mode_dig));
 	}
 
-	printf("%s%s%ls", output, getcol(RESET_ALL), FIELD_PAD);
+	sb_addcol(output, RESET_ALL);
+	sb_addstr(output, FIELD_PAD, sizeof(FIELD_PAD) - 1);
+
+	sb_putsf(output);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -243,10 +247,8 @@ static inline char getPermColour(const char *mode_str, const int idx) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_mode_str(const FileStat *const pFS) {
-	char xa_buf[32] = {0};
-	char *xab_ptr = xa_buf;
-
 	if (!DO_COLOUR()) {
+		char xa_buf[3] = {0}, *xab_ptr = xa_buf;
 		// fill the buffer with the xat/acl chars, and keep track of the length
 		if (pFS->has_xat) *xab_ptr++ = XATTR_CHAR;
 		if (pFS->has_acl) *xab_ptr++ = ACL_CHAR;
@@ -257,12 +259,11 @@ void print_mode_str(const FileStat *const pFS) {
 
 	/* ————————————————————————————————————————————————— */
 
-	char output[256] = {0};
-	char *out_ptr = output;
+	StringBuilder output = sb_init();
 
 	// firstly, add the type's colour & character to the output string
-	ADD_COLOUR(file_colour_esc[getTypeColour(pFS->mode_str[0])], out_ptr);
-	*out_ptr++ = pFS->mode_str[0];
+	sb_addcol(output, file_colour_esc[getTypeColour(pFS->mode_str[0])]);
+	sb_addchr(output, pFS->mode_str[0]);
 
 	/* ————————————————————————————————————————————————— */
 
@@ -272,28 +273,27 @@ void print_mode_str(const FileStat *const pFS) {
 		// get this char's colour
 		esc = getPermColour(pFS->mode_str, i);
 		// only add a colour if the last colour wasn't also the same
-		if (esc != last_esc) ADD_COLOUR(perm_colour_esc[esc], out_ptr);
+		if (esc != last_esc) sb_addcol(output, perm_colour_esc[esc]);
 
-		*out_ptr++ = pFS->mode_str[i];
+		sb_addchr(output, pFS->mode_str[i]);
 		last_esc = esc;
 	}
 
 	/* ————————————————————————————————————————————————— */
 
 	// finally, find and add the xattr and acl colours/chars, if they exist
-	if (pFS->has_xat) { ADD_COLOUR(XATTR_COLOUR, xab_ptr); *xab_ptr++ = XATTR_CHAR; }
-	if (pFS->has_acl) { ADD_COLOUR(ACL_COLOUR  , xab_ptr); *xab_ptr++ = ACL_CHAR  ; }
+	if (pFS->has_xat) { sb_addcol(output, XATTR_COLOUR); sb_addchr(output, XATTR_CHAR); }
+	if (pFS->has_acl) { sb_addcol(output, ACL_COLOUR  ); sb_addchr(output, ACL_CHAR	 ); }
 
 	const int pure_xa_len = pFS->has_xat + pFS->has_acl;
-	// only print a final reset sequence if there were no extra characters, and the final perm colour had a background
-	const bool do_reset = pure_xa_len == 0 && has_bg(perm_colour_esc[esc]);
 
-	printf("%s%s" "%s%*s" "%ls",
-		output, do_reset ? getcol(RESET_ALL) : "",
-		// print the xattr & acl chars, and pad appropriately
-		xa_buf, getLen(FI_xat_acl) - pure_xa_len, "", 
-		FIELD_PAD
-	);
+	// only print a final reset sequence if there were no extra characters, and the final perm colour had a background
+	if (!pFS->has_xat && !pFS->has_acl && has_bg(perm_colour_esc[esc])) sb_addcol(output, RESET_ALL);
+
+	sb_addstr(output, getspaces(getLen(FI_xat_acl) - pure_xa_len));
+	sb_addlit(output, FIELD_PAD);
+
+	sb_putsf(output);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

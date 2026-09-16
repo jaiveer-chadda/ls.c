@@ -160,13 +160,14 @@ void print_size_str(const FileStat *const pFS) {
 		unit_col_obj.style |= G_DIM;
 	}
 
-	const char *const size_col_ansi	=			getcol(size_col_obj);
-	const char *const unit_col_ansi	= do_unit ?	getcol(unit_col_obj)	: "";
-	const char *const unit_str		= do_unit ?	(char[]){ unit, '\0' }	: "";
+	const char
+		*const size_col_ansi =			 getcol(size_col_obj),
+		*const unit_col_ansi = do_unit ? getcol(unit_col_obj) : "",
+		*const unit_str		 = do_unit ? (char[]){ unit }	  : "";
 
 	const int padding = getLen(FI_size_str) - (size_len + do_unit);
 
-	printf("%*s" "%s%s" "%s%s" "%ls",
+	printf("%*s" "%s%s" "%s%.1s" "%ls",
 		padding, "",
 		size_col_ansi, size_str,
 		unit_col_ansi, unit_str,
