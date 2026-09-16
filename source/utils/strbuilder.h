@@ -18,11 +18,15 @@ void sb_free(StringBuilder p_strb);
 size_t b__addstr(StringBuilder p_strb, const char *const src, const size_t size);
 size_t sb_addcol(StringBuilder p_strb, const Colour col);
 size_t sb_addchr(StringBuilder p_strb, const char chr);
+size_t sb_memset(StringBuilder p_strb, const int val, const size_t len);
 
 size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free);
-char  *sb_strdup(StringBuilder p_strb);
+char * sb_strcpy(StringBuilder p_strb, char *const buffer);
+char * sb_strdup(StringBuilder p_strb);
 
-size_t sb_length(StringBuilder p_strb);
+void   sb_clear (StringBuilder p_strb);
+size_t sb_delete(StringBuilder p_strb, const size_t n);
+size_t sb_length(const StringBuilder p_strb);
 
 /* —— sb_init() ———————————————————————————————————————————————————————————————————————————————————————————————————— */
 

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "malloc.h"
 #include "strbuilder.h"
@@ -15,11 +16,6 @@ struct b__strbuilder {
 };
 
 /* ——————————————————————————————————————————————————————————— */
-
-#if !__bool_true_false_are_defined
-#	define true 1
-#	define false 0
-#endif
 
 #ifdef MULT_BY_1_5
 #	undef MULT_BY_1_5
@@ -44,6 +40,11 @@ struct b__strbuilder {
 
 /** @brief Find the current strlen of the string stored at `p_sb` */
 #define length(p_sb) ((size_t)((p_sb)->head - (p_sb)->root))
+
+#define sb_endstr(p_sb) do {	\
+	sb_realloc((p_sb), 1);		\
+	*(p_sb)->head = '\0';		\
+} while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Static Functions ————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -125,13 +126,21 @@ size_t sb_addcol(StringBuilder p_strb, const Colour col) {
 	return sb_addstr(p_strb, ansi_str, col_size);
 }
 
+/* ——————————————————————————————————————————————————— */
+
+size_t sb_memset(StringBuilder p_strb, const int val, const size_t len) {
+	sb_realloc(p_strb, len);
+	memset(p_strb->head, val, len);
+
+	p_strb->head += len;
+	return len;
+}
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Output Functions ————————————————————————————————————————————————————————————————————————————————————————————— */
 
 size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free) {
-	sb_realloc(p_strb, 1);
-	*p_strb->head = '\0';
-
+	sb_endstr(p_strb);
 	fputs(p_strb->root, file);
 
 	const size_t len = length(p_strb);
@@ -142,21 +151,35 @@ size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free) {
 
 /* ——————————————————————————————————————————————————— */
 
-char *sb_strdup(StringBuilder p_strb) {
-	sb_realloc(p_strb, 1);
-	*p_strb->head++ = '\0';
-
-	char *const output = emalloc(length(p_strb));
-	memcpy(output, p_strb->root, length(p_strb));
+char *sb_strcpy(StringBuilder p_strb, char *const buffer) {
+	sb_endstr(p_strb);
+	memcpy(buffer, p_strb->root, length(p_strb));
 
 	sb_free(p_strb);
-	return output;
+	return buffer;
+}
+
+/* ——————————————————————————————————————————————————— */
+
+char *sb_strdup(StringBuilder p_strb) {
+	return sb_strcpy(p_strb, emalloc(length(p_strb)));
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Util Functions ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
-size_t sb_length(StringBuilder p_strb) { return length(p_strb); }
+void sb_clear(StringBuilder p_strb) {
+	p_strb->head = p_strb->root;
+}
+
+size_t sb_delete(StringBuilder p_strb, const size_t n) {
+	p_strb->head -= n;
+	return n;
+}
+
+size_t sb_length(const StringBuilder p_strb) {
+	return length(p_strb);
+}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
