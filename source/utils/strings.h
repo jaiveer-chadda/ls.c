@@ -8,11 +8,10 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-size_t cstrlen(const char *cstr);
-bool strends(const char *inp, const char *end);
-
-const char *getspaces(const size_t n);
+bool strends(const char *const inp, const char *const end);
 void fputspaces(const size_t n, FILE *const file);
+const char *getspaces(const size_t n);
+
 #define putspaces(n) fputspaces((n), stdout)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

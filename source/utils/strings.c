@@ -1,42 +1,9 @@
 /// @file utils/strings.c
 
 #include <stddef.h>
+#include <string.h>
+
 #include "strings.h"
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-size_t cstrlen(const char *cstr) {
-	char *chr = (char *)cstr;
-	while (*(chr++) != '\0');
-	return (size_t)(chr - cstr - 1);
-}
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-typedef struct {
-	char *cstr;
-	size_t len;
-} str_t;
-
-str_t strInit(const char *cstr) {
-	str_t output = {
-		.cstr = (char*)cstr,
-		.len = cstrlen(cstr)
-	};
-
-	output.cstr[output.len] = '\0';
-	return output;
-}
-
-str_t strnInit(const char *cstr, const size_t len) {
-	str_t output = {
-		.cstr = (char*)cstr,
-		.len = len
-	};
-
-	output.cstr[len] = '\0';
-	return output;
-}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -58,8 +25,6 @@ void arg2__toLower(char *str_out, const char *str_in) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#include <string.h>
-
 /**
  * @brief Find out whether a given string ends in another substring.
  *
@@ -68,7 +33,7 @@ void arg2__toLower(char *str_out, const char *str_in) {
  *
  * @return true if `inp` ends with the substring `end`, and false otherwise.
  */
-bool strends(const char *inp, const char *end) {
+bool strends(const char *const inp, const char *const end) {
 	// get the lengths of both strings
 	const int inp_len = strlen(inp), end_len = strlen(end);
 
