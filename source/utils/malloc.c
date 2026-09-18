@@ -5,8 +5,8 @@
 #include <string.h>
 
 #include "malloc.h"
-#include "model/global.h"
 #include "debugging.h"
+#include "model/global.h"
 
 #ifdef DEBUG_MODE
 #	define print_error(...) debug(ERROR, __VA_ARGS__)
@@ -31,38 +31,46 @@ void e__checkMemLeak(void) {
 
 /* ———————————————————————————————————————————————————————— */
 
-static inline void* exitIfNull(void *ptr, const int errno_) {
+static inline void *exitIfNull(void *ptr) {
 	if (ptr != NULL) return ptr;
 
-	print_error("%s: %s", argv0, strerror(errno_));
+	print_error("%s: %s", argv0, strerror(errno));
 	exit(EXIT_FAILURE);
 }
 
-/* ———————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void* emalloc(size_t size) {
-	void *r_ptr = malloc(size);
+#ifdef DEBUG_MODE
+
+void *e__malloc(size_t size) {
 	alloc_count++;
-	return exitIfNull(r_ptr, errno);
+	return exitIfNull(malloc(size));
 }
 
-void* ecalloc(size_t count, size_t size) {
-	void *r_ptr = calloc(count, size);
+void *e__calloc(size_t count, size_t size) {
 	alloc_count++;
-	return exitIfNull(r_ptr, errno);
+	return exitIfNull(calloc(count, size));
 }
 
-void* erealloc(void *ptr, size_t size) {
+void *e__realloc(void *ptr, size_t size) {
 	// `reallocf` frees the original pointer if it fails
-	void *r_ptr = reallocf(ptr, size);
-	return exitIfNull(r_ptr, errno);
+	return exitIfNull(reallocf(ptr, size));
 }
 
 /* ———————————————————————————————————————————————————————— */
 
-void efree(void *ptr) {
+void e__free(void *ptr) {
 	free(ptr);
 	free_count++;
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#else /* !DEBUG_MODE */
+void *e__malloc(size_t size) 				{ alloc_count++; return exitIfNull(malloc(size))		; }
+void *e__calloc(size_t count, size_t size)	{ alloc_count++; return exitIfNull(calloc(count, size))	; }
+void *e__realloc(void *ptr, size_t size)	{				 return exitIfNull(reallocf(ptr, size))	; }
+void  e__free(void *ptr)					{ free_count ++; free(ptr)								; }
+#endif /* DEBUG_MODE */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
