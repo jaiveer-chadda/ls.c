@@ -40,51 +40,26 @@ static inline void *exitIfNull(void *ptr) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#ifdef DEBUG_MODE
-
-#define E__DEBUG_ARGS		\
-	const char *const file,	\
-	const char *const func,	\
-	const int lineno
-
-#define E__ARGS_IGNORE \
-	(void)file; (void)func; (void)lineno
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-void *e__malloc(E__DEBUG_ARGS, size_t size) {
-	E__ARGS_IGNORE;
+void* emalloc(size_t size) {
 	alloc_count++;
 	return exitIfNull(malloc(size));
 }
 
-void *e__calloc(E__DEBUG_ARGS, size_t count, size_t size) {
-	E__ARGS_IGNORE;
+void* ecalloc(size_t count, size_t size) {
 	alloc_count++;
 	return exitIfNull(calloc(count, size));
 }
 
-void *e__realloc(E__DEBUG_ARGS, void *ptr, size_t size) {
-	E__ARGS_IGNORE;
+void* erealloc(void *ptr, size_t size) {
 	// `reallocf` frees the original pointer if it fails
 	return exitIfNull(reallocf(ptr, size));
 }
 
 /* ———————————————————————————————————————————————————————— */
 
-void e__free(E__DEBUG_ARGS, void *ptr) {
-	E__ARGS_IGNORE;
+void efree(void *ptr) {
 	free(ptr);
 	free_count++;
 }
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#else /* !DEBUG_MODE */
-void *e__malloc	(size_t size) 				{ alloc_count++; return exitIfNull(malloc(size))		; }
-void *e__calloc	(size_t count, size_t size)	{ alloc_count++; return exitIfNull(calloc(count, size))	; }
-void *e__realloc(void *ptr, size_t size)	{				 return exitIfNull(reallocf(ptr, size))	; }
-void  e__free	(void *ptr)					{ free_count ++; free(ptr)								; }
-#endif /* DEBUG_MODE */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
