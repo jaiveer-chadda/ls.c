@@ -1,11 +1,11 @@
-/// @file map/map.c
+/// @file utils/hashmap/hashmap.c
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "map.h"
-#include "hash/hash.h"
+#include "./hashmap.h"
+#include "./hash/hash.h"
 
 /* —— Macro Definitions ———————————————————————————————————————————————————————————————————————————————————————————— */
 

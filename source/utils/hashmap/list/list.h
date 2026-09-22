@@ -1,7 +1,7 @@
-/// @file list/list.h
+/// @file utils/hashmap/list/list.h
 
-#ifndef LIST_H
-#define LIST_H
+#ifndef LIST_H_
+#define LIST_H_
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -35,4 +35,4 @@ void ll_dump(const LList list, const char *const fmt);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#endif /* !LIST_H */
+#endif /* !LIST_H_ */

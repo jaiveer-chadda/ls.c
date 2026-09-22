@@ -1,6 +1,6 @@
 /// @file hash/hash.c
 
-#include "hash.h"
+#include "./hash.h"
 
 typedef unsigned char byte_t;
 

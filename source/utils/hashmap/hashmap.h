@@ -1,9 +1,9 @@
-/// @file map/map.h
+/// @file utils/hashmap/hashmap.h
 
-#ifndef MAP_H
-#define MAP_H
+#ifndef HASHMAP_H_
+#define HASHMAP_H_
 
-#include "list/list.h"
+#include "./list/list.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -24,4 +24,4 @@ void *hm_pop(HashMap map, const void *const key, const size_t ksize);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#endif /* !MAP_H */
+#endif /* !HASHMAP_H_ */
