@@ -100,8 +100,9 @@ int main(const int argc, char *argv[]) {
 		}
 	}
 
-	/// @todo implement `--sort-input`/`DO_SORT_INPUT`
-	if (/* DO_SORT_INPUTS() && */ file_count >= 2) sortFiles(0, &inputs[0], &file_count);
+	if (DO_SORT_INPUTS() && file_count >= 2) {
+		sortFiles(0, &inputs[0], &file_count);
+	}
 
 	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
 

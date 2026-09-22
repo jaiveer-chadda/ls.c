@@ -45,7 +45,7 @@ static const flagset ALL_FLAGS[] = {
 	{ SF_DATALESS	, "dataless"	, "dtles", "dl", FL_S_DATALESS	 }, // file is dataless object
 
 	//UF_NOUNLINK	, "unounlink"	, "unoul", "uu", FL_U_NOUNLINK	 }, // [BSD only]
-	//SF_SNAPSHOT	, "dataless"	, "snaps", "sn", FL_S_SNAPSHOT	 }, // [BSD only]
+	//SF_SNAPSHOT	, "snapshot"	, "snaps", "sn", FL_S_SNAPSHOT	 }, // [BSD only]
 };
 
 #define FLAG_COUNT ((int)(sizeof(ALL_FLAGS) / sizeof(ALL_FLAGS[0])))
@@ -182,15 +182,12 @@ static inline void checkFirmlink(FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define DO_FIRMLINKS() /*temp*/ true
-
 #define GET_FLAG_NAME(flag) \
 	(DO_TINY_FLAGS() ? (flag).tiny_name : ( \
 		DO_SHORT_FLAGS() ? (flag).short_name : (flag).name \
 	))
 
 char *parseFlags(FileStat *const pFS) {
-	/// @todo implement the `--check-firmlinks` option
 	if (DO_FIRMLINKS()) checkFirmlink(pFS);
 
 	if (pFS->s->st_flags == 0) {
@@ -266,7 +263,7 @@ void print_flags(const FileStat *const pFS) {
 		sb_addchr(output, INT_TO_HEX(hex_out[get_idx]));
 	}
 
-	sb_addstr(output, FIELD_PAD, sizeof(FIELD_PAD) - 1);
+	sb_addlit(output, FIELD_PAD);
 	sb_putsf(output);
 }
 

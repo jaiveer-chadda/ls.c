@@ -26,12 +26,15 @@ int setOptions(const int argc, char *argv[]);
 	X(DO_DOTFILES		, true	, false	, 'A', { "all"			, "almost-all"				}) \
 	X(DO_DIVIDERS		, true	, false	, '_', { "divider"		, "dividers"				}) \
 	X(DO_MOUNTDEV		, true	, false	, 'M', { "mount"		, "mounts"					}) \
+	X(DO_FIRMLINKS		, true	, false	, NSF, { "firmlinks"	, "check-firmlinks"			}) \
 	X(DIRS_AS_FILES		, false	, false	, 'd', { "dirs-as-files", "no-recurse-dirs"			}) \
 	X(DO_DIM_HIDDEN		, true	, false	, '.', { "dim-hidden"	, "dim"						}) \
 	X(DO_MOUNT_OWNER	, false	, false	, NSF, { "mount-owner"								}) \
+	X(DO_SORT_INPUTS	, false	, false	, NSF, { "sort-input"	, "sort-inputs"				}) \
 	X(DO_DEVNO_MAJMIN	, true	, false	, NSF, { "devno-majmin"	, "majmin-devno"			}) \
 	X(DO_REVERSE_SORT	, false	, false	, 'r', { "reverse"		, "rev"						}) \
 	X(SORT_DIRS_FIRST	, true	, false	, 'D', { "dirs-first"	, "sort-dirs-first"			}) \
+	X(SORT_CASE_SENSIT	, false	, false	, NSF, { "sort-case-sensitive"						}) \
 	\
 	X(do_icon			, true	, true	, 'I', { "icon"			, "icons"					}) \
 	X(do_suffix			, true	, true	, 'P', { "suffix"		, "mark-type"				}) \

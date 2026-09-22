@@ -73,13 +73,18 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 
 	CHECK_DIRS();
 
-	const char *const inp_name_1 = GET_ATTR(1, name);
-	const char *const inp_name_2 = GET_ATTR(2, name);
+	const char *name_1 = GET_ATTR(1, name);
+	const char *name_2 = GET_ATTR(2, name);
 
-	/// @todo implement an option to turn case-sensitivity on/off
-	name_t name_1, name_2;
-	toLower(name_1, inp_name_1);
-	toLower(name_2, inp_name_2);
+	name_t lname_1, lname_2;
+
+	if (!SORT_CASE_SENSIT()) {
+		toLower(lname_1, name_1);
+		toLower(lname_2, name_2);
+
+		name_1 = lname_1;
+		name_2 = lname_2;
+	}
 
 	namlen_t i = 0, j = 0;
 	while (name_1[i] != '\0' && name_2[j] != '\0') {

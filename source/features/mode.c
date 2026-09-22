@@ -13,8 +13,6 @@
 #include "options/options.h"
 #include "graphics/graphics.h"
 
-static inline FileColour getTypeColour(const char type_char); /** @todo move */
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define EXT_MASK 0007000	/// A mask to get the extended bits (4,2,1 = uid, gid, sticky) from octal permissions.
@@ -154,6 +152,22 @@ static inline PermColour getExtColour(const mode_t mode) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline FileColour getTypeColour(const char type_char) {
+	switch (type_char) {
+		case REGULAR_CHAR	: return FC_REGULAR	;
+		case DIR_CHAR		: return FC_DIRECT	;
+		case SYMLINK_CHAR	: return FC_SYMLINK	;
+		case PIPE_CHAR		: return FC_PIPE	;
+		case SOCKET_CHAR	: return FC_SOCKET	;
+		case CHRDEV_CHAR	: return FC_CHR_DEV	;
+		case BLKDEV_CHAR	: return FC_BLK_DEV	;
+		case WHITEOUT_CHAR	: return FC_WHITEOUT;
+		default				: return FC_REGULAR	;
+	}
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #define DIG_TO_CHR(dig) ((char)('0' + (unsigned)(dig)))
 
 #define ADD_COLOUR(src, dst_ptr) do {						\
@@ -206,20 +220,6 @@ void print_mode(const FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-static inline FileColour getTypeColour(const char type_char) {
-	switch (type_char) {
-		case REGULAR_CHAR	: return FC_REGULAR	;
-		case DIR_CHAR		: return FC_DIRECT	;
-		case SYMLINK_CHAR	: return FC_SYMLINK	;
-		case PIPE_CHAR		: return FC_PIPE	;
-		case SOCKET_CHAR	: return FC_SOCKET	;
-		case CHRDEV_CHAR	: return FC_CHR_DEV	;
-		case BLKDEV_CHAR	: return FC_BLK_DEV	;
-		case WHITEOUT_CHAR	: return FC_WHITEOUT;
-		default				: return FC_REGULAR	;
-	}
-}
 
 #define IS_REG() (mode_str[0] == REGULAR_CHAR)	/// Whether the file is a regular file or not.
 #define IS_UID() (idx == 3) /// `3` is the index of the SUID bit in the mode string.
