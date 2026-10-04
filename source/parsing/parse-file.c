@@ -28,7 +28,7 @@
 	if (do_time_t((type))) {				\
 		size_t b_writ = 0;					\
 		pfsf->times[(type)] = parseTime(	\
-			emalloc(sizeof(TimeInfo)),		\
+			emalloc(sizeof(TimeInfo)), /* [alloc:time-info] - freed in `printFields` */ \
 			(pstat->SPEC(type).tv_sec),		\
 			&b_writ							\
 		);									\

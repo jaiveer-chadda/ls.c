@@ -37,7 +37,7 @@ char *parseSize(unit_t *const size_unit, const off_t size, const dev_t rdev) {
 		size_str[str_len] = '\0';
 		setLen(FI_size_str, str_len);
 
-		return memcpy(emalloc(str_len + 1), size_str, str_len + 1);
+		return memcpy(emalloc(str_len + 1), size_str, str_len + 1); /* [alloc:size-str - see below] */
 	}
 
 	/* ———————————————————————————————————————————————————————————— */
@@ -73,7 +73,7 @@ char *parseSize(unit_t *const size_unit, const off_t size, const dev_t rdev) {
 	size_str[str_len] = '\0';
 	setLen(FI_size_str, str_len + (DO_PRINT_SIZE_UNIT(*size_unit) ? 1 : 0));
 
-	return memcpy(emalloc(str_len + 1), size_str, str_len + 1);
+	return memcpy(emalloc(str_len + 1), size_str, str_len + 1); /* [alloc:size-str] - freed in `print_size_str` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -173,6 +173,8 @@ void print_size_str(const FileStat *const pFS) {
 		unit_col_ansi, unit_str,
 		FIELD_PAD
 	);
+
+	efree((void*)size_str); /* [free:size-str] - alloced in `parseSize` */
 
 }
 

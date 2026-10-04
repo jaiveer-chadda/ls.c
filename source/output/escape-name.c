@@ -102,7 +102,7 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 		+ (do_init_col ? init_ansi_len		  : 0);
 
 	// allocate memory for the output, and setup the output pointer
-	char *output = emalloc(alloc_size);
+	char *output = emalloc(alloc_size); /* [alloc:escd-name-output] - freed locally */
 	char *out_ptr = output;
 
 	/* —— Add Padding & Colour ———————————————————————————————— */
@@ -155,7 +155,7 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 	/* —— Print, Free, & Cleanup —————————————————————————————— */
 
 	fputs(output, stdout);
-	efree(output);
+	efree(output); /* [free:escd-name-output] - alloced locally */
 
 	if (inp_ptr != name) setActive(DO_ANY_ESC(*(inp_ptr - 1)) ? esc_colour : colour);
 	return;

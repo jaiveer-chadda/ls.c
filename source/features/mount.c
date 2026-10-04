@@ -28,7 +28,7 @@ const MountInfo *getMountPoint(const char *const path, const bool is_dir) {
 	// if the mount location _is_ the path, then the file's a mount point
 	if (strcmp(abs_path, mt_stat.f_mntonname) != 0) return NULL;
 
-	MountInfo *const mt_info = ecalloc(1, sizeof(MountInfo));
+	MountInfo *const mt_info = ecalloc(1, sizeof(MountInfo)); /* [alloc:mount-info] - freed in `print_mount` */
 
 	mt_info->flags = mt_stat.f_flags;
 	mt_info->owneruid = mt_stat.f_owner;
@@ -62,9 +62,9 @@ void print_mount(const MountInfo *const mount) {
 	// `[owner]`
 	if (DO_MOUNT_OWNER()) {
 		printf(" [%s%s%s]%s", username_ansi, username, punct_ansi, IFCOLOUR(RESET));
-		efree((void*)username);
+		efree((void*)username); /* [free:mount-username] - alloced in `getUser` */
 	}
 
 	setActive(RESET_ALL);
-	efree((void*)mount);
+	efree((void*)mount); /* [free:mount-info] - alloced in `getMountPoint` */
 }

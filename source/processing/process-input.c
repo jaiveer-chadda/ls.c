@@ -56,18 +56,21 @@ const char *getPath(FileStat *const file) {
 
 	// allocate memory for this file's path, then copy the parent's path into the buffer
 	//	(note: no need to copy the nullbyte, so no +1 for the length)
-	char *const path = memcpy(emalloc(child_size), parent_path, parent_plen);  //i)path = "/path/to/parent"
+	char *const path = memcpy(emalloc(child_size), parent_path, parent_plen); /* [alloc:filepath] - freed in ??? */
+	//i)path = "/path/to/parent"
 
 	/* —————————————————————————————————————————————————————— */
 
 	// add the path separator
-	path[getPathLen(parent)] = '/';  //i)path = "/path/to/parent/"
+	path[getPathLen(parent)] = '/';
+	//i)path = "/path/to/parent/"
 
 	// append the file's name to the end of the path
-	memcpy(path + 1 + getPathLen(parent),  //i)path = "/path/to/parent/child_name"
+	memcpy(path + 1 + getPathLen(parent),
 		file->name,
 		file->name_len + 1 // +1 for the nullbyte this time
 	);
+	//i)path = "/path/to/parent/child_name"
 
 	/* —————————————————————————————————————————————————————— */
 
@@ -81,7 +84,8 @@ const char *getPath(FileStat *const file) {
 static inline void processChild(FileStat *const pFS_child, const struct dirent *const pDT_child) {
 	/* —— basic child info (dirent) ——————————————————————————————— */
 
-	char *child_name = emalloc(pDT_child->d_namlen + 1); // +1 for the nullbyte
+	// +1 for the nullbyte
+	char *child_name = emalloc(pDT_child->d_namlen + 1); /* [alloc:child-name] - freed locally */
 
 	// copy the info from `dirent` over to the child's `FileStat` object
 	*pFS_child = (FileStat){
@@ -107,12 +111,12 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 
 	// rather than being its own data, a file's name is now a pointer to where its name starts in `.path`
 	//	this saves having to alloc memory for its name (hence the `free` here), and having to store the path's length
-	efree(child_name);
+	efree(child_name); /* [free:child-name] - alloced locally */
 
 	/* —— `stat` child file ——————————————————————————————————————— */
 
 	// allocate the memory for the child's `stat` struct
-	pFS_child->s = emalloc(sizeof(struct stat));
+	pFS_child->s = emalloc(sizeof(struct stat)); /* [alloc:fsstat] - freed in ???, locally if error */
 
 	// run `lstat` on the path
 	if (lstat(pFS_child->path, pFS_child->s) == -1) {
@@ -120,7 +124,7 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 		pFS_child->err_no = errno;
 
 		// free the memory we allocated for the file's `stat` object
-		efree(pFS_child->s);
+		efree(pFS_child->s); /* [free:IF-ERROR] - alloced locally */
 		// then set the pointer to all its remaining elements to NULL, so we know not to process it later
 		pFS_child->s = NULL;
 		pFS_child->f = NULL;
@@ -130,7 +134,7 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 	}
 
 	// finally, if all of that succeeded, allocate some zeroed memory for the child's FSF object
-	pFS_child->f = ecalloc(1, sizeof(FileStatFields));
+	pFS_child->f = ecalloc(1, sizeof(FileStatFields)); /* [alloc:filestat] - freed in ??? */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -162,7 +166,7 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 	//	we'll realloc if we need more memory later
 	int32_t child_alloc_count = INIT_CHILD_COUNT;
 
-	pFS_dir->f->children = ecalloc(child_alloc_count, sizeof(FileStat));
+	pFS_dir->f->children = ecalloc(child_alloc_count, sizeof(FileStat)); /* [alloc:children] - freed in ??? */
 	FileStat **const children = &pFS_dir->f->children;
 
 	/* —— For Each Child in Dir ——————————————————————————————————— */
@@ -291,9 +295,9 @@ FileStat processInput(char *const path) {
 		.name_len = -1,
 
 		// allocate memory for the `stat` object that will be pointed to by `FileStat::s`
-		.s = emalloc(sizeof(struct stat)),
+		.s = emalloc(sizeof(struct stat)), /* [alloc:fsstat-input] - freed in ??? */
 		// finally, allocate memory for the `FileStatFields` object, and assign its pointer to the FileStat object
-		.f = ecalloc(1, sizeof(FileStatFields)),
+		.f = ecalloc(1, sizeof(FileStatFields)), /* [alloc:filestat-input] - freed in ??? */
 	};
 
 	// copy `statobj` from the stack into the newly-allocated heap memory at `FileStat::s file->s`

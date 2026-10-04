@@ -34,9 +34,8 @@ const char *getBasename(const char *const path) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define RETURN_PATH(path, len) (				 \
-	is_link_tg									 \
-		? path : memcpy(emalloc(len), path, len) \
+#define RETURN_PATH(path, len) ( \
+	is_link_tg ? path : memcpy(emalloc(len), path, len) /* [alloc:display-path] - freed in `print_name` */ \
 )
 
 const char *getDisplayPath(const char *const path, const namlen_t path_len) {
@@ -126,7 +125,7 @@ void print_name(const FileStat *const pFS) {
 	if (doDimFile(pFS) && !has_bg(colour)) colour.style |= G_DIM;
 
 	printEscdName(name_or_path, colour, true);
-	if (pFS->display != NULL) efree((void*)pFS->display);
+	if (pFS->display != NULL) efree((void*)pFS->display); /* [free:display-path] - freed in `getDisplayPath` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

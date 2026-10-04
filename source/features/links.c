@@ -125,7 +125,8 @@ static inline bool resolveAppleAlias(
 		goto return_1; // if that wasn't the issue, then just clean up and return
 
 	// allocate enough memory for the path
-	char *temp_t_path = emalloc((size_t)(target_path_len + 1)); // +1 for the nullbyte
+	// +1 for the nullbyte
+	char *temp_t_path = emalloc((size_t)(target_path_len + 1)); /* [alloc:temp-apple-path] - freed locally */
 
 	// try assigning the path again, now with the larger buffer
 	if (!CFStringGetFileSystemRepresentation(alias_string, temp_t_path, target_path_len))
@@ -170,7 +171,7 @@ static inline bool resolveAppleAlias(
 	return_3:
 		CFRelease(cf_t_path);
 	return_2:
-		free(temp_t_path);
+		efree(temp_t_path); /* [free:temp-apple-path] - allocated locally */
 	return_1:
 		CFRelease(alias_string);
 		*target_len = target_path_len;
@@ -235,7 +236,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 	/* ———————————————————————————————————————————————————————— */
 
 	// this memory is freed once the target is printed (in `print_link()`)
-	TargetInfo *tg_info = ecalloc(1, sizeof(TargetInfo));
+	TargetInfo *tg_info = ecalloc(1, sizeof(TargetInfo)); /* [alloc:target-info] - freed in `print_link` */
 	memcpy(tg_info->path, target_path, target_len);
 
 	tg_info->is_apple = is_apple;
@@ -324,7 +325,7 @@ void print_link(const FileStat *const pFS) {
 
 	/* ———————————————————————————————————————————————————————— */
 
-	efree((void*)tg_info);
+	efree((void*)tg_info); /* [free:target-info] - allocated in `getLink` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

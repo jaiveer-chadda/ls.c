@@ -61,7 +61,7 @@ int main(const int argc, char *argv[]) {
 	// unfortunately, this has to be allocated on the heap, since wah wah, variable-size arrays are bad
 	//	boo hoo, and I want to be a good programmer, so I don't use them. bollocks >:(
 	/// An array of FileStat objects, each representing the inputted files/dirs.
-	FileStat *const inputs = ecalloc(file_count, sizeof(FileStat));
+	FileStat *const inputs = ecalloc(file_count, sizeof(FileStat)); /* [alloc:inputs] - freed locally */
 
 	// iterate through each input, and get the input's `FileStat` object to add to the array
 	for (int i = 0; i < file_count; i++) {
@@ -137,7 +137,7 @@ int main(const int argc, char *argv[]) {
 		 */
 	}
 
-	efree(inputs);
+	efree(inputs); /* [free:inputs] - allocated locally */
 	freeFirmlinks();
 
 	/* —— Return ————————————————————————————————————————————————————————————————————————————————— */

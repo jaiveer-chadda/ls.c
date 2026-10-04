@@ -84,7 +84,7 @@ static inline bool initFirmlinks(void) {
 	// from here on, everything will only run once
 
 	// open the firmlink file for reading
-	p_flink = fopen(FIRMLINK_MAP_FILE, "r");
+	p_flink = fopen(FIRMLINK_MAP_FILE, "r"); /* [open:firmlink-file] - closed in `freeFirmlinks` */
 
 	// it's fine p_flink is NULL - we'll check this return value in the calling function,
 	//	which should return early every time from now on
@@ -94,14 +94,14 @@ static inline bool initFirmlinks(void) {
 
 	// initialise the main firmlink array
 	uint16_t fl_alloced = INIT_FLN_COUNT;
-	FIRMLINKS = ecalloc((size_t)fl_alloced, sizeof(char*));
+	FIRMLINKS = ecalloc((size_t)fl_alloced, sizeof(char*)); /* [alloc:firmlinks] - freed in `freeFirmlinks` */
 
 	/* ———————————————————————————————————————————————— */
 
 	// allocate some memory in which the section parsed by `getdelim` will go
 	//	this has to be heap memory, since `getdelim` will realloc `sec_buf` to make sure it always has enough space
 	size_t sec_bufsize = INIT_LN_BUFSIZE;
-	char *sec_buf = emalloc(sec_bufsize);
+	char *sec_buf = emalloc(sec_bufsize); /* [alloc:sec_buf] - freed locally */
 
 	// initialise the section length to be `-1`, so if errors occur on the first iteration, they're caught correctly
 	ssize_t sec_len = EOF;
@@ -132,12 +132,12 @@ static inline bool initFirmlinks(void) {
 		//	- allocate memory for the firmlink (including the nullbyte),
 		//	- then copy `sec_buf` into the newly-allocated firmlink buffer,
 		//	- then add the firmlink_buf pointer to the main `FIRMLINKS` array
-		FIRMLINKS[fl_count++] = memcpy(emalloc(sec_len), sec_buf, sec_len);
+		FIRMLINKS[fl_count++] = memcpy(emalloc(sec_len), sec_buf, sec_len); /* [alloc:fln] - freed in `freeFirmlinks`*/
 	}
 
 	// if `getdelim` changes the pointer to `sec_buf` when calling `realloc`, it'll put the new pointer
 	//	back into `sec_buf`, so this should be safe to free
-	efree(sec_buf);
+	efree(sec_buf); /* [free:sec_buf] - allocated locally */
 	return ( success = true );
 }
 
@@ -145,14 +145,14 @@ static inline bool initFirmlinks(void) {
 
 void freeFirmlinks(void) {
 	if (p_flink == NULL) return;
-	fclose(p_flink);
+	fclose(p_flink); /* [close:firmlink-file] - opened in `initFirmlinks` */
 
 	if (FIRMLINKS == NULL) return;
 	for (uint16_t i = 0; i < fl_count; i++) {
-		if (FIRMLINKS[i] != NULL) efree(FIRMLINKS[i]);
+		if (FIRMLINKS[i] != NULL) efree(FIRMLINKS[i]); /* [free:fln] - allocated in `initFirmlinks` */
 	}
 
-	efree(FIRMLINKS);
+	efree(FIRMLINKS); /* [free:firmlinks] - allocated in `initFirmlinks` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -208,7 +208,7 @@ char *parseFlags(FileStat *const pFS) {
 	}
 
 	setLen(FI_flag_str, sb_length(flag_str));
-	return sb_strdup(flag_str);
+	return sb_strdup(flag_str); /* [alloc:flag-str] - freed in ??? */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

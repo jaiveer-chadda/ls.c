@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "output.h"
+#include "malloc.h"
 #include "icons/icons.h"
 #include "options/options.h"
 #include "features/features.h"
@@ -72,6 +73,7 @@ static inline void print_suff(const FileStat *const pFS) {
 #define print_time(type) if (do_time_t(type)) { \
 	if (do_time	   ()) print_time_raw(pFS, (type)); \
 	if (do_time_str()) print_time_str(pFS, (type)); \
+	efree((void*)pFS->f->times[type]); /* [free:time-info] - alloced in `parseFile` */ \
 }
 
 /* ——————————————————————————————————————————————————— */

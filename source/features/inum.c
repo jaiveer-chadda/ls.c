@@ -23,7 +23,7 @@ void processInum(const ino_t inum) {
 	static uint32_t alloc_count = 0;
 
 	if (!inited && ( inited = true )) {
-		all_inums = emalloc(sizeof(ino_t) * ( alloc_count = INIT_INUM_COUNT ));
+		all_inums = emalloc(sizeof(ino_t) * ( alloc_count = INIT_INUM_COUNT )); /* [alloc:inums] - freed ??? */
 	}
 
 	if (store_count + 1 > alloc_count) {
