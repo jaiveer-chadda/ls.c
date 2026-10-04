@@ -15,12 +15,9 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-typedef struct {
+typedef struct flagset {
 	flag_t mask;
-	char name[MAX_FLAG_LEN];
-	char short_name[6];
-	char tiny_name[3];
-
+	char name[MAX_FLAG_LEN], short_name[6], tiny_name[3];
 	Colour colour;
 } flagset;
 

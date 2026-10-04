@@ -48,7 +48,9 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	if (!stopRecursing(pFS, depth, new_lines)) {
 		// then iterate through this directory's children, and recursively print them
 		for (int i = 0; i < pFS->f->child_count; i++) {
+			// determine whether this is the last child, so `└─` can be printed instead of `├─`
 			const bool is_last_child = (i == pFS->f->child_count - 1);
+			// recurse w/ TCO - reduces risk of a stack overflow, as the compiler will optimise to reuse the stackframe
 			printFile(&pFS->f->children[i], depth + 1, is_last_child, new_lines);
 		}
 	}

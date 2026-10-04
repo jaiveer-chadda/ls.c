@@ -96,11 +96,12 @@ FileColour setFileColour(const char *const name, const mode_t mode,
 
 		/* —— Permissions ——————————————————————————————————————— */
 
-		case S_IFDIR: // directories
+		case S_IFDIR: { // directories
 			if (mode & S_ISVTX)	return GET_STIC_COL(mode);	// directory w/ sticky bit set
 			if (mode & S_IWOTH)	return FC_OW_DIR;			// other-writeable directory
 			if (mount != NULL)	return FC_MOUNT;			// mount point
 			else				return FC_DIRECT;			// regular directory
+		}
 	}
 
 	// colour the file based on the suid/sgid bits

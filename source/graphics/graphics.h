@@ -342,11 +342,11 @@
 	X(PC_STIC_X		, HL_STIC_X		) /* 00 0000 .--------t \e[44m  */ \
 	X(PC_STIC_N		, HL_STIC_N		) /* 00 0000 .--------T \e[104m */ \
 	\
-	X(PC_NON_EXT 	, DARK_PUNCT	) /* 00 0000 .--------- \e[30m  */ \
-	X(PC_REA_EXE 	, HL_REA_EXE	) /* 00 0000 .r-xr-xr-x #E48256 */ \
-	X(PC_WRT_EXE 	, HL_WRT_EXE	) /* 00 0000 .-wx-wx--x #DFAD81 */ \
-	X(PC_REA_WRT 	, HL_REA_WRT	) /* 00 0000 .rw-rw-r-- \e[94m  */ \
-	X(PC_RWX_ALL 	, HL_RWX_ALL	) /* 00 0000 .rwxrwxr-x \e[34m  */ \
+	X(PC_NON_EXT	, DARK_PUNCT	) /* 00 0000 .--------- \e[30m  */ \
+	X(PC_REA_EXE	, HL_REA_EXE	) /* 00 0000 .r-xr-xr-x #E48256 */ \
+	X(PC_WRT_EXE	, HL_WRT_EXE	) /* 00 0000 .-wx-wx--x #DFAD81 */ \
+	X(PC_REA_WRT	, HL_REA_WRT	) /* 00 0000 .rw-rw-r-- \e[94m  */ \
+	X(PC_RWX_ALL	, HL_RWX_ALL	) /* 00 0000 .rwxrwxr-x \e[34m  */ \
 
 /* —— Time —————————————————————————————————————————————————————————————————— */
 
@@ -418,10 +418,10 @@
 /* —— —— Type Definitions —— ——————————————————————————————————————————————————————————————————————————————————————— */
 
 #define X(name, esc) name, // only unpack the names
-typedef enum { FILE_COLOUR_TABLE FC_COUNT } FileColour;
-typedef enum { PERM_COLOUR_TABLE PC_COUNT } PermColour;
-typedef enum { SIZE_COLOUR_TABLE SC_COUNT } SizeColour;
-typedef enum { TIME_COLOUR_TABLE TC_COUNT } TimeColour;
+typedef enum FileColour { FILE_COLOUR_TABLE FC_COUNT } FileColour;
+typedef enum PermColour { PERM_COLOUR_TABLE PC_COUNT } PermColour;
+typedef enum SizeColour { SIZE_COLOUR_TABLE SC_COUNT } SizeColour;
+typedef enum TimeColour { TIME_COLOUR_TABLE TC_COUNT } TimeColour;
 #undef X
 
 /* —— —— Colour Enum Declarations —— ——————————————————————————————————————————————————————————————————————————————— */

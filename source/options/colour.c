@@ -41,7 +41,7 @@ bool doColourAuto(void) {
 	const char *TERM = getenv("TERM");
 
 	if (IS_VALID_VAR(TERM)) {
-		// if check whether 
+		// if check whether
 		if (strends(TERM, "-direct"	 ) ||
 			strends(TERM, "-256color")
 		) return true;

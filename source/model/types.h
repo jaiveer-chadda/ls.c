@@ -14,8 +14,8 @@
 
 #include "consts.h"
 
-#define st_btimespec st_birthtimespec 
-#define st_btime st_btimespec.tv_sec
+#define st_btimespec st_birthtimespec
+#define st_btime	 st_btimespec.tv_sec
 
 /* ——————————————————————————————————————————————————— */
 
@@ -30,7 +30,14 @@
  * - `B_TIME`(3): Birth			time: The time the file was originally created.
  * - `TIME_COUNT`(4): The number of types in the enum.
  */
-typedef enum { A_TIME, M_TIME, C_TIME, B_TIME, TT_COUNT } TimeType;
+typedef enum TimeType {
+	A_TIME,	 /** [A]ccess time		 - Time a file's contents were last accessed. */
+	M_TIME,	 /** [M]odification time - Time the contents of a file were last modified. */
+	C_TIME,	 /** [C]reation time	 - Time the inode information of a file was last changed. */
+	B_TIME,	 /** [B]irth time		 - Time the file was created (birthed). */
+	TT_COUNT
+} TimeType;
+// spell:ignoreRegexp /(?<=\[[A-Z]\])\w+/g
 
 /* ——————————————————————————————————————————————————— */
 
@@ -59,7 +66,19 @@ typedef struct TimeInfo			TimeInfo;
  */
 typedef struct FileStat			FileStat;
 /**
+ * @struct MountInfo
+ * @brief Holds info about a mount point.
  *
+ * Contains as much information as could be needed/wanted by the user to fully describe a mount point and its
+ *	associated file system.
+ *
+ * `MountInfo::flags` is currently unused, as it's a lot of information to pack into a very small space.
+ *	@todo implement the displaying of `MountInfo::flags`.
+ *
+ * @var MountInfo::fromname	Where the filesystem is mounted from (usually in the form `/dev/disk...`).
+ * @var MountInfo::typename	String name of the type of filesystem (`devfs`, `autofs`, etc.).
+ * @var MountInfo::owneruid	UID of the user that mounted the filesystem.
+ * @var MountInfo::flags	Copy of mount-exported flags.
  */
 typedef struct MountInfo		MountInfo;
 /**
@@ -89,33 +108,47 @@ typedef struct FileStatFields	FileStatFields;
 
 /* ——————————————————————————————————————————————————— */
 
-// 2,147,483,647 files ≈ 2.1 Gb
+typedef uint32_t flag_t	 ; /** The user/system defined flag/flags associated with a file. */
+typedef wchar_t	 icon_t	 ; /** A single multibyte character defining the icon printed before a file's name. */
+typedef int16_t	 namlen_t; /** The length of a name or path. */
+typedef char	*link_t	 ; /** The path held by a symlink. */
+typedef char	 suff_t	 ; /** A file's suffix. Can be one of: `/`, `@`, `*`, `=`, `|`, `%` */
+typedef char	 unit_t	 ; /** The unit of a file's size. Also used to denote whether a size is zero, or is maj,min. */
 
-typedef bool lines_t[RECURSION_LIMIT]; // `bool[RECURSION_LIMIT]` = 16
+typedef char  name_t[MAX_NAME_LEN];		/** `char  name_t[MAX_NAME_LEN]` = 255 */
+typedef char  path_t[MAX_PATH_LEN];		/** `char  path_t[MAX_PATH_LEN]` = 1024 */
+typedef char sizestr[MAX_SIZE_LEN];		/** `char sizestr[MAX_SIZE_LEN]` = 10 */
+typedef char modestr[MODE_STR_LEN];		/** `char modestr[MODE_STR_LEN]` = 12 */
+typedef char mttyp_t[MNT_TYPE_LEN];		/** `char mttyp_t[MNT_TYPE_LEN]` = 16 */
+typedef char timestr[MAX_TIME_LEN];		/** `char timestr[MAX_TIME_LEN]` = `(1 << 5)` = 32 */
+typedef char ugidstr[MAX_UGID_LEN];		/** `char ugidstr[MAX_UGID_LEN]` = `(1 << 5)` = 32 */
+typedef bool lines_t[RECURSION_LIMIT];	/** `bool lines_t[RECURSION_LIMIT]` = 16 */
+typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; /** `char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]` = 180 */
 
-typedef wchar_t icon_t;
-typedef uint32_t flag_t;
-typedef int16_t namlen_t;
-
-typedef char *link_t;
-typedef char  suff_t; /** Can be one of: `/`, `@`, `*`, `=`, `|`, `%` */
-typedef char  unit_t;
-typedef char  name_t[MAX_NAME_LEN]; // `char[MAX_NAME_LEN] = 255`
-typedef char  path_t[MAX_PATH_LEN]; // `char[MAX_PATH_LEN] = 1024`
-
-typedef char sizestr[MAX_SIZE_LEN]; // `char sizestr[MAX_SIZE_LEN]` = 10
-typedef char modestr[MODE_STR_LEN]; // `char modestr[MODE_STR_LEN]` = 12
-typedef char mttyp_t[MNT_TYPE_LEN]; // `char mttyp_t[MNT_TYPE_LEN]` = 16
-typedef char timestr[MAX_TIME_LEN]; // `char timestr[MAX_TIME_LEN]` = `(1 << 5)` = 32 
-typedef char ugidstr[MAX_UGID_LEN]; // `char ugidstr[MAX_UGID_LEN]` = `(1 << 5)` = 32
-typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; // `(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM` = 180
+/** `char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")]` = `20 + 6` = 26 */
+typedef char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")];
 
 /* ——————————————————————————————————————————————————— */
 
-/// @brief The fields by which outputs can be sorted, using the `--sort` flag.
-typedef enum {
-	SB_DEFAULT, SB_NONE,
-	SB_NAME, SB_SIZE, SB_TIME, SB_INODE, SB_DEVNO, SB_UID, SB_GID, SB_NLINK, SB_FLAGS, SB_TYPE, SB_MODE,
+/**
+ * @enum SortByField
+ * @brief The fields by which outputs can be sorted, using the `--sort`/`--sort-by` flag.
+ */
+typedef enum SortByField {
+	SB_DEFAULT,	/** Sort by the default sorting order (usually by name). */
+	SB_NONE	,	/** Don't sort files at all - leave them in the order defined by the OS, or by argument order. */
+
+	SB_NAME	, /** Sort lex12ly by a file's name. Dotfiles first, then alphabetically, with all numbers in order. */
+	SB_SIZE	, /** Sort by a file's size. */
+	SB_TIME	, /** Sort by the time being displayed (modification time by default). */
+	SB_INODE, /** Sort by a file's inode number. */
+	SB_DEVNO, /** Sort by the device number of the file's filesystem. */
+	SB_UID	, /** Sort by a file's owner's UID. */
+	SB_GID	, /** Sort by a file's group's GID. */
+	SB_NLINK, /** Sort by the number of links a file has. */
+	SB_FLAGS, /** Sort by a file's user/super-user defined flags (sorts numerically by the raw hex flags). */
+	SB_TYPE	, /** Sort files by their type defined in the first two digits of a file's octal mode. */
+	SB_MODE	, /** Sort files by their permissions (sorts numerically by raw hex mode, excluding filetype). */
 	/* SB_COUNT */
 } SortByField;
 

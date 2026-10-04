@@ -12,8 +12,8 @@
 #include "model/global.h"
 
 #ifndef t
-#define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug that my error checker has */
-#define f 0
+#	define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug that my error checker has */
+#	define f 0
 #endif
 
 /* —— Initialise Options ——————————————————————————————————————————————————————————————————————————————————————————— */
@@ -115,7 +115,7 @@ static inline void allFieldsOn(void) {
 
 /* ── ── setOptions() ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
-int setOptions(const int argc, char *argv[]) {
+int setOptions(const int argc, char *const *const argv) {
 	if (argv0[0] == 'c') VALUE_OF(DO_CLEAR) = true;
 
 	/// True if the colour should be determined automatically by the program.
@@ -323,15 +323,14 @@ bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS	; }
 bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS; }
 
 // create very basic getter functions for each of the binary options
-#define X(name, ...) \
-	inline bool name(void) { return VALUE_OF(name); }
-BINARY_OPTIONS_TABLE
+#define X(name, ...) inline bool name(void) { return VALUE_OF(name); }
+	BINARY_OPTIONS_TABLE
 #undef X
 
 /* ————————————————————————————————————————————————————————— */
 
 inline bool do_time_t(TimeType type) {
-	static bool (* const funcs[])(void) = {
+	static bool (*const funcs[])(void) = {
 		[A_TIME] = do_atime,
 		[M_TIME] = do_mtime,
 		[C_TIME] = do_ctime,

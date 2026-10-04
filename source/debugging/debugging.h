@@ -18,12 +18,12 @@
 	X(FATAL		, 41) \
 
 #define X(name, ...) L_##name,
-typedef enum { LOG_LEVEL_TABLE L_COUNT } LogLevelIdx;
+typedef enum LogLevelIdx { LOG_LEVEL_TABLE L_COUNT } LogLevelIdx;
 #undef X
 
-typedef struct {
+typedef struct LogLevel {
 	char name[10];
-	unsigned short colour;
+	uint16_t colour;
 } LogLevel;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -75,11 +75,12 @@ void d__line(const uint8_t len);
 				case '\n' : fputs("\33[33mn\33[m", stderr); break;												\
 				case '\r' : fputs("\33[33mr\33[m", stderr); break;												\
 				case '\33': fputs("\33[34me\33[m", stderr); break;												\
-				default:																						\
+				default: {																						\
 					if (0x01 <= _stri && _stri <= 0x09)	{ fprintf(stderr, "\33[91m\\%hu\33[m", _stri); break; }	\
 					if (0x0A <= _stri && _stri <= 0x1F)	{ fprintf(stderr, "\33[92m\\x%x\33[m", _stri); break; }	\
 					if (_stri & 128 /*(top bit set)*/ )	{ fprintf(stderr, "\33[95m\\x%x\33[m", _stri); break; }	\
 					fputc(_stri, stderr);																		\
+				}																								\
 			}																									\
 		}																										\
 		\

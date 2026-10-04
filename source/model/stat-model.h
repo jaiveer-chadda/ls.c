@@ -8,13 +8,18 @@
 
 /* —— FileStat (main) —————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/*
+ * DO NOT USE IN ANY PRODUCTION CODE!
+ *
+ * These macros are purely used as a quick reference to determine the size of each of the below structs.
+ *	Note: `[]` is included at the end of each statement to prevent any of these statements ever being valid C.
+ */
 #ifdef DEBUG_MODE
-/*	DO NOT USE IN ANY PRODUCTION CODE! */
-#	define _FILESTAT_SIZE sizeof(FileStat)
-#	define _FSFIELDS_SIZE sizeof(FileStatFields)
-#	define _TARGINFO_SIZE sizeof(TargetInfo)
-#	define _MOUNTINF_SIZE sizeof(MountInfo)
-#	define _TIMEINFO_SIZE sizeof(TimeInfo)
+#	define _FILESTAT_SIZE sizeof(FileStat)		 []
+#	define _FSFIELDS_SIZE sizeof(FileStatFields) []
+#	define _TARGINFO_SIZE sizeof(TargetInfo)	 []
+#	define _MOUNTINF_SIZE sizeof(MountInfo)		 []
+#	define _TIMEINFO_SIZE sizeof(TimeInfo)		 []
 #endif
 
 /**
@@ -79,7 +84,7 @@ struct FileStatFields {
 	const char	*usr_name	; // 8 /** The name of the file's owner. */
 	const char	*grp_name	; // 8 /** The name of the file's group. */
 
-	FileStat	*children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s */
+	FileStat	*children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s. */
 	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
 	unit_t		size_unit	; // 1 /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
 }; // 93 + 3 pad = 96b
@@ -111,6 +116,21 @@ struct TargetInfo {
 
 /* —— MountInfo ———————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/**
+ * @struct MountInfo
+ * @brief Holds info about a mount point.
+ *
+ * Contains as much information as could be needed/wanted by the user to fully describe a mount point and its
+ *	associated file system.
+ *
+ * `MountInfo::flags` is currently unused, as it's a lot of information to pack into a very small space.
+ *	@todo implement the displaying of `MountInfo::flags`.
+ *
+ * @var MountInfo::fromname	Where the filesystem is mounted from (usually in the form `/dev/disk...`).
+ * @var MountInfo::typename	String name of the type of filesystem (`devfs`, `autofs`, etc.).
+ * @var MountInfo::owneruid	UID of the user that mounted the filesystem.
+ * @var MountInfo::flags	Copy of mount-exported flags.
+ */
 struct MountInfo {
 	path_t	fromname; // 1024	/** Where the filesystem is mounted from (usually `/dev/disk...`). */
 	mttyp_t	typename; // 16		/** Name of the type of filesystem. */
@@ -132,20 +152,81 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36b
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Helper Macros ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define isValidFS(p_fs) \
-	(((FileStat*)(p_fs)) != NULL && ((FileStat*)(p_fs))->name != NULL)
+/**
+ * @def isValidFS
+ * @brief Determine whether a `FileStat` object is valid or not.
+ *
+ * Firstly, check whether `p_fs` is `NULL`. If it is, then there's no object behind the pointer, and it can't be valid.
+ *
+ * If `p_fs` isn't `NULL`, then check if the `FileStat::name` field has been set. At every initialisation of the
+ * `FileStat` object, the `name` field is always set, ∴ no `FileStat` object can be valid without it
+ *
+ * @param p_fs[in] A pointer to the `FileStat` object which is to be checked.
+ * @return `bool` – `true` if `p_fs` points to a valid `FileStat` object, `false` otherwise.
+ */
+#define isValidFS(p_fs) ((bool)(		 \
+	((FileStat*)(p_fs))		  != NULL && \
+	((FileStat*)(p_fs))->name != NULL	 \
+))
 
-#define getPathLen(p_fs) \
-	((namlen_t)(((p_fs)->path == NULL || (p_fs)->name == NULL) ? 0 \
-		: (((p_fs)->name - (p_fs)->path) + (p_fs)->name_len)))
+/**
+ * @def getPathLen
+ * @brief Get the length of the string held by `FileStat::path`.
+ *
+ * If the `FileStat` object at `p_fs` isn't valid, or if its `path` hasn't been set, then return 0.
+ *
+ * Otherwise, since `FileStat::name` is a pointer to a character within `FileStat::path`, find the offset between
+ *	`->name` and `->path`. This is the length of the `basename` (i.e. the path without the filename). Then add the
+ *	length of the filename, to get the total length of the path to the file at `p_fs`.
+ *
+ * @param p_fs[in] The `FileStat` object whose path's length should be determined.
+ * @return `namlen_t` – The length of the path of the `FileStat` object at `p_fs`. `0` on failure.
+ */
+#define getPathLen(p_fs) (									\
+	(namlen_t)((!isValidFS(p_fs) || (p_fs)->path == NULL)	\
+		? 0													\
+		: (													\
+			((p_fs)->name - (p_fs)->path)					\
+			+ (p_fs)->name_len								\
+		)													\
+	)														\
+)
 
-#define isFSDir(p_fs) (							\
+/**
+ * @def isFSDir
+ * @brief Determine whether a `FileStat` object references a directory or not.
+ *
+ * Firstly, check if the `FileStat` object's mode defines it as a directory. If it does, then there's no need for more
+ *	checks - return `true`.
+ *
+ * However, if the file isn't a directory, then:
+ *
+ *	- Check if it has a `FileStatFields` object.
+ *
+ *	- If it does, check if it has a target (i.e. that it's either a symlink, or an Apple alias).
+ *
+ *	- If it @a is a link/alias, then check if the suffix for the the target of that link has been set to be a
+ *		directory's suffix.
+ *
+ *	-	- Since the mode of a target path isn't stored, this is the easiest way to determine whether the link points to
+ *			a directory or not
+ *
+ * If any of these checks fail, then either the file isn't a directory, or we can't tell.
+ * In either case, return `false`.
+ *
+ * @param p_fs[in] A pointer to the `FileStat` object which should be queried about being a directory.
+ * @return `bool` – `true` if `p_fs` points to a `FileStat` object representing a directory. `false` otherwise.
+ *
+ * @warning `isFSDir` will segfault if `p_fs == NULL`.
+
+ */
+#define isFSDir(p_fs) ((bool)(					\
 	S_ISDIR((p_fs)->mode) || (					\
-		(p_fs)->f != NULL &&					\
-		(p_fs)->f->target != NULL &&			\
+		(p_fs)->f				  != NULL &&	\
+		(p_fs)->f->target		  != NULL &&	\
 		(p_fs)->f->target->suffix == DIR_SUFFIX	\
 	)											\
-)
+))
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

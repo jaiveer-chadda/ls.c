@@ -9,49 +9,52 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/** The name of this program - used to print error messages as a fallback, when `argv[0]` can't be parsed correctly. */
 #define PROGRAM_NAME "lk"
-#define DOTDIR "."
-#define BASE_10 10
+#define DOTDIR "." /** An abbreviation representing the current directory being referenced by the program. */
+#define BASE_10 10 /** A clarifying constant, passed to `strtol`. */
 
 /* —————————————————————————————————————————————————————— */
 
-/// @brief The maximum number of levels the program is allowed to recuse.
-#define RECURSION_LIMIT 16
+#define RECURSION_LIMIT 16 /** @brief The maximum number of levels the program is allowed to recuse. */
 
-/// @brief How many children of a directory to allocate memory for, before we know the final child count.
+/** @brief How many children of a directory to allocate memory for, before we know the final child count. */
 #define INIT_CHILD_COUNT 2
 
 /**
  * @brief The maximum number of files that APFS will allow in a single folder.
  *
- * `MAX_CHILD_COUNT` = `INT32_MAX` = `(1 << ((1 << 5) - 1)) - 1` = `2,147,483,647 files` ≈ `2.1 G`
+ * And therefore the maximum number of children (child/sub files) that a directory can have.
+ *
+ * ---
+ *
+ * `MAX_CHILD_COUNT` = `INT32_MAX` = `(1 << ((1 << 5) - 1)) - 1` = `2,147,483,647 files` ≈ `2.1 GB`
  */
 #define MAX_CHILD_COUNT ((signed int)((1l << ((1l << 5) - 1)) - 2))
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/// @brief The maximum length a filename can be on Darwin (macOS/some BSD) machines (255 b).
+/** @brief The maximum length of an option's long flag (excluding the leading `--`, but including the nullbyte). */
+#define MAX_OPT_FLAG_LEN 20
+/** @brief The maximum number of long flags that an option can have. */
+#define MAX_OPT_FLAG_NUM 3
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+/** @brief The maximum length a filename can be on Darwin (macOS/some BSD) machines (255 B). */
 #define MAX_NAME_LEN MAXNAMLEN
 
-/// @brief The maximum length a path can be on Darwin (macOS/some BSD) machines (1024 b).
+/** @brief The maximum length a path can be on Darwin (macOS/some BSD) machines (1024 B). */
 #define MAX_PATH_LEN MAXPATHLEN
 
-/// @brief The maximum number of characters that a mount point's type can be
-#define MNT_TYPE_LEN MFSTYPENAMELEN
-
-/// @brief The maximum number of possible user and superuser flags on macOS.
-#define MAX_FLAG_NUM 15
-
-/// @brief The longest flag name on macOS ("uimmutable") + 1.
-#define MAX_FLAG_LEN 11
+#define MNT_TYPE_LEN MFSTYPENAMELEN	/** @brief The maximum number of characters that a mount point's type can be. */
+#define MAX_FLAG_NUM 15				/** @brief The maximum number of possible user and super-user flags on macOS. */
+#define MAX_FLAG_LEN 11				/** @brief The longest flag name on macOS ("uimmutable") + 1. */
 
 /* —————————————————————————————————————————————————————— */
 
-/// @brief The length of the mode (including type) when written in octal (e.g. `040755`).
-#define OCT_MODE_LEN 6
-
-/// @brief The length of the human-readable mode string (e.g. `drwxr-xr-x@+`).
-#define MODE_STR_LEN 12
+#define OCT_MODE_LEN 6	/** @brief The length of the mode (including type) when written in octal (e.g. `040755`). */
+#define MODE_STR_LEN 12	/** @brief The length of the human-readable mode string (e.g. `drwxr-xr-x@+`). */
 
 /**
  * @brief The length of the string displaying a file's size.
@@ -63,8 +66,8 @@
 /**
  * @brief The maximum length of a user or group name.
  *
- * This also doesn't hit the theoretical max (2^8), but nothing's ever gonna be that long,
- *  and macOS' GUI only allows you to create usernames of length 2^5 (32) anyways.
+ * This also doesn't hit the theoretical max (`2^8` = `256`), but nothing's ever gonna be that long,
+ *  and macOS' GUI only allows you to create usernames of length `2^5` (32) anyways.
  */
 #define MAX_UGID_LEN (1 << 5)
 

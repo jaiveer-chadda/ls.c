@@ -144,7 +144,7 @@ static inline bool resolveAppleAlias(
 	if (cf_t_path == NULL)
 		goto return_3;
 
-	// now that we know whether the file exists or not, 
+	// now that we know whether the file exists or not,
 	//	truncate the path string so it'll fit in into `path_t`
 	const CFStringRef trunc_t_path = CFStringCreateWithSubstring(
 		/* alloc	*/ DEFAULT_ALLOCATOR,
@@ -162,7 +162,7 @@ static inline bool resolveAppleAlias(
 		/* buffer	 */ target_buffer,
 		/* maxBufLen */ (CFIndex)sizeof(path_t)
 	);
-	
+
 	/* ——————————————————————————————————————————————————————————— */
 
 	return_4:

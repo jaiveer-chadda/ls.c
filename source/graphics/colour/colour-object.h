@@ -97,7 +97,7 @@ typedef int32_t colour_t;
 
 /* —— Main struct/object ——————————————————————————————————————————————————————————————————————————————————————————— */
 
-typedef struct {
+typedef struct Colour {
 	style_t style;
 	colour_t fg, bg;
 } Colour;

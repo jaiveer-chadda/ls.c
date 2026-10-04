@@ -1,57 +1,22 @@
 /// @file debugging/debugging.c
 
-#include <stdio.h>
 #include <wchar.h>
-#include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
 #include <stdbool.h>
 #include <execinfo.h>
 
-#define DEBUGGING_IMPLEMENTATION
-#include "debugging.h"
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#ifdef RESET
-#	undef RESET
-#	undef ANSI
-#	undef DIM
-#endif
-
-#define RESET "\33[m"
-#define ANSI(code) "\033[" code "m"
-
-#define DIM		ANSI("2")
-#define NO_DIM	ANSI("22")
-
-#define DIMS(str) DIM str NO_DIM
-
-#define LBR DIMS("[")
-#define RBR DIMS("]")
-
-#define LPA DIMS("(")
-#define RPA DIMS(")")
-
-#define REL_PATH(file) (char *)(strstr((char *)(file), "source/") + (int)strlen("source/"))
-
-#define STACK_MAX 128
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#define toStderr(...) do { fprintf(stderr, __VA_ARGS__); fflush(stderr); } while (0)
+#include "_defs.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #ifdef LOG_LEVEL_TABLE
-#	define X(name, ...) [L_##name] = { #name, __VA_ARGS__ }, 
+#	define X(name, ...) [L_##name] = { #name, __VA_ARGS__ },
 	static const LogLevel LOG_LEVELS[] = { LOG_LEVEL_TABLE };
 #	undef X
 #	undef LOG_LEVEL_TABLE
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
 
 void d__debug(
 	const LogLevelIdx level_,
@@ -61,29 +26,35 @@ void d__debug(
 ) {
 	const LogLevel level = LOG_LEVELS[level_ < L_COUNT ? level_ : L_DEBUG];
 
-	toStderr(
-		ANSI("%hu") LBR " %-7s " RBR RESET " "	// [ WARNING ]
-		LBR "%s" RBR " "						//		[02:41:15]
-		ANSI("38;5;217") "%16s " DIMS("@")		//			getTargetInfo @
-		ANSI("38;5;111") " %-30s"				//				info/get-file-info.c
-		LPA "%3d" RPA RESET " "					//					(110)
-		ANSI("%hu")
-		,
-		level.colour, level.name,
-		time,
-		func,
-		REL_PATH(file),
-		lineno,
-		level.colour
-	);
+	/* ———————————————————————————————————————————————————————————————————— */
 
+	toStderr(ANSI("%hu")						,			level.colour	); // colour
+	toStderr(D("[")	SP	"%-*s"	D("]") RESET " ", NAME_LEN, level.name		); //	[ WARNING ]
+	toStderr(D("[")		"%*s"	D("]") RESET " ", TIME_LEN, time			); //		[02:41:15]
+	toStderr(ANSI8(217)	"%*s"SP	D("@")		 " ", FUNC_LEN, func			); //			getTargetInfo @
+	toStderr(ANSI8(111)	"%-*s"				 " ", FILE_LEN, REL_PATH(file)	); //				info/get-file-info.c
+	toStderr(D("(")		"%*d"	D(")") RESET " ", LNNO_LEN, lineno			); //					(110)
+	toStderr(ANSI("%hu")						,			level.colour	); // colour
+
+	/* ———————————————————————————————————————————————————————————————————— */
+
+	// fill the buffer with the output of `printf`
+	char *pbuffer;
 	va_list va_args;
-	va_start(va_args, fmt); // `fmt` is the last known fixed argument
 
-	vfprintf(stderr, fmt, va_args);
+	va_start(va_args, fmt); // `fmt` is the last known fixed argument
+	vasprintf(&pbuffer, fmt, va_args);
 	va_end(va_args);
 
-	fputs(RESET "\n", stderr);
+	/* —————————————————————————————————— */
+
+	for (const char *chr = pbuffer; *chr != '\0'; chr++) {
+		fputc(*chr, stderr);
+		if (*chr == '\n') toStderr("%*s", TOTAL_LEN, "");
+	}
+
+	free(pbuffer);
+	toStderr(RESET "\n");
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -96,25 +67,37 @@ void d__line(const uint8_t len) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define ST_LINE L"────────"
+
 void d__stacktrace(void) {
 	void *stack_buffer[STACK_MAX];
-
-	// get the current stack return addresses
-	int trace_size = backtrace(stack_buffer, STACK_MAX);
+	// get the current stack return addresses, putting them into the `stack_buffer` array
+	int stack_count = backtrace(stack_buffer, STACK_MAX);
 	// translate addresses into strings
-	char **symbols = backtrace_symbols(stack_buffer, trace_size);
+	char **stack = backtrace_symbols(stack_buffer, stack_count);
 
 	dline();
-	if (symbols == NULL) {
+
+	if (stack == NULL) {
 		debug(ERROR, "`stacktrace` failed");
+		dline();
 		return;
 	}
 
-	fprintf(stderr, "%s function call stack (depth: %d) %s\n", "────────", trace_size, "────────");
-	for (int i = 1; i < trace_size; i++) fprintf(stderr, "[%d] %s\n", i - 1, symbols[i]);
-	dline(); 
+	// note: `ST_LINE` can't be passed directly to `printf`'s format string, since it's a multibyte (wchar_t) string
+	toStderr("%ls function call stack (depth: %d) %ls\n",
+		ST_LINE, stack_count, ST_LINE
+	);
 
-	free(symbols);
+	// starting at `i = 1` avoids the stacktrace listing `d__stacktrace` in the stack
+	for (int i = 1; i < stack_count; i++) {
+		toStderr("[%d] %s\n", i - 1, stack[i]);
+	}
+	free(stack);
+
+	dline();
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignore LNNO

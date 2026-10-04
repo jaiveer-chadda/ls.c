@@ -1,71 +1,15 @@
 /// @file debugging/dump.c
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
-#include "debugging.h"
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#ifdef RESET
-#	undef RESET
-#	undef ANSI
-#	undef DIM
-#endif
-
-#define RESET "\33[m"
-#define ANSI(code) "\033[" code "m"
-
-#define DIM		ANSI("2")
-#define NO_DIM	ANSI("22")
-
-#define DIMS(str) DIM str NO_DIM
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#define T		DIMS("├─")
-#define I		DIMS("│ ")
-#define O		DIMS("└─")
-
-#define p		 "\33[96m*"			RESET
-#define S		" \33[96m* "		RESET
-#define E		" \33[94m= "		RESET
-
-#define null	" \33[91m(null)"	RESET
-#define STRUCT	" \33[95mstruct "	RESET
-#define CHAR	" \33[95mchar "		RESET
-#define BOOL	" \33[34mbool "		RESET
-
-#define PTR				"%s"
-#define STR		"\33[92m%s%s%s"		RESET
-#define CHR		"\33[92m'%c'"		RESET
-#define LCR		"\33[92m'%lc'"		RESET
-
-#define ENM(idx) "\33[38;5;116m" DIMS("[")	#idx DIMS("]")	RESET
-#define IDX(idx) "\33[38;5;216m" DIMS("[")	#idx DIMS("]")	RESET
-#define NUM(fmt) "\33[38;5;216m"			#fmt		""	RESET
-#define OCT(fmt) "\33[94m"					#fmt		""	RESET
-#define   V(typ) "\33[93m"					#typ		""	RESET
+#include "_defs.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static char buf[32] = "";
-static inline char *tostr(void *ptr) {
-	if (ptr == NULL) strcpy(buf, "\33[38;5;69mNULL" RESET);
-	else sprintf(buf, "\33[38;5;147m%p"RESET, ptr);
+static inline char *tostr(void *ptr_) {
+	if (ptr_ == NULL) strcpy(buf, "\33[38;5;69mNULL" RESET);
+	else sprintf(buf, "\33[38;5;147m%p" RESET, ptr_);
 	return buf;
 }
-
-#define ptr(ptr) tostr((void*)(ptr))
-#define ifn(q, do, else) ((q) == NULL ? (do) : (else))
-#define str(fld) ifn(fld,"","\""), ifn(fld, "\b" null, fld), ifn(fld,"","\"")
-
-#define ter(...) fprintf(stderr, __VA_ARGS__);
-#define err(fmt, ...) do { fprintf(stderr, (fmt "\n"), __VA_ARGS__); fflush(stderr); } while (0)
-#define ERR(str_) fputs(str_ "\n", stderr);
-#define pbool(val) ((val) ? "\33[32m✓ true\33[m" : "\33[31m× false\33[m")
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

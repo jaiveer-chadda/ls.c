@@ -7,10 +7,8 @@
 
 /* ——————————————————————————————————————————————————————— */
 
-typedef struct {
-	const char title[12];
-	const char fmt_p[12];
-	const char fmt_s[8];
+typedef struct field_t {
+	const char title[12], fmt_p[12], fmt_s[8];
 	size_t len;
 	uint8_t title_len;
 	bool is_right;
@@ -52,7 +50,7 @@ extern field_t fields[];
 /**/
 
 #define X(fld, hdr, fms, ext, lor) FI_##fld,
-typedef enum { FIELDS_TABLE FI_COUNT } FieldIdx;
+typedef enum FieldIdx { FIELDS_TABLE FI_COUNT } FieldIdx;
 #undef X
 
 #define FIRST_TIME_FIELD	FI_atime

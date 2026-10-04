@@ -171,11 +171,14 @@ void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_co
 	/// The multiplier which will be applied to a sort if the `--reverse-sort` option is enabled.
 	REVERSE = DO_REVERSE_SORT() ? -1 : 1;
 
-	#pragma clang diagnostic push
-	#pragma clang diagnostic ignored "-Wimplicit-fallthrough"
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 
 	switch (SORT_BY()) {
-		case SB_DEFAULT	: /* [[fallthrough]]; */ /* sort by name by default*/
+		case SB_DEFAULT	: /* sort by name by default*/
+		#if __STDC_VERSION__ >= 202300L
+			[[fallthrough]];
+		#endif
 		case SB_NAME	: SORT_FILES_BY(name ); break;
 		case SB_MODE	: SORT_FILES_BY(mode ); break;
 		case SB_SIZE	: SORT_FILES_BY(size ); break;
@@ -190,7 +193,7 @@ void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_co
 		case SB_NONE	: return; // if we're not sorting this file, then we won't be sorting any of its children
 	}
 
-	#pragma clang diagnostic pop
+	#pragma GCC diagnostic pop
 
 	// this is a special case, since the decision to sort inputs is taken seperately to whether to sort children
 	if (depth == 0) return;

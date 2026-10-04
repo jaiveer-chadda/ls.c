@@ -29,7 +29,7 @@ struct b__strbuilder {
  * ---
  *
  * @returns
- * 	- `var == 0` → `var = 1`
+ *	- `var == 0` → `var = 1`
  *
  *	- `var == 1` → `var = 1`
  *

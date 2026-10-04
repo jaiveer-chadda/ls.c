@@ -13,7 +13,7 @@
 #include "debugging.h"
 #include "options/options.h"
 
-typedef struct { uint8_t r, g, b; } rgb_t;
+typedef struct rgb_t { uint8_t r, g, b; } rgb_t;
 
 /* ── ── Function Defs ── ────────────────────────────────────────────────────────────────────────────────────────── */
 
@@ -354,8 +354,9 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 		switch (style) {
 			case G_DUNDER:	return ANSI_NO_UNDER;	// on = `\e[21m`, off = `\e[24m`
 			case G_BOLD:	return ANSI_NO_BOLD;	// on = `\e[1m` , off = `\e[22m`
-			default: // recurse once into this function, and add 20 to its normal output
+			default: { // recurse once into this function, and add 20 to its normal output
 				return stylelookup(style, ON) + ANSI_OFF_MOD; // on = `\e[Xm` , off = `\e[2Xm`
+			}
 		}
 	}
 
@@ -369,9 +370,10 @@ static inline int stylelookup(const style_t style, const bool turn_style) {
 		case G_INVIS	: return ANSI_INVIS	;
 		case G_STRIKE	: return ANSI_STRIKE;
 		case G_DUNDER	: return ANSI_DUNDER;
-		default:
+		default: {
 			debug(WARNING, "Invalid `Colour::style` value: '%#x'", style);
 			return ANSI_NOTHING; // the esc seq `\e[6m` does nothing, and is harmless to print
+		}
 	}
 }
 
