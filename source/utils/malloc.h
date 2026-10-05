@@ -15,21 +15,19 @@ void efree(void *ptr);
 
 /* —————————————————————————————————————————————————————————— */
 
-/// Approximately multiplies a number by 1.5, in place.
+/** @brief Approximately multiplies a number by 1.5, in place. */
 #define MULT_BY_1_5(var) \
 	((var) += (var) == 1 ? 1 : (var) >> 1)
 
-/// Approximately multiplies a number by 1.5, and returns the result.
+/** @brief Approximately multiplies a number by 1.5, and returns the result. */
 #define TIMES_1_5(var) \
 	((var) == 1 ? 1 : (var) >> 1)
 
 /* —————————————————————————————————————————————————————————— */
 
 #ifdef DEBUG_MODE
-	void e__checkMemLeak(void);
-	void e__alloced(size_t count);
-#	define checkMemLeak() e__checkMemLeak()
-#	define alloced(count) e__alloced(count)
+	void checkMemLeak(void);
+	void alloced(const size_t count);
 #else
 #	define checkMemLeak()
 #	define alloced(count) (void)count
