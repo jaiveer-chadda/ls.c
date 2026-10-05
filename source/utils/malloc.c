@@ -8,38 +8,93 @@
 #include "debugging.h"
 #include "model/global.h"
 
-#ifdef DEBUG_MODE
-	static size_t alloc_count = 0, freed_count = 0;
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#	define add_to_alloc(num) (alloc_count += (num))
-#	define add_to_freed(num) (freed_count += (num))
-#	define print_error(...) debug(ERROR, __VA_ARGS__)
-#else
-#	define add_to_alloc(num) (void)num
-#	define add_to_freed(num) (void)num
-#	define print_error(...) fprintf(stderr, __VA_ARGS__)
-#endif
+#define LOG_FILE PROJECT_ROOT "/logs/allocations.log"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #ifdef DEBUG_MODE
+	static size_t alloc_count = 0, freed_count = 0;
+	static bool first_write = true;
+
+#	define print_error(...)	debug(ERROR, __VA_ARGS__)
+
+#	define PTR(p)			((uintptr_t)(p))
+#	define REL_PATH(file)	((char *)(strstr((char *)(file), "source/") + (int)(sizeof("source/") - 1)))
+
+#	define DEB_PRINT		REL_PATH(file), func, line
+#	define DEB_FMT			"\"%-26s\" @ %-14s (%3d)"
+
+#	define DIFF				(L'Δ'), ((ssize_t)(alloc_count - freed_count))
+#	define DIFF_FMT(chr)	" [" #chr "=%3zu %lc=%3zd] "
+
+#	define tologfile(fmt, ...) do {															\
+		const int err_no = errno;															\
+		FILE *const log_file = fopen(LOG_FILE, first_write ? "w" : "a");					\
+		first_write = false;																\
+		\
+		fprintf(log_file, "["__TIME__"] " fmt "  " DEB_FMT "\n", __VA_ARGS__, DEB_PRINT);	\
+		fclose(log_file);																	\
+		errno = err_no;																		\
+	} while (0)
+
+	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 	void checkMemLeak(void) {
-		if (freed_count >  alloc_count) debug(ERROR, "freed memory more times than allocated...?");
 		if (freed_count == alloc_count) {
 			debug(SUCCESS, "likely no memory leak - times alloced = %zu, times freed = %zu (%lc = %zd)",
-				alloc_count, freed_count, L'Δ', (ssize_t)(alloc_count - freed_count)
+				alloc_count, freed_count, DIFF
 			);
 			return;
 		}
 
+		if (freed_count > alloc_count) debug(ERROR, "freed memory more times than allocated");
+
 		debug(WARNING, "likely memory leak - times alloced = %zu, times freed = %zu (%lc = %zd)",
-			alloc_count, freed_count, L'Δ', (ssize_t)(alloc_count - freed_count)
+			alloc_count, freed_count, DIFF
 		);
 	}
 
-	void alloced(const size_t count) {
-		add_to_alloc(count);
+	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	static inline void *log_alloc(void *ptr DEBUG_ARGS) {
+		alloc_count++;
+		tologfile("[alloc]" DIFF_FMT(a) "%29lX", alloc_count, DIFF, PTR(ptr));
+
+		return ptr;
 	}
+
+	static inline void *log_realloc(void *oldptr, void *newptr DEBUG_ARGS) {
+		if (oldptr == NULL) {
+			alloc_count++;
+			tologfile("[alloc]" DIFF_FMT(a) "%12lX --> %12lX", alloc_count, DIFF, PTR(oldptr), PTR(newptr));
+		} else {
+			tologfile("[reall]  -- -- -- --  %12lX --> %12lX",					  PTR(oldptr), PTR(newptr));
+		}
+
+		return newptr;
+	}
+
+	static inline void *log_freed(void *ptr DEBUG_ARGS) {
+		freed_count++;
+		tologfile("[freed]" DIFF_FMT(f) "%12lX %16s", freed_count, DIFF, PTR(ptr), "");
+		return ptr;
+	}
+
+	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	void e__alloced(const size_t count DEBUG_ARGS) {
+		alloc_count += count;
+		tologfile("[alloc]" DIFF_FMT(a) "%29s", alloc_count, DIFF, "???");
+	}
+
+#else
+#	define	 log_alloc(ptr)		 (ptr)
+#	define	 log_freed(ptr)		 (ptr)
+#	define log_realloc(old, new) (new)
+
+#	define print_error(...) fprintf(stderr, __VA_ARGS__)
 #endif
 
 /* ———————————————————————————————————————————————————————— */
@@ -53,26 +108,25 @@ static inline void *exitIfNull(void *ptr) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void* emalloc(size_t size) {
-	add_to_alloc(1);
-	return exitIfNull(malloc(size));
+void* e__malloc(size_t size DEBUG_ARGS) {
+	return exitIfNull(log_alloc(malloc(size) DEBUG_PASSED));
 }
 
-void* ecalloc(size_t count, size_t size) {
-	add_to_alloc(1);
-	return exitIfNull(calloc(count, size));
+void* e__calloc(size_t count, size_t size DEBUG_ARGS) {
+	return exitIfNull(log_alloc(calloc(count, size) DEBUG_PASSED));
 }
 
-void* erealloc(void *ptr, size_t size) {
+void* e__realloc(void *ptr, size_t size DEBUG_ARGS) {
 	// `reallocf` frees the original pointer if it fails
-	return exitIfNull(reallocf(ptr, size));
+	return exitIfNull(log_realloc(ptr, reallocf(ptr, size) DEBUG_PASSED));
 }
 
 /* ———————————————————————————————————————————————————————— */
 
-void efree(void *ptr) {
-	free(ptr);
-	add_to_freed(1);
+void e__free(void *ptr DEBUG_ARGS) {
+	free(log_freed(ptr DEBUG_PASSED));
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignore reall

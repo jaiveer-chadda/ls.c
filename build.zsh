@@ -42,7 +42,11 @@ function -- () {
 
   # —— Definitions/Undefinitions ——————————————————————— #
 
-  local -a DEFINITIONS=( TTYCOLUMNS="$COLUMNS" )
+  local -a DEFINITIONS=(
+    TTYCOLUMNS="$COLUMNS"
+    PROJECT_ROOT="\"$_proj_root\""
+  )
+
   local -a UNDEFINE=( )
 
   # —— Enable & Disable Warnings ——————————————————————— #

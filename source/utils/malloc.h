@@ -7,11 +7,25 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void* emalloc(size_t size);
-void* ecalloc(size_t count, size_t size);
-void* erealloc(void *ptr, size_t size);
+#ifdef DEBUG_MODE
+#	define DEBUG_ARGS	, const char *const file, const char *const func, const int line
+#	define DEBUG_PASSED	,					file,					func,			line
+#	define DEBUG_PARAMS	,				  __FILE__,				  __func__,		  __LINE__
+#else
+#	define DEBUG_ARGS
+#	define DEBUG_PARAMS
+#	define DEBUG_PASSED
+#endif
 
-void efree(void *ptr);
+void  e__free(void *ptr DEBUG_ARGS);
+void* e__malloc(size_t size DEBUG_ARGS);
+void* e__calloc(size_t count, size_t size DEBUG_ARGS);
+void* e__realloc(void *ptr, size_t size DEBUG_ARGS);
+
+#define efree(ptr)				e__free((ptr) DEBUG_PARAMS)
+#define emalloc(size)			e__malloc((size) DEBUG_PARAMS)
+#define ecalloc(num, size)		e__calloc((num), (size) DEBUG_PARAMS)
+#define erealloc(ptr, size)		e__realloc((ptr), (size) DEBUG_PARAMS)
 
 /* —————————————————————————————————————————————————————————— */
 
@@ -27,7 +41,8 @@ void efree(void *ptr);
 
 #ifdef DEBUG_MODE
 	void checkMemLeak(void);
-	void alloced(const size_t count);
+	void e__alloced(const size_t count DEBUG_ARGS);
+#	define alloced(count) e__alloced(count DEBUG_PARAMS)
 #else
 #	define checkMemLeak()
 #	define alloced(count) (void)count

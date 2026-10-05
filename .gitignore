@@ -5,6 +5,7 @@
 .vscode/
 
 out/
+logs/
 archive/
 *.tmp*
 
