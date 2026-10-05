@@ -1,12 +1,15 @@
 # .gitignore
 # ‾‾‾‾‾‾‾‾‾‾
+
 .DS_Store
 .vscode/
 
 out/
 archive/
 *.tmp*
+
 _*
+!**/_defs.h
 
 !_output/
 
