@@ -23,7 +23,8 @@ void processInum(const ino_t inum) {
 	static uint32_t alloc_count = 0;
 
 	if (!inited && ( inited = true )) {
-		all_inums = emalloc(sizeof(ino_t) * ( alloc_count = INIT_INUM_COUNT )); /* [alloc:inums] - freed ??? */
+		/* [alloc:inums] - freed in `freeInums` */
+		all_inums = emalloc(sizeof(ino_t) * ( alloc_count = INIT_INUM_COUNT ));
 	}
 
 	if (store_count + 1 > alloc_count) {
@@ -32,6 +33,10 @@ void processInum(const ino_t inum) {
 
 	all_inums[store_count++] = inum;
 }
+
+/* ——————————————————————————————————————————————————— */
+
+void freeInums(void) { efree(all_inums); /* [free:inums] - alloced in `processInum` */ }
 
 /* ——————————————————————————————————————————————————— */
 
@@ -62,3 +67,5 @@ void print_inum(const FileStat *const pFS) {
 		FIELD_PAD
 	);
 }
+
+/* ——————————————————————————————————————————————————— */

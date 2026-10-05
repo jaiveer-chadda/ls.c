@@ -208,7 +208,7 @@ char *parseFlags(FileStat *const pFS) {
 	}
 
 	setLen(FI_flag_str, sb_length(flag_str));
-	return sb_strdup(flag_str); /* [alloc:flag-str] - freed in ??? */
+	return sb_strdup(flag_str); alloced(1); /* [alloc:flag-str] - freed in `print_flag_str` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -276,8 +276,10 @@ void print_flag_str(const FileStat *const pFS) {
 
 	if (!DO_COLOUR()) {
 		printf("%-*s%ls", getLen(FI_flag_str), pFS->f->flag_str, FIELD_PAD);
+		efree((void*)pFS->f->flag_str); /* [free:flag-str-duplicate] - see below */
 		return;
 	}
+	efree((void*)pFS->f->flag_str); /* [free:flag-str] - alloced in `parseFlags` */
 
 	StringBuilder output = sb_init(INIT_ALLOC_SIZE);
 	uint8_t flagstr_len = 0;

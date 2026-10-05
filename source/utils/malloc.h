@@ -27,9 +27,12 @@ void efree(void *ptr);
 
 #ifdef DEBUG_MODE
 	void e__checkMemLeak(void);
+	void e__alloced(size_t count);
 #	define checkMemLeak() e__checkMemLeak()
+#	define alloced(count) e__alloced(count)
 #else
 #	define checkMemLeak()
+#	define alloced(count) (void)count
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

@@ -24,10 +24,12 @@ void e__checkMemLeak(void) {
 	if (free_count == alloc_count) return;
 
 	debug(WARNING,
-		"likely memory leak - times alloced = %zu, times freed = %zu (%lc = %zu)",
-		alloc_count, free_count, L'Δ', alloc_count - free_count
+		"likely memory leak - times alloced = %zu, times freed = %zu (%lc = %zd)",
+		alloc_count, free_count, L'Δ', (ssize_t)(alloc_count - free_count)
 	);
 }
+
+void e__alloced(size_t count) { alloc_count += count; }
 
 /* ———————————————————————————————————————————————————————— */
 

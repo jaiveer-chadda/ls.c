@@ -124,25 +124,13 @@ int main(const int argc, char *argv[]) {
 
 	/* —— Cleanup ———————————————————————————————————————————————————————————————————————————————— */
 
-	/// @todo move most of this into the printing section
-	for (int i = 0; i < file_count; i++) {
-		/* Memory Allocated
-		 * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-		 *	- `FileStat *inputs[]` - one for each input that was successfully statted (set to NULL on failure)
-		 *		- `struct stat	  *FileStat::s` - same conditions as above
-		 *		- `FileStatFields *FileStat::f` - same conditions as above
-		 *			- `FileStat (*FileStatFields::children)[]` - allocated if input is a directory
-		 *				- `char	*FileStat::name` - allocated unconditionally for every child created
-		 *				- `stat *FileStat::s`	 - allocated if child was statted successfully (NULL otherwise)
-		 */
-	}
-
 	efree(inputs); /* [free:inputs] - allocated locally */
+	freeInums();
 	freeFirmlinks();
 
 	/* —— Return ————————————————————————————————————————————————————————————————————————————————— */
 
-	// checkMemLeak();
+	checkMemLeak();
 	return EXIT_SUCCESS;
 }
 

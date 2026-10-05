@@ -19,7 +19,7 @@ char *getUser(const uid_t uid) {
 	const size_t strsize = strlen(pw->pw_name) + 1;
 	setLen(FI_usr_name, strsize - 1);
 
-	return memcpy(emalloc(strsize), pw->pw_name, strsize);	/* [alloc:username] - freed in ??? */
+	return memcpy(emalloc(strsize), pw->pw_name, strsize);	/* [alloc:username] - freed in `print_ug_name` */
 	/**/													/* [alloc:mount-username] - freed in `print_mount` */
 }
 
@@ -30,7 +30,7 @@ char *getGroup(const gid_t gid) {
 	const size_t strsize = strlen(grp->gr_name) + 1;
 	setLen(FI_grp_name, strsize - 1);
 
-	return memcpy(emalloc(strsize), grp->gr_name, strsize); /* [alloc:groupname] - freed in ??? */
+	return memcpy(emalloc(strsize), grp->gr_name, strsize); /* [alloc:groupname] - freed in `print_ug_name` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -101,6 +101,7 @@ static inline Colour get_grp_colour(const FileStat *const pFS) {
 			valid ? pFS->f->usgr##_name : "-",								\
 			FIELD_PAD														\
 		);																	\
+		efree((void*)pFS->f->usgr##_name);									\
 	}
 
 /* ———————————————————————————————————————————————————————— */

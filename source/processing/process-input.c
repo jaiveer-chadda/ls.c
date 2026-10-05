@@ -56,7 +56,8 @@ const char *getPath(FileStat *const file) {
 
 	// allocate memory for this file's path, then copy the parent's path into the buffer
 	//	(note: no need to copy the nullbyte, so no +1 for the length)
-	char *const path = memcpy(emalloc(child_size), parent_path, parent_plen); /* [alloc:filepath] - freed in ??? */
+	/* [alloc:filepath] - freed in `printFile` */
+	char *const path = memcpy(emalloc(child_size), parent_path, parent_plen);
 	//i)path = "/path/to/parent"
 
 	/* —————————————————————————————————————————————————————— */
@@ -116,7 +117,7 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 	/* —— `stat` child file ——————————————————————————————————————— */
 
 	// allocate the memory for the child's `stat` struct
-	pFS_child->s = emalloc(sizeof(struct stat)); /* [alloc:fsstat] - freed in ???, locally if error */
+	pFS_child->s = emalloc(sizeof(struct stat)); /* [alloc:fsstat] - freed in `printFile` locally if error */
 
 	// run `lstat` on the path
 	if (lstat(pFS_child->path, pFS_child->s) == -1) {
@@ -134,7 +135,7 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 	}
 
 	// finally, if all of that succeeded, allocate some zeroed memory for the child's FSF object
-	pFS_child->f = ecalloc(1, sizeof(FileStatFields)); /* [alloc:filestat] - freed in ??? */
+	pFS_child->f = ecalloc(1, sizeof(FileStatFields)); /* [alloc:filestat] - freed in `printFile` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -166,7 +167,7 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 	//	we'll realloc if we need more memory later
 	int32_t child_alloc_count = INIT_CHILD_COUNT;
 
-	pFS_dir->f->children = ecalloc(child_alloc_count, sizeof(FileStat)); /* [alloc:children] - freed in ??? */
+	pFS_dir->f->children = ecalloc(child_alloc_count, sizeof(FileStat)); /* [alloc:children] - freed in `printFile` */
 	FileStat **const children = &pFS_dir->f->children;
 
 	/* —— For Each Child in Dir ——————————————————————————————————— */
@@ -295,9 +296,9 @@ FileStat processInput(char *const path) {
 		.name_len = -1,
 
 		// allocate memory for the `stat` object that will be pointed to by `FileStat::s`
-		.s = emalloc(sizeof(struct stat)), /* [alloc:fsstat-input] - freed in ??? */
+		.s = emalloc(sizeof(struct stat)), /* [alloc:fsstat-input] - freed in `printFile` */
 		// finally, allocate memory for the `FileStatFields` object, and assign its pointer to the FileStat object
-		.f = ecalloc(1, sizeof(FileStatFields)), /* [alloc:filestat-input] - freed in ??? */
+		.f = ecalloc(1, sizeof(FileStatFields)), /* [alloc:filestat-input] - freed in `printFile` */
 	};
 
 	// copy `statobj` from the stack into the newly-allocated heap memory at `FileStat::s file->s`

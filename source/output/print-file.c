@@ -55,6 +55,19 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 			printFile(&pFS->f->children[i], depth + 1, is_last_child, new_lines);
 		}
 	}
+
+	if (pFS->path != NULL && depth != 0 && pFS->path != pFS->name) {
+		efree((void*)pFS->path); /* [free:filepath] - alloced in `getPath` */
+	}
+
+	if (pFS->s != NULL) {
+		efree((void*)pFS->s); /* [free:fsstat] - alloced in `processChild` */
+	}
+
+	if (pFS->f != NULL) {
+		if (pFS->f->children != NULL) efree((void*)pFS->f->children); /* [free:children] - alloced in `processDir` */
+		efree((void*)pFS->f); /* [free:filestat] - alloced in `processChild` */
+	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
