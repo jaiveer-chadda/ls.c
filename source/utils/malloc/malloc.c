@@ -25,6 +25,7 @@
 #	define tolog(fpath, mode, fmt, ...) do {							\
 		const int err_no = errno;										\
 		FILE *const log_file = fopen(fpath, first_write ? "w" : mode);	\
+		first_write = false;											\
 		\
 		fprintf(log_file, fmt "  %-26s @ %-14s (%3d)\n",				\
 			__VA_ARGS__, REL_PATH(file), func, line						\
@@ -33,11 +34,8 @@
 		errno = err_no;													\
 	} while (0)
 
-#	define tologfile(...) do {				\
-		tolog(LOG_FILE, "a", __VA_ARGS__);	\
-		tolog(LOG_PIPE, "w", __VA_ARGS__);	\
-		first_write = false;				\
-	} while (0)
+#	define tologfile(...) tolog(LOG_FILE, "a", __VA_ARGS__)
+#	define tologpipe(...) tolog(LOG_PIPE, "w", __VA_ARGS__)
 
 	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -61,6 +59,7 @@
 	static inline void *log_alloc(void *ptr DEBUG_ARGS) {
 		alloc_count++;
 		tologfile("[alloc]" DIFF_FMT(a) "%29lX", alloc_count, DIFF, PTR(ptr));
+		tologpipe(						"%29lX",					PTR(ptr));
 
 		return ptr;
 	}
@@ -69,8 +68,10 @@
 		if (oldptr == NULL) {
 			alloc_count++;
 			tologfile("[alloc]" DIFF_FMT(a) "%12lX --> %12lX", alloc_count, DIFF, PTR(oldptr), PTR(newptr));
+			tologpipe(						"%12lX --> %12lX",					  PTR(oldptr), PTR(newptr));
 		} else {
 			tologfile("[reall]  -- -- -- --  %12lX --> %12lX",					  PTR(oldptr), PTR(newptr));
+			tologpipe(						"%12lX --> %12lX",					  PTR(oldptr), PTR(newptr));
 		}
 
 		return newptr;
@@ -78,7 +79,9 @@
 
 	static inline void *log_freed(void *ptr DEBUG_ARGS) {
 		freed_count++;
+
 		tologfile("[freed]" DIFF_FMT(f) "%12lX %16s", freed_count, DIFF, PTR(ptr), "");
+		tologpipe(						"%12lX %16s",					 PTR(ptr), "");
 		return ptr;
 	}
 
@@ -124,6 +127,7 @@ void* e__realloc(void *ptr, size_t size DEBUG_ARGS) {
 /* ———————————————————————————————————————————————————————— */
 
 void e__free(void *ptr DEBUG_ARGS) {
+	if (ptr == NULL) return;
 	free(log_freed(ptr DEBUG_PASSED));
 }
 

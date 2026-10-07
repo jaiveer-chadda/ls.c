@@ -203,12 +203,14 @@ function -- () {
     local -ri 10 debugger_pid=$!
   }
 
-  # then, if successful, execute the program
-  #  run the newly compiled binary (with sanitisation options set)
-  ASAN_OPTIONS="$ASAN" "${(@)CMD}"
-  retcode=$? # get the return code of `CMD`
+  { # then, if successful, execute the program
+    #  run the newly compiled binary (with sanitisation options set)
+    ASAN_OPTIONS="$ASAN" "${(@)CMD}"
+    retcode=$? # get the return code of `CMD`
 
-  if [[ "$mode" == 'debug' ]] { =kill -s SIGTERM $debugger_pid; }
+  } always { # no matter what happens, make sure to kill the debugger
+    if [[ "$mode" == 'debug' ]] { =kill -s SIGTERM $debugger_pid; }
+  }
 
   # —— Cleanup & Copying ——————————————————————————————— #
 
