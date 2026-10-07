@@ -21,9 +21,9 @@ SIGNAL: Final[int] = 128
 
 def catch_signal(signum: int | Signals, _f: Optional[FrameType]) -> NoReturn:
     match signum:
-        case Signals.SIGTERM: pass  # error("process terminated")
+        case Signals.SIGTERM: print_report()
         case Signals.SIGINT : error("\33[2D" "interrupted by user")
-        case _              : error(f"unexpected terminating signal: {Signals(signum)._name_}")
+        case _              : error(f"unexpected signal: {Signals(signum)._name_}")
 
     sysexit(SIGNAL + signum)
 
@@ -47,6 +47,19 @@ FREEINFO: Final[int] = 3
 NULL: Final[Ptr] = 0
 
 ptr_dict: PtrDict = {}
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+def print_report() -> None:
+    if len(ptr_dict) == 0: return
+
+    for ptr, (is_freed, old_ptrs, old_info, _) in ptr_dict.items():
+        if is_freed: continue
+        print(hex(ptr)[2:].rjust(12))
+
+        assert len(old_ptrs) == len(old_info)
+        for o_ptr, o_info in zip(old_ptrs, old_info):
+            print('', hex(o_ptr)[2:].rjust(12), o_info, sep='\t')
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
@@ -140,4 +153,4 @@ if __name__ == "__main__":
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
-# spell:ignore ptrs alloced
+# spell:ignore ptrs
