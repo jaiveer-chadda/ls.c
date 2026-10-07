@@ -293,7 +293,8 @@ void print_link(const FileStat *const pFS) {
 
 		printf("%s%s", arrow_ansi, arrow);
 		printEscdName(path, INVALID_LINK_COLOUR, false);
-		return;
+
+		goto cleanup_and_return;
 	}
 
 	/* ———————————————————————————————————————————————————————— */
@@ -325,7 +326,8 @@ void print_link(const FileStat *const pFS) {
 
 	/* ———————————————————————————————————————————————————————— */
 
-	efree((void*)tg_info); /* [free:target-info] - allocated in `getLink` */
+	cleanup_and_return:
+		efree((void*)tg_info); /* [free:target-info] - allocated in `getLink` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

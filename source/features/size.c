@@ -37,7 +37,7 @@ char *parseSize(unit_t *const size_unit, const off_t size, const dev_t rdev) {
 		size_str[str_len] = '\0';
 		setLen(FI_size_str, str_len);
 
-		return memcpy(emalloc(str_len + 1), size_str, str_len + 1); /* [alloc:size-str - see below] */
+		return memcpy(emalloc(str_len + 1), size_str, str_len + 1); /* [alloc:majmin] - freed in `printMajMinSize` */
 	}
 
 	/* ———————————————————————————————————————————————————————————— */
@@ -129,6 +129,8 @@ static inline void printMajMinSize(const FileStat *const pFS) {
 		MIN_COL_ANSI, min,
 		FIELD_PAD
 	);
+
+	efree((void*)pFS->f->size_str); /* [free:majmin] - alloced in `parseSize` */
 
 	setActive(MIN_COLOUR);
 }

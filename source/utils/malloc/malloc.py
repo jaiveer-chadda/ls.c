@@ -123,7 +123,7 @@ def process_line(line: str, output: TextIO) -> None:
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
-WRITE_TO   : Final[str]  = "ttys001" # "stdout"
+WRITE_TO   : Final[str]  = "null" # "ttys001" # "stdout"
 OUTPUT_FILE: Final[Path] = Path("/dev") / WRITE_TO
 
 def process_pipe(input: TextIO):
