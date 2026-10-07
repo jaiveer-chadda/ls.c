@@ -71,7 +71,7 @@ function -- () {
   # —— Libraries & Inclusions —————————————————————————— #
 
   local -ra LIBPATHS=( ) LDLIBS=( )
-  local -ra INCLUDES=( "$_proj_root/source/"{utils,debugging,} )
+  local -ra INCLUDES=( "$_proj_root/source/"{{utils,debugging}{/**,},} )
 
   local -ra FRAMEWORKS=( CoreFoundation )
 
