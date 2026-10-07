@@ -36,6 +36,12 @@ function -- () {
 
   # equivalent to running `dirname` on this file's path (w/o resolving links)
   local -r _proj_root="${${(%):-%x}:a:h}"
+  local -r _source="$_proj_root/source"
+
+  local -r _alloc_debugger="$_source/utils/malloc/malloc.py"
+
+  local -r _log_file="$_proj_root/logs/allocations.log"
+  local -r _log_pipe="$_proj_root/logs/allocations.fifo"
 
   local -r CC='clang'
   local -a CFLAGS=( )
@@ -44,7 +50,8 @@ function -- () {
 
   local -a DEFINITIONS=(
     TTYCOLUMNS="$COLUMNS"
-    PROJECT_ROOT="\"$_proj_root\""
+    LOG_FILE="\"$_log_file\""
+    LOG_PIPE="\"$_log_pipe\""
   )
 
   local -a UNDEFINE=( )
@@ -71,7 +78,7 @@ function -- () {
   # —— Libraries & Inclusions —————————————————————————— #
 
   local -ra LIBPATHS=( ) LDLIBS=( )
-  local -ra INCLUDES=( "$_proj_root/source/"{{utils,debugging}{/**,},} )
+  local -ra INCLUDES=( "$_source/"{{utils,debugging}{/**,},} )
 
   local -ra FRAMEWORKS=( CoreFoundation )
 
@@ -90,7 +97,7 @@ function -- () {
   # —— Source Files ———————————————————————————————————— #
 
   # an array of all the program's source files
-  local -ra SOURCE_FILES=( "$_proj_root/source/"**/*.c )
+  local -ra SOURCE_FILES=( "$_source/"**/*.c )
 
   # —— Execution Options ——————————————————————————————— #
 
@@ -142,6 +149,8 @@ function -- () {
 
   if [[ "$mode" == 'prod'  ]] SANITISE=()
 
+  local -r ASAN="${(j.:.)ASAN_OPTS}"
+
   # ————————————————————————————————————————————————————————————————————————— #
   # —— Collate Build Arguments —————————————————————————————————————————————— #
 
@@ -171,31 +180,48 @@ function -- () {
       && cp $TARGET ~cs/bin/${TARGET##*/}"}"//$_proj_root\//./}"
   }
 
-  # —— Compile & Run ———————————————————————————————————————————————————————— #
+  # —— Compilation —————————————————————————————————————————————————————————— #
 
   # source files are added here so they don't mess up the `print_cmd` output
   BUILD_ARGS=( "${(@z)BUILD_ARGS}" -- "${(@)SOURCE_FILES}" )
 
+  echo -n 'compiling...' >&2
+
   # pass that array of arguments to the compiler
   "$CC" "${(@)BUILD_ARGS}" # compile the program
+  local -i 10 retcode=$?
 
-  if (( $? )) return "$?" # failed to compile `$CC`
-  if (( !run_cmd )) return 0  # we don't want to run the command
+  echo $'\r\e[K' >&2
+
+  if   (( retcode )) return retcode # failed to compile `$CC`
+  if ! (( run_cmd )) return 0       # we don't want to run the command
+
+  # —— Run Program ————————————————————————————————————— #
+
+  if [[ "$mode" == 'debug' ]] {
+    "$_alloc_debugger" "$_log_pipe" &
+    local -ri 10 debugger_pid=$!
+  }
 
   # then, if successful, execute the program
   #  run the newly compiled binary (with sanitisation options set)
-  ASAN_OPTIONS="${(j.:.)ASAN_OPTS}" "${(@)CMD}"
+  ASAN_OPTIONS="$ASAN" "${(@)CMD}"
+  retcode=$? # get the return code of `CMD`
 
-  local -ri 10 retcode=$? # get the return code of `CMD`
+  if [[ "$mode" == 'debug' ]] { =kill -s SIGTERM $debugger_pid; }
+
+  # —— Cleanup & Copying ——————————————————————————————— #
+
   if (( retcode )) return retcode # the function failed
 
   # if everything compiled, and the function ran without errors,
   #  then copy the binary into `$CS/bin`
-  cp "$TARGET" "$CS/bin/${TARGET##*/}"
+  if [[ "$mode" != 'debug' ]] cp "$TARGET" "$CS/bin/${TARGET##*/}"
 
-  # ————————————————————————————————————————————————————————————————————————— #
+  # —— Return ——————————————————————————————————————————————————————————————— #
 
   return retcode
+
 } "$@"
 
 # ——————————————————————————————————————————————————————————————————————————— #

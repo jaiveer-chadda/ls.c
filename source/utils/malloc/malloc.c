@@ -10,10 +10,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define LOG_FILE PROJECT_ROOT "/logs/allocations.log"
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
 #ifdef DEBUG_MODE
 	static size_t alloc_count = 0, freed_count = 0;
 	static bool first_write = true;
@@ -23,20 +19,24 @@
 #	define PTR(p)			((uintptr_t)(p))
 #	define REL_PATH(file)	((char *)(strstr((char *)(file), "source/") + (int)(sizeof("source/") - 1)))
 
-#	define DEB_PRINT		REL_PATH(file), func, line
-#	define DEB_FMT			"\"%-26s\" @ %-14s (%3d)"
-
 #	define DIFF				(L'Δ'), ((ssize_t)(alloc_count - freed_count))
 #	define DIFF_FMT(chr)	" [" #chr "=%3zu %lc=%3zd] "
 
-#	define tologfile(fmt, ...) do {															\
-		const int err_no = errno;															\
-		FILE *const log_file = fopen(LOG_FILE, first_write ? "w" : "a");					\
-		first_write = false;																\
+#	define tolog(fpath, mode, fmt, ...) do {							\
+		const int err_no = errno;										\
+		FILE *const log_file = fopen(fpath, first_write ? "w" : mode);	\
 		\
-		fprintf(log_file, "["__TIME__"] " fmt "  " DEB_FMT "\n", __VA_ARGS__, DEB_PRINT);	\
-		fclose(log_file);																	\
-		errno = err_no;																		\
+		fprintf(log_file, fmt "  %-26s @ %-14s (%3d)\n",				\
+			__VA_ARGS__, REL_PATH(file), func, line						\
+		);																\
+		fclose(log_file);												\
+		errno = err_no;													\
+	} while (0)
+
+#	define tologfile(...) do {				\
+		tolog(LOG_FILE, "a", __VA_ARGS__);	\
+		tolog(LOG_PIPE, "w", __VA_ARGS__);	\
+		first_write = false;				\
 	} while (0)
 
 	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
