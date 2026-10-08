@@ -209,7 +209,10 @@ function -- () {
     retcode=$? # get the return code of `CMD`
 
   } always { # no matter what happens, make sure to kill the debugger
-    if [[ "$mode" == 'debug' ]] { =kill -s SIGTERM $debugger_pid; }
+    if [[ "$mode" == 'debug' ]] {
+      if (( retcode == 0 )) { =kill -s SIGINFO $debugger_pid; } \
+      else                  { =kill -s SIGTERM $debugger_pid; }
+    }
   }
 
   # —— Cleanup & Copying ——————————————————————————————— #

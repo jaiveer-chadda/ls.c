@@ -3,7 +3,7 @@
 from sys       import exit as sysexit, argv, stderr
 
 from pathlib   import Path
-from signal    import Signals, signal, SIGINT, SIGTERM
+from signal    import Signals, signal, SIGINFO, SIGINT, SIGTERM
 
 from types     import FrameType
 from functools import partial
@@ -21,13 +21,15 @@ SIGNAL: Final[int] = 128
 
 def catch_signal(signum: int | Signals, _f: Optional[FrameType]) -> NoReturn:
     match signum:
-        case Signals.SIGTERM: print_report()
+        case Signals.SIGTERM: pass
+        case Signals.SIGINFO: print_report()
         case Signals.SIGINT : error("\33[2D" "interrupted by user")
         case _              : error(f"unexpected signal: {Signals(signum)._name_}")
 
     sysexit(SIGNAL + signum)
 
 signal(SIGINT , catch_signal)
+signal(SIGINFO, catch_signal)
 signal(SIGTERM, catch_signal)
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
