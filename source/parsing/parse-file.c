@@ -116,7 +116,9 @@ void parseFile(FileStat *const pfile) {
 	if (do_flag_str()) pfsf->flag_str = parseFlags(pfile);
 	if (do_icon	   ()) pfile->icon	  = getIcon(pfile);
 	if (DO_COLOUR  ()) pfile->file_col = setFileColour(pfile->name, pfile->mode, pfsf->mount, pstat);
-	if (do_time_str()) { parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); }
+	if (do_time_str() || do_time()) {
+		parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME);
+	}
 
 	// calculate the lengths of all numerical fields (i.e., non-string fields)
 	checkLengths(pfile, false);
