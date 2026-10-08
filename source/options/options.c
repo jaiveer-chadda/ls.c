@@ -237,6 +237,8 @@ int setOptions(const int argc, char *const *const argv) {
 		/* —— --depth ———————————————————————————————————————————————————— */
 
 		if (OPTION_IS("--depth", "--level")) {
+			if (!HAS_ARG) ERR_TAKES_ARG();
+
 			char *p_strend; // pointer to the end of the argument string
 			// convert the string to a `long`
 			const long int_arg = strtol(optarg, &p_strend, BASE_10);
@@ -244,15 +246,12 @@ int setOptions(const int argc, char *const *const argv) {
 			if (int_arg <= RECURSION_LIMIT && int_arg >= 0 && // if its within the set limits
 				p_strend > optarg && // and some characters were read
 				p_strend[0] == '\0' // and all characters were read
-			) {
-				// then set it as the globally available depth (and convert it down to an unsigned char)
+			) { // then set it as the globally available depth (and convert it down to an unsigned char)
 				U_DEPTH = (uint8_t)int_arg;
+			} else ERR_DEPTH();
+
 				CONSUME_ARG;
 				continue;
-			}
-
-			if (HAS_ARG) ERR_DEPTH();
-			else ERR_TAKES_ARG();
 		}
 
 		/* —— All Fields ————————————————————————————————————————————————— */
