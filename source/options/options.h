@@ -95,7 +95,7 @@ bool DO_SHORT_FLAGS	(void);
 bool do_time_t(TimeType type);
 
 #define X(name, ...) bool name(void);
-BINARY_OPTIONS_TABLE
+	BINARY_OPTIONS_TABLE
 #undef X
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

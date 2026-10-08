@@ -296,11 +296,21 @@ int setOptions(const int argc, char *const *const argv) {
 	// if `--colour` wasn't set, or if `--colour=auto` was given, then determine whether colour should be used
 	if (colour_auto) U_DO_COLOUR = doColourAuto();
 
-	if (!(times[A_TIME] || times[M_TIME] || times[C_TIME] || times[B_TIME])) return i;
-	VALUE_OF(do_atime) = false; VALUE_OF(do_mtime) = false; VALUE_OF(do_ctime) = false; VALUE_OF(do_btime) = false;
+	// if none of the times were set, then just return as usual (and let the default time string be displayed)
+	if (!(times[A_TIME] || times[M_TIME] || times[C_TIME] || times[B_TIME])) {
+		return i;
+	}
 
+	/* ————————————————————————————————— */
+
+	// if any of the times _were_ set by the user, then firstly, reset them all
+	VALUE_OF(do_atime) = false, VALUE_OF(do_mtime) = false, VALUE_OF(do_ctime) = false, VALUE_OF(do_btime) = false;
+
+	// then, iterate through the possible times, and activate each of those that were set
+	// this is done so that if a user just specifies, e.g. `--atime`, the program doesn't display the mtime _and_ atime
 	for (TimeType type = 0; type < TT_COUNT; type++) {
 		if (!times[type]) continue;
+
 		switch (type) {
 			case A_TIME: VALUE_OF(do_atime) = true; break;
 			case M_TIME: VALUE_OF(do_mtime) = true; break;
