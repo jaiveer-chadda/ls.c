@@ -55,13 +55,12 @@ ptr_dict: PtrDict = {}
 def print_report() -> None:
     if len(ptr_dict) == 0: return
 
-    for ptr, (is_freed, old_ptrs, old_info, _) in ptr_dict.items():
+    for _, (is_freed, old_ptrs, old_info, _) in ptr_dict.items():
         if is_freed: continue
-        print(hex(ptr)[2:].rjust(12))
-
         assert len(old_ptrs) == len(old_info)
+
         for o_ptr, o_info in zip(old_ptrs, old_info):
-            print('', hex(o_ptr)[2:].rjust(12), o_info, sep='\t')
+            print(hex(o_ptr)[2:].rjust(12), o_info, sep='\t')
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
