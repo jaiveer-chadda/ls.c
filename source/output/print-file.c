@@ -56,18 +56,12 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 		}
 	}
 
-	if (pFS->path != NULL && depth != 0 && pFS->path != pFS->name) {
-		efree((void*)pFS->path); /* [free:filepath] - alloced in `getPath` */
-	}
-
-	if (pFS->s != NULL) {
-		efree((void*)pFS->s); /* [free:fsstat] - alloced in `processChild` */
-	}
-
-	if (pFS->f != NULL) {
-		if (pFS->f->children != NULL) efree((void*)pFS->f->children); /* [free:children] - alloced in `processDir` */
-		efree((void*)pFS->f); /* [free:filestat] - alloced in `processChild` */
-	}
+	// don't free the paths of first-order files/dirs, and paths are their names,
+	//	since those paths were specifically taken from the command line arguments, which can't be freed
+	if (depth != 0 && pFS->path != pFS->name) efree((void*)pFS->path);	/* [free:filepath] - alloced in getPath		 */
+	if (pFS->f != NULL) efree((void*)pFS->f->children);					/* [free:children] - alloced in processDir	 */
+	efree((void*)pFS->f);												/* [free:filestat] - alloced in processChild */
+	efree((void*)pFS->s);												/* [free:fsstat]   - alloced in processChild */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -80,7 +74,6 @@ static inline void print_suff(const FileStat *const pFS) {
 
 /* —— printFields() ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// #define print_field(field)  if (do_##field()) print_##field(pFS)
 #define print_field(field) if (do_##field()) { print_##field(pFS); colprint(RESET_ALL); }
 
 #define print_time(type) if (do_time_t(type)) { \
