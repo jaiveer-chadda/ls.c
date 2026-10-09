@@ -308,7 +308,7 @@ FileStat processInput(char *const path) {
 
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
 	//	then there's nothing else to do at this stage - send it off for parsing
-	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES()) {
+	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES() || MAX_DEPTH == 0) {
 		assert(isValidFS(&file));
 		return file;
 	}
