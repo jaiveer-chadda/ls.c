@@ -86,6 +86,8 @@ BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #define ERR_TAKES_ARG()	  THROW_ERR("`%s` takes an argument", opt)
 #define ERR_EMPTY_ARG()	  THROW_ERR("argument for `%s` is empty", opt)
 #define ERR_NO_ARGS()	  THROW_ERR("`%s` doesn't take an argument", opt)
+#define ERR_NO_OFF()	  THROW_ERR("`+%c`: '+' can only be used for binary options", *chr)
+
 #define ERR_BAD_ARG(args) THROW_ERR("invalid argument `%s` for `%s`. possible arguments are: %s", optarg, opt, (args))
 #define ERR_DEPTH()		  THROW_ERR(				\
 	"invalid argument `%s` for `%s`. "				\
@@ -141,17 +143,31 @@ int setOptions(const int argc, char *const *const argv) {
 		/* —— Single-Character Options ——————————————————————————————————— */
 
 		if (opt[1] != '-') { // i.e. if `opt` looks like `-abc` or `+abc`
-
-			// turn the option on if the first char of `opt` was `-`, and off if the first char was `+`
+			// turn the option on, if the first char of `opt` was '-', and off if the first char was '+'
 			const bool turn_opt = opt[0] == '-';
 
+			// iterate through each of the character options, i.e. if `-abc` is passed, iterate through 'a', 'b', 'c'
 			for (const char *chr = &opt[1]; *chr != '\0'; chr++) {
 
 				// if the character option is an option that takes arguments
 				if (*chr == SORT_BY_CHR_FLAG || *chr == DEPTH_CHR_FLAG) {
+					// firstly make sure that we're not trying to turn flags with arguments off
+					//	because, e.g. `+L3` (opposite of `--level=3`) doesn't make any sense
+					if (turn_opt == false) ERR_NO_OFF();
+
+					// set `opt` to a representation of the command line arg passed
+					//	this isn't strictly necessary, but it makes error messages far clearer
+					opt = (char[3]){ opt[0], *chr }; // e.g. opt[0] = '-', *chr = 'a' => `{ '-', 'a', '\0' }` == `"-a"`
+
+					// find where the argument starts, making sure to ignore the equals sign if necessary
 					optarg = chr + (chr[1] == '=' ? 2 : 1);
+
+					// since we don't consume a command line arg, we have to adjust the argument count
+					//	(see the `--option=arg` section for a full explanation)
 					UN_CONSUME_ARG;
 
+					// we've now set up `opt` and `optarg` as if the option was passed as a normal long flag
+					//	so we can now just send each of the cases off to be parsed by the usual sections
 					switch (*chr) {
 						case SORT_BY_CHR_FLAG: goto parse_sort_by;
 						case   DEPTH_CHR_FLAG: goto parse_depth;
@@ -159,22 +175,30 @@ int setOptions(const int argc, char *const *const argv) {
 					}
 				}
 
+				/* ————————————————————————————————— */
+
 				// iterate through all possible binary flags, and turn each one on/off if they're found
 				for (BinOptIdx opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
 					BinaryOption *const bin_opt = &BINARY_OPTS[opt_i];
 
+					// if the char matches the defined short flag...
 					if (*chr == bin_opt->short_flag) {
+						// turn the option on/off
 						bin_opt->value = turn_opt;
+						// and then move on to parsing the next char, bypassing the error message
 						goto next_char;
 					}
 				}
 
+				// only print this error if none of the character options match
+				//	either the argument options or binary options
 				THROW_ERR("unknown option: `%c%c`", opt[0], *chr);
 
 				next_char:
 					continue;
 			}
 
+			// if a string of single-char options was passed and parsed, then move on to the next arg in `argv`
 			continue;
 		}
 
