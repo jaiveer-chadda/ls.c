@@ -101,7 +101,7 @@ static inline Colour get_grp_colour(const FileStat *const pFS) {
 			valid ? pFS->f->usgr##_name : "-",								\
 			FIELD_PAD														\
 		);																	\
-		efree((void*)pFS->f->usgr##_name);									\
+		if (valid) efree((void*)pFS->f->usgr##_name);						\
 	}
 
 /* ———————————————————————————————————————————————————————— */
