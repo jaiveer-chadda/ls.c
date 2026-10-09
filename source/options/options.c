@@ -137,8 +137,8 @@ int setOptions(const int argc, char *const *const argv) {
 
 		/* —— End Option Parsing ————————————————————————————————————————— */
 
-		if (opt[0] != '-' && opt[0] != '+') break;
-		if (OPTION_IS("--")) { CONSUME_ARG; break; }
+		if (opt[0] != '-' && opt[0] != '+')		  break;
+		if (OPTION_IS("--", "+-")) { CONSUME_ARG; break; }
 
 		/* —— Single-Character Options ——————————————————————————————————— */
 
@@ -148,6 +148,8 @@ int setOptions(const int argc, char *const *const argv) {
 
 			// iterate through each of the character options, i.e. if `-abc` is passed, iterate through 'a', 'b', 'c'
 			for (const char *chr = &opt[1]; *chr != '\0'; chr++) {
+
+				/* ————————————————————————————————— */
 
 				// if the character option is an option that takes arguments
 				if (*chr == SORT_BY_CHR_FLAG || *chr == DEPTH_CHR_FLAG) {
@@ -189,6 +191,8 @@ int setOptions(const int argc, char *const *const argv) {
 						goto next_char;
 					}
 				}
+
+				/* ————————————————————————————————— */
 
 				// only print this error if none of the character options match
 				//	either the argument options or binary options
