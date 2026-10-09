@@ -29,7 +29,7 @@ BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 
 /* —— Generic Macros ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define ARG_EXISTS	((i + 1 < argc) && (argv[i + 1][0] != '-'))
+#define ARG_EXISTS	((i + 1 < argc) && (argv[i+1][0] != '-') && (argv[i+1][0] != '+'))
 #define HAS_ARG		(optarg != NULL && optarg[0] != '\0')
 
 #define CONSUME_ARG i++
@@ -138,6 +138,46 @@ int setOptions(const int argc, char *const *const argv) {
 		if (opt[0] != '-' && opt[0] != '+') break;
 		if (OPTION_IS("--")) { CONSUME_ARG; break; }
 
+		/* —— Single-Character Options ——————————————————————————————————— */
+
+		if (opt[1] != '-') { // i.e. if `opt` looks like `-abc` or `+abc`
+
+			// turn the option on if the first char of `opt` was `-`, and off if the first char was `+`
+			const bool turn_opt = opt[0] == '-';
+
+			for (const char *chr = &opt[1]; *chr != '\0'; chr++) {
+
+				// if the character option is an option that takes arguments
+				if (*chr == SORT_BY_CHR_FLAG || *chr == DEPTH_CHR_FLAG) {
+					optarg = chr + (chr[1] == '=' ? 2 : 1);
+					UN_CONSUME_ARG;
+
+					switch (*chr) {
+						case SORT_BY_CHR_FLAG: goto parse_sort_by;
+						case   DEPTH_CHR_FLAG: goto parse_depth;
+						default: assert(false && "impossible case");
+					}
+				}
+
+				// iterate through all possible binary flags, and turn each one on/off if they're found
+				for (BinOptIdx opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
+					BinaryOption *const bin_opt = &BINARY_OPTS[opt_i];
+
+					if (*chr == bin_opt->short_flag) {
+						bin_opt->value = turn_opt;
+						goto next_char;
+					}
+				}
+
+				THROW_ERR("unknown option: `%c%c`", opt[0], *chr);
+
+				next_char:
+					continue;
+			}
+
+			continue;
+		}
+
 		/* —— Check for `--option=arg` ——————————————————————————————————— */
 
 		// find the the first equals sign in the string
@@ -174,6 +214,8 @@ int setOptions(const int argc, char *const *const argv) {
 			if (OPTION_IS("--rsort")) {
 				VALUE_OF(DO_REVERSE_SORT) = !VALUE_OF(DO_REVERSE_SORT);
 			}
+
+			parse_sort_by:
 
 			if		(OPTARG_IS("none" )						 ) U_SORT_BY = SB_NONE	;
 			else if	(OPTARG_IS("name" )						 ) U_SORT_BY = SB_NAME	;
@@ -237,6 +279,8 @@ int setOptions(const int argc, char *const *const argv) {
 		/* —— --depth ———————————————————————————————————————————————————— */
 
 		if (OPTION_IS("--depth", "--level")) {
+			parse_depth:
+
 			if (!HAS_ARG) ERR_TAKES_ARG();
 
 			char *p_strend; // pointer to the end of the argument string
@@ -250,8 +294,8 @@ int setOptions(const int argc, char *const *const argv) {
 				U_DEPTH = (uint8_t)int_arg;
 			} else ERR_DEPTH();
 
-				CONSUME_ARG;
-				continue;
+			CONSUME_ARG;
+			continue;
 		}
 
 		/* —— All Fields ————————————————————————————————————————————————— */

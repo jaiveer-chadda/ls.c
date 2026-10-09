@@ -62,10 +62,25 @@ int	 setOptions(const int argc, char *const *const argv);
 	X(do_btime			, false	, true	, NSF,	{ "btime"									})	\
    /*└──────────────────┴───────┴───────┴───────┴───────────────────────────────────────────┘*/
 
+#define SORT_BY_CHR_FLAG 's'
+#define DEPTH_CHR_FLAG	 'L'
+
+// options which take an argument
+//							   default	│ short	│ long				│ options
+//							  ──────────┼───────┼───────────────────┼──────────────────────────
+SortByField SORT_BY (void);	// name		│ 's'	│ "sort"  "sort-by"	│ [see `SortByField`]
+uint8_t O__DEPTH	(void);	// 1		│ 'L'	│ "depth" "level"	│ 0 -> 16
+bool DO_COLOUR		(void);	// auto		│ NSF	│ "color" "colour"	│ "", "always", "never"
+// funcs handled by `--flags`  short	│ NSF	│ "flags"			│ "long", "tiny", "short"
+bool DO_TINY_FLAGS	(void);
+bool DO_SHORT_FLAGS	(void);
+
+#define MAX_DEPTH O__DEPTH()
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define X(name, ...) BO_##name,
-typedef enum BinOptIdx { BINARY_OPTIONS_TABLE BINOPT_COUNT } BinOptIdx;
+	typedef enum BinOptIdx { BINARY_OPTIONS_TABLE BINOPT_COUNT } BinOptIdx;
 #undef X
 
 /**
@@ -82,21 +97,11 @@ typedef struct BinaryOption {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define MAX_DEPTH O__DEPTH()
-
-/* —————————————————————————————————————————————————————————————— */
-
-SortByField SORT_BY (void);
-uint8_t O__DEPTH	(void);
-bool DO_COLOUR		(void);
-bool DO_TINY_FLAGS	(void);
-bool DO_SHORT_FLAGS	(void);
-
-bool do_time_t(TimeType type);
-
 #define X(name, ...) bool name(void);
 	BINARY_OPTIONS_TABLE
 #undef X
+
+bool do_time_t(TimeType type);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
