@@ -218,7 +218,6 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36b
  * @return `bool` – `true` if `p_fs` points to a `FileStat` object representing a directory. `false` otherwise.
  *
  * @warning `isFSDir` will segfault if `p_fs == NULL`.
-
  */
 #define isFSDir(p_fs) ((bool)(					\
 	S_ISDIR((p_fs)->mode) || (					\
