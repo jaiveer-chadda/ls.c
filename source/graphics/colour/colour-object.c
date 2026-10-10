@@ -21,7 +21,7 @@ static inline rgb_t toRGB_t(const colour_t raw);
 static inline int stylelookup(const style_t style, const bool turn_style);
 static inline void simplify_fgbg(
 	char *const fgbg, colour_t *const act, int *const len, bool *const has_fgbg,
-	const colour_t col, const int code, const bool set_active, const bool do_add
+	const colour_t col, const int code, const bool do_add
 );
 
 #ifdef DEBUG_MODE
@@ -73,19 +73,15 @@ static Colour active = RESET_ALL;
  *	debugging significantly easier, were something to go wrong.
  */
 static char colheap[MAX_ANSI_SIZE * COLHEAP_CAPACITY] = {0};
-
 /** A pointer to the next available space on `colheap`. */
 static char *colheap_ptr = colheap;
-
-/** A constant pointer to the last addressable byte on `colheap`. */
-static const char *const colheap_end = colheap + sizeof(colheap) - 1;
 
 /* —————————————————————————————————————————————————————————————————— */
 
 static inline char *get_colheap_ptr(void) {
 	// if the next write to `colheap` has even the possibility of overflowing the heap,
 	//	then reset the buffer, and move the pointer back to the beginning of the heap
-	if (colheap_ptr + sizeof(ansi_t) >= colheap_end) colheap_ptr = colheap;
+	if (sizeof(colheap) - (colheap_ptr - colheap) < sizeof(ansi_t)) colheap_ptr = colheap;
 	return colheap_ptr;
 }
 
@@ -103,6 +99,7 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	/// A copy of the inputted colour object, which we can mutate if needed.
 	Colour colour = input_col;
+	Colour nxtact = active;
 
 	/* ── Bounds Checking ─────────────────────────────────────────────── */
 
@@ -127,8 +124,8 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	// UNDER/DUNDER will always overwrite each other,
 	//	so there's no point resetting one just to replace it with the other
-	if (set_active && has_under ) active.rem_style(G_DUNDER);
-	if (set_active && has_dunder) active.rem_style(G_UNDER );
+	if (has_under ) nxtact.rem_style(G_DUNDER);
+	if (has_dunder) nxtact.rem_style(G_UNDER );
 
 	// additionally, having both is also redundant, so, since DUNDER takes priority, remove UNDER from `colour`
 	if (has_under && has_dunder) colour.rem_style(G_UNDER);
@@ -140,14 +137,14 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 	// if we're gonna remove BOLD and DIM from `active`, then pretend that `active`
 	//	doesn't have one of them in the first place.
 	//	- this way we won't have to reset both of them, which causes extra chars to be printed
-	if (!do_add && set_active && // (when we're adding, we won't be removing anything, so this check is unnecessary)
-		!(colour.has_style(G_BOLD)) && (active.has_style(G_BOLD)) &&
-		!(colour.has_style(G_DIM) ) && (active.has_style(G_DIM) )
-	) active.rem_style(G_BOLD);
+	if (!do_add && // (when we're adding, we won't be removing anything, so this check is unnecessary)
+		!(colour.has_style(G_BOLD)) && (nxtact.has_style(G_BOLD)) &&
+		!(colour.has_style(G_DIM) ) && (nxtact.has_style(G_DIM) )
+	) nxtact.rem_style(G_BOLD);
 
 	// if there's no dunder already active, and the inputted colour has the hardlink style set, then add a dunder
-	const bool add_hardln = (colour.has_style(G_HARDLINK)) && !(active.has_style(G_HARDLINK));
-	if (add_hardln && !(active.has_style(G_DUNDER))) colour.add_style(G_DUNDER);
+	const bool add_hardln = (colour.has_style(G_HARDLINK)) && !(nxtact.has_style(G_HARDLINK));
+	if (add_hardln && !(nxtact.has_style(G_DUNDER))) colour.add_style(G_DUNDER);
 
 	/* ———————————————————————————————————————————————— */
 
@@ -157,29 +154,29 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	// if the current style is identical to the previous style, then nothing has to be printed
 	//	this check is technically redundant, but it saves having to do a check for each of the styles
-	if (colour.style != active.style) {
+	if (colour.style != nxtact.style) {
 		// iterate through each style, and check if the style is included in `colour.style`
 		for (size_t i = 0; i < GSTYLES_LEN; i++) {
 			const style_t style_i = G_STYLES[i];
 			const bool col_has_st = colour.has_style(style_i);
-			const bool act_has_st = active.has_style(style_i);
+			const bool act_has_st = nxtact.has_style(style_i);
 
 			// but only print the style if the previous style differs
 			if (col_has_st && !act_has_st) {
 				has_st = true;
-				if (set_active) active.add_style(style_i); // turn the style on
+				nxtact.add_style(style_i); // turn the style on
 				APPEND_TO_STYLE(stylelookup(style_i, ON));
 
 			// however, if the style isn't set in `colour`, but is active, then we need to turn it off
 			} else if (!col_has_st && act_has_st && !do_add) { // that is, unless we're just adding
 				has_st = true;
-				if (set_active) active.rem_style(style_i); // turn the style off
+				nxtact.rem_style(style_i); // turn the style off
 				APPEND_TO_STYLE(stylelookup(style_i, OFF));
 
 				// since the codes to reset bold & dim are identical,
 				//	we need to re-apply the other when we reset the other
-				if (style_i == G_BOLD && active.has_style(G_DIM) ) APPEND_TO_STYLE(ANSI_DIM );
-				if (style_i == G_DIM  && active.has_style(G_BOLD)) APPEND_TO_STYLE(ANSI_BOLD);
+				if (style_i == G_BOLD && nxtact.has_style(G_DIM) ) APPEND_TO_STYLE(ANSI_DIM );
+				if (style_i == G_DIM  && nxtact.has_style(G_BOLD)) APPEND_TO_STYLE(ANSI_BOLD);
 			}
 		}
 	}
@@ -187,6 +184,7 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 	if (add_hardln) {
 		memcpy(style + st_len, HARDLN_COLOUR_ANSI ";", sizeof(HARDLN_COLOUR_ANSI ";") - 1);
 		st_len += sizeof(HARDLN_COLOUR_ANSI ";") - 1;
+		has_st = true;
 	}
 
 	/* ── Process Colour::fg/bg ───────────────────────────────────────── */
@@ -202,7 +200,10 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 
 	// if everything is set to 0, then there's no point individually
 	//	resetting everything, so we can just print `\e[m` instead.
-	if (active.style + active.fg + active.bg == 0) RETURN_LITERAL(CSI END);
+	if (!(colour.style & G_ADD) && areEqual(nxtact, RESET_ALL)) {
+		if (set_active) active = RESET_ALL;
+		RETURN_LITERAL(CSI END);
+	}
 
 	/* ── Check for Nothing-ness ──────────────────────────────────────── */
 
@@ -234,6 +235,8 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 	char *const output_ptr = colheap_ptr;
 	colheap_ptr += output_len + 1; // +1 to include the nullbyte
 
+	if (set_active) active = nxtact;
+
 	RETURN_LEN(output_len);
 	return output_ptr;
 }
@@ -255,15 +258,15 @@ void setActive(const Colour input) {
 	if (!DO_COLOUR()) return;
 	active.fg	 = input.fg,
 	active.bg	 = input.bg,
-	active.style = input.style;
+	active.style = input.style & ~G_ADD;
 }
 
 Colour getActive(void) { return active; }
 
 bool areEqual(const Colour c1, const Colour c2) {
 	return
-		c1.fg	 == c2.fg &&
-		c1.bg	 == c2.bg &&
+		c1.fg == c2.fg &&
+		c1.bg == c2.bg &&
 		c1.style == c2.style;
 }
 
@@ -275,7 +278,7 @@ bool areEqual(const Colour c1, const Colour c2) {
 
 static inline void simplify_fgbg(
 	char *const fgbg, colour_t *const act, int *const len, bool *const has_fgbg,
-	const colour_t col, const int code, const bool set_active, const bool do_add
+	const colour_t col, const int code, const bool do_add
 ) {
 	*len = 0;
 	if (IS_8B(col)) {
@@ -291,26 +294,20 @@ static inline void simplify_fgbg(
 		*len = SNPRINTF(fgbg, FGBG_BUFSIZE, "%d8;2;%hu;%hu;%hu", code, rgb.r, rgb.g, rgb.b);
 	}
 
-	*has_fgbg = (*len > 0);
-	if (set_active && *has_fgbg) *act = col;
+	if (( *has_fgbg = *len > 0 )) *act = col;
 }
 
 /* ── ── `toRGB_t()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline rgb_t toRGB_t(const colour_t raw) {
 	assert(raw >= COLOUR_24_MIN);
-
 	const int rgb = (raw - COLOUR_24_MIN);
 
-	const uint8_t red = (rgb / 1000000);
-	const uint8_t grn = (rgb / 1000) -  (red * 1000);
-	const uint8_t blu = (rgb - ((rgb / 1000) * 1000));
-
-	assert(0U <= red && red <= 255U);
-	assert(0U <= grn && grn <= 255U);
-	assert(0U <= blu && blu <= 255U);
-
-	return (const rgb_t){ .r = red, .g = grn, .b = blu };
+	return (rgb_t){
+		.r = (rgb / 1000000	),
+		.g = (rgb / 1000	) % 1000,
+		.b = (rgb			) % 1000,
+	};
 }
 
 /* ── ── `d_snprintf()` ── ───────────────────────────────────────────────────────────────────────────────────────── */
@@ -346,7 +343,7 @@ static inline int d_snprintf(char *restrict str, size_t size, const char *restri
  */
 static inline int stylelookup(const style_t style, const bool turn_style) {
 	assert(0x0000 < style && style <= 0x0200); // `style` is in range
-	assert(log2(style) == floor(log2(style))); // `style` is a power of 2
+	assert((style & (style - 1)) == 0 && style != 0); // `style` is a power of 2
 
 	if (turn_style == OFF) {
 		// bold and double underline don't conform to the normal escape

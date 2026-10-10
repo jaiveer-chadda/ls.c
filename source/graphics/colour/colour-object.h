@@ -140,6 +140,7 @@ char *c__getcol(const Colour input_col, const bool set_active, uint8_t *const co
 #define NO_CHANGE ((Colour){ .style = G_ADD | G_NONE })			 /** Add nothing. Equivalent to `((Colour){1})`. */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-// spell:ignoreRegexp /(?<=G_)\w+\b/g
 
 #endif /* !COLOUR_OBJECTS_INITIALIASED */
+
+// spell:ignoreRegexp /(?<=G_)\w+\b/g

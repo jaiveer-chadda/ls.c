@@ -74,11 +74,11 @@ static inline void print_suff(const FileStat *const pFS) {
 
 /* —— printFields() ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define print_field(field) if (do_##field()) { print_##field(pFS); colprint(RESET_ALL); }
+#define print_field(field) if (do_##field()) print_##field(pFS);
 
-#define print_time(type) if (do_time_t(type)) { \
-	if (do_time	   ()) print_time_raw(pFS, (type)); \
-	if (do_time_str()) print_time_str(pFS, (type)); \
+#define print_time(type) if (do_time_t(type)) {		\
+	if (do_time	   ()) print_time_raw(pFS, (type));	\
+	if (do_time_str()) print_time_str(pFS, (type));	\
 	if (pFS->f != NULL) efree((void*)pFS->f->times[type]); /* [free:time-info] - alloced in `parseFile` */ \
 }
 

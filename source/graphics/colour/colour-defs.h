@@ -17,7 +17,7 @@
 #define ANSI_RB_MOD	  (+6) /** The modifier that turns ANSI colour codes from regular to bright. */
 
 #define ANSI_fg_CODE	3 /** The number which regular colour fg codes begin with. E.g. `\e[35m` or `\e[38;5;255m`. */
-#define ANSI_bg_CODE	4 /** The number which regular colour fg codes begin with. E.g. `\e[44m` or `\e[48;5;128m`. */
+#define ANSI_bg_CODE	4 /** The number which regular colour bg codes begin with. E.g. `\e[44m` or `\e[48;5;128m`. */
 
 #define ANSI_BLACK		0
 #define ANSI_FGBG_OFF	9
@@ -75,20 +75,20 @@
 #define SET(fgbg, is_8bit, mode, ansi_col) \
 	SNPRINTF((fgbg), FGBG_BUFSIZE, ((is_8bit) ? "%d" ANSI_8BIT_SEQ "%d" : "%d%d"), (mode), (ansi_col))
 
-#define SIMPLIFY_FGBG(fgbg)									\
-	simplify_fgbg(											\
-		fgbg, &active.fgbg, &fgbg##_len, &has_##fgbg,		\
-		colour.fgbg, ANSI_##fgbg##_CODE, set_active, do_add	\
-	)
+#define SIMPLIFY_FGBG(fgbg) \
+    simplify_fgbg( \
+        fgbg, &nxtact.fgbg, &fgbg##_len, &has_##fgbg, \
+        colour.fgbg, ANSI_##fgbg##_CODE, do_add \
+    )
 
 /* —— Bounds Checks ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define FGBG_OOR_WARNING(fgbg)								\
 	fprintf(stderr,											\
-		"Warning: `Colour::"#fgbg"` is out of range: %hd.\n"\
+		"Warning: `Colour::"#fgbg"` is out of range: %d.\n"	\
 		"Valid range is: %d <= "#fgbg" <= %d.\n"			\
 		"`"#fgbg"` has been locally set as follows:\n"		\
-		"   abs(%hd) %% %d = %hd\n",						\
+		"   abs(%hd) %% %d = %d\n",							\
 		(input_col.fgbg),									\
 		COLOUR_8_MIN, COLOUR_8_MAX,							\
 		(input_col.fgbg), COLOUR_8_MAX, (colour.fgbg)		\
@@ -102,11 +102,11 @@
 		(input_col.style), STYLE_T_MAX						\
 	)
 
-#define WRITE_LEN_WARNING() do {																					\
-	debug(WARNING, "write to `colheap` larger than `MAX_ANSI_SIZE` (%d).", MAX_ANSI_SIZE);							\
-	debug(WARNING, "write: `%s%s%s%s` (len = %zu)", MAX_ANSI_SIZE, style, fg, do_fg_sc ? ";" : "", bg, output_len);	\
-	debug(WARNING, "returned empty string (\"\")%s.", collen != NULL ? ", and colour len of 0" : "");				\
-	dline(100);																										\
+#define WRITE_LEN_WARNING() do {																		\
+	debug(WARNING, "write to `colheap` larger than `MAX_ANSI_SIZE` (%d).", MAX_ANSI_SIZE);				\
+	debug(WARNING, "write: `%s%s%s%s` (len = %zu)", style, fg, do_fg_sc ? ";" : "", bg, output_len);	\
+	debug(WARNING, "returned empty string (\"\")%s.", collen != NULL ? ", and colour len of 0" : "");	\
+	dline(100);																							\
 } while (0)
 
 /* —— Warning Msgs —————————————————————————————————————————————————— */
@@ -132,8 +132,8 @@
 
 /* —————————————————————————————————————————————————————————————————— */
 
-// spell:ignore fgbg
-
 #endif /* !COLOUR_DEFS_H */
+
+// spell:ignore fgbg
 
 /* ———————————————————————————————————————————————————eof——————————————————————————————————————————————————————————— */

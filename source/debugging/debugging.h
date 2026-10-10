@@ -5,7 +5,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#include <math.h> // used for some assertions
 #include "model/stat-model.h"
 
 #define LOG_LEVEL_TABLE \

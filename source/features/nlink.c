@@ -25,9 +25,10 @@ void print_nlink(const FileStat *const pFS) {
 	const int nlink_len = snprintf(NULL, 0, "%'hu", nlink);
 	const Colour nlink_col = getLinkColour(nlink, S_ISDIR(pFS->mode));
 
+	const bool do_reset = has_bg(nlink_col) || nlink_col.style & G_DIM;
 	const char
 		*const nlink_ansi = getcol(nlink_col),
-		*const reset_ansi = has_bg(nlink_col) ? getcol(RESET_ALL) : "";
+		*const reset_ansi = do_reset ? getcol(RESET_ALL) : "";
 
 	printf("%*s" "%s%'hu" "%s" "%ls",
 		getLen(FI_nlink) - nlink_len, "",
