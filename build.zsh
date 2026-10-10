@@ -221,7 +221,7 @@ function -- () {
 
   # if everything compiled, and the function ran without errors,
   #  then copy the binary into `$CS/bin`
-  if [[ "$mode" != 'debug' ]] cp "$TARGET" "$CS/bin/${TARGET##*/}"
+  cp "$TARGET" "$CS/bin/${TARGET##*/}"
 
   # —— Return ——————————————————————————————————————————————————————————————— #
 
