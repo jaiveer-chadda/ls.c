@@ -110,7 +110,7 @@ void parseFile(FileStat *const pfile) {
 
 	if (DO_MOUNTDEV()) pfsf->mount	  = getMountPoint(pfile->path, S_ISDIR(pfile->mode));
 	if (do_link_to ()) pfsf->target   = getLink(pfile);
-	if (do_usr_name()) pfsf->usr_name = getUser(pstat->st_uid);
+	if (do_usr_name()) pfsf->usr_name = getUser(pstat->st_uid, true);
 	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
 	if (do_flag_str()) pfsf->flag_str = parseFlags(pfile);

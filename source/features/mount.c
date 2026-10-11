@@ -49,7 +49,7 @@ void print_mount(const MountInfo *const mount) {
 		*const mt_from_ansi	 = getcol(MT_FROM_COLOUR),
 		*const mt_type_ansi	 = getcol(MT_TYPE_COLOUR),
 
-		*const username		 = DO_MOUNT_OWNER() ? getUser(mount->owneruid) : NULL,
+		*const username		 = DO_MOUNT_OWNER() ? getUser(mount->owneruid, false) : NULL,
 		*const username_ansi = DO_MOUNT_OWNER() ? getcol(get_usr_colour(mount->owneruid)) : NULL;
 
 	// `[source (type)]`

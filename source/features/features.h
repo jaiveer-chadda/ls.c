@@ -76,7 +76,7 @@ TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *con
 
 /* —— ugid.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-char  *getUser(const uid_t uid);
+char  *getUser(const uid_t uid, const bool do_set_len);
 char *getGroup(const gid_t gid);
 Colour get_usr_colour(const uid_t uid);
 
