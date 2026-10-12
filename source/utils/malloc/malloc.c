@@ -35,7 +35,12 @@
 	} while (0)
 
 #	define tologfile(...) tolog(LOG_FILE, "a", __VA_ARGS__)
-#	define tologpipe(...) tolog(LOG_PIPE, "w", __VA_ARGS__)
+
+#	ifdef DEBUG_ALLOCATIONS
+#		define tologpipe(...) tolog(LOG_PIPE, "w", __VA_ARGS__)
+#	else
+#		define tologpipe(...)
+#	endif
 
 	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

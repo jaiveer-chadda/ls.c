@@ -13,10 +13,11 @@ function -- () {
 
   # dev mode is supposed to be halfway between the debug and production modes
   local mode=dev
-  local -i 2 print_cmd=0 do_time=0 do_dump=0 run_cmd=1 do_clear=1
+  local -i 2 print_cmd=0 do_time=0 do_dump=0 alloc_dbg=1 run_cmd=1 do_clear=1
 
   while [[ -n "$1" ]] { #
     case "$1" {
+      ( --no-alloc-debug ) alloc_dbg=0 ;;
       ( --(print-|)cmd   ) print_cmd=1 ;;
       ( --debug(ging|)   ) mode=debug  ;;
       ( --prod(uction|)  ) mode=prod   ;;
@@ -139,15 +140,19 @@ function -- () {
 
   # note: `NDEBUG` disables the `assert` macro
   if [[ "$mode" == 'debug' ]] {
-    UNDEFINE+=( NDEBUG ); DEFINITIONS+=( DEBUG_MODE );
+    if (( alloc_dbg )) DEFINITIONS+=( DEBUG_ALLOCATIONS )
+
+    DEFINITIONS+=( DEBUG_MODE )
+    UNDEFINE+=( NDEBUG )
 
   } elif [[ "$mode" == 'prod' ]] {
-    DEFINITIONS+=( NDEBUG ); UNDEFINE+=( DEBUG_MODE )
+    DEFINITIONS+=( NDEBUG )
+    UNDEFINE+=( DEBUG_MODE )
   }
 
   # —— $SANITISE ——————————————————————————————————————— #
 
-  if [[ "$mode" == 'prod'  ]] SANITISE=()
+  if [[ "$mode" == 'prod' ]] SANITISE=()
 
   local -r ASAN="${(j.:.)ASAN_OPTS}"
 
@@ -198,7 +203,7 @@ function -- () {
 
   # —— Run Program ————————————————————————————————————— #
 
-  if [[ "$mode" == 'debug' ]] {
+  if [[ "$mode" == 'debug' && "$alloc_dbg" -eq 1 ]] {
     "$_alloc_debugger" "$_log_pipe" &
     local -ri 10 debugger_pid=$!
   }
@@ -209,7 +214,7 @@ function -- () {
     retcode=$? # get the return code of `CMD`
 
   } always { # no matter what happens, make sure to kill the debugger
-    if [[ "$mode" == 'debug' ]] {
+    if [[ "$mode" == 'debug' && "$alloc_dbg" -eq 1 ]] {
       if (( retcode == 0 )) { =kill -s SIGINFO $debugger_pid; } \
       else                  { =kill -s SIGTERM $debugger_pid; }
     }
