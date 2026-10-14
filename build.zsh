@@ -78,8 +78,12 @@ function -- () {
 
   # —— Libraries & Inclusions —————————————————————————— #
 
-  local -ra LIBPATHS=( ) LDLIBS=( )
-  local -ra INCLUDES=( "$_source/"{{utils,debugging}{/**,},} )
+  local -ra LDLIBS=( git2 )
+  local -ra LIBPATHS=( '/opt/homebrew/opt/libgit2/lib' )
+  local -ra INCLUDES=(
+    "$_source/"{{utils,debugging}{/**,},}
+    '/opt/homebrew/opt/libgit2/include'
+  )
 
   local -ra FRAMEWORKS=( CoreFoundation )
 

@@ -50,7 +50,7 @@ void parseFile(FileStat *const pfile) {
 	assert(isValidFS(pfile));
 
 	const struct stat *const pstat = pfile->s;
-	FileStatFields *const pfsf = pfile->f;
+	FileStatFields	  *const pfsf  = pfile->f;
 
 	// there should never be a case in which the stat object has been initiliased, and the FSF object hasn't, &vv
 	//	i.e. either both should be initiliased, or neither should
@@ -108,14 +108,15 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
-	if (DO_MOUNTDEV()) pfsf->mount	  = getMountPoint(pfile->path, S_ISDIR(pfile->mode));
-	if (do_link_to ()) pfsf->target   = getLink(pfile);
-	if (do_usr_name()) pfsf->usr_name = getUser(pstat->st_uid, true);
-	if (do_grp_name()) pfsf->grp_name = getGroup(pstat->st_gid);
-	if (do_size_str()) pfsf->size_str = parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
-	if (do_flag_str()) pfsf->flag_str = parseFlags(pfile);
-	if (do_icon	   ()) pfile->icon	  = getIcon(pfile);
-	if (DO_COLOUR  ()) pfile->file_col = setFileColour(pfile->name, pfile->mode, pfsf->mount, pstat);
+	if (DO_MOUNTDEV()) pfsf->mount		= getMountPoint(pfile->path, S_ISDIR(pfile->mode));
+	if (do_link_to ()) pfsf->target		= getLink(pfile);
+	if (do_usr_name()) pfsf->usr_name	= getUser(pstat->st_uid, true);
+	if (do_grp_name()) pfsf->grp_name	= getGroup(pstat->st_gid);
+	if (do_size_str()) pfsf->size_str	= parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
+	if (do_flag_str()) pfsf->flag_str	= parseFlags(pfile);
+	if (do_git_info()) pfsf->git		= getGitInfo(pfile);
+	if (do_icon	   ()) pfile->icon		= getIcon(pfile);
+	if (DO_COLOUR  ()) pfile->file_col	= setFileColour(pfile->name, pfile->mode, pfsf->mount, pstat);
 	if (do_time_str() || do_time()) {
 		parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME);
 	}

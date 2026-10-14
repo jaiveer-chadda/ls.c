@@ -20,6 +20,7 @@ void print_flags(const FileStat *const pFS);
 void print_nlink(const FileStat *const pFS);
 void print_dev_no(const FileStat *const pFS);
 void print_flag_str(const FileStat *const pFS);
+void print_git_info(const FileStat *const pFS);
 void print_mode_str(const FileStat *const pFS);
 void print_size_str(const FileStat *const pFS);
 void print_usr_name(const FileStat *const pFS);
@@ -34,6 +35,11 @@ void print_mount(const MountInfo *const mount);
 
 char *parseFlags(FileStat *const pFS);
 void freeFirmlinks(void);
+
+/* —— git.c ———————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void freeGitState(void);
+GitInfo *getGitInfo(const FileStat *const pFS);
 
 /* —— inum.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

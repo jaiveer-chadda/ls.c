@@ -5,6 +5,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#include <git2.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <inttypes.h>
@@ -36,11 +37,11 @@ typedef enum TimeType {
 	C_TIME,	 /** [C]reation time	 - Time the inode information of a file was last changed. */
 	B_TIME,	 /** [B]irth time		 - Time the file was created (birthed). */
 	TT_COUNT
-} TimeType;
-// spell:ignoreRegexp /(?<=\[[A-Z]\])\w+/g
+} TimeType; // spell:ignoreRegexp /(?<=\[[A-Z]\])\w+/g
 
 /* ——————————————————————————————————————————————————— */
 
+typedef struct GitInfo			GitInfo;
 /**
  * @struct TimeInfo
  * @brief Information about a file's time.

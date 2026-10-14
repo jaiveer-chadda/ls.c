@@ -114,7 +114,7 @@ int getTotalLen(void) {
 		(getLen(FI_xat_acl)) +
 
 		CALCULATE_LEN(inum	) + CALCULATE_LEN(dev_no  ) +
-		CALCULATE_LEN(nlink	) +
+		CALCULATE_LEN(nlink	) + CALCULATE_LEN(git_info) +
 		CALCULATE_LEN(mode	) + CALCULATE_LEN(mode_str) +
 		CALCULATE_LEN(size	) + CALCULATE_LEN(size_str) +
 		CALCULATE_LEN(uid	) + CALCULATE_LEN(usr_name) +

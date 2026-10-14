@@ -36,6 +36,7 @@ extern field_t fields[];
 	X(usr_name	, "User"	, "s"	, NA , left	 ) \
 	X(gid		, "GID"		, "d"	, NA , right ) \
 	X(grp_name	, "Group"	, "s"	, NA , left	 ) \
+	X(git_info	, "Git Info", "s"	, NA , left	 ) \
 	\
 	X(atime		, "ATime"	, "ld"	, NA , right ) \
 	X(mtime		, "MTime"	, "ld"	, NA , right ) \

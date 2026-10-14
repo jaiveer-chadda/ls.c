@@ -126,6 +126,7 @@ int main(const int argc, char *argv[]) {
 
 	efree(inputs); /* [free:inputs] - allocated locally */
 	freeInums();
+	freeGitState();
 	freeFirmlinks();
 
 	/* —— Return ————————————————————————————————————————————————————————————————————————————————— */

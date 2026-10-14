@@ -1,7 +1,7 @@
 /// @file model/stat-model.h
 
-#ifndef NEW_STAT_MODEL_H
-#define NEW_STAT_MODEL_H
+#ifndef STAT_MODEL_H
+#define STAT_MODEL_H
 
 #include "types.h"
 #include "graphics/graphics.h"
@@ -20,6 +20,7 @@
 #	define _TARGINFO_SIZE sizeof(TargetInfo)	 []
 #	define _MOUNTINF_SIZE sizeof(MountInfo)		 []
 #	define _TIMEINFO_SIZE sizeof(TimeInfo)		 []
+#	define _GIT_INFO_SIZE sizeof(GitInfo)		 []
 #endif
 
 /**
@@ -78,6 +79,7 @@ struct FileStatFields {
 
 	const TargetInfo *target; // 8 /** Information about the target of a link, if one exists. */
 	const MountInfo	 *mount	; // 8 /** Information about a mount point. If file isn't a mount point, then NULL. */
+	const GitInfo	 *git	; // 8 /** Information about a file's git branch and status. */
 
 	const char	*size_str	; // 8 /** A string repr of the filesize. */
 	const char	*flag_str	; // 8 /** A string repr of the file's user-defined flags. `NULL` if file has no flags. */
@@ -137,6 +139,17 @@ struct MountInfo {
 	uid_t	owneruid; // 4		/** UID of the user that mounted the filesystem. */
 	flag_t	flags	; // 4		/** [Unused] Copy of mount-exported flags. */
 }; // 1048 + 0 pad = 1048b
+
+/* —— GitInfo —————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+/**
+ * @struct GitInfo
+ */
+struct GitInfo {
+	const char	*branch; // 8	/** The name of the branch the file is on. */
+	int	  branch_status; // 4	/** Whether the branch is at/behind/ahead `main`. */
+	git_status_t status; // 4	/** The status flags of the file. */
+}; // 16 + 0 pad = 16b
 
 /* —— TimeInfo ————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -229,4 +242,4 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36b
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#endif /* !NEW_STAT_MODEL_H */
+#endif /* !STAT_MODEL_H */
