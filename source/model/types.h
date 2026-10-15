@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <sys/mount.h>
 
+#include "hash.h"
 #include "consts.h"
 
 #define st_btimespec st_birthtimespec

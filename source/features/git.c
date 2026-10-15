@@ -1,10 +1,9 @@
 /// @file features/git.c
 
 #include <git2.h>
-#include <errno.h>
 #include <stdio.h>
 #include <assert.h>
-#include <string.h>
+#include <string.h> // strrchr()
 #include <stdbool.h>
 
 #include "hash.h"
@@ -25,9 +24,15 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline const char *getBranchName(const git_reference *const head);
+static inline void parseStatuses(git_status_list *const status_list, const size_t status_count);
 static inline int getGitStatusList(git_status_list **const status_list, git_repository *const repo);
-static inline int getBasicCommitInfo(
-	git_repository **const repo, git_reference **const head, git_object **const commit, const char *const path
+static inline int getRepoInfo(
+	git_reference **const head, git_object **const commit, const char **const branch_name,
+	git_status_list **const status_list, size_t *status_count, git_repository *const repo
+);
+static inline int getRepo(
+	git_repository **const repo, const char **const repo_root, hash_t *repo_hash, const char *const path
 );
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -48,9 +53,9 @@ void freeGitState(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define RETURN goto LABEL_RETURN
-
 GitInfo *getGitInfo(const FileStat *const pFS) {
+	printf("file      : %s", pFS->display);
+
 	// initialise `libgit2`'s global state
 	//	note: this state will be released by `main`, at the end of the program
 	initGitState();
@@ -67,78 +72,59 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 	// note: this is defined earlier than it needs to be, so that the `goto LABEL_RETURN` statement works correctly
 	git_status_list *status_list = NULL; /** The statuses of all ignored/modified/new/etc files in a repo. */
 
-	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+	/* ——————————————————————————————————————————————————————— */
+
+	const char *repo_root; /** The path to the repo's `.git/` directory. */
+	hash_t		repo_hash; /** The unique ID of the repo, based on the path to the repo's `.git` directory. */
 
 	// fill out the repo, branch, and commit info, returning `NULL` if one of them can't be found
-	int error = getBasicCommitInfo(&repo, &head, &commit, pFS->path);
-
-	// TEMP: this switch statement is currently just being used to print debugging messages
-	switch (error) {
-		case 0: break;
-		case GIT_ENOTFOUND: printf("file      : %s \33[91m( not in git repo )\33[m\n", pFS->display);
-		/*[[fallthrough]];*/
-		default: RETURN;
-	}
-	// this is what the switch statement will eventually be replaced with
-	if (error != 0) RETURN;
+	if (getRepo(&repo, &repo_root, &repo_hash, pFS->path) != 0) goto LABEL_RETURN;
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
-	/// I'm making the executive decision to not handle bare repos. With how complicated `git` already is, I don't need
-	///  any more unnecessary complexity, and they're so rare that they're not worth considering.
-	/// @todo I may add support for them later, but not while I'm still setting the system up.
-	if ((bool)git_repository_is_bare(repo)) RETURN;
+	// from this point on, we know for a fact that we're in a git repo
+	/// @todo now check if the repo already exists - branch off to either creating a new 
 
-	/* ——————————————————————————————————————————————————————— */
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	/// @todo if the repo doesn't exist, start creating a new one...
 
 	/** The name of the branch. May be the alnum name (e.g. `main`), or the branch hash. */
-	const char *branch_name = git_reference_name(head);
+	const char *branch_name;
+	size_t status_count;
 
-	// if the branchname is formatted as, e.g., `origin/main`, then only keep the final segment, `main`
-	const char *const branch_basename = strrchr(branch_name, '/');
-	if (branch_basename != NULL) branch_name = branch_basename + 1;
-
-	/* ——————————————————————————————————————————————————————— */
-
-	/** The path to the repo's `.git/` directory. */
-	const char *const repo_root = git_repository_commondir(repo);
-
-	/**
-	 * For the system I'm trying to build to work correctly, I need to be able to compare two repos to check whether
-	 *	they're the same or not.
-	 *
-	 * This could be easily achieved by comparing their paths directly using `strcmp`, however, using `strcmp` while
-	 *	iterating through a list of repos would be very inefficient.
-	 *
-	 * Therefore, I'm going to take the performace hit once per file, by iterating through its `commondir` path
-	 *	just once (in `hashstr`), which will then allow me to directly compare hashes, instead of paths.
-	 */
-	const hash_t repo_hash = hashstr(repo_root);
+	if (getRepoInfo(&head, &commit, &branch_name, &status_list, &status_count, repo) != 0) goto LABEL_RETURN;
+	/*TEMP:*/ printf("\nfrom repo : %s\non branch : %s\nrepo hash : %llu\n", repo_root, branch_name, repo_hash);
 
 	/* ——————————————————————————————————————————————————————— */
 
-	printf("file      : %s\n", pFS->display);
-	printf("from repo : %s\n", repo_root);
-	printf("on branch : %s\n", branch_name);
-	printf("repo hash : %llu\n", repo_hash);
+	/// @todo now that we've successfully got all the repo info, parse the statuses of each file
+
+	parseStatuses(status_list, status_count);
+
+	/* —— */ LABEL_RETURN: /* ——————————————————————————————————————————————————————————————————————— */
+
+	// free all allocations
+	//	note: usually I wouldn't check for `NULL` when freeing things, but I don't know how these functions work, so
+	//		I'd rather be safe than sorry
+	if (commit		!= NULL) git_object_free(commit);
+	if (head		!= NULL) git_reference_free(head);
+	if (repo		!= NULL) git_repository_free(repo);
+	if (status_list	!= NULL) git_status_list_free(status_list);
 
 	/* ——————————————————————————————————————————————————————— */
 
-	// from the repo, get the status of all ignored, modified, new, etc. files
-	error = getGitStatusList(&status_list, repo);
-	if (error != 0) RETURN;
+	/*TEMP:*/ dline();
+	return git_info_obj;
+}
 
-	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+#undef RETURN
 
-	const size_t count = git_status_list_entrycount(status_list);
-	if (count == 0) {
-		/*TEMP:*/ puts("\33[32m( nothing to be tracked )\33[m");
-		RETURN;
-	}
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-	/* ——————————————————————————————————————————————————————— */
-
-	for (size_t i = 0; i < count; ++i) {
+static inline void parseStatuses(git_status_list *const status_list, const size_t status_count) {
+	for (size_t i = 0; i < status_count; ++i) {
 		const git_status_entry *const entry = git_status_byindex(status_list, i);
 
 		// check for errors, i.e. whether the entry we got, or its diff object, is `NULL`
@@ -182,25 +168,21 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 
 		putchar('\n');
 	}
-
-	/* —— */ LABEL_RETURN: /* ——————————————————————————————————————————————————————————————————————— */
-
-	// free all allocations
-	//	note: usually I wouldn't check for `NULL` when freeing things, but I don't know how these functions work, so
-	//		I'd rather be safe than sorry
-	if (commit		!= NULL) git_object_free(commit);
-	if (head		!= NULL) git_reference_free(head);
-	if (repo		!= NULL) git_repository_free(repo);
-	if (status_list	!= NULL) git_status_list_free(status_list);
-
-	/*TEMP:*/ dline();
-
-	return git_info_obj;
 }
 
-#undef RETURN
-
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline const char *getBranchName(const git_reference *const head) {
+	/** The name of the branch. May be the alnum name (e.g. `main`), or the branch hash. */
+	const char *branch_name = git_reference_name(head);
+
+	// if the branchname is formatted as, e.g., `origin/main`, then only keep the final segment, `main`
+	const char *const branch_basename = strrchr(branch_name, '/');
+	if (branch_basename != NULL) branch_name = branch_basename + 1;
+
+	return branch_name;
+}
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline int getGitStatusList(git_status_list **const status_list, git_repository *const repo) {
@@ -223,26 +205,15 @@ static inline int getGitStatusList(git_status_list **const status_list, git_repo
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline int getBasicCommitInfo(
-	git_repository **const repo, git_reference **const head, git_object **const commit, const char *const path
+static inline int getRepoInfo(
+	git_reference **const head, git_object **const commit, const char **const branch_name,
+	git_status_list **const status_list, size_t *status_count, git_repository *const repo
 ) {
-	/// @todo print/store proper error messages for each of the caught errors
 	int error = 0;
 
-	/* ——————————————————————————————————————————————————————— */
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
-	error = git_repository_open_ext(repo, path, 0, NULL); // open the repo
-
-	switch (error) {
-		case 0				: break;
-		case GIT_ENOTFOUND	: return error; // repo not found (not a git repo)
-		case -1				: return error; // repo found, but corruption/error while reading it
-		default				: return error; // unknown error
-	}
-
-	/* ——————————————————————————————————————————————————————— */
-
-	error = git_repository_head(head, *repo); // get the HEAD reference (current branch)
+	error = git_repository_head(head, repo); // get the HEAD reference (current branch)
 
 	switch (error) {
 		case 0					: break;
@@ -262,7 +233,71 @@ static inline int getBasicCommitInfo(
 		default				: return error; // unknown error
 	}
 
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	/** The name of the branch. May be the alnum name (e.g. `main`), or the branch hash. */
+	*branch_name = getBranchName(*head);
+
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	// from the repo, get the status of all ignored, modified, new, etc. files
+	error = getGitStatusList(status_list, repo);
+	if (error != 0) return error;
+
+	*status_count = git_status_list_entrycount(*status_list);
+
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	assert(error == 0);
+	return error;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define E_BARE_REPO ((int)-2)
+
+static inline int getRepo(
+	git_repository **const repo, const char **const repo_root, hash_t *repo_hash, const char *const path
+) {
+	/// @todo print/store proper error messages for each of the caught errors
+	int error = 0;
+
 	/* ——————————————————————————————————————————————————————— */
+
+	error = git_repository_open_ext(repo, path, 0, NULL); // open the repo
+
+	switch (error) {
+		case 0				: break;
+		case GIT_ENOTFOUND	: printf(" \33[91m( not in git repo )\33[m\n"); return error; // repo not found
+		case -1				: return error; // repo found, but corruption/error while reading it
+		default				: return error; // unknown error
+	}
+
+	/* ——————————————————————————————————————————————————————— */
+
+	/// I'm making the executive decision to not handle bare repos. With how complicated `git` already is, I don't need
+	///  any more unnecessary complexity, and they're so rare that they're not worth considering.
+	/// @todo I may add support for them later, but not while I'm still setting the system up.
+	if (git_repository_is_bare(*repo)) return E_BARE_REPO;
+
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	/** The path to the repo's `.git/` directory. */
+	*repo_root = git_repository_commondir(*repo);
+
+	/**
+	 * For the system I'm trying to build to work correctly, I need to be able to compare two repos to check whether
+	 *	they're the same or not.
+	 *
+	 * This could be easily achieved by comparing their paths directly using `strcmp`, however, using `strcmp` while
+	 *	iterating through a list of repos would be very inefficient.
+	 *
+	 * Therefore, I'm going to take the performace hit once per file, by iterating through its `commondir` path
+	 *	just once (in `hashstr`), which will then allow me to directly compare hashes, instead of paths.
+	 */
+	*repo_hash = hashstr(*repo_root);
+
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 	assert(error == 0);
 	return error;
