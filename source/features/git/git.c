@@ -1,4 +1,4 @@
-/// @file features/git.c
+/// @file features/git/git.c
 
 #include <git2.h>
 #include <stdio.h>
