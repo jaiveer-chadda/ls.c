@@ -21,6 +21,8 @@
 #	define _MOUNTINF_SIZE sizeof(MountInfo)		 []
 #	define _TIMEINFO_SIZE sizeof(TimeInfo)		 []
 #	define _GIT_INFO_SIZE sizeof(GitInfo)		 []
+#	define _GIT_FILE_SIZE sizeof(GitFileInfo)	 []
+#	define _GIT_REPO_SIZE sizeof(GitRepoInfo)	 []
 #endif
 
 /**
@@ -47,7 +49,7 @@ struct FileStat {
 
 	// the following fields are all taken directly from `struct dirent`.
 	char		*name	; // 8 /** A pointer to the place in `.path` where the file's name starts. */
-	const char	*path	; // 8 /** The absolute path to this file. */
+	const char	*path	; // 8 /** The path to this file, relative to its topmost ancestor. */
 	const char	*display; // 8 /** The formatted path to be printed if this file is of level 0. NULL otherwise. */
 	ino_t		inum	; // 8 /** The inode number for this file. */
 	namlen_t	name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
@@ -63,7 +65,7 @@ struct FileStat {
 	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
 
 	modestr		mode_str; // 12 /** A string repr of the file's mode (type & permissions). */
-}; // 84 + 4 pad = 88b
+}; // 84 + 4 pad = 88 B
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -76,7 +78,7 @@ struct FileStat {
  */
 struct FileStatFields {
 	const TimeInfo *times[TT_COUNT]; // 32 /** Info about access, modification, change, and birth times of the file. */
-
+	
 	const TargetInfo *target; // 8 /** Information about the target of a link, if one exists. */
 	const MountInfo	 *mount	; // 8 /** Information about a mount point. If file isn't a mount point, then NULL. */
 	const GitInfo	 *git	; // 8 /** Information about a file's git branch and status. */
@@ -89,7 +91,7 @@ struct FileStatFields {
 	FileStat	*children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s. */
 	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
 	unit_t		size_unit	; // 1 /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
-}; // 93 + 3 pad = 96b
+}; // 101 + 3 pad = 104 B
 
 /* —— TargetInfo ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -109,12 +111,12 @@ struct FileStatFields {
  * @var TargetInfo::is_apple Whether the source of this link is a symbolic link, or an Apple alias file.
  */
 struct TargetInfo {
-	path_t			path	; // 1024 /** The contents of the link (usually the absolute path to the target file). */
-	const MountInfo	*mount	; // 8 /** Information about a mount point. If target isn't a mount point, then NULL. */
-	FileColour		colour	; // 4 /** The colour that the file should be displayed in. */
-	char			suffix	; // 1 /** The symbol to be shown after the target's name. */
-	bool			is_apple; // 1 /** Whether the link that pointed to this target was an apple alias. */
-}; // 1038 + 2 pad = 1040b
+	path_t			path	; // 1024	/** The contents of the link (usually the absolute path to the target file). */
+	const MountInfo	*mount	; // 8		/** Information about a mount point. NULL if target isn't a mount point. */
+	FileColour		colour	; // 4		/** The colour that the file should be displayed in. */
+	char			suffix	; // 1		/** The symbol to be shown after the target's name. */
+	bool			is_apple; // 1		/** Whether the link that pointed to this target was an apple alias. */
+}; // 1038 + 2 pad = 1040 B
 
 /* —— MountInfo ———————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -138,18 +140,31 @@ struct MountInfo {
 	mttyp_t	typename; // 16		/** Name of the type of filesystem. */
 	uid_t	owneruid; // 4		/** UID of the user that mounted the filesystem. */
 	flag_t	flags	; // 4		/** [Unused] Copy of mount-exported flags. */
-}; // 1048 + 0 pad = 1048b
+}; // 1048 + 0 pad = 1048 B
 
 /* —— GitInfo —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/**
- * @struct GitInfo
- */
 struct GitInfo {
-	const char	*branch; // 8	/** The name of the branch the file is on. */
-	int	  branch_status; // 4	/** Whether the branch is at/behind/ahead `main`. */
-	git_status_t status; // 4	/** The status flags of the file. */
-}; // 16 + 0 pad = 16b
+	union GitInfo_U_ { GitRepoInfo *repo; GitFileInfo *file; } data; // 8
+	enum  GitInfo_E_ { GITINFO_REPO		, GITINFO_FILE		 } type; // 4
+}; // 12 + 4 pad = 16 B
+
+/* —— GitRepoInfo —————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+struct GitRepoInfo {
+	const char	*branch		; // 8 /** The name of the branch the file is on. */
+	const char	*root		; // 8 /** The directory which the `.git` directory is in. */
+	GitFileInfo	*files		; // 8 /** The array of files in the repo with statuses. */
+	uint32_t	file_count	; // 4 /** The number of files in the `GitRepoInfo::files` array. */
+	int			br_status	; // 4 /** Whether the branch is at/ahead/behind `main`. */
+}; // 32 + 0 pad = 32 B
+
+/* —— GitFileInfo —————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+struct GitFileInfo {
+	GitRepoInfo	*repo	; // 8 /** A pointer to the `GitRepoInfo` object representing this file's repo. */
+	git_status_t status	; // 4 /** The status flags of the file. */
+}; // 12 + 4 pad = 16 B
 
 /* —— TimeInfo ————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -160,7 +175,7 @@ struct GitInfo {
  * Contains the string that should be used to display the time, as well as the colour that that string should be
  * printed in.
  */
-struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36b
+struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36 B
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Helper Macros ———————————————————————————————————————————————————————————————————————————————————————————————— */

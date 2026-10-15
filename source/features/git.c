@@ -3,170 +3,255 @@
 #include <git2.h>
 #include <errno.h>
 #include <stdio.h>
+#include <assert.h>
 #include <string.h>
 #include <stdbool.h>
 
 #include "malloc.h"
+#include "debugging.h"
 #include "model/stat-model.h"
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define GIT_STATUS_OPTS_FLAGS ((unsigned int)(	\
+	GIT_STATUS_OPT_INCLUDE_IGNORED			|	\
+	GIT_STATUS_OPT_INCLUDE_UNTRACKED		|	\
+	GIT_STATUS_OPT_INCLUDE_UNMODIFIED		|	\
+	GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX	|	\
+	GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS	|	\
+	GIT_STATUS_OPT_RENAMES_INDEX_TO_WORKDIR		\
+))
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline int getGitStatusList(git_status_list *const status_list, git_repository *const repo);
+static inline int getBasicCommitInfo(
+	git_repository **const repo, git_reference **const head, git_object **const commit, const char *const path
+);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static bool did_init = false;
 
-static inline void initGitState(void) { if (!did_init) git_libgit2_init		(); did_init = true; }
-/**/		  void freeGitState(void) { if ( did_init) git_libgit2_shutdown	();					 }
+static inline void initGitState(void) {
+	if (!did_init) git_libgit2_init();
+	did_init = true;
+}
+
+void freeGitState(void) {
+	if (did_init) git_libgit2_shutdown();
+}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define RETURN goto LABEL_RETURN
+
 GitInfo *getGitInfo(const FileStat *const pFS) {
-
-	return NULL;
-
 	// initialise `libgit2`'s global state
 	//	note: this state will be released by `main`, at the end of the program
 	initGitState();
 
-	git_status_list *list = NULL;
-	git_repository	*repo = NULL;
-	git_reference	*head = NULL;
-	git_object		*comt = NULL;
+	/* ——————————————————————————————————————————————————————— */
+
+	/** A pointer to the `GitInfo` object we're creating, which will be returned by the function. */
+	GitInfo *git_info_obj	= NULL;
+
+	git_repository	*repo	= NULL; /** Repr. of an existing git repo, including all its object contents. */
+	git_reference	*head	= NULL; /** Information about the current branch of a repo. */
+	git_object		*commit	= NULL; /** Info about the commmit that the branch `head` is at. */
+
+	// note: this is defined earlier than it needs to be, so that the `goto LABEL_RETURN` statement works correctly
+	git_status_list *status_list = NULL; /** The statuses of all ignored/modified/new/etc files in a repo. */
 
 	/* ——————————————————————————————————————————————————————— */
 
-	const char *const path_to_get = /* (pFS->parent != NULL) ? pFS->parent->path : */ pFS->path;
+	// fill out the repo, branch, and commit info, returning `NULL` if one of them can't be found
+	int error = getBasicCommitInfo(&repo, &head, &commit, pFS->path);
 
-	/* ——————————————————————————————————————————————————————— */
-
-	/// @todo print/store proper error messages for each of the caught errors
-	int error = 0;
-
-	error = git_repository_open_ext(&repo, path_to_get, 0, NULL); // open the repo
-
-	switch (error) {
-		case 0				: break;
-		case GIT_ENOTFOUND	: goto return_; // repo not found (not a git repo)
-		case -1				: goto return_; // repo found, but corruption/error while reading it
-		default				: goto return_; // unknown error
-	}
-
-	/* ——————————————————————————————————————————————————————— */
-
-	error = git_repository_head(&head, repo); // get the HEAD reference (current branch)
-
+	// TEMP: this switch statement is currently just being used to print debugging messages
 	switch (error) {
 		case 0: break;
-		case GIT_ENOTFOUND		: goto return_; // `head` is missing
-		case GIT_EUNBORNBRANCH	: goto return_; // points to a branch that doesn't exist
-		default					: goto return_; // other error - `errno` was set
+		case GIT_ENOTFOUND: printf("file      : %s \33[91m( not in git repo )\33[m\n", pFS->display);
+		/*[[fallthrough]];*/
+		default: RETURN;
 	}
+	// this is what the switch statement will eventually be replaced with
+	if (error != 0) RETURN;
 
 	/* ——————————————————————————————————————————————————————— */
 
-	error = git_reference_peel(&comt, head, GIT_OBJECT_COMMIT); // resolve HEAD to the latest commit object
-
-	switch (error) {
-		case 0: break;
-		case GIT_ENOTFOUND	: goto return_; // `head` is missing
-		case GIT_EAMBIGUOUS	: goto return_; // ambiguous commit
-		default				: goto return_; // unknown error
-	}
-
-	/* ——————————————————————————————————————————————————————— */
-
-	// GitInfo *const info = emalloc(sizeof(GitInfo));
-
+	/** The name of the branch. May be the alnum name (e.g. `main`), or the branch hash. */
 	const char *branch_name = git_reference_name(head);
-	const char *const branch_basename = strrchr(branch_name, '/');
 
+	// if the branchname is formatted as, e.g., `origin/main`, then only keep the final segment, `main`
+	const char *const branch_basename = strrchr(branch_name, '/');
 	if (branch_basename != NULL) branch_name = branch_basename + 1;
 
-	printf("\33[m\n%s - on branch %s\n", path_to_get, branch_name);
+	/* ——————————————————————————————————————————————————————— */
+
+	/** The directory that contains the `.git/` dir. */
+	const char *const repo_root = git_repository_workdir(repo);
 
 	/* ——————————————————————————————————————————————————————— */
+
+	printf("file      : %s\n", pFS->display);
+	printf("from repo : %s\n", repo_root);
+	printf("on branch : %s\n", branch_name);
+
+	/* ——————————————————————————————————————————————————————— */
+
+	// from the repo, get the status of all ignored, modified, new, etc. files
+	error = getGitStatusList(status_list, repo);
+	if (error != 0) RETURN;
+
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-
-	git_status_options opts = GIT_STATUS_OPTIONS_INIT;
-
-	#pragma GCC diagnostic pop
-
-	opts.show = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
-	opts.flags = (
-		GIT_STATUS_OPT_INCLUDE_IGNORED			|
-		GIT_STATUS_OPT_INCLUDE_UNTRACKED		|
-		GIT_STATUS_OPT_INCLUDE_UNMODIFIED		|
-		GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX	|
-		GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS	|
-		GIT_STATUS_OPT_RENAMES_INDEX_TO_WORKDIR
-	);
-
-	error = git_status_list_new(&list, repo, &opts);
-	if (error != 0) goto return_;
+	const size_t count = git_status_list_entrycount(status_list);
+	if (count == 0) {
+		puts("\33[32m( nothing to be tracked )\33[m");
+		RETURN;
+	}
 
 	/* ——————————————————————————————————————————————————————— */
 
-	const size_t count = git_status_list_entrycount(list);
-
 	for (size_t i = 0; i < count; ++i) {
-		const git_status_entry *const entry = git_status_byindex(list, i);
-		if (entry == NULL) continue;
+		const git_status_entry *const entry = git_status_byindex(status_list, i);
 
-		if (entry->index_to_workdir	!= NULL) printf("\33[1;4;34m%s\33[m\n", entry->index_to_workdir->old_file.path);
+		// check for errors, i.e. whether the entry we got, or its diff object, is `NULL`
+		//	however, I don't actually know how I would catch/handle it - I think I'll just ignore it for now
+		if (entry == NULL || entry->index_to_workdir == NULL) continue;
 
 		const git_status_t status = entry->status;
 
-		// general
-		if (status & GIT_STATUS_CURRENT			) puts("CURRENT			");
-		if (status & GIT_STATUS_IGNORED			) puts("IGNORED			");
-		if (status & GIT_STATUS_CONFLICTED		) puts("CONFLICTED		");
+		// since this is by far the most common case, this short-circuit saves us from doing all the checks below
+		/** @todo
+		 *	I may expand this single `status` check into a switch/case statement that short-circuits all of the
+		 *		most common cases, and then check combined cases if a single.
+		 *	This'd keep the `O(1)`/`O(log n)` complexity of switch/case statements for most cases, falling back to
+		 *		a tower of `if`s (which is `O(n)`) for all cases in which a file has more than one flag.
+		 */
+		if (status == GIT_STATUS_CURRENT) continue;
 
-		// unstaged
-		if (status & GIT_STATUS_WT_NEW			) puts("WT_NEW			");
-		if (status & GIT_STATUS_WT_MODIFIED		) puts("WT_MODIFIED		");
-		if (status & GIT_STATUS_WT_DELETED		) puts("WT_DELETED		");
-		if (status & GIT_STATUS_WT_TYPECHANGE	) puts("WT_TYPECHANGE	");
-		if (status & GIT_STATUS_WT_RENAMED		) puts("WT_RENAMED		");
-		if (status & GIT_STATUS_WT_UNREADABLE	) puts("WT_UNREADABLE	");
+		/*TEMP:*/ if (status == GIT_STATUS_IGNORED) continue; // temp so I don't have to see all the ignored files
+		/*TEMP:*/ printf("\33[34m'%s'\33[m  \t: ", entry->index_to_workdir->old_file.path);
+
+		/* ——————————————————————————————————————————————————————— */
 
 		// staged
-		if (status & GIT_STATUS_INDEX_NEW		) puts("INDEX_NEW		");
-		if (status & GIT_STATUS_INDEX_MODIFIED	) puts("INDEX_MODIFIED	");
-		if (status & GIT_STATUS_INDEX_DELETED	) puts("INDEX_DELETED	");
-		if (status & GIT_STATUS_INDEX_RENAMED	) puts("INDEX_RENAMED	");
-		if (status & GIT_STATUS_INDEX_TYPECHANGE) puts("INDEX_TYPECHANGE");
+		if (status & GIT_STATUS_INDEX_NEW		) printf("INDEX_NEW "		);
+		if (status & GIT_STATUS_INDEX_MODIFIED	) printf("INDEX_MODIFIED "	);
+		if (status & GIT_STATUS_INDEX_DELETED	) printf("INDEX_DELETED "	);
+		if (status & GIT_STATUS_INDEX_RENAMED	) printf("INDEX_RENAMED "	);
+		if (status & GIT_STATUS_INDEX_TYPECHANGE) printf("INDEX_TYPECHANGE ");
+
+		// unstaged
+		if (status & GIT_STATUS_WT_NEW			) printf("WT_NEW "			);
+		if (status & GIT_STATUS_WT_MODIFIED		) printf("WT_MODIFIED "		);
+		if (status & GIT_STATUS_WT_DELETED		) printf("WT_DELETED "		);
+		if (status & GIT_STATUS_WT_TYPECHANGE	) printf("WT_TYPECHANGE "	);
+		if (status & GIT_STATUS_WT_RENAMED		) printf("WT_RENAMED "		);
+		if (status & GIT_STATUS_WT_UNREADABLE	) printf("WT_UNREADABLE "	);
+
+		// general
+		if (status & GIT_STATUS_IGNORED			) printf("IGNORED "			);
+		if (status & GIT_STATUS_CONFLICTED		) printf("CONFLICTED "		);
 
 		putchar('\n');
 	}
 
-	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
-
-	return_:
+	/* —— */ LABEL_RETURN: /* ——————————————————————————————————————————————————————————————————————— */
 
 	// free all allocations
-	if (comt != NULL) git_object_free(comt);
-	if (head != NULL) git_reference_free(head);
-	if (repo != NULL) git_repository_free(repo);
-	if (list != NULL) git_status_list_free(list);
+	//	note: usually I wouldn't check for `NULL` when freeing things, but I don't know how these functions work, so
+	//		I'd rather be safe than sorry
+	if (commit		!= NULL) git_object_free(commit);
+	if (head		!= NULL) git_reference_free(head);
+	if (repo		!= NULL) git_repository_free(repo);
+	if (status_list	!= NULL) git_status_list_free(status_list);
 
-	static int iter_count = 0;
+	/*TEMP:*/ dline();
 
-	if (iter_count++ == 0) {
-		putchar('\n');
-		exit(0);
-	}
-
-	return NULL;
+	return git_info_obj;
 }
 
+#undef RETURN
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline int getGitStatusList(git_status_list *const status_list, git_repository *const repo) {
+	const git_status_options opts = {
+		.version = GIT_STATUS_OPTIONS_VERSION,
+		.show	 = GIT_STATUS_SHOW_INDEX_AND_WORKDIR,
+		.flags	 = GIT_STATUS_OPTS_FLAGS,
+	};
+
+	const int error = git_status_list_new(status_list, repo, &opts);
+
+	switch (error) {
+		case 0	: break;
+		default	: return error; // `errno` was set
+	}
+
+	assert(error == 0);
+	return error;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline int getBasicCommitInfo(
+	git_repository **const repo, git_reference **const head, git_object **const commit, const char *const path
+) {
+	/// @todo print/store proper error messages for each of the caught errors
+	int error = 0;
+
+	/* ——————————————————————————————————————————————————————— */
+
+	error = git_repository_open_ext(repo, path, 0, NULL); // open the repo
+
+	switch (error) {
+		case 0				: break;
+		case GIT_ENOTFOUND	: return error; // repo not found (not a git repo)
+		case -1				: return error; // repo found, but corruption/error while reading it
+		default				: return error; // unknown error
+	}
+
+	/* ——————————————————————————————————————————————————————— */
+
+	error = git_repository_head(head, *repo); // get the HEAD reference (current branch)
+
+	switch (error) {
+		case 0					: break;
+		case GIT_ENOTFOUND		: return error; // `head` is missing
+		case GIT_EUNBORNBRANCH	: return error; // points to a branch that doesn't exist
+		default					: return error; // other error - `errno` was set
+	}
+
+	/* ——————————————————————————————————————————————————————— */
+
+	error = git_reference_peel(commit, *head, GIT_OBJECT_COMMIT); // resolve HEAD to the latest commit object
+
+	switch (error) {
+		case 0				: break;
+		case GIT_ENOTFOUND	: return error; // `head` is missing
+		case GIT_EAMBIGUOUS	: return error; // ambiguous commit
+		default				: return error; // unknown error
+	}
+
+	/* ——————————————————————————————————————————————————————— */
+
+	assert(error == 0);
+	return error;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_git_info(const FileStat *const pFS) {
-	(void)pFS;
-	printf("%s%s", getcol(RESET_ALL), "gitinfo");
+	/*TEMP:*/ (void)pFS;
+	/*TEMP:*/ printf("%s%s", getcol(RESET_ALL), "gitinfo");
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// spell:ignoreRegexp /\bGIT_E\B|comt|(?<=\n\s*#.+"-)W/g
+// spell:ignoreRegexp /\bGIT_E\B|commit|(?<=\n\s*#.+"-)W/g

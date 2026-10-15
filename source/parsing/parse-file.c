@@ -114,7 +114,7 @@ void parseFile(FileStat *const pfile) {
 	if (do_grp_name()) pfsf->grp_name	= getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str	= parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
 	if (do_flag_str()) pfsf->flag_str	= parseFlags(pfile);
-	if (do_git_info()) pfsf->git		= getGitInfo(pfile);
+	// if (do_git_info()) pfsf->git		= getGitInfo(pfile);
 	if (do_icon	   ()) pfile->icon		= getIcon(pfile);
 	if (DO_COLOUR  ()) pfile->file_col	= setFileColour(pfile->name, pfile->mode, pfsf->mount, pstat);
 	if (do_time_str() || do_time()) {

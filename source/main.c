@@ -16,7 +16,7 @@
 #include "output/output.h" // printFile()
 #include "form/formatting.h" // initFormatting()
 #include "options/options.h" // setOptions(), DO_CLEAR()
-#include "features/features.h" // freeFirmlinks()
+#include "features/features.h" // freeFirmlinks(), freeGitState()
 #include "parsing/parse-file.h" // parseFile()
 #include "processing/process-input.h" // processInput()
 
@@ -72,13 +72,17 @@ int main(const int argc, char *argv[]) {
 		if (!isValidFS(&inputs[i])) continue;
 		any_valid_input = true;
 
-		for (int j = 0; j < inputs[i].f->child_count; j++) { /** @todo FIXME: !! */
+		for (int j = 0; j < inputs[i].f->child_count; j++) {
 			inputs[i].f->children[j].parent = &inputs[i];
 		}
 
 		// then parse the file - i.e. go through and convert things from raw data into displayable output
 		parseFile(&inputs[i]);
+
+		/*TEMP:*/ getGitInfo(&inputs[i]);
 	}
+
+	/*TEMP:*/ return 0;
 
 	// if none of the inputs were valid, don't bother with even trying to print them - just return failure
 	if (!any_valid_input) return EXIT_FAILURE;
