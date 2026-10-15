@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "hash.h"
 #include "malloc.h"
 #include "debugging.h"
 #include "model/stat-model.h"
@@ -33,30 +34,17 @@ static inline int getBasicCommitInfo(
 
 static bool did_init = false;
 
-#ifdef DEBUG_MODE
+static inline void initGitState(void) {
+	if (did_init) return;
+	if (git_libgit2_init() != 1) debug(WARNING, "libgit2 initialised more than once");
+	did_init = true;
+}
 
-	static inline void initGitState(void) {
-		if (did_init) return;
-		if (git_libgit2_init() != 1) debug(WARNING, "libgit2 initialised more than once");
-		did_init = true;
-	}
-
-	void freeGitState(void) {
-		if (!did_init) return;
-		if (git_libgit2_shutdown() != 0) debug(WARNING, "libgit2 not fully shut down");
-		did_init = false;
-	}
-
-#else
-	static inline void initGitState(void) {
-		if (!did_init) git_libgit2_init();
-		did_init = true;
-	}
-
-	void freeGitState(void) {
-		if (did_init) git_libgit2_shutdown();
-	}
-#endif
+void freeGitState(void) {
+	if (!did_init) return;
+	if (git_libgit2_shutdown() != 0) debug(WARNING, "libgit2 not fully shut down");
+	did_init = false;
+}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -79,7 +67,7 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 	// note: this is defined earlier than it needs to be, so that the `goto LABEL_RETURN` statement works correctly
 	git_status_list *status_list = NULL; /** The statuses of all ignored/modified/new/etc files in a repo. */
 
-	/* ——————————————————————————————————————————————————————— */
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 	// fill out the repo, branch, and commit info, returning `NULL` if one of them can't be found
 	int error = getBasicCommitInfo(&repo, &head, &commit, pFS->path);
@@ -94,6 +82,13 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 	// this is what the switch statement will eventually be replaced with
 	if (error != 0) RETURN;
 
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	/// I'm making the executive decision to not handle bare repos. With how complicated `git` already is, I don't need
+	///  any more unnecessary complexity, and they're so rare that they're not worth considering.
+	/// @todo I may add support for them later, but not while I'm still setting the system up.
+	if ((bool)git_repository_is_bare(repo)) RETURN;
+
 	/* ——————————————————————————————————————————————————————— */
 
 	/** The name of the branch. May be the alnum name (e.g. `main`), or the branch hash. */
@@ -105,14 +100,27 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 
 	/* ——————————————————————————————————————————————————————— */
 
-	/** The directory that contains the `.git/` dir. */
-	const char *const repo_root = git_repository_workdir(repo);
+	/** The path to the repo's `.git/` directory. */
+	const char *const repo_root = git_repository_commondir(repo);
+
+	/**
+	 * For the system I'm trying to build to work correctly, I need to be able to compare two repos to check whether
+	 *	they're the same or not.
+	 *
+	 * This could be easily achieved by comparing their paths directly using `strcmp`, however, using `strcmp` while
+	 *	iterating through a list of repos would be very inefficient.
+	 *
+	 * Therefore, I'm going to take the performace hit once per file, by iterating through its `commondir` path
+	 *	just once (in `hashstr`), which will then allow me to directly compare hashes, instead of paths.
+	 */
+	const hash_t repo_hash = hashstr(repo_root);
 
 	/* ——————————————————————————————————————————————————————— */
 
 	printf("file      : %s\n", pFS->display);
 	printf("from repo : %s\n", repo_root);
 	printf("on branch : %s\n", branch_name);
+	printf("repo hash : %llu\n", repo_hash);
 
 	/* ——————————————————————————————————————————————————————— */
 
@@ -124,7 +132,7 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 
 	const size_t count = git_status_list_entrycount(status_list);
 	if (count == 0) {
-		puts("\33[32m( nothing to be tracked )\33[m");
+		/*TEMP:*/ puts("\33[32m( nothing to be tracked )\33[m");
 		RETURN;
 	}
 

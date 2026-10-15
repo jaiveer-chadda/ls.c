@@ -151,20 +151,25 @@ struct GitInfo {
 
 /* —— GitRepoInfo —————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// TEMP: I'll end up removing/changing some of the info in `GitRepoInfo` and `GitFileInfo` later, but I'm leaving
+//		  everything in for the moment, so that I have as much info to work with, while developing.
+
 struct GitRepoInfo {
 	const char	*branch		; // 8 /** The name of the branch the file is on. */
-	const char	*root		; // 8 /** The directory which the `.git` directory is in. */
+	const char	*root		; // 8 /** The path to the repo's `.git` directory. */
 	GitFileInfo	*files		; // 8 /** The array of files in the repo with statuses. */
+	hash_t		hash		; // 8 /** A unique ID, based on the path to the repo's `.git` directory. */
 	uint32_t	file_count	; // 4 /** The number of files in the `GitRepoInfo::files` array. */
 	int			br_status	; // 4 /** Whether the branch is at/ahead/behind `main`. */
-}; // 32 + 0 pad = 32 B
+}; // 40 + 0 pad = 40 B
 
 /* —— GitFileInfo —————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 struct GitFileInfo {
+	hash_t		rp_hash	; // 8 /** The unique ID of the repo which this file belongs to. */
 	GitRepoInfo	*repo	; // 8 /** A pointer to the `GitRepoInfo` object representing this file's repo. */
 	git_status_t status	; // 4 /** The status flags of the file. */
-}; // 12 + 4 pad = 16 B
+}; // 20 + 4 pad = 22 B
 
 /* —— TimeInfo ————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
