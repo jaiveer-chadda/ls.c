@@ -24,7 +24,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline int getGitStatusList(git_status_list *const status_list, git_repository *const repo);
+static inline int getGitStatusList(git_status_list **const status_list, git_repository *const repo);
 static inline int getBasicCommitInfo(
 	git_repository **const repo, git_reference **const head, git_object **const commit, const char *const path
 );
@@ -33,14 +33,30 @@ static inline int getBasicCommitInfo(
 
 static bool did_init = false;
 
-static inline void initGitState(void) {
-	if (!did_init) git_libgit2_init();
-	did_init = true;
-}
+#ifdef DEBUG_MODE
 
-void freeGitState(void) {
-	if (did_init) git_libgit2_shutdown();
-}
+	static inline void initGitState(void) {
+		if (did_init) return;
+		if (git_libgit2_init() != 1) debug(WARNING, "libgit2 initialised more than once");
+		did_init = true;
+	}
+
+	void freeGitState(void) {
+		if (!did_init) return;
+		if (git_libgit2_shutdown() != 0) debug(WARNING, "libgit2 not fully shut down");
+		did_init = false;
+	}
+
+#else
+	static inline void initGitState(void) {
+		if (!did_init) git_libgit2_init();
+		did_init = true;
+	}
+
+	void freeGitState(void) {
+		if (did_init) git_libgit2_shutdown();
+	}
+#endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -101,7 +117,7 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 	/* ——————————————————————————————————————————————————————— */
 
 	// from the repo, get the status of all ignored, modified, new, etc. files
-	error = getGitStatusList(status_list, repo);
+	error = getGitStatusList(&status_list, repo);
 	if (error != 0) RETURN;
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -179,7 +195,7 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline int getGitStatusList(git_status_list *const status_list, git_repository *const repo) {
+static inline int getGitStatusList(git_status_list **const status_list, git_repository *const repo) {
 	const git_status_options opts = {
 		.version = GIT_STATUS_OPTIONS_VERSION,
 		.show	 = GIT_STATUS_SHOW_INDEX_AND_WORKDIR,
@@ -190,7 +206,7 @@ static inline int getGitStatusList(git_status_list *const status_list, git_repos
 
 	switch (error) {
 		case 0	: break;
-		default	: return error; // `errno` was set
+		default	: return error; // error is an `errno` code
 	}
 
 	assert(error == 0);
@@ -224,7 +240,7 @@ static inline int getBasicCommitInfo(
 		case 0					: break;
 		case GIT_ENOTFOUND		: return error; // `head` is missing
 		case GIT_EUNBORNBRANCH	: return error; // points to a branch that doesn't exist
-		default					: return error; // other error - `errno` was set
+		default					: return error; // other error - error is an `errno` code
 	}
 
 	/* ——————————————————————————————————————————————————————— */
