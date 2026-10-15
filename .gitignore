@@ -10,9 +10,9 @@ archive/
 *.tmp*
 
 _*
-!**/_defs.h
 
-!_output/
+!**/_defs.h
+!**/git/_*
 
 Icon?
 *_chrdv*
