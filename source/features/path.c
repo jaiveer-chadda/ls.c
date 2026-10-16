@@ -1,6 +1,7 @@
 /// @file features/path/path.c
 
 #include <stdio.h>
+#include <errno.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +17,57 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/**
+ * @brief Get the program's `$PWD`, and cache it for further use.
+ */
+static inline const char *getPWD(size_t *const len) {
+	/**
+	 * The `PWD_buffer` is here in case we need to use `getwd`,
+	 *	which writes to a buffer directly, rather than returning a pointer
+	 */
+	static char PWD_buffer[MAX_PATH_LEN];
+	static bool did_init = false;
+	static int PWD_errno = 0;
+
+	static char *PWD = NULL;
+	static size_t PWD_len = 0;
+
+	if (did_init) {
+		*len = PWD_len;
+		errno = PWD_errno;
+		return PWD;
+	}
+
+	/* ——————————————————————————————————————————————— */
+
+	did_init = true;
+
+	PWD = getenv("PWD");
+
+	if (PWD == NULL) { // if `getenv` fails for some reason, then fall back to using `getwd`
+		// unlike `getenv`, `getwd` fills the path buffer directly
+		//	note: the reason we use `getenv("PWD")` first, is because the `$PWD` environment variable
+		//		preserves symlinks, whereas `getwd` will resolve symlinks when getting `$PWD`
+		PWD = getwd(PWD_buffer);
+
+		// if `getwd` also doesn't work, then there's nothing we can really do - return failure
+		if (PWD == NULL) {
+			if (len != NULL) *len = 0;
+
+			PWD_len = 0, PWD_errno = errno;
+			return NULL;
+		}
+	}
+
+	// if `getwd` succeeds, then to avoid really complex checks later, get its `strlen` now
+	if (len != NULL) *len = strlen(PWD);
+
+	PWD_len = *len, PWD_errno = 0;
+	return PWD;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 void getAbsolutePath(const FileStat *const pFS) {
 	char *path;
 
@@ -24,8 +76,8 @@ void getAbsolutePath(const FileStat *const pFS) {
 	} else {
 		path = ecalloc(1, MAX_PATH_LEN);
 
-		const char *const PWD = getenv("PWD");
-		const size_t pwd_len = strlen(PWD);
+		size_t pwd_len;
+		const char *const PWD = getPWD(&pwd_len);
 
 		memcpy(path, PWD, pwd_len);
 		path[pwd_len] = '/';
@@ -102,39 +154,26 @@ const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 	const bool is_link_tg = (path_len == IS_LINK_TARGET);
 
 	path_t path_buffer = {0};
-	ssize_t adj_len = -1; // the length of the path after it's been adjusted
-	char *adj_path, *PWD = path_buffer;
+	size_t adj_len = 0; // the length of the path after it's been adjusted
+	char *adj_path;
 
 	// if this func is being called to create a path for a main input file ...
 	if (!is_link_tg) {
 		// ... then check if the path is the dot dir, i.e. `if (path == ".")`
 		if ((path[0] == '.' && path[1] == '\0')) {
 			// if `path` _is_ ".", then convert that into the full path to `$PWD`
-			// `getenv` returns a pointer to a string ...
-			PWD = getenv("PWD");
-
-			if (PWD != NULL) {
-				// ... so we need to fill the path buffer with the result of `getenv`.
-				// note: since we're going to need the length of `PWD` later, we might as well get its `strlen` now
-				memcpy(path_buffer, PWD, ( adj_len = strlen(PWD) ));
-
-			} else { // if `getenv` fails for some reason, then fall back to using `getcwd`
-				// unlike `getenv`, `getcwd` fills the path buffer directly
-				//	note: the reason we use `getenv("PWD")` first, is because the `$PWD` environment variable
-				//		preserves symlinks, whereas `getcwd` will resolve symlinks when getting `$PWD`
-				PWD = getcwd(PWD, sizeof(path_buffer));
-				// if `getcwd` also doesn't work, then there's nothing we can really do - return failure
+			const char *const PWD = getPWD(&adj_len);
 				if (PWD == NULL) return NULL;
 
-				// if `getcwd` succeeds, then to avoid really complex checks later, get its `strlen` now
-				adj_len = strlen(PWD);
-			}
+			// `getPWD` returns a pointer to a string, so we need to fill the path buffer with its result
+			memcpy(path_buffer, PWD, adj_len);
 
 		} else { // if `path` isn't ".", then just copy `path` into `path_buffer`
 			assert(path_len >= 1);
 			// fill the path buffer with the inputted string
 			memcpy(path_buffer, path, ( adj_len = path_len ));
 		}
+
 		adj_path = path_buffer; // by this point, `path_buffer` is definitely full, so we can point `adj_path` to it
 
 	} else { // if we _are_ just making a link target, then `path` is mutable, so point `adj_path` to the input
@@ -144,7 +183,7 @@ const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 
 	// no matter which route we went down above, we need to try and replace `$HOME` with `~` - so find `$HOME`.
 	const char *const HOME = getenv("HOME");
-	const ssize_t home_len = strlen(HOME); // and find its length too - this is unavoidable
+	const size_t  home_len = strlen(HOME); // and find its length too - this is unavoidable
 
 	if (HOME == NULL || home_len == 0				// make sure that we successfully got the `$HOME` var,
 		|| adj_len <= home_len						// that `$PWD != $HOME`, so we don't replace the bare path
@@ -182,7 +221,7 @@ void print_name(const FileStat *const pFS) {
 	if (doDimFile(pFS) && !has_bg(colour)) colour.style |= G_DIM;
 
 	printEscdName(name_or_path, colour, true);
-	if (pFS->display != NULL) efree((void*)pFS->display); /* [free:display-path] - freed in `getDisplayPath` */
+	efree((void*)pFS->display); /* [free:display-path] - allocated in `getDisplayPath` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
