@@ -27,20 +27,22 @@ static inline const char *getPWD(size_t *const len) {
 	 */
 	static char PWD_buffer[MAX_PATH_LEN];
 	static bool did_init = false;
-	static int PWD_errno = 0;
 
 	static char *PWD = NULL;
 	static size_t PWD_len = 0;
-
-	if (did_init) {
-		*len = PWD_len;
-		errno = PWD_errno;
-		return PWD;
-	}
+	static uint8_t PWD_errno = 0;
 
 	/* ——————————————————————————————————————————————— */
 
+	if (did_init) {
+		errno = PWD_errno;
+		if (len != NULL) *len = PWD_len;
+		return PWD;
+	}
+
 	did_init = true;
+
+	/* ——————————————————————————————————————————————— */
 
 	PWD = getenv("PWD");
 
@@ -54,70 +56,78 @@ static inline const char *getPWD(size_t *const len) {
 		if (PWD == NULL) {
 			if (len != NULL) *len = 0;
 
-			PWD_len = 0, PWD_errno = errno;
+			PWD_errno = errno,
+			PWD_len = 0;
+
 			return NULL;
 		}
 	}
 
+	/* ——————————————————————————————————————————————— */
+
 	// if `getwd` succeeds, then to avoid really complex checks later, get its `strlen` now
 	if (len != NULL) *len = strlen(PWD);
 
-	PWD_len = *len, PWD_errno = 0;
+	errno = PWD_errno = 0,
+	PWD_len = *len;
+
 	return PWD;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void getAbsolutePath(const FileStat *const pFS) {
-	char *path;
+	const char *path;
 
 	if (pFS->path[0] == '/') {
-		path = (char*)pFS->path;
+		path = pFS->path;
+
 	} else {
-		path = ecalloc(1, MAX_PATH_LEN);
+		char *const new_path = ecalloc(1, MAX_PATH_LEN);
 
 		size_t pwd_len;
 		const char *const PWD = getPWD(&pwd_len);
 
-		memcpy(path, PWD, pwd_len);
-		path[pwd_len] = '/';
-		memcpy(path + pwd_len + 1, pFS->path, getPathLen(pFS));
+		memcpy(new_path, PWD, pwd_len);
+		new_path[pwd_len] = '/';
+
+		memcpy(new_path + pwd_len + 1, pFS->path, getPathLen(pFS));
+		path = new_path;
 	}
 
+	// 32 is an arbitrary limit for now - will implement dynamic allocation later
 	char segments[MAX_NAME_LEN][32];
-	int seg_count = 0;
+	size_t seg_count = 0;
 
-	char buffer[MAX_PATH_LEN];
-	char *bufptr = buffer;
+	const char *ppath = path;
 
-	for (const char *pathptr = path; *pathptr != '\0'; pathptr++) {
-		if (*pathptr != '/') {
-			*bufptr++ = *pathptr;
+	while (*ppath != '\0') {
+		while (*ppath == '/') ppath++; // skip leading and repeated slashes
+		if (*ppath == '\0') break; // stop if there are no more segments
+
+		const char *const segment = ppath; // find the start of the new segment
+		while (*ppath != '\0' && *ppath != '/') ppath++; // then iterate to the end of the segment
+
+		const ptrdiff_t seg_len = ppath - segment;
+
+		// ignore the `.` segment
+		if (seg_len == 1 && segment[0] == '.') continue;
+
+		// ignore the `..` segment, as well as the segment before it
+		if (seg_len == 2 && segment[0] == '.' && segment[1] == '.') {
+			// decrement the count so that the next segment overwrites the previous one
+			if (seg_count > 0) seg_count--; // `seg_count` should never drop below 0
 			continue;
 		}
 
-		if (pathptr != path && pathptr[-1] == '/') continue;
-
-		*bufptr = '\0';
-
-		if (buffer[0] == '.') {
-			if (buffer[1] == '\0' || (buffer[1] == '.' && buffer[2] == '\0')) {
-				if (buffer[1] == '.') seg_count--;
-				bufptr = buffer;
-				continue;
-			}
-		}
-
-		memcpy(&segments[seg_count++], buffer, (bufptr - buffer) + 1);
-		bufptr = buffer;
+		memcpy(segments[seg_count], segment, seg_len);
+		segments[seg_count++][seg_len] = '\0';
 	}
 
-	*bufptr = '\0';
-	memcpy(&segments[seg_count++], buffer, (bufptr - buffer) + 1);
-
-	for (int i = 0; i < seg_count; i++) {
+	putchar('/');
+	for (size_t i = 0; i < seg_count; i++) {
+		if (i != 0) putchar('/');
 		printf("%s", segments[i]);
-		if (i != seg_count - 1) putchar('/');
 	}
 }
 
