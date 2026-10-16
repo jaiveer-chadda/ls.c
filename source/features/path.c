@@ -16,6 +16,62 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+void getAbsolutePath(const FileStat *const pFS) {
+	char *path;
+
+	if (pFS->path[0] == '/') {
+		path = (char*)pFS->path;
+	} else {
+		path = ecalloc(1, MAX_PATH_LEN);
+
+		const char *const PWD = getenv("PWD");
+		const size_t pwd_len = strlen(PWD);
+
+		memcpy(path, PWD, pwd_len);
+		path[pwd_len] = '/';
+		memcpy(path + pwd_len + 1, pFS->path, getPathLen(pFS));
+	}
+
+	char segments[MAX_NAME_LEN][32];
+	int seg_count = 0;
+
+	char buffer[MAX_PATH_LEN];
+	char *bufptr = buffer;
+
+	for (const char *pathptr = path; *pathptr != '\0'; pathptr++) {
+		if (*pathptr != '/') {
+			*bufptr++ = *pathptr;
+			continue;
+		}
+
+		if (pathptr != path && pathptr[-1] == '/') continue;
+
+		*bufptr = '\0';
+
+		if (buffer[0] == '.') {
+			if (buffer[1] == '\0' || (buffer[1] == '.' && buffer[2] == '\0')) {
+				if (buffer[1] == '.') seg_count--;
+				bufptr = buffer;
+				continue;
+			}
+		}
+
+		memcpy(&segments[seg_count++], buffer, (bufptr - buffer) + 1);
+		bufptr = buffer;
+	}
+
+	*bufptr = '\0';
+	memcpy(&segments[seg_count++], buffer, (bufptr - buffer) + 1);
+
+	for (int i = 0; i < seg_count; i++) {
+		printf("%s", segments[i]);
+		if (i != seg_count - 1) putchar('/');
+	}
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 const char *getBasename(const char *const path) {
 	const char *definite = NULL, *running = NULL;
 
@@ -113,6 +169,7 @@ const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 
 static inline const char* choosePath(const FileStat *const pFS) {
 	if (pFS->display != NULL			 ) return pFS->display;
+	if (pFS->abspath != NULL && DO_ABS ()) return pFS->abspath;
 	if (pFS->path	 != NULL && DO_PATH()) return pFS->path;
 	return pFS->name;
 }

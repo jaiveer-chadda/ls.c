@@ -29,7 +29,7 @@ I just assigned flags to them cos there was one available - not cos I want it to
 -@							-~
 
 -A	DO_DOTFILES				-a
--B							-b
+-B	DO_ABS					-b
 -C	SORT_CASE_SENSIT		-c	DO_CLEAR
 -D	SORT_DIRS_FIRST			-d	DIRS_AS_FILES
 -E	do_mode_str				-e	do_mode
@@ -66,6 +66,7 @@ I just assigned flags to them cos there was one available - not cos I want it to
    /*│ option name		│default│ is	│ short	│ long flags								│*/	\
    /*│					│ value	│ field	│ flag	│											│*/	\
    /*├──────────────────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
+	X(DO_ABS			, false	, false	, 'B',	{ "abs"				, "absolute-path"		})	\
 	X(DO_PATH			, false	, false	, 'p',	{ "path"			, "full-path"			})	\
 	X(DO_CLEAR			, false	, false	, 'c',	{ "clear"									})	\
 	X(DO_HEADER			, false	, false	, 'H',	{ "header"			, "headers"				})	\
