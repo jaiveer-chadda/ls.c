@@ -14,6 +14,10 @@
 #include "output/output.h"
 #include "options/options.h"
 
+#ifndef MAX
+#	define MAX(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -76,34 +80,32 @@ static inline const char *getPWD(size_t *const len) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void getAbsolutePath(const FileStat *const pFS) {
+char *getAbsolutePath(const FileStat *const pFS) {
 
-	typedef char seg_t[MAX_NAME_LEN];
-	const char *path;
+	const char *path = pFS->path;
 	bool did_alloc = false;
 
 	/* ——————————————————————————————————————————————— */
 
-	if (pFS->path[0] == '/') {
-		path = pFS->path;
-
-	} else {
+	if (pFS->path[0] != '/') {
 		size_t pwd_len;
 		const char *const PWD = getPWD(&pwd_len);
 
-		if (PWD == NULL) return /* NULL */;
+		if (PWD == NULL) return NULL;
 
-		char *const new_path = ecalloc(1, MAX_PATH_LEN);
+		char *const new_path = ecalloc(1, MAX_PATH_LEN); /* [alloc:new-path] - freed locally */
 		did_alloc = true;
 
 		memcpy(new_path, PWD, pwd_len);
 		new_path[pwd_len] = '/';
-
 		memcpy(new_path + pwd_len + 1, pFS->path, getPathLen(pFS));
+
 		path = new_path;
 	}
 
 	/* ——————————————————————————————————————————————— */
+
+	typedef char seg_t[MAX_NAME_LEN];
 
 	seg_t  *segments = NULL;
 	size_t *seg_lens = NULL;
@@ -127,8 +129,11 @@ void getAbsolutePath(const FileStat *const pFS) {
 
 		// ignore the `..` segment, as well as the segment before it
 		if (seg_len == 2 && segment[0] == '.' && segment[1] == '.') {
-			// decrement the count so that the next segment overwrites the previous one
-			if (seg_count > 0) seg_count--; // `seg_count` should never drop below 0
+			if (seg_count > 0) { // `seg_count` should never drop below 0
+				// decrement the total length by the length of the previous segment
+				// decrement the count so that the next segment overwrites the previous one
+				total_len -= seg_lens[--seg_count];
+			}
 			continue;
 		}
 
@@ -136,6 +141,7 @@ void getAbsolutePath(const FileStat *const pFS) {
 
 		if (seg_count + 1 > seg_alloc) {
 			MULT_BY_1_5(seg_alloc);
+			/* [alloc:segments] - freed locally */
 			segments = erealloc(segments, seg_alloc * sizeof(seg_t ));
 			seg_lens = erealloc(seg_lens, seg_alloc * sizeof(size_t));
 		}
@@ -147,15 +153,21 @@ void getAbsolutePath(const FileStat *const pFS) {
 		segments[seg_count++][seg_len] = '\0';
 	}
 
-	if (did_alloc) efree(path);
+	if (did_alloc) efree((void*)path); /* [free:new-path] - alloced locally */
 
 	/* ——————————————————————————————————————————————— */
 
-	char *const output = emalloc((total_len + seg_count + 1) * sizeof(char));
+	// the total length of the path segments, +1 for each segment (to add `/`), +1 for the null terminator
+	//	however, always make sure that the length is at least 2, in the case of the `/\0` path
+	const size_t output_len = MAX(2, total_len + seg_count + 1);
+
+	char *const output = emalloc(output_len * sizeof(char)); /* [alloc:abs-path] - freed ??? */
 	char *outptr = output;
 
+	// always begin the output with `/` - this guarantees the path is valid, even if there aren't any segments
 	*outptr++ = '/';
 
+	// iterate through the segments' array, adding each segment to the output string one by one
 	for (size_t i = 0; i < seg_count; i++) {
 		if (i != 0) *outptr++ = '/';
 
@@ -163,13 +175,18 @@ void getAbsolutePath(const FileStat *const pFS) {
 		outptr += seg_lens[i];
 	}
 
+	/* [free:segments] - alloced locally */
 	efree(segments);
 	efree(seg_lens);
 
-	*outptr = '\0';
+	// null-terminate the output string, and return the result
+	*outptr++ = '\0';
+
+	// the length of the output should be the same as the output length we calculated
+	assert((size_t)(outptr - output) == output_len);
 	
 	/*TEMP:*/ printf("%s", output);
-	/* return output; */
+	return output;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

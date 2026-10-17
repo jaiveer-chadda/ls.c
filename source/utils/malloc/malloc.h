@@ -31,11 +31,11 @@ void* e__realloc(void *ptr, size_t size DEBUG_ARGS);
 
 /** @brief Approximately multiplies a number by 1.5, in place. */
 #define MULT_BY_1_5(var) \
-	((var) += (var) == 1 ? 1 : (var) >> 1)
+	((var) += (var) <= 1 ? 1 : (var) >> 1)
 
 /** @brief Approximately multiplies a number by 1.5, and returns the result. */
 #define TIMES_1_5(var) \
-	((var) == 1 ? 1 : (var) >> 1)
+	((var) <= 1 ? 1 : (var) >> 1)
 
 /* —————————————————————————————————————————————————————————— */
 

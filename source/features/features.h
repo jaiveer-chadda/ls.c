@@ -69,7 +69,7 @@ const MountInfo *getMountPoint(const char *const path, const bool is_dir);
 
 #define IS_LINK_TARGET INT16_MIN
 
-void getAbsolutePath(const FileStat *const pFS);
+char *getAbsolutePath(const FileStat *const pFS);
 const char *getBasename(const char *const path);
 const char *getDisplayPath(const char *const path, const namlen_t path_len);
 
