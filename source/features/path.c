@@ -77,16 +77,24 @@ static inline const char *getPWD(size_t *const len) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void getAbsolutePath(const FileStat *const pFS) {
+
+	typedef char seg_t[MAX_NAME_LEN];
 	const char *path;
+	bool did_alloc = false;
+
+	/* ——————————————————————————————————————————————— */
 
 	if (pFS->path[0] == '/') {
 		path = pFS->path;
 
 	} else {
-		char *const new_path = ecalloc(1, MAX_PATH_LEN);
-
 		size_t pwd_len;
 		const char *const PWD = getPWD(&pwd_len);
+
+		if (PWD == NULL) return /* NULL */;
+
+		char *const new_path = ecalloc(1, MAX_PATH_LEN);
+		did_alloc = true;
 
 		memcpy(new_path, PWD, pwd_len);
 		new_path[pwd_len] = '/';
@@ -95,11 +103,15 @@ void getAbsolutePath(const FileStat *const pFS) {
 		path = new_path;
 	}
 
-	// 32 is an arbitrary limit for now - will implement dynamic allocation later
-	char segments[MAX_NAME_LEN][32];
-	size_t seg_count = 0;
+	/* ——————————————————————————————————————————————— */
+
+	seg_t  *segments = NULL;
+	size_t *seg_lens = NULL;
+	size_t seg_count = 0, seg_alloc = 0, total_len = 0;
 
 	const char *ppath = path;
+
+	/* ——————————————————————————————————————————————— */
 
 	while (*ppath != '\0') {
 		while (*ppath == '/') ppath++; // skip leading and repeated slashes
@@ -108,7 +120,7 @@ void getAbsolutePath(const FileStat *const pFS) {
 		const char *const segment = ppath; // find the start of the new segment
 		while (*ppath != '\0' && *ppath != '/') ppath++; // then iterate to the end of the segment
 
-		const ptrdiff_t seg_len = ppath - segment;
+		const size_t seg_len = ppath - segment;
 
 		// ignore the `.` segment
 		if (seg_len == 1 && segment[0] == '.') continue;
@@ -120,15 +132,44 @@ void getAbsolutePath(const FileStat *const pFS) {
 			continue;
 		}
 
+		/* ——————————————————————————————————————————————— */
+
+		if (seg_count + 1 > seg_alloc) {
+			MULT_BY_1_5(seg_alloc);
+			segments = erealloc(segments, seg_alloc * sizeof(seg_t ));
+			seg_lens = erealloc(seg_lens, seg_alloc * sizeof(size_t));
+		}
+
+		total_len += seg_len;
+		seg_lens[seg_count] = seg_len;
+
 		memcpy(segments[seg_count], segment, seg_len);
 		segments[seg_count++][seg_len] = '\0';
 	}
 
-	putchar('/');
+	if (did_alloc) efree(path);
+
+	/* ——————————————————————————————————————————————— */
+
+	char *const output = emalloc((total_len + seg_count + 1) * sizeof(char));
+	char *outptr = output;
+
+	*outptr++ = '/';
+
 	for (size_t i = 0; i < seg_count; i++) {
-		if (i != 0) putchar('/');
-		printf("%s", segments[i]);
+		if (i != 0) *outptr++ = '/';
+
+		memcpy(outptr, segments[i], seg_lens[i]);
+		outptr += seg_lens[i];
 	}
+
+	efree(segments);
+	efree(seg_lens);
+
+	*outptr = '\0';
+	
+	/*TEMP:*/ printf("%s", output);
+	/* return output; */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
