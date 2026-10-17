@@ -74,7 +74,6 @@ void getPureAbsPath(const char **output, namlen_t *output_len, const char *input
 const char *getPath(FileStat *const pFS);
 const char *getAbsPath(FileStat *const pFS);
 const char *getBasename(const char *const path);
-const char *getDisplayPath(const char *const path, const namlen_t path_len);
 
 /* —— size.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

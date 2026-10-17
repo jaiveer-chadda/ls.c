@@ -40,7 +40,7 @@ void freeGitState(void) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 GitInfo *getGitInfo(const FileStat *const pFS) {
-	printf("file      : %s", pFS->display);
+	printf("file      : %s", pFS->abspath);
 
 	// initialise `libgit2`'s global state
 	//	note: this state will be released by `main`, at the end of the program

@@ -68,7 +68,6 @@ void parseFile(FileStat *const pfile) {
 		if (pfile->name_len <= 0) pfile->name_len = strlen(pfile->name);
 		// then make sure that the path is initialised, so `getPathLen` can work correctly
 		pfile->path = getPath(pfile);
-		pfile->display = getDisplayPath(pfile->path, getPathLen(pfile));
 	}
 
 	// `FileStat::mode` and `FileStat::inum` are the two fields which are filled by both `dirent` and `stat`

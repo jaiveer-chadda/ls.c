@@ -289,7 +289,7 @@ void print_link(const FileStat *const pFS) {
 	/* ———————————————————————————————————————————————————————— */
 
 	const char *const arrow = tg_info->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
-	const char *const path = getDisplayPath(tg_info->path, IS_LINK_TARGET);
+	const char *const path = tg_info->path;
 
 	// if this is an invalid link
 	if (tg_info->suffix == INVALID_LINK) {

@@ -41,7 +41,7 @@ static inline icon_t findIconMatch(const char *const check_str, const Icon icon_
 
 icon_t getIcon(const FileStat *const pFS) {
 	// determine which name we'll be using to find the icon
-	const char *filename = pFS->display != NULL ? pFS->display : pFS->name;
+	const char *filename = pFS->abspath != NULL ? pFS->abspath : pFS->name;
 	const bool is_dir = isFSDir(pFS);
 
 	path_t name_buf = {0};
