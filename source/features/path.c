@@ -80,6 +80,66 @@ static inline const char *getPWD(size_t *const len) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/**
+ * @fn getPath
+ * @brief Get the path to the given file, relative to its most senior parent.
+ */
+const char *getPath(FileStat *const file) {
+	// if we've already found this path before, then just return a pointer to it
+	if (file->path != NULL) return file->path;
+
+	FileStat *const parent = file->parent;
+
+	// base case: if this file doesn't have any parents, then we know that its name is already a valid path
+	if (parent == NULL) {
+		file->path = file->name;
+		return file->name;
+	}
+
+	// neither of their lengths should be 0 or -1
+	assert(file->name_len >= 1 && parent->name_len >= 1);
+
+	/* —————————————————————————————————————————————————————— */
+
+	// recurse until we have the full path to the parent, then calculate its path len
+	const char *const parent_path = getPath(parent);
+	const namlen_t parent_plen = getPathLen(parent);
+
+	/* —————————————————————————————————————————————————————— */
+
+	// check the resultant size, including the parent path, the `/`, the child's name, and a null terminator
+	const size_t child_size = parent_plen + 1 + file->name_len + 1;
+	// make sure that the resultant child path won't be too long once we create it
+	if (child_size > sizeof(path_t)) return NULL;
+
+	/* —————————————————————————————————————————————————————— */
+
+	// allocate memory for this file's path, then copy the parent's path into the buffer
+	//	(note: no need to copy the nullbyte, so no +1 for the length)
+	char *const path = memcpy(emalloc(child_size), parent_path, parent_plen); /* [alloc:filepath] - free: printFile */
+	//i)path = "/path/to/parent"
+
+	/* —————————————————————————————————————————————————————— */
+
+	// add the path separator
+	path[getPathLen(parent)] = '/';
+	//i)path = "/path/to/parent/"
+
+	// append the file's name to the end of the path
+	memcpy(path + 1 + getPathLen(parent),
+		file->name,
+		file->name_len + 1 // +1 for the nullbyte this time
+	);
+	//i)path = "/path/to/parent/child_name"
+
+	/* —————————————————————————————————————————————————————— */
+
+	file->name = &path[getPathLen(parent)] + 1;
+	return path;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 void getPureAbsPath(
 	const char **const output, namlen_t *const output_len,
 	const char	*const	input, const namlen_t	input_len

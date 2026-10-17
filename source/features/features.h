@@ -71,6 +71,7 @@ const MountInfo *getMountPoint(const char *const path, const bool is_dir);
 
 void getPureAbsPath(const char **output, namlen_t *output_len, const char *input, const namlen_t input_len);
 
+const char *getPath(FileStat *const pFS);
 const char *getAbsPath(FileStat *const pFS);
 const char *getBasename(const char *const path);
 const char *getDisplayPath(const char *const path, const namlen_t path_len);
