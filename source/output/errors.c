@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "output.h"
+#include "strings.h"
 #include "options/options.h"
 #include "form/formatting.h"
 #include "model/stat-model.h"
@@ -11,7 +12,7 @@
 /* —— print_empty_tree() ——————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define print_empty_tree() do {						\
-	printf("%*s", getTotalLen(), "");				\
+	putspaces(getTotalLen());						\
 	print_tree(NULL, new_lines, depth + 1, true);	\
 } while (0)
 
