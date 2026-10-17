@@ -282,26 +282,7 @@ FileStat *processInput(char *const path) {
 	//	accurate results from `lstat` - especially in the case where the input is a symlinked dir
 	getPureAbsPath(&abs_path, &abs_len, path, input_len);
 
-	struct stat statobj = {0};
-
-	/* —— `stat` input file ——————————————————————————————————————— */
-
-	// firstly, try to run `lstat` on the input path
-	//	the reason we're `stat`ting the file upfront is because we absolutely _need_ to know
-	//	whether its a directory or not, so we might as well store the stat information if we have it
-	// pass the absolute path, however, if `getPureAbsPath` failed, fall back to the original input path
-	if (lstat(( abs_path ? abs_path : path ), &statobj) == -1) {
-		// if it fails, print an error and move onto the next file
-		if (errno == ENOENT) { /** @todo handle */ }
-
-		efree((void*)abs_path);
-		printError(path);
-		// set the pointer to this input to NULL, so we know not to process/print it later
-		return NULL;
-	}
-
 	/* —— assign basic info to input —————————————————————————————— */
-	// since we successfully got the `stat` information, we can start building the `FileStat` object
 
 	FileStat *const pFS = emalloc(sizeof(FileStat));
 	*pFS = (FileStat){
@@ -320,15 +301,32 @@ FileStat *processInput(char *const path) {
 		.f = ecalloc(1, sizeof(FileStatFields)), /* [alloc:filestat-input] - freed in `printFile` */
 	};
 
-	// copy `statobj` from the stack into the newly-allocated heap memory at `FileStat::s file->s`
-	memcpy(pFS->s, &statobj, sizeof(struct stat));
+	/* —— `stat` input file ——————————————————————————————————————— */
+
+	// firstly, try to run `lstat` on the input path
+	//	the reason we're `stat`ting the file upfront is because we absolutely _need_ to know
+	//	whether its a directory or not, so we might as well store the stat information if we have it
+	// pass the absolute path, however, if `getPureAbsPath` failed, fall back to the original input path
+	if (lstat(( abs_path ? abs_path : path ), pFS->s) == -1) {
+		if (errno == ENOENT) { /** @todo handle */ }
+
+		// if it fails, free all the allocated memory, print an error, and move onto the next file
+		efree((void*)pFS->abspath);
+		efree((void*)pFS->s);
+		efree((void*)pFS->f);
+
+		printError(path);
+
+		// set the pointer to this input to NULL, so we know not to process/print it later
+		return NULL;
+	}
 
 	/* —— Check if Input is Dir ——————————————————————————————————— */
 
 	/// @todo implement checking for whether a file is a symlink to a dir
 	const bool is_dir = (
-		(S_ISDIR(statobj.st_mode)) ||
-		(S_ISLNK(statobj.st_mode) && false)
+		(S_ISDIR(pFS->s->st_mode)) ||
+		(S_ISLNK(pFS->s->st_mode) && false)
 	);
 
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
