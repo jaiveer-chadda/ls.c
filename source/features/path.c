@@ -80,25 +80,33 @@ static inline const char *getPWD(size_t *const len) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-char *getAbsolutePath(const FileStat *const pFS) {
+void getPureAbsPath(
+	const char **const output, namlen_t *const output_len,
+	const char	*const	input, const namlen_t	input_len
+) {
 
-	const char *path = pFS->path;
+	/* ——————————————————————————————————————————————— */
+
+	const char *path = input;
 	bool did_alloc = false;
 
 	/* ——————————————————————————————————————————————— */
 
-	if (pFS->path[0] != '/') {
+	if (input[0] != '/') {
 		size_t pwd_len;
 		const char *const PWD = getPWD(&pwd_len);
 
-		if (PWD == NULL) return NULL;
+		if (PWD == NULL) {
+			*output_len = -1, *output = NULL;
+			return;
+		}
 
-		char *const new_path = ecalloc(1, MAX_PATH_LEN); /* [alloc:new-path] - freed locally */
+		char *const new_path = ecalloc(1, pwd_len + 1 + input_len + 1); /* [alloc:new-path] - freed locally */
 		did_alloc = true;
 
 		memcpy(new_path, PWD, pwd_len);
 		new_path[pwd_len] = '/';
-		memcpy(new_path + pwd_len + 1, pFS->path, getPathLen(pFS));
+		memcpy(new_path + pwd_len + 1, input, input_len);
 
 		path = new_path;
 	}
@@ -157,12 +165,14 @@ char *getAbsolutePath(const FileStat *const pFS) {
 
 	/* ——————————————————————————————————————————————— */
 
+	assert(total_len + seg_count + 1 <= INT16_MAX);
+
 	// the total length of the path segments, +1 for each segment (to add `/`), +1 for the null terminator
 	//	however, always make sure that the length is at least 2, in the case of the `/\0` path
-	const size_t output_len = MAX(2, total_len + seg_count + 1);
+	*output_len = MAX(2, total_len + seg_count + 1);
 
-	char *const output = emalloc(output_len * sizeof(char)); /* [alloc:abs-path] - freed ??? */
-	char *outptr = output;
+	*output = emalloc(*output_len * sizeof(char)); /* [alloc:abs-path] - freed in `printFile` */
+	char *outptr = (char*)*output;
 
 	// always begin the output with `/` - this guarantees the path is valid, even if there aren't any segments
 	*outptr++ = '/';
@@ -183,10 +193,38 @@ char *getAbsolutePath(const FileStat *const pFS) {
 	*outptr++ = '\0';
 
 	// the length of the output should be the same as the output length we calculated
-	assert((size_t)(outptr - output) == output_len);
-	
-	/*TEMP:*/ printf("%s", output);
-	return output;
+	assert((namlen_t)(outptr - *output) == *output_len);
+
+	(*output_len)--; // -1 to account for the null byte
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+const char *getAbsPath(FileStat *const pFS) {
+
+	if (pFS->abspath != NULL) return pFS->abspath;
+
+	/* ——————————————————————————————————————————————— */
+
+	if (pFS->parent != NULL) {
+		const char *const parent_path = ( pFS->parent->abspath = getAbsPath(pFS->parent) );
+		const namlen_t parent_len = pFS->parent->abs_len;
+
+		namlen_t path_len = parent_len + 1 + pFS->name_len + 1;
+		assert(path_len <= INT16_MAX);
+
+		char *const path = memcpy(emalloc(path_len), parent_path, parent_len); /* [alloc:abs-path] - see below */
+		path[parent_len] = '/';
+		memcpy(path + parent_len + 1, pFS->name, pFS->name_len);
+
+		path[path_len - 1] = '\0';
+
+		pFS->abs_len = path_len - 1; // -1 to account for the null byte
+		return path;
+	}
+
+	getPureAbsPath(&pFS->abspath, &pFS->abs_len, pFS->path, getPathLen(pFS));
+	return pFS->abspath;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -275,9 +313,9 @@ const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 	((!S_ISDIR((p_fs)->mode)) && ((p_fs)->s != NULL) && ((p_fs)->s->st_nlink > 1))
 
 static inline const char* choosePath(const FileStat *const pFS) {
-	if (pFS->display != NULL			 ) return pFS->display;
 	if (pFS->abspath != NULL && DO_ABS ()) return pFS->abspath;
 	if (pFS->path	 != NULL && DO_PATH()) return pFS->path;
+	if (pFS->display != NULL			 ) return pFS->display;
 	return pFS->name;
 }
 

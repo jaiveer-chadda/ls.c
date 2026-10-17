@@ -54,6 +54,7 @@ struct FileStat {
 	const char	*abspath; // 8
 	ino_t		inum	; // 8 /** The inode number for this file. */
 	namlen_t	name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`) */
+	namlen_t	abs_len	; // 2
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
 
 	// the following are fields which can be derived from just the information from `struct dirent`

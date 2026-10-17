@@ -48,8 +48,8 @@ static inline bool resolveAppleAlias(
 	//	this just reads the raw path and converts it into a format that the CF library can understand
 	const CFURLRef path_url = CFURLCreateFromFileSystemRepresentation(
 		/* allocator	*/ DEFAULT_ALLOCATOR,
-		/* buffer		*/ (UInt8 *)alias_path,
-		/* bufLen		*/ (CFIndex)strlen(alias_path),
+		/* buffer		*/ (UInt8*)alias_path,
+		/* bufLen		*/ strlen(alias_path),
 		/* isDirectory	*/ false
 	);
 
@@ -73,6 +73,13 @@ static inline bool resolveAppleAlias(
 	CFRelease(path_url);
 
 	if (bookmark_data == NULL) {
+		#ifdef DEBUG_MODE
+			if (strcasestr(alias_path, "apple") != NULL) {
+				debug(WARNING, "'%s': failed to get bookmark data", alias_path);
+				dline();
+			}
+		#endif
+
 		// if this function failed, it's most likely because the file isn't actually an apple alias
 		//	it's at this point that we're fully certain that `is_apple_alias` is false
 		return FILE_IS_NOT_APPLE_ALIAS;
@@ -107,7 +114,7 @@ static inline bool resolveAppleAlias(
 	const bool conversion_success = (bool)CFStringGetFileSystemRepresentation(
 		/* string	 */ alias_string,
 		/* buffer	 */ target_buffer,
-		/* maxBufLen */ (CFIndex)sizeof(path_t)
+		/* maxBufLen */ sizeof(path_t)
 	);
 
 	// if that's successful, then everything worked correctly
@@ -126,7 +133,7 @@ static inline bool resolveAppleAlias(
 
 	// allocate enough memory for the path
 	// +1 for the nullbyte
-	char *temp_t_path = emalloc((size_t)(target_path_len + 1)); /* [alloc:temp-apple-path] - freed locally */
+	char *temp_t_path = emalloc(target_path_len + 1); /* [alloc:temp-apple-path] - freed locally */
 
 	// try assigning the path again, now with the larger buffer
 	if (!CFStringGetFileSystemRepresentation(alias_string, temp_t_path, target_path_len))
@@ -139,7 +146,7 @@ static inline bool resolveAppleAlias(
 	const CFStringRef cf_t_path = CFStringCreateWithCString(
 		/* alloc	*/ DEFAULT_ALLOCATOR,
 		/* cStr		*/ temp_t_path,
-		/* encoding	*/ (CFStringEncoding)kCFStringEncodingUTF8
+		/* encoding	*/ kCFStringEncodingUTF8
 	);
 
 	if (cf_t_path == NULL)
@@ -150,7 +157,7 @@ static inline bool resolveAppleAlias(
 	const CFStringRef trunc_t_path = CFStringCreateWithSubstring(
 		/* alloc	*/ DEFAULT_ALLOCATOR,
 		/* str		*/ cf_t_path,
-		/* range	*/ (CFRange){ .location = 0, .length = (CFIndex)sizeof(path_t) }
+		/* range	*/ (CFRange){ .location = 0, .length = sizeof(path_t) }
 	);
 
 	// make sure that nothing went wrong with the truncation
@@ -161,21 +168,18 @@ static inline bool resolveAppleAlias(
 	(void)CFStringGetFileSystemRepresentation(
 		/* string	 */ trunc_t_path,
 		/* buffer	 */ target_buffer,
-		/* maxBufLen */ (CFIndex)sizeof(path_t)
+		/* maxBufLen */ sizeof(path_t)
 	);
 
 	/* ——————————————————————————————————————————————————————————— */
 
-	return_4:
-		CFRelease(trunc_t_path);
-	return_3:
-		CFRelease(cf_t_path);
-	return_2:
-		efree(temp_t_path); /* [free:temp-apple-path] - allocated locally */
-	return_1:
-		CFRelease(alias_string);
-		*target_len = target_path_len;
-		return FILE_IS_APPLE_ALIAS;
+	return_4: CFRelease(trunc_t_path);
+	return_3: CFRelease(cf_t_path);
+	return_2: efree(temp_t_path); /* [free:temp-apple-path] - allocated locally */
+	return_1: CFRelease(alias_string);
+
+	*target_len = target_path_len;
+	return FILE_IS_APPLE_ALIAS;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -229,14 +233,14 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	} else {
 		// if the file's a regular file, then check if it's an apple alias - if not, then return
-		if (!resolveAppleAlias(target_path, &target_len, &is_valid, pFS->path)) return NULL;
+		if (!resolveAppleAlias(target_path, &target_len, &is_valid, getAbsPath(pFS))) return NULL;
 		is_apple = true; // if we're here, we've successfully parsed the apple alias
 	}
 
 	/* ———————————————————————————————————————————————————————— */
 
 	// this memory is freed once the target is printed (in `print_link()`)
-	TargetInfo *tg_info = ecalloc(1, sizeof(TargetInfo)); /* [alloc:target-info] - freed in `print_link` */
+	TargetInfo *const tg_info = ecalloc(1, sizeof(TargetInfo)); /* [alloc:target-info] - freed in `print_link` */
 	memcpy(tg_info->path, target_path, target_len);
 
 	tg_info->is_apple = is_apple;

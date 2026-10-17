@@ -8,6 +8,7 @@
 #include "malloc.h"
 #include "debugging.h"
 #include "options/options.h"
+#include "features/features.h"
 
 #include "model/global.h"
 #include "model/stat-model.h"
@@ -56,8 +57,7 @@ const char *getPath(FileStat *const file) {
 
 	// allocate memory for this file's path, then copy the parent's path into the buffer
 	//	(note: no need to copy the nullbyte, so no +1 for the length)
-	/* [alloc:filepath] - freed in `printFile` */
-	char *const path = memcpy(emalloc(child_size), parent_path, parent_plen);
+	char *const path = memcpy(emalloc(child_size), parent_path, parent_plen); /* [alloc:filepath] - free: printFile */
 	//i)path = "/path/to/parent"
 
 	/* —————————————————————————————————————————————————————— */
@@ -108,7 +108,8 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 	// none of these files should be parentless - its pretty much impossible
 	assert(pFS_child->parent != NULL);
 
-	if (( pFS_child->path = getPath(pFS_child) ) == NULL) return;
+	if (( pFS_child->path	 =	  getPath(pFS_child) ) == NULL) return;
+	if (( pFS_child->abspath = getAbsPath(pFS_child) ) == NULL) return;
 
 	// rather than being its own data, a file's name is now a pointer to where its name starts in `.path`
 	//	this saves having to alloc memory for its name (hence the `free` here), and having to store the path's length
@@ -117,10 +118,10 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 	/* —— `stat` child file ——————————————————————————————————————— */
 
 	// allocate the memory for the child's `stat` struct
-	pFS_child->s = emalloc(sizeof(struct stat)); /* [alloc:fsstat] - freed in `printFile` locally if error */
+	pFS_child->s = emalloc(sizeof(struct stat)); /* [alloc:fsstat] - freed in `printFile`; locally if error */
 
 	// run `lstat` on the path
-	if (lstat(pFS_child->path, pFS_child->s) == -1) {
+	if (lstat(pFS_child->abspath, pFS_child->s) == -1) {
 		// if it fails, note down the errno
 		pFS_child->err_no = errno;
 
@@ -269,6 +270,18 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
  * @return `FileStat`: The `FileStat` object generated from the input file. An empty object on failure.
  */
 FileStat processInput(char *const path) {
+	// bite the bullet and use `strlen` to calculate the file's length now,
+	//	bc we need it to properly get the absolute path.
+	const size_t input_len = strlen(path);
+	const char *abs_path = NULL;
+	namlen_t abs_len = -1;
+
+	assert(input_len <= INT16_MAX && input_len <= MAX_PATH_LEN);
+
+	// get the absolute path to the input - this is the only way we can 100% guarantee that we get
+	//	accurate results from `lstat` - especially in the case where the input is a symlinked dir
+	getPureAbsPath(&abs_path, &abs_len, path, input_len);
+
 	struct stat statobj = {0};
 
 	/* —— `stat` input file ——————————————————————————————————————— */
@@ -276,10 +289,12 @@ FileStat processInput(char *const path) {
 	// firstly, try to run `lstat` on the input path
 	//	the reason we're `stat`ting the file upfront is because we absolutely _need_ to know
 	//	whether its a directory or not, so we might as well store the stat information if we have it
-	if (lstat(path, &statobj) == -1) {
+	// pass the absolute path, however, if `getPureAbsPath` failed, fall back to the original input path
+	if (lstat(( abs_path ? abs_path : path ), &statobj) == -1) {
 		// if it fails, print an error and move onto the next file
 		if (errno == ENOENT) { /** @todo handle */ }
 
+		efree((void*)abs_path);
 		printError(path);
 		// set the pointer to this input to NULL, so we know not to process/print it later
 		return (FileStat){0};
@@ -292,8 +307,11 @@ FileStat processInput(char *const path) {
 		// since `path` comes from `file_paths`, which comes from `argv`, the memory containing `file->name`
 		//	doesn't need to be allocated, since pointers to `argv` exist through the lifetime of the program
 		.name = path,
-		// we don't know the name's length, so set it to -1 for now, and we can calculate it later if needed
-		.name_len = -1,
+		.name_len = input_len,
+
+		// copy over the absolute path and its size, so we don't have to calculate it again
+		.abspath = abs_path,
+		.abs_len = abs_len,
 
 		// allocate memory for the `stat` object that will be pointed to by `FileStat::s`
 		.s = emalloc(sizeof(struct stat)), /* [alloc:fsstat-input] - freed in `printFile` */
@@ -306,19 +324,22 @@ FileStat processInput(char *const path) {
 
 	/* —— Check if Input is Dir ——————————————————————————————————— */
 
+	/// @todo implement checking for whether a file is a symlink to a dir
+	const bool is_dir = (
+		(S_ISDIR(statobj.st_mode)) ||
+		(S_ISLNK(statobj.st_mode) && false)
+	);
+
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
 	//	then there's nothing else to do at this stage - send it off for parsing
-	if (!S_ISDIR(statobj.st_mode) || DIRS_AS_FILES() || MAX_DEPTH == 0) {
+	if (!is_dir || DIRS_AS_FILES() || MAX_DEPTH == 0) {
 		assert(isValidFS(&file));
 		return file;
 	}
 
 	/* —— If Input is Dir ————————————————————————————————————————— */
-	// if the input was a directory, however, we need to find & process its children
 
-	// bite the bullet and use `strlen` to calculate the dir's length now,
-	//	bc we're going to need it to get the path to the children in a moment
-	file.name_len = (namlen_t)strlen(path);
+	// if the input was a directory, however, we need to find & process its children
 	return *processDir(&file, 1);
 }
 

@@ -66,7 +66,7 @@ I just assigned flags to them cos there was one available - not cos I want it to
    /*│ option name		│default│ is	│ short	│ long flags								│*/	\
    /*│					│ value	│ field	│ flag	│											│*/	\
    /*├──────────────────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
-	X(DO_ABS			, false	, false	, 'B',	{ "abs"				, "absolute-path"		})	\
+	X(DO_ABS			, false	, false	, 'B',	{ "absolute-path"	, "abs-path", "abs"		})	\
 	X(DO_PATH			, false	, false	, 'p',	{ "path"			, "full-path"			})	\
 	X(DO_CLEAR			, false	, false	, 'c',	{ "clear"									})	\
 	X(DO_HEADER			, false	, false	, 'H',	{ "header"			, "headers"				})	\

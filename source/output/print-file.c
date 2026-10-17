@@ -56,9 +56,12 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 		}
 	}
 
+	/* —— free memory ————————————————————————————————————————————————————————————————————————————————— */
+
 	// don't free the paths of first-order files/dirs, and paths are their names,
 	//	since those paths were specifically taken from the command line arguments, which can't be freed
-	if (depth != 0 && pFS->path != pFS->name) efree((void*)pFS->path);	/* [free:filepath] - alloced in getPath		 */
+	if (pFS->path != pFS->name && depth != 0) efree((void*)pFS->path);	/* [free:filepath] - alloced in getPath		 */
+	if (pFS->abspath != pFS->name) efree((void*)pFS->abspath);			/* [free:abs-path] - alloced in getAbsPath	 */
 	if (pFS->f != NULL) efree((void*)pFS->f->children);					/* [free:children] - alloced in processDir	 */
 	efree((void*)pFS->f);												/* [free:filestat] - alloced in processChild */
 	efree((void*)pFS->s);												/* [free:fsstat]   - alloced in processChild */
