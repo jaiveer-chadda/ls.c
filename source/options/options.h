@@ -74,6 +74,7 @@ I just assigned flags to them cos there was one available - not cos I want it to
 	X(DO_DIVIDERS		, true	, false	, '_',	{ "divider"			, "dividers"			})	\
 	X(DO_MOUNTDEV		, true	, false	, 'M',	{ "mount"			, "mounts"				})	\
 	X(DO_FIRMLINKS		, true	, false	, 'X',	{ "firmlinks"		, "check-firmlinks"		})	\
+	X(LINKS_AS_DIRS		, true	, false	, NSF,	{ "links-as-dirs"	, "recurse-links"		})	\
 	X(DIRS_AS_FILES		, false	, false	, 'd',	{ "dirs-as-files"	, "no-recurse-dirs"		})	\
 	X(DO_DIM_HIDDEN		, true	, false	, '.',	{ "dim-hidden"		, "dim"					})	\
 	X(DO_MOUNT_OWNER	, true	, false	, 'O',	{ "mount-owner"								})	\

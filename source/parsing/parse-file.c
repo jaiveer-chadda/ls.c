@@ -123,15 +123,6 @@ void parseFile(FileStat *const pfile) {
 
 	// calculate the lengths of all numerical (i.e., non-string) fields
 	checkLengths(pfile, CHECK_ALL_LENS);
-
-	/* ————————————————————————————————————————————————————————— */
-
-	// recursively call this function for all children in a directory
-	if (pfsf->child_count > 0) {
-		for (int i = 0; i < pfsf->child_count; i++) {
-			parseFile(&pfsf->children[i]);
-		}
-	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

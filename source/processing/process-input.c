@@ -9,6 +9,7 @@
 #include "debugging.h"
 #include "options/options.h"
 #include "features/features.h"
+#include "parsing/parse-file.h"
 
 #include "model/global.h"
 #include "model/stat-model.h"
@@ -175,10 +176,14 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 
 		/* —— recurse into child —————————————————————————————————————— */
 
-		// now that the child's been processed, check if we should recurse into it to calculate deeper
-		if (!S_ISDIR(pFS_child->mode) || depth + 1 > MAX_DEPTH || pFS_child->f == NULL) continue;
-		// if we should, then process the child in the same way we processed this dir
-		processDir(pFS_child, depth + 1);
+		// now parse the file - i.e. go through and convert things from raw data into displayable output
+		parseFile(pFS_child);
+
+		// now that the child's been processed & parsed, check if we should recurse into it to calculate deeper
+		if (isFSDir(pFS_child) && depth + 1 <= MAX_DEPTH && pFS_child->f != NULL) {
+			// if we should, then process the child in the same way we processed this dir
+			processDir(pFS_child, depth + 1);
+		}
 	}
 
 	assert(isValidFS(pFS_dir));
@@ -234,6 +239,9 @@ FileStat *processInput(char *const path) {
 		.abspath = abs_path,
 		.abs_len = abs_len,
 
+		// note: `s` is using `malloc`, since it's going to be assigned to immediately,
+		//	and, `f` is using `calloc`, since I want to set everything to 0/NULL/false before I start processing
+
 		// allocate memory for the `stat` object that will be pointed to by `FileStat::s`
 		.s = emalloc(sizeof(struct stat)), /* [alloc:fsstat-input] - freed in `printFile` */
 		// finally, allocate memory for the `FileStatFields` object, and assign its pointer to the FileStat object
@@ -260,25 +268,20 @@ FileStat *processInput(char *const path) {
 		return NULL;
 	}
 
-	/* —— Check if Input is Dir ——————————————————————————————————— */
+	FileStat *output = pFS;
 
-	/// @todo implement checking for whether a file is a symlink to a dir
-	const bool is_dir = (
-		(S_ISDIR(pFS->s->st_mode)) ||
-		(S_ISLNK(pFS->s->st_mode) && false)
-	);
+	// parse the info in `pFS`, so we know whether its a link to a directory or not
+	//	but don't recurse into it, since we won't have any of the information from `processChild`
+	parseFile(pFS);
 
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
 	//	then there's nothing else to do at this stage - send it off for parsing
-	if (!is_dir || DIRS_AS_FILES() || MAX_DEPTH == 0) {
-		assert(isValidFS(pFS));
-		return pFS;
+	if (isFSDir(pFS) && !DIRS_AS_FILES() && MAX_DEPTH != 0) {
+		// if the input was a directory, however, we need to find & process its children
+		output = processDir(pFS, 1);
 	}
 
-	/* —— If Input is Dir ————————————————————————————————————————— */
-
-	// if the input was a directory, however, we need to find & process its children
-	return processDir(pFS, 1);
+	return output;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

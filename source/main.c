@@ -17,7 +17,6 @@
 #include "form/formatting.h" // initFormatting()
 #include "options/options.h" // setOptions(), DO_CLEAR()
 #include "features/features.h" // freeFirmlinks(), freeGitState()
-#include "parsing/parse-file.h" // parseFile()
 #include "processing/process-input.h" // processInput()
 
 /* ── ── Declarations ── ─────────────────────────────────────────────────────────────────────────────────────────── */
@@ -69,23 +68,16 @@ int main(const int argc, char *argv[]) {
 		inputs[i] = processInput(file_paths[i]);
 
 		// make sure we were actually able to get anything from `processInput()`
-		if (!isValidFS(inputs[i])) continue;
-		any_valid_input = true;
-
-		// then parse the file - i.e. go through and convert things from raw data into displayable output
-		parseFile(inputs[i]);
+		if (isValidFS(inputs[i])) {
+			any_valid_input = true;
+			if (MAX_DEPTH != 0) SORT_CHILDREN(inputs[i], 1);
+		}
 	}
 
 	// if none of the inputs were valid, don't bother with even trying to print them - just return failure
 	if (!any_valid_input) return EXIT_FAILURE;
 
 	/* —— Sort Files ————————————————————————————————————————————————————————————————————————————— */
-
-	if (MAX_DEPTH != 0) {
-		for (int i = 0; i < file_count; i++) {
-			SORT_CHILDREN(inputs[i], /* depth = */ 1);
-		}
-	}
 
 	if (DO_SORT_INPUTS() && file_count >= 2) sortFiles(0, inputs, file_count);
 

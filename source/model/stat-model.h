@@ -256,6 +256,7 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36 B
  */
 #define isFSDir(p_fs) ((bool)(					\
 	S_ISDIR((p_fs)->mode) || (					\
+		LINKS_AS_DIRS()					  &&	\
 		(p_fs)->f				  != NULL &&	\
 		(p_fs)->f->target		  != NULL &&	\
 		(p_fs)->f->target->suffix == DIR_SUFFIX	\
