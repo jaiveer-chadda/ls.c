@@ -4,6 +4,6 @@
 #define PROCESS_INPUT_H
 
 const char *getPath(FileStat *const pFS);
-FileStat processInput(char *const path);
+FileStat *processInput(char *const path);
 
 #endif /* !PROCESS_INPUT_H */

@@ -269,7 +269,7 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
  * @param path[in] A string containing the path to the input file.
  * @return `FileStat`: The `FileStat` object generated from the input file. An empty object on failure.
  */
-FileStat processInput(char *const path) {
+FileStat *processInput(char *const path) {
 	// bite the bullet and use `strlen` to calculate the file's length now,
 	//	bc we need it to properly get the absolute path.
 	const size_t input_len = strlen(path);
@@ -297,13 +297,14 @@ FileStat processInput(char *const path) {
 		efree((void*)abs_path);
 		printError(path);
 		// set the pointer to this input to NULL, so we know not to process/print it later
-		return (FileStat){0};
+		return NULL;
 	}
 
 	/* —— assign basic info to input —————————————————————————————— */
 	// since we successfully got the `stat` information, we can start building the `FileStat` object
 
-	FileStat file = {
+	FileStat *const pFS = emalloc(sizeof(FileStat));
+	*pFS = (FileStat){
 		// since `path` comes from `file_paths`, which comes from `argv`, the memory containing `file->name`
 		//	doesn't need to be allocated, since pointers to `argv` exist through the lifetime of the program
 		.name = path,
@@ -320,7 +321,7 @@ FileStat processInput(char *const path) {
 	};
 
 	// copy `statobj` from the stack into the newly-allocated heap memory at `FileStat::s file->s`
-	memcpy(file.s, &statobj, sizeof(struct stat));
+	memcpy(pFS->s, &statobj, sizeof(struct stat));
 
 	/* —— Check if Input is Dir ——————————————————————————————————— */
 
@@ -333,14 +334,14 @@ FileStat processInput(char *const path) {
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
 	//	then there's nothing else to do at this stage - send it off for parsing
 	if (!is_dir || DIRS_AS_FILES() || MAX_DEPTH == 0) {
-		assert(isValidFS(&file));
-		return file;
+		assert(isValidFS(pFS));
+		return pFS;
 	}
 
 	/* —— If Input is Dir ————————————————————————————————————————— */
 
 	// if the input was a directory, however, we need to find & process its children
-	return *processDir(&file, 1);
+	return processDir(pFS, 1);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

@@ -60,8 +60,8 @@ int main(const int argc, char *argv[]) {
 
 	// unfortunately, this has to be allocated on the heap, since wah wah, variable-size arrays are bad
 	//	boo hoo, and I want to be a good programmer, so I don't use them. bollocks >:(
-	/// An array of FileStat objects, each representing the inputted files/dirs.
-	FileStat *const inputs = ecalloc(file_count, sizeof(FileStat)); /* [alloc:inputs] - freed locally */
+	/// An array of pointers to `FileStat` objects, each representing the inputted files/dirs.
+	FileStat **const inputs = ecalloc(file_count, sizeof(FileStat)); /* [alloc:inputs] - freed locally */
 
 	// iterate through each input, and get the input's `FileStat` object to add to the array
 	for (int i = 0; i < file_count; i++) {
@@ -69,15 +69,15 @@ int main(const int argc, char *argv[]) {
 		inputs[i] = processInput(file_paths[i]);
 
 		// make sure we were actually able to get anything from `processInput()`
-		if (!isValidFS(&inputs[i])) continue;
+		if (!isValidFS(inputs[i])) continue;
 		any_valid_input = true;
 
-		for (int j = 0; j < inputs[i].f->child_count; j++) {
-			inputs[i].f->children[j].parent = &inputs[i];
+		for (int j = 0; j < inputs[i]->f->child_count; j++) {
+			inputs[i]->f->children[j].parent = inputs[i];
 		}
 
 		// then parse the file - i.e. go through and convert things from raw data into displayable output
-		parseFile(&inputs[i]);
+		parseFile(inputs[i]);
 	}
 
 	// if none of the inputs were valid, don't bother with even trying to print them - just return failure
@@ -87,21 +87,23 @@ int main(const int argc, char *argv[]) {
 
 	if (MAX_DEPTH != 0) {
 		for (int i = 0; i < file_count; i++) {
-			if (!S_ISDIR(inputs[i].mode)||
-				DIRS_AS_FILES()			||
-				inputs[i].f == NULL		||
-				inputs[i].f->child_count < 2
+			if (!S_ISDIR(inputs[i]->mode)||
+				DIRS_AS_FILES()				||
+				inputs[i]->f == NULL		||
+				inputs[i]->f->child_count < 2
 			) continue;
 
 			sortFiles(1,
-				&inputs[i].f->children[0],
-				&inputs[i].f->child_count
+				&inputs[i]->f->children[0],
+				&inputs[i]->f->child_count
 			);
 		}
 	}
 
+	if (false) { /** disabled temporarily - @todo fix input sorting */
 	if (DO_SORT_INPUTS() && file_count >= 2) {
-		sortFiles(0, &inputs[0], &file_count);
+		sortFiles(0, *inputs, &file_count);
+	}
 	}
 
 	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
@@ -119,7 +121,8 @@ int main(const int argc, char *argv[]) {
 	// print each of the inputs in the order they were given
 	// `printFile` will recurse into the file and print as many levels as was specified
 	for (int i = 0; i < file_count; i++) {
-		printFile(&inputs[i], /*level*/0, /*is_last*/i == file_count - 1, NO_LINES);
+		printFile(inputs[i], /*level*/0, /*is_last*/i == file_count - 1, NO_LINES);
+		efree(inputs[i]);
 	}
 
 	/* —— Cleanup ———————————————————————————————————————————————————————————————————————————————— */
