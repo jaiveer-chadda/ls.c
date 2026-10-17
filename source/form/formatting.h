@@ -65,6 +65,9 @@ typedef enum FieldIdx { FIELDS_TABLE FI_COUNT } FieldIdx;
 /// Get the calculated maximum length of the inputted field (`type`).
 #define getLen(type) ((int)(fields[(type)].len))
 
+#define CHECK_BASIC_LENS true
+#define CHECK_ALL_LENS	 false
+
 void initFormatting(void);
 void checkLengths(const FileStat *const pfile, const bool do_basic);
 void setLen(const FieldIdx field, const size_t length);

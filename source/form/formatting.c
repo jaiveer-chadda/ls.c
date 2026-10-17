@@ -67,9 +67,10 @@ inline void setLen(const FieldIdx field, const size_t length) {
 inline void checkLengths(const FileStat *const pfile, const bool do_basic) {
 	// these are the only two fields (which we need to find the lengths of) which don't come from `stat`,
 	//	which is why their signatures are slightly different to the rest
-	if (do_basic) {
+	if (do_basic == CHECK_BASIC_LENS) {
 		if (do_inum()) setLen(FI_inum, GET_LEN(fields[FI_inum].fmt_s, pfile->inum));
 		if (do_mode()) setLen(FI_mode, 6); // the octal mode is always 6 chars long: `10644`
+
 		return;
 	}
 

@@ -19,7 +19,7 @@
 #endif
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── getPWD() ── ─────────────────────────────────────────────────────────────────────────────────────────────── */
 
 /**
  * @brief Get the program's `$PWD`, and cache it for further use.
@@ -36,7 +36,7 @@ static inline const char *getPWD(size_t *const len) {
 	static size_t PWD_len = 0;
 	static uint8_t PWD_errno = 0;
 
-	/* ——————————————————————————————————————————————— */
+	/* —— return cached data ————————————————————————— */
 
 	if (did_init) {
 		errno = PWD_errno;
@@ -46,7 +46,7 @@ static inline const char *getPWD(size_t *const len) {
 
 	did_init = true;
 
-	/* ——————————————————————————————————————————————— */
+	/* —— try getenv & getwd ———————————————————————— */
 
 	PWD = getenv("PWD");
 
@@ -67,7 +67,7 @@ static inline const char *getPWD(size_t *const len) {
 		}
 	}
 
-	/* ——————————————————————————————————————————————— */
+	/* —— return ————————————————————————————————————— */
 
 	// if `getwd` succeeds, then to avoid really complex checks later, get its `strlen` now
 	if (len != NULL) *len = strlen(PWD);
@@ -79,6 +79,7 @@ static inline const char *getPWD(size_t *const len) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── getPath() ── ────────────────────────────────────────────────────────────────────────────────────────────── */
 
 /**
  * @fn getPath
@@ -88,9 +89,11 @@ const char *getPath(FileStat *const file) {
 	// if we've already found this path before, then just return a pointer to it
 	if (file->path != NULL) return file->path;
 
+	/* —— base case ————————————————————————————————————————— */
+
 	FileStat *const parent = file->parent;
 
-	// base case: if this file doesn't have any parents, then we know that its name is already a valid path
+	// if this file doesn't have any parents, then we know that its name is already a valid path
 	if (parent == NULL) {
 		file->path = file->name;
 		return file->name;
@@ -99,27 +102,27 @@ const char *getPath(FileStat *const file) {
 	// neither of their lengths should be 0 or -1
 	assert(file->name_len >= 1 && parent->name_len >= 1);
 
-	/* —————————————————————————————————————————————————————— */
+	/* —— get parent's path ————————————————————————————————— */
 
 	// recurse until we have the full path to the parent, then calculate its path len
 	const char *const parent_path = getPath(parent);
 	const namlen_t parent_plen = getPathLen(parent);
 
-	/* —————————————————————————————————————————————————————— */
+	/* —— get path len & verify size ———————————————————————— */
 
 	// check the resultant size, including the parent path, the `/`, the child's name, and a null terminator
 	const size_t child_size = parent_plen + 1 + file->name_len + 1;
 	// make sure that the resultant child path won't be too long once we create it
 	if (child_size > sizeof(path_t)) return NULL;
 
-	/* —————————————————————————————————————————————————————— */
+	/* —— copy parent's path ———————————————————————————————— */
 
 	// allocate memory for this file's path, then copy the parent's path into the buffer
 	//	(note: no need to copy the nullbyte, so no +1 for the length)
 	char *const path = memcpy(emalloc(child_size), parent_path, parent_plen); /* [alloc:filepath] - free: printFile */
 	//i)path = "/path/to/parent"
 
-	/* —————————————————————————————————————————————————————— */
+	/* —— append name to path ——————————————————————————————— */
 
 	// add the path separator
 	path[getPathLen(parent)] = '/';
@@ -132,25 +135,24 @@ const char *getPath(FileStat *const file) {
 	);
 	//i)path = "/path/to/parent/child_name"
 
-	/* —————————————————————————————————————————————————————— */
+	/* —— return ———————————————————————————————————————————— */
 
 	file->name = &path[getPathLen(parent)] + 1;
 	return path;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── getPureAbsPath() ── ─────────────────────────────────────────────────────────────────────────────────────── */
 
 void getPureAbsPath(
 	const char **const output, namlen_t *const output_len,
 	const char	*const	input, const namlen_t	input_len
 ) {
 
-	/* ——————————————————————————————————————————————— */
-
 	const char *path = input;
 	bool did_alloc = false;
 
-	/* ——————————————————————————————————————————————— */
+	/* —— ensure basic abspath ——————————————————————— */
 
 	if (input[0] != '/') {
 		size_t pwd_len;
@@ -171,7 +173,7 @@ void getPureAbsPath(
 		path = new_path;
 	}
 
-	/* ——————————————————————————————————————————————— */
+	/* —— set up segment vars ———————————————————————— */
 
 	typedef char seg_t[MAX_NAME_LEN];
 
@@ -181,7 +183,7 @@ void getPureAbsPath(
 
 	const char *ppath = path;
 
-	/* ——————————————————————————————————————————————— */
+	/* —— create & proc segments ————————————————————— */
 
 	while (*ppath != '\0') {
 		while (*ppath == '/') ppath++; // skip leading and repeated slashes
@@ -205,7 +207,7 @@ void getPureAbsPath(
 			continue;
 		}
 
-		/* ——————————————————————————————————————————————— */
+		/* —— malloc & assign segment ———————————————————— */
 
 		if (seg_count + 1 > seg_alloc) {
 			MULT_BY_1_5(seg_alloc);
@@ -223,7 +225,7 @@ void getPureAbsPath(
 
 	if (did_alloc) efree((void*)path); /* [free:new-path] - alloced locally */
 
-	/* ——————————————————————————————————————————————— */
+	/* —— concatenate segments ——————————————————————— */
 
 	assert(total_len + seg_count + 1 <= INT16_MAX);
 
@@ -245,6 +247,8 @@ void getPureAbsPath(
 		outptr += seg_lens[i];
 	}
 
+	/* —— set return vars & cleanup —————————————————— */
+
 	/* [free:segments] - alloced locally */
 	efree(segments);
 	efree(seg_lens);
@@ -258,37 +262,37 @@ void getPureAbsPath(
 	(*output_len)--; // -1 to account for the null byte
 }
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── getAbsPath() ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 const char *getAbsPath(FileStat *const pFS) {
 
 	if (pFS->abspath != NULL) return pFS->abspath;
 
-	/* ——————————————————————————————————————————————— */
-
-	if (pFS->parent != NULL) {
-		const char *const parent_path = ( pFS->parent->abspath = getAbsPath(pFS->parent) );
-		const namlen_t parent_len = pFS->parent->abs_len;
-
-		namlen_t path_len = parent_len + 1 + pFS->name_len + 1;
-		assert(path_len <= INT16_MAX);
-
-		char *const path = memcpy(emalloc(path_len), parent_path, parent_len); /* [alloc:abs-path] - see below */
-		path[parent_len] = '/';
-		memcpy(path + parent_len + 1, pFS->name, pFS->name_len);
-
-		path[path_len - 1] = '\0';
-
-		pFS->abs_len = path_len - 1; // -1 to account for the null byte
-		return path;
+	if (pFS->parent == NULL) {
+		getPureAbsPath(&pFS->abspath, &pFS->abs_len, pFS->path, getPathLen(pFS));
+		return pFS->abspath;
 	}
 
-	getPureAbsPath(&pFS->abspath, &pFS->abs_len, pFS->path, getPathLen(pFS));
-	return pFS->abspath;
+	/* ——————————————————————————————————————————————— */
+
+	const char *const parent_path = ( pFS->parent->abspath = getAbsPath(pFS->parent) );
+	const namlen_t parent_len = pFS->parent->abs_len;
+
+	namlen_t path_len = parent_len + 1 + pFS->name_len + 1;
+	assert(path_len <= INT16_MAX);
+
+	char *const path = memcpy(emalloc(path_len), parent_path, parent_len); /* [alloc:abs-path] - see below */
+	path[parent_len] = '/';
+	memcpy(path + parent_len + 1, pFS->name, pFS->name_len);
+
+	path[path_len - 1] = '\0';
+
+	pFS->abs_len = path_len - 1; // -1 to account for the null byte
+	return path;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── getBasename() ── ────────────────────────────────────────────────────────────────────────────────────────── */
 
 const char *getBasename(const char *const path) {
 	const char *definite = NULL, *running = NULL;
@@ -306,12 +310,13 @@ const char *getBasename(const char *const path) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── getDisplayPath() ── ─────────────────────────────────────────────────────────────────────────────────────── */
 
 #define RETURN_PATH(path, len) ( \
 	is_link_tg ? path : memcpy(emalloc(len), path, len) /* [alloc:display-path] - freed in `print_name` */ \
 )
 
+/// @todo see if I can get rid of the need for this function
 const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 	assert(path != NULL);
 
@@ -368,6 +373,7 @@ const char *getDisplayPath(const char *const path, const namlen_t path_len) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── print_name() ── ── ──────────────────────────────────────────────────────────────────────────────────────── */
 
 #define isFSHardlink(p_fs) \
 	((!S_ISDIR((p_fs)->mode)) && ((p_fs)->s != NULL) && ((p_fs)->s->st_nlink > 1))

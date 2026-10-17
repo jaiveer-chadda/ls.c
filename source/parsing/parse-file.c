@@ -46,7 +46,6 @@
  */
 void parseFile(FileStat *const pfile) {
 	// all NULL and invalid objects should have been filtered out by now
-	assert(pfile != NULL);
 	assert(isValidFS(pfile));
 
 	const struct stat *const pstat = pfile->s;
@@ -97,12 +96,13 @@ void parseFile(FileStat *const pfile) {
 	}
 
 	// calculate the lengths of the `inode` and `mode` fields (if they're being displayed)
-	checkLengths(pfile, true);
+	checkLengths(pfile, CHECK_BASIC_LENS);
 
 	if (is_incomplete) {
 		if (do_inum()) processInum(pfile->inum);
 		if (do_icon()) pfile->icon = getIcon(pfile);
 		if (DO_COLOUR()) pfile->file_col = setFileColour(pfile->name, pfile->mode, NULL, NULL);
+
 		return;
 	}
 
@@ -114,15 +114,15 @@ void parseFile(FileStat *const pfile) {
 	if (do_grp_name()) pfsf->grp_name	= getGroup(pstat->st_gid);
 	if (do_size_str()) pfsf->size_str	= parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
 	if (do_flag_str()) pfsf->flag_str	= parseFlags(pfile);
-	// if (do_git_info()) pfsf->git		= getGitInfo(pfile);
+	if (do_git_info()) pfsf->git		= getGitInfo(pfile);
 	if (do_icon	   ()) pfile->icon		= getIcon(pfile);
 	if (DO_COLOUR  ()) pfile->file_col	= setFileColour(pfile->name, pfile->mode, pfsf->mount, pstat);
 	if (do_time_str() || do_time()) {
 		parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME);
 	}
 
-	// calculate the lengths of all numerical fields (i.e., non-string fields)
-	checkLengths(pfile, false);
+	// calculate the lengths of all numerical (i.e., non-string) fields
+	checkLengths(pfile, CHECK_ALL_LENS);
 
 	/* ————————————————————————————————————————————————————————— */
 
