@@ -12,6 +12,7 @@
 
 #include "form/formatting.h"
 #include "options/options.h"
+#include "features/features.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -164,13 +165,10 @@ static inline void checkFirmlink(FileStat *const pFS) {
 	// make sure the firmlinks array is initialised
 	if (!initFirmlinks()) return; // if we weren't able to get all the the data we needed, return
 
-	// get the absolute path to the file we're checking, since that's how they're stored in the lookup file
-	path_t abs_path = {0};
-	if (realpath(pFS->path, abs_path) == NULL) return;
-
 	// iterate through each firmlink we've stored
 	for (uint16_t i = 0; i < fl_count; i++) {
-		if (strcmp(FIRMLINKS[i], abs_path) == 0) { // if the firmlink's path matches our file's path
+		// use the absolute path to the file we're checking, since that's how they're stored in the lookup file
+		if (strcmp(FIRMLINKS[i], pFS->abspath) == 0) { // if the firmlink's path matches our file's path
 			pFS->s->st_flags |= SF_FIRMLINK; // then add the firmlink flag to the file's flags
 			break; // no more processing to be done
 		}

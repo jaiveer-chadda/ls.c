@@ -83,13 +83,12 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 /* ── ── processDir ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth) {
-	const char *const dirpath = getPath(pFS_dir);
 
 	/* —— Open Dir & Error Check —————————————————————————————————— */
 
 	// firstly, open the directory and get a pointer to a `DIR` object
 	//	note: we can't get any info from `DIR`, it's use is to be passed into other functions
-	DIR *const p_dir = opendir(dirpath);
+	DIR *const p_dir = opendir(pFS_dir->abspath);
 
 	if (p_dir == NULL) { // if we can't open the directory...
 		// set the number of children to -1, so we know the difference between having 0 children,
@@ -124,8 +123,8 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 			// get the few pieces of information that we care about from the `dirent` object
 			// note: we're not keeping `d_name` or `d_namlen`, since these would just
 			//	return "." and 1 respectively, which isn't much help to us
-			pFS_dir->mode = DTTOIF(pDT_child->d_type);
-			pFS_dir->inum = pDT_child->d_ino;
+			if ((pFS_dir->mode & PERM_MASK)	== 0) pFS_dir->mode = DTTOIF(pDT_child->d_type);
+			if ((pFS_dir->inum)				== 0) pFS_dir->inum = pDT_child->d_ino;
 
 			continue; // continue - the rest of the information we need is already in `pFS_dir->s`
 		}
@@ -139,7 +138,8 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 		) continue;
 
 		#ifdef DEBUG_MODE
-		if (strcmp(pDT_child->d_name, ".git") == 0) continue;
+			if (strcmp(pDT_child->d_name, ".git") == 0) continue;
+			if (strcmp(pDT_child->d_name, "Icon\r") == 0) continue;
 		#endif
 
 		/* —— alloc mem for children —————————————————————————————————— */
@@ -276,7 +276,7 @@ FileStat *processInput(char *const path) {
 
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
 	//	then there's nothing else to do at this stage - send it off for parsing
-	if (isFSDir(pFS) && !DIRS_AS_FILES() && MAX_DEPTH != 0) {
+	if (isFSDir(pFS) && MAX_DEPTH != 0) {
 		// if the input was a directory, however, we need to find & process its children
 		output = processDir(pFS, 1);
 	}

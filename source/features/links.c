@@ -204,7 +204,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	if (S_ISLNK(mode)) {
 		// if the file is a symlink, then simply call `readlink` on it
-		if (( target_len = readlink(getAbsPath(pFS), target_path, sizeof(path_t)) ) == -1) {
+		if (( target_len = readlink(pFS->abspath, target_path, sizeof(path_t)) ) == -1) {
 			pFS->err_no = errno;
 			return NULL;
 		}
@@ -233,14 +233,14 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	} else {
 		// if the file's a regular file, then check if it's an apple alias - if not, then return
-		if (!resolveAppleAlias(target_path, &target_len, &is_valid, getAbsPath(pFS))) return NULL;
+		if (!resolveAppleAlias(target_path, &target_len, &is_valid, pFS->abspath)) return NULL;
 		is_apple = true; // if we're here, we've successfully parsed the apple alias
 	}
 
 	/* ———————————————————————————————————————————————————————— */
 
 	// this memory is freed once the target is printed (in `print_link()`)
-	TargetInfo *const tg_info = ecalloc(1, sizeof(TargetInfo)); /* [alloc:target-info] - freed in `print_link` */
+	TargetInfo *const tg_info = ecalloc(1, sizeof(TargetInfo)); /* [alloc:targinfo] - freed in `printFile` */
 	memcpy(tg_info->path, target_path, target_len);
 
 	tg_info->is_apple = is_apple;
@@ -298,7 +298,7 @@ void print_link(const FileStat *const pFS) {
 		printf("%s%s", arrow_ansi, arrow);
 		printEscdName(path, INVALID_LINK_COLOUR, false);
 
-		goto cleanup_and_return;
+		return;
 	}
 
 	/* ———————————————————————————————————————————————————————— */
@@ -327,11 +327,6 @@ void print_link(const FileStat *const pFS) {
 
 	// print info about the target's mount device / mounted filesystems
 	print_mount(tg_info->mount);
-
-	/* ———————————————————————————————————————————————————————— */
-
-	cleanup_and_return:
-		efree((void*)tg_info); /* [free:target-info] - allocated in `getLink` */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

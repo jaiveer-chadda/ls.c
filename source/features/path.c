@@ -288,7 +288,7 @@ const char *getAbsPath(FileStat *const pFS) {
 	path[path_len - 1] = '\0';
 
 	pFS->abs_len = path_len - 1; // -1 to account for the null byte
-	return path;
+	return ( pFS->abspath = path );
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

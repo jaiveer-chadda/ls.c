@@ -255,6 +255,7 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36 B
  * @warning `isFSDir` will segfault if `p_fs == NULL`.
  */
 #define isFSDir(p_fs) ((bool)(					\
+	!DIRS_AS_FILES() &&							\
 	S_ISDIR((p_fs)->mode) || (					\
 		LINKS_AS_DIRS()					  &&	\
 		(p_fs)->f				  != NULL &&	\

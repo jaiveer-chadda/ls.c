@@ -71,6 +71,8 @@ TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *con
 
 	*b_writ = 0; // bytes written
 
+	/// @todo implement times into the future
+
 	if		(t_diff <  5 * SEC)				{ SET_TIME_TEXT("Now"			); timeobj->colour = TC_NOW		; }
 	else if	(t_diff <  1 * MIN)				{ SET_TIME_RELA(SEC, "secs"		); timeobj->colour = TC_MIN		; }
 

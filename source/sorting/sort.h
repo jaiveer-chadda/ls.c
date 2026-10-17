@@ -6,8 +6,7 @@
 #include "model/stat-model.h"
 
 #define DO_SORT_CHILDREN(p_fs) ( \
-	S_ISDIR((p_fs)->mode)	&&	 \
-	!DIRS_AS_FILES()		&&	 \
+	isFSDir(p_fs)			&&	 \
 	(p_fs)->f != NULL		&&	 \
 	(p_fs)->f->child_count >= 2	 \
 )
