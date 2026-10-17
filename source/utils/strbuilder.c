@@ -153,7 +153,7 @@ size_t sb_fputsf(StringBuilder p_strb, FILE *const file, const bool do_free) {
 
 char *sb_strcpy(StringBuilder p_strb, char *const buffer) {
 	sb_endstr(p_strb);
-	memcpy(buffer, p_strb->root, length(p_strb));
+	memcpy(buffer, p_strb->root, length(p_strb) + 1);
 
 	sb_free(p_strb);
 	return buffer;
@@ -162,7 +162,7 @@ char *sb_strcpy(StringBuilder p_strb, char *const buffer) {
 /* ——————————————————————————————————————————————————— */
 
 char *sb_strdup(StringBuilder p_strb) {
-	return sb_strcpy(p_strb, emalloc(length(p_strb)));
+	return sb_strcpy(p_strb, emalloc(length(p_strb) + 1));
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
