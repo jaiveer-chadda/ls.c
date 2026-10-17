@@ -6,13 +6,14 @@
 #include <string.h>
 
 #include "sort.h"
+#include "malloc.h"
 #include "strings.h"
 
 #include "options/options.h"
 #include "features/features.h"
 
 /// The multiplier which will be applied to a sort if the `--reverse-sort` option is enabled.
-static int8_t REVERSE;
+static int8_t REVERSE = 0;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -31,19 +32,29 @@ static int8_t REVERSE;
 #define GET_ATTR(n, field) \
 	(((const FileStat *const)file_ ## n)->field)
 
+#define SORT_1_FIRST_IF(condition) \
+	(((condition) ? FILE_1_FIRST : FILE_2_FIRST) * REVERSE)
+
 /// For all numerical fields, we can find out whether one if above or below another by subtracting boolean values.
-#define GET_ORDERING(field) ( \
+#define GET_ORDERING(field) (( \
 		(GET_ATTR(1, field) > GET_ATTR(2, field)) -	\
 		(GET_ATTR(1, field) < GET_ATTR(2, field))	\
-	)
+	) * REVERSE)
 
 #define CHECK_DIRS() \
 	if (SORT_DIRS_FIRST()) {															\
+		const bool f1_dir = IS_DIR(1), f2_dir = IS_DIR(2);								\
 		/* if one file is a directory and the other isn't, sort the directory first */	\
 		/*	note: we don't reverse the ordering of this sort - dirs are always first */	\
-		if ( IS_DIR(1) && !IS_DIR(2)) return FILE_1_FIRST;								\
-		if (!IS_DIR(1) &&  IS_DIR(2)) return FILE_2_FIRST;								\
+		if ( f1_dir && !f2_dir) return FILE_1_FIRST;									\
+		if (!f1_dir &&  f2_dir) return FILE_2_FIRST;									\
 	}
+
+#define CHECK_VALID_STAT() do {											\
+	const bool f1_nul = GET_ATTR(1,s) == NULL;							\
+	const bool f2_nul = GET_ATTR(2,s) == NULL;							\
+	if (f1_nul || f2_nul) return (f1_nul > f2_nul) - (f1_nul < f2_nul);	\
+} while (0)
 
 /* ——————————————————————————————————————————————————————————————————— */
 
@@ -51,13 +62,15 @@ static int8_t REVERSE;
 	static inline int compare_ ## funcname ## s(const void *file_1, const void *file_2)
 
 /// Define a function that can be passed into `qsort` (by the `SORT_FILES_BY` macro).
-#define DEFINE_COMPARE_FUNCTION(funcname, field) \
-	QSORT_PROTOTYPE(funcname) {	\
+#define DEFINE_COMPARE_FUNCTION(field)														\
+	QSORT_PROTOTYPE(field) {																\
+		/* firstly, check that `FileStat::s` isn't `NULL`. if it is, then return early */	\
+		CHECK_VALID_STAT();																	\
+		/* then, if we have to sort dirs first, check whether one of them is a dir */		\
 		CHECK_DIRS();																		\
-		const int8_t result = GET_ORDERING(field) * REVERSE;								\
-		/**/																				\
+		const int8_t result = GET_ORDERING(s->st_##field);									\
 		/* in the case of a tie, sort the files by name */									\
-		return result != 0 ? result : compare_names(file_1, file_2);						\
+		return result ? result : compare_names(file_1, file_2);								\
 	}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -73,17 +86,12 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 
 	CHECK_DIRS();
 
-	const char *name_1 = GET_ATTR(1, name);
-	const char *name_2 = GET_ATTR(2, name);
-
+	const char *name_1 = GET_ATTR(1, name), *name_2 = GET_ATTR(2, name);
 	name_t lname_1, lname_2;
 
 	if (!SORT_CASE_SENSIT()) {
-		toLower(lname_1, name_1);
-		toLower(lname_2, name_2);
-
-		name_1 = lname_1;
-		name_2 = lname_2;
+		toLower(lname_1, name_1), toLower(lname_2, name_2);
+		name_1 = lname_1, name_2 = lname_2;
 	}
 
 	namlen_t i = 0, j = 0;
@@ -115,20 +123,20 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 				num_2 = atoi(buf_2);
 
 			// if the numbers differ, compare them, and sort the smaller one first
-			if (num_1 != num_2) return (num_1 < num_2 ? FILE_1_FIRST : FILE_2_FIRST) * REVERSE;
+			if (num_1 != num_2) return SORT_1_FIRST_IF(num_1 < num_2);
 
 			// if the numbers are equal, keep checking
 
 		// if either character is a non-digit, return them in their regular ascii sorting order
 		} else if (name_1[i] != name_2[j]) {
-			return (name_1[i] < name_2[j] ? FILE_1_FIRST : FILE_2_FIRST) * REVERSE;
+			return SORT_1_FIRST_IF(name_1[i] < name_2[j]);
 
 		// if both characters are the same, then move onto the next character
 		} else i++, j++;
-	}
+}
 
 	// if one of the names is a prefix of the other, sort the shorter name first
-	return (name_1[i] == '\0' ? FILE_1_FIRST : FILE_2_FIRST) * REVERSE;
+	return SORT_1_FIRST_IF(name_1[i] == '\0');
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -145,9 +153,8 @@ static inline int compare_modes_or_types(const void *file_1, const void *file_2,
 		(mode_1 < mode_2)
 	) * REVERSE;
 
-	if (result != 0) return result;
 	// in the case of a tie, sort the files by name
-	return compare_names(file_1, file_2);
+	return result ? result : compare_names(file_1, file_2);
 }
 
 QSORT_PROTOTYPE(mode) { return compare_modes_or_types(file_1, file_2, PERM_MASK); }
@@ -155,21 +162,30 @@ QSORT_PROTOTYPE(type) { return compare_modes_or_types(file_1, file_2, TYPE_MASK)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/// @todo add checks for if `file->s == NULL`
-DEFINE_COMPARE_FUNCTION(inode, inum			)
-DEFINE_COMPARE_FUNCTION(size , s->st_size	)
-DEFINE_COMPARE_FUNCTION(devno, s->st_dev	)
-DEFINE_COMPARE_FUNCTION(uid	 , s->st_uid	)
-DEFINE_COMPARE_FUNCTION(gid	 , s->st_gid	)
-DEFINE_COMPARE_FUNCTION(nlink, s->st_nlink	)
-DEFINE_COMPARE_FUNCTION(flag , s->st_flags	)
-DEFINE_COMPARE_FUNCTION(time , s->st_mtime	) /** @todo make this work for other times too */
+QSORT_PROTOTYPE(inode) {
+	CHECK_DIRS();
+
+	const int8_t result = GET_ORDERING(inum);
+	return result ? result : compare_names(file_1, file_2);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+DEFINE_COMPARE_FUNCTION(size )
+DEFINE_COMPARE_FUNCTION(dev	 )
+DEFINE_COMPARE_FUNCTION(uid	 )
+DEFINE_COMPARE_FUNCTION(gid	 )
+DEFINE_COMPARE_FUNCTION(nlink)
+DEFINE_COMPARE_FUNCTION(flags)
+DEFINE_COMPARE_FUNCTION(mtime) /** @todo make this work for other times too */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_count) {
 	/// The multiplier which will be applied to a sort if the `--reverse-sort` option is enabled.
-	REVERSE = DO_REVERSE_SORT() ? -1 : 1;
+	if (REVERSE == 0) REVERSE = DO_REVERSE_SORT() ? -1 : 1;
+
+	/* —————————————————————————————————————————————————— */
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
@@ -181,36 +197,37 @@ void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_co
 		#endif
 		case SB_NAME	: SORT_FILES_BY(name ); break;
 		case SB_MODE	: SORT_FILES_BY(mode ); break;
-		case SB_SIZE	: SORT_FILES_BY(size ); break;
+		case SB_TYPE	: SORT_FILES_BY(type ); break;
 		case SB_INODE	: SORT_FILES_BY(inode); break;
-		case SB_DEVNO	: SORT_FILES_BY(devno); break;
+
+		case SB_SIZE	: SORT_FILES_BY(size ); break;
+		case SB_DEVNO	: SORT_FILES_BY(dev	 ); break;
 		case SB_UID		: SORT_FILES_BY(uid	 ); break;
 		case SB_GID		: SORT_FILES_BY(gid	 ); break;
 		case SB_NLINK	: SORT_FILES_BY(nlink); break;
-		case SB_FLAGS	: SORT_FILES_BY(flag ); break;
-		case SB_TYPE	: SORT_FILES_BY(type ); break;
-		case SB_TIME	: SORT_FILES_BY(time ); break; // note: not fully implemented
-		case SB_NONE	: return; // if we're not sorting this file, then we won't be sorting any of its children
+		case SB_FLAGS	: SORT_FILES_BY(flags); break;
+		case SB_TIME	: SORT_FILES_BY(mtime); break; // note: not fully implemented
+
+		case SB_NONE	: return; // if we're not sorting this file, then we're not sorting any of its children either
 	}
 
 	#pragma GCC diagnostic pop
 
 	// this is a special case, since the decision to sort inputs is taken seperately to whether to sort children
 	if (depth == 0) return;
+
+	/* —————————————————————————————————————————————————— */
+
 	if (depth + 1 > MAX_DEPTH) return;
 
+	// recursively sort this file's children (if they're dirs, and have children)
 	for (int i = 0; i < *arr_count; i++) {
-		if (!S_ISDIR(arr[i].mode)	||
-			DIRS_AS_FILES()			||
-			arr[i].f == NULL		||
-			arr[i].f->child_count < 2
-		) continue;
-
-		sortFiles(depth + 1,
-			(arr[i].f->children),
-			&arr[i].f->child_count
-		);
+		if (S_ISDIR(arr[i].mode) && !DIRS_AS_FILES() && arr[i].f && arr[i].f->child_count >= 2) {
+			sortFiles(depth + 1, arr[i].f->children, &arr[i].f->child_count );
 	}
+	}
+
+	/* —————————————————————————————————————————————————— */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
