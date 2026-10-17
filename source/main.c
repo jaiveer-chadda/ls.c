@@ -78,11 +78,7 @@ int main(const int argc, char *argv[]) {
 
 		// then parse the file - i.e. go through and convert things from raw data into displayable output
 		parseFile(&inputs[i]);
-
-		/*TEMP:*/ getGitInfo(&inputs[i]);
 	}
-
-	/*TEMP:*/ return 0;
 
 	// if none of the inputs were valid, don't bother with even trying to print them - just return failure
 	if (!any_valid_input) return EXIT_FAILURE;

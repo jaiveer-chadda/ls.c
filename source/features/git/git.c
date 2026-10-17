@@ -17,6 +17,11 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define RETURN goto LABEL_RETURN
+
+static GitRepoInfo *all_repos = NULL;
+static size_t repo_count = 0, repo_alloc = 0;
+
 static bool did_init = false;
 
 static inline void initGitState(void) {
@@ -26,6 +31,7 @@ static inline void initGitState(void) {
 }
 
 void freeGitState(void) {
+	efree(all_repos);
 	if (!did_init) return;
 	if (git_libgit2_shutdown() != 0) debug(WARNING, "libgit2 not fully shut down");
 	did_init = false;
@@ -58,13 +64,28 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 	hash_t		repo_hash; /** The unique ID of the repo, based on the path to the repo's `.git` directory. */
 
 	// fill out the repo, branch, and commit info, returning `NULL` if one of them can't be found
-	if (getRepo(&repo, &repo_root, &repo_hash, pFS->path) != 0) goto LABEL_RETURN;
+	if (getRepo(&repo, &repo_root, &repo_hash, pFS->path) != 0) RETURN;
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 	// from this point on, we know for a fact that we're in a git repo
 	/// @todo now check if the repo already exists
 	///			based on that, branch off to either creating a new repo, or assigning one to a file
+
+	bool repo_exists = false;
+
+	for (size_t i = 0; i < repo_count; i++) {
+		if (all_repos[i].hash != repo_hash) continue;
+		repo_exists = true;
+	}
+
+	/* ——————————————————————————————————————————————————————— */
+
+	if (repo_exists) {
+		// ...
+		puts(" \33[33m( repo exists )\33[m");
+		RETURN;
+	}
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -74,8 +95,23 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 	const char *branch_name;
 	size_t status_count;
 
-	if (getRepoInfo(&head, &commit, &branch_name, &status_list, &status_count, repo) != 0) goto LABEL_RETURN;
+	if (getRepoInfo(&head, &commit, &branch_name, &status_list, &status_count, repo) != 0) RETURN;
 	/*TEMP:*/ printf("\nfrom repo : %s\non branch : %s\nrepo hash : %llu\n", repo_root, branch_name, repo_hash);
+
+	/* ——————————————————————————————————————————————————————— */
+
+	if (repo_count + 1 > repo_alloc) {
+		all_repos = erealloc(all_repos, MULT_BY_1_5(repo_alloc) * sizeof(GitRepoInfo));
+	}
+
+	(void)getRepoDirname; /** @todo implement */
+
+	GitRepoInfo *const repo_info = &all_repos[repo_count++];
+	*repo_info = (GitRepoInfo){
+		.hash	= repo_hash,
+		.root	= repo_root,
+		.branch	= branch_name
+	};
 
 	/* ——————————————————————————————————————————————————————— */
 
@@ -100,11 +136,26 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline const char *getRepoDirname(const char *const repo_root) {
+	const size_t root_len = strlen(repo_root);
+	char *const root_end = memcpy(ecalloc(1, root_len + 1), repo_root, root_len + 1);
+
+	char *const last_char = &root_end[root_len - 1];
+	if (*last_char == '/') *last_char = '\0';
+
+	char *const git_dir = strrchr(root_end, '/');
+	if (git_dir != NULL) *git_dir = '\0';
+
+	return root_end;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_git_info(const FileStat *const pFS) {
 	/*TEMP:*/ (void)pFS;
-	/*TEMP:*/ printf("%s%s", getcol(RESET_ALL), "gitinfo");
+	/*TEMP:*/ printf("%s%s", getcol(RESET_ALL), "g");
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
