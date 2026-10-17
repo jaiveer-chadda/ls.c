@@ -204,7 +204,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	if (S_ISLNK(mode)) {
 		// if the file is a symlink, then simply call `readlink` on it
-		if (( target_len = readlink(pFS->path, target_path, sizeof(path_t)) ) == -1) {
+		if (( target_len = readlink(getAbsPath(pFS), target_path, sizeof(path_t)) ) == -1) {
 			pFS->err_no = errno;
 			return NULL;
 		}
