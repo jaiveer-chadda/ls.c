@@ -87,24 +87,11 @@ int main(const int argc, char *argv[]) {
 
 	if (MAX_DEPTH != 0) {
 		for (int i = 0; i < file_count; i++) {
-			if (!S_ISDIR(inputs[i]->mode)||
-				DIRS_AS_FILES()				||
-				inputs[i]->f == NULL		||
-				inputs[i]->f->child_count < 2
-			) continue;
-
-			sortFiles(1,
-				&inputs[i]->f->children[0],
-				&inputs[i]->f->child_count
-			);
+			SORT_CHILDREN(inputs[i], /* depth = */ 1);
 		}
 	}
 
-	if (false) { /** disabled temporarily - @todo fix input sorting */
-	if (DO_SORT_INPUTS() && file_count >= 2) {
-		sortFiles(0, *inputs, &file_count);
-	}
-	}
+	if (DO_SORT_INPUTS() && file_count >= 2) sortFiles(0, inputs, file_count);
 
 	/* —— Print —————————————————————————————————————————————————————————————————————————————————— */
 

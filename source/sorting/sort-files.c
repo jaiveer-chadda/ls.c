@@ -1,10 +1,5 @@
 /// @file info/sorting/sort-files.c
 
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "sort.h"
 #include "malloc.h"
 #include "strings.h"
@@ -20,22 +15,29 @@ static int8_t REVERSE = 0;
 #define FILE_1_FIRST -1
 #define FILE_2_FIRST  1
 
+#define ARR_ELEM_SIZE ((depth == 0) ? sizeof(FileStat*) : sizeof(FileStat))
+
 #define SORT_FILES_BY(field) \
-	qsort(arr, *arr_count, sizeof(FileStat), (compare_ ## field ## s))
+	qsort_r(arr, arr_count, ARR_ELEM_SIZE, (void*)&depth, (compare_ ## field ## s)); \
 
 /* ——————————————————————————————————————————————————————————————————— */
 
+#define	 AS_P_FILESTAT(f)	((const FileStat *const		  )(f))
+#define	AS_PP_FILESTAT(f) (*((const FileStat *const *const)(f)))
+
+#define AS_PFS(f) AS_P_FILESTAT((*((uint8_t*)depth) == 0) ? AS_PP_FILESTAT(f) : (f))
+
 #define IS_DIR(n) \
-	isFSDir((const FileStat *const)file_ ## n)
+	isFSDir(AS_PFS(file_ ## n))
 
 /// Get the specified `field` from either file_1 or file_2.
 #define GET_ATTR(n, field) \
-	(((const FileStat *const)file_ ## n)->field)
+	(AS_PFS(file_ ## n)->field)
 
 #define SORT_1_FIRST_IF(condition) \
 	(((condition) ? FILE_1_FIRST : FILE_2_FIRST) * REVERSE)
 
-/// For all numerical fields, we can find out whether one if above or below another by subtracting boolean values.
+/// For all numerical fields, we can find out whether one is above or below another by subtracting boolean values.
 #define GET_ORDERING(field) (( \
 		(GET_ATTR(1, field) > GET_ATTR(2, field)) -	\
 		(GET_ATTR(1, field) < GET_ATTR(2, field))	\
@@ -59,9 +61,9 @@ static int8_t REVERSE = 0;
 /* ——————————————————————————————————————————————————————————————————— */
 
 #define QSORT_PROTOTYPE(funcname) \
-	static inline int compare_ ## funcname ## s(const void *file_1, const void *file_2)
+	static inline int compare_ ## funcname ## s(void *depth, const void *file_1, const void *file_2)
 
-/// Define a function that can be passed into `qsort` (by the `SORT_FILES_BY` macro).
+/// Define a function that can be passed into `qsort_r` (by the `SORT_FILES_BY` macro).
 #define DEFINE_COMPARE_FUNCTION(field)														\
 	QSORT_PROTOTYPE(field) {																\
 		/* firstly, check that `FileStat::s` isn't `NULL`. if it is, then return early */	\
@@ -70,7 +72,7 @@ static int8_t REVERSE = 0;
 		CHECK_DIRS();																		\
 		const int8_t result = GET_ORDERING(s->st_##field);									\
 		/* in the case of a tie, sort the files by name */									\
-		return result ? result : compare_names(file_1, file_2);								\
+		return result ? result : compare_names(depth, file_1, file_2);						\
 	}
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -79,12 +81,8 @@ static int8_t REVERSE = 0;
 
 /* ——————————————————————————————————————————————————————————————————— */
 
-static inline int compare_names(const void *file_1, const void *file_2) {
-	// check for invalid files
-	if (!isValidFS(file_1)) return FILE_1_FIRST;
-	if (!isValidFS(file_2)) return FILE_2_FIRST;
-
-	CHECK_DIRS();
+QSORT_PROTOTYPE(name) {
+	CHECK_DIRS(); // check for dir sorting
 
 	const char *name_1 = GET_ATTR(1, name), *name_2 = GET_ATTR(2, name);
 	name_t lname_1, lname_2;
@@ -131,9 +129,9 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 		} else if (name_1[i] != name_2[j]) {
 			return SORT_1_FIRST_IF(name_1[i] < name_2[j]);
 
-		// if both characters are the same, then move onto the next character
+		// if both characters are the same, move onto the next character
 		} else i++, j++;
-}
+	}
 
 	// if one of the names is a prefix of the other, sort the shorter name first
 	return SORT_1_FIRST_IF(name_1[i] == '\0');
@@ -141,7 +139,7 @@ static inline int compare_names(const void *file_1, const void *file_2) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline int compare_modes_or_types(const void *file_1, const void *file_2, const uint16_t mask) {
+static inline int compare_modes_or_types(void *depth, const void *file_1, const void *file_2, const uint16_t mask) {
 	CHECK_DIRS();
 
 	const mode_t // get rid of the type info, and keep just the permissions
@@ -154,11 +152,11 @@ static inline int compare_modes_or_types(const void *file_1, const void *file_2,
 	) * REVERSE;
 
 	// in the case of a tie, sort the files by name
-	return result ? result : compare_names(file_1, file_2);
+	return result ? result : compare_names(depth, file_1, file_2);
 }
 
-QSORT_PROTOTYPE(mode) { return compare_modes_or_types(file_1, file_2, PERM_MASK); }
-QSORT_PROTOTYPE(type) { return compare_modes_or_types(file_1, file_2, TYPE_MASK); }
+QSORT_PROTOTYPE(mode) { return compare_modes_or_types(depth, file_1, file_2, PERM_MASK); }
+QSORT_PROTOTYPE(type) { return compare_modes_or_types(depth, file_1, file_2, TYPE_MASK); }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -166,7 +164,7 @@ QSORT_PROTOTYPE(inode) {
 	CHECK_DIRS();
 
 	const int8_t result = GET_ORDERING(inum);
-	return result ? result : compare_names(file_1, file_2);
+	return result ? result : compare_names(depth, file_1, file_2);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -181,9 +179,24 @@ DEFINE_COMPARE_FUNCTION(mtime) /** @todo make this work for other times too */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_count) {
+void sortFiles(const uint8_t depth, void *const arr, const int arr_count) {
 	/// The multiplier which will be applied to a sort if the `--reverse-sort` option is enabled.
 	if (REVERSE == 0) REVERSE = DO_REVERSE_SORT() ? -1 : 1;
+
+	/* —————————————————————————————————————————————————— */
+
+	/* Note re: the `arr` parameter
+	 * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	 * When receiving the `arr` parameter, there are two types of arrays that we could get:
+	 *
+	 *	1. in most cases (when `depth != 0`), the array will be `FileStat *arr`
+	 *		- in this case, we don't have to do anything special - just sort the files as usual and return
+	 *
+	 *	2. if, however, we're sorting command line inputs (`depth == 0`), the array will be `FileStat **arr`
+	 *		- (i.e., an array of pointers to `FileStat`s)
+	 *		- in this case, we need to convert `FileStat **arr` into `FileStat *arr`
+	 *			- this is done by the `AS_PFS` / `AS_PP_FILESTAT` macros
+	 */
 
 	/* —————————————————————————————————————————————————— */
 
@@ -191,7 +204,7 @@ void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_co
 	#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 
 	switch (SORT_BY()) {
-		case SB_DEFAULT	: /* sort by name by default*/
+		case SB_DEFAULT	: /* sort by name by default */
 		#if __STDC_VERSION__ >= 202300L
 			[[fallthrough]];
 		#endif
@@ -213,21 +226,14 @@ void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_co
 
 	#pragma GCC diagnostic pop
 
+	/* —————————————————————————————————————————————————— */
+
 	// this is a special case, since the decision to sort inputs is taken seperately to whether to sort children
 	if (depth == 0) return;
+	if (depth >= MAX_DEPTH) return;
 
-	/* —————————————————————————————————————————————————— */
-
-	if (depth + 1 > MAX_DEPTH) return;
-
-	// recursively sort this file's children (if they're dirs, and have children)
-	for (int i = 0; i < *arr_count; i++) {
-		if (S_ISDIR(arr[i].mode) && !DIRS_AS_FILES() && arr[i].f && arr[i].f->child_count >= 2) {
-			sortFiles(depth + 1, arr[i].f->children, &arr[i].f->child_count );
-	}
-	}
-
-	/* —————————————————————————————————————————————————— */
+	// recursively sort this file's children
+	for (int i = 0; i < arr_count; i++) SORT_CHILDREN((FileStat*)(arr) + i, depth + 1);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

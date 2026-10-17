@@ -5,6 +5,22 @@
 
 #include "model/stat-model.h"
 
-void sortFiles(const uint8_t depth, FileStat *const arr, const int *const arr_count);
+#define DO_SORT_CHILDREN(p_fs) ( \
+	S_ISDIR((p_fs)->mode)	&&	 \
+	!DIRS_AS_FILES()		&&	 \
+	(p_fs)->f != NULL		&&	 \
+	(p_fs)->f->child_count >= 2	 \
+)
+
+#define SORT_CHILDREN(p_fs, depth_) do { \
+	if (DO_SORT_CHILDREN(p_fs)) {		 \
+		sortFiles((depth_),				 \
+			(p_fs)->f->children,		 \
+			(p_fs)->f->child_count		 \
+		);								 \
+	}									 \
+} while (0)
+
+void sortFiles(const uint8_t depth, void *const arr, const int arr_count);
 
 #endif /* !SORT_H */
