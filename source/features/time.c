@@ -15,38 +15,33 @@
 #	undef MIN
 #endif
 
-#define SEC	   1
-#define MIN	  60
-#define HOUR (60 * MIN)
-#define DAY	 (24 * HOUR)
-
-#define SET_DATE_TEXT(text) *b_writ = strftime(timeobj->str, sizeof(timestr), (text TIME_FMT), pTime)
-#define SET_TIME_TEXT(text)	*b_writ = sizeof(text) - 1; strncpy(timeobj->str, (text), sizeof(timestr))
-
-#define SET_TIME_RELA(unit, text) \
-	*b_writ = snprintf(timeobj->str, sizeof(timestr), ("%ld " text), (long)(t_diff/(unit))) /* always round down */
+#define SEC		(  1		)
+#define MIN		( 60 * SEC	)
+#define HOUR	( 60 * MIN	)
+#define DAY		( 24 * HOUR	)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static bool time_initialised = false;
-
-time_t current_time;
-time_t diff_midn;	/// Number of seconds since midnight.
-time_t diff_month;	/// Number of seconds since midnight on the 1ˢᵗ of the month.
-time_t diff_year;	/// Number of seconds since midnight on the 1ˢᵗ of January this year.
+static time_t current_time	;
+static time_t diff_midn		; /** Number of seconds since midnight. */
+static time_t diff_month	; /** Number of seconds since midnight on the 1ˢᵗ of the month. */
+static time_t diff_year		; /** Number of seconds since midnight on the 1ˢᵗ of January this year. */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void initTime(void) {
+	static bool time_initialised = false;
+
+	if (time_initialised) return;
 	time_initialised = true;
 
 	current_time = time(NULL);
 	const struct tm *time_tm = localtime(&current_time);
 
 	diff_midn =
-		time_tm->tm_hour * HOUR +
-		time_tm->tm_min  * MIN +
-		time_tm->tm_sec;
+		time_tm->tm_hour * HOUR	+
+		time_tm->tm_min	 * MIN	+
+		time_tm->tm_sec	 * SEC	;
 
 	diff_month	= diff_midn + (time_tm->tm_mday - 1) * DAY;
 	diff_year	= diff_midn + (time_tm->tm_yday - 1) * DAY;
@@ -57,23 +52,32 @@ void initTime(void) {
 #define RETURN_ERROR() do {										\
 	debug(WARNING, "parseTime: %s", strerror(errno));			\
 	memcpy(timeobj->str, TIME_ERR_STR, sizeof(TIME_ERR_STR));	\
-	*b_writ = sizeof(TIME_ERR_STR);								\
+	*b_writ = sizeof(TIME_ERR_STR) - 1;							\
 	return timeobj;												\
 } while (0)
 
+/* —————————————————————————————————————————————————————————————— */
+
+#define SET_TIME_RELA(u, t) *b_writ = snprintf(timeobj->str, sizeof(timestr), ("%ld " t), (long)(t_diff/(u)))
+#define SET_DATE_TEXT(text) *b_writ = strftime(timeobj->str, sizeof(timestr), (text TIME_FMT), pTime)
+#define SET_TIME_TEXT(text)	*b_writ = sizeof(text) - 1; strncpy(timeobj->str, (text), sizeof(timestr))
+
+/* —————————————————————————————————————————————————————————————— */
+
 TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *const b_writ) {
-	if (!time_initialised) initTime();
 	if (file_time == 0) RETURN_ERROR();
+
+	initTime(); // initialise the current time, seconds since midnight, etc.
 
 	/// How many seconds ago the file was modified.
 	const time_t t_diff = current_time - file_time;
-	const struct tm *pTime = localtime(&file_time);
+	const struct tm *const pTime = localtime(&file_time);
 
 	*b_writ = 0; // bytes written
 
-	/// @todo implement times into the future
+	if		(t_diff < -2 * SEC)				{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_FUTURE	; }
 
-	if		(t_diff <  5 * SEC)				{ SET_TIME_TEXT("Now"			); timeobj->colour = TC_NOW		; }
+	else if	(t_diff <  5 * SEC)				{ SET_TIME_TEXT("Now"			); timeobj->colour = TC_NOW		; }
 	else if	(t_diff <  1 * MIN)				{ SET_TIME_RELA(SEC, "secs"		); timeobj->colour = TC_MIN		; }
 
 	else if	(t_diff <  2 * MIN)				{ SET_TIME_TEXT("1 " "min. ago"	); timeobj->colour = TC_MIN		; }
@@ -91,6 +95,7 @@ TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *con
 	return timeobj;
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_time_raw(const FileStat *const pFS, const TimeType type) {

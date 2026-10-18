@@ -364,7 +364,8 @@
 	X(TC_2DAYS	, toColour( .fg = RGB(100, 145, 225)					)) \
 	X(TC_THIS_MO, toColour( .fg = RGB( 70, 132, 230)					)) \
 	X(TC_THIS_YR, toColour( .fg = RGB( 35, 106, 204)					)) \
-	X(TC_OTHER	, toColour( .fg = RGB(  4,  65, 145)					))
+	X(TC_OTHER	, toColour( .fg = RGB(  4,  65, 145)					)) \
+	X(TC_FUTURE	, toColour( .fg = 1										)) /* \e[31m */
 
 /* —— File Sizes ———————————————————————————————————————————————————————————— */
 
@@ -387,16 +388,16 @@
 #define UNIT_RONNA		((unit_t)'R')
 #define UNIT_QUETTA		((unit_t)'Q')
 
-#define DO_PRINT_SIZE_UNIT(u)	\
-	(!((u) == UNIT_MAJ_MIN		\
-	|| (u) == UNIT_ERROR		\
-	|| (u) == UNIT_ZERO			\
-	|| (u) == UNIT_BYTE			\
-	|| (u) == '\0'				\
-	))
+#define DO_PRINT_SIZE_UNIT(u) ( \
+	(u) != UNIT_MAJ_MIN	&&	\
+	(u) != UNIT_ERROR	&&	\
+	(u) != UNIT_ZERO	&&	\
+	(u) != UNIT_BYTE	&&	\
+	(u) != '\0'				\
+)
 
-#define MAJ_COL_ANSI	ANSI_IFCOL( "37"	) // \e[37m
-#define MIN_COL_ANSI	ANSI_IFCOL( "36"	) // \e[36m
+#define MAJ_COL_ANSI	ANSI_IFCOL( "37" ) // \e[37m
+#define MIN_COL_ANSI	ANSI_IFCOL( "36" ) // \e[36m
 #define MIN_COLOUR		toColour( .fg = G_CYAN ) // \e[36m
 
 #define SIZE_COLOUR_TABLE \
