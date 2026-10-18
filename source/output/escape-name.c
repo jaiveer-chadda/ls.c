@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "malloc.h"
+#include "strbuilder.h"
 #include "options/options.h"
 #include "graphics/graphics.h"
 
@@ -23,8 +24,10 @@
 
 /* —— escapeCharacter() ———————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define copy_and_return(fmt, src) \
-	return sprintf(esc, ("\\" fmt), (src));
+#define return_esc(c) {			 \
+	esc[0] = '\\', esc[1] = (c); \
+	return 2;					 \
+}
 
 /**
  * @brief Find the appropriate escape sequence for an inputted character.
@@ -42,20 +45,20 @@ static inline uint8_t escapeCharacter(char *esc, const char chr) {
 	// if a character has a pre-defined escape sequence, print it
 	switch (chr) {
 		// note: backslashes are being escaped to eliminate ambiguity when not printing in colour
-		case '\\' : copy_and_return("%c", '\\');
-		case '\a' : copy_and_return("%c", 'a' );
-		case '\b' : copy_and_return("%c", 'b' );
-		case '\t' : copy_and_return("%c", 't' );
-		case '\n' : copy_and_return("%c", 'n' );
-		case '\v' : copy_and_return("%c", 'v' );
-		case '\f' : copy_and_return("%c", 'f' );
-		case '\r' : copy_and_return("%c", 'r' );
-		case '\33': copy_and_return("%c", 'e' );
+		case '\\' : return_esc('\\'	);
+		case '\a' : return_esc(	'a'	);
+		case '\b' : return_esc(	'b'	);
+		case '\t' : return_esc(	't'	);
+		case '\n' : return_esc(	'n'	);
+		case '\v' : return_esc(	'v'	);
+		case '\f' : return_esc(	'f'	);
+		case '\r' : return_esc(	'r'	);
+		case '\33': return_esc(	'e'	);
 		default	  : break;
 	}
 
-	if DO_OCT_ESC(chr) copy_and_return("%hu"  , (uint8_t)chr);
-	if DO_HEX_ESC(chr) copy_and_return("x%02X", (uint8_t)chr);
+	if DO_OCT_ESC(chr) return sprintf(esc, "\\%hu"	, chr);
+	if DO_HEX_ESC(chr) return sprintf(esc, "\\x%02X", chr);
 
 	*esc = chr;	// nothing to escape - push the inputted char back onto the buffer
 	return 1;	// length = 1
@@ -82,83 +85,51 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 
 	/* —— Colour Setup ———————————————————————————————————————— */
 
-	uint8_t init_ansi_len = 0, esc_ansi_len, file_ansi_len;
-
 	// if the file's colour is different to the active colour, and the first char in the name isn't escaped,
 	//	then print some colour before the name
 	const bool do_init_col = !areEqual(colour, getActive()) && !DO_ANY_ESC(name[0]);
 	const Colour esc_colour = has_bg(colour) ? ESC_CHAR_BG_COLOUR : ESC_CHAR_FG_COLOUR;
 
-	const char
-		*const init_ansi = do_init_col ? getcollen(colour, &init_ansi_len) : NULL,
-		*const esc_ansi	 = getcollen(esc_colour, &esc_ansi_len),
-		*const file_ansi = getcollen(colour, &file_ansi_len);
-
 	/* —— Alloc & Ouput Setup ————————————————————————————————— */
 
-	size_t alloc_size =
-		INIT_ALLOC_LEN
-		+ (do_padding  ? sizeof(PRE_NAME_PAD) : 0)
-		+ (do_init_col ? init_ansi_len		  : 0);
+	/// @todo refactor this to use a `StringBuilder`
+	/// @todo while iterating through the string, keep checking if it matches `$HOME`
+	///			if it does, then replace `/Users/name` with `~`
 
-	// allocate memory for the output, and setup the output pointer
-	char *output = emalloc(alloc_size); /* [alloc:escd-name-output] - freed locally */
-	char *out_ptr = output;
+	StringBuilder path_str = sb_init(INIT_ALLOC_LEN);
 
 	/* —— Add Padding & Colour ———————————————————————————————— */
 
-	if (do_padding) {
 		// if we add the padding to the output buffer, we can use `fputs`, rather than `printf` when printing
-		memcpy(out_ptr, PRE_NAME_PAD, sizeof(PRE_NAME_PAD) - 1);
-		out_ptr += sizeof(PRE_NAME_PAD) - 1;
-	}
+	if (do_padding) sb_addlit(path_str, PRE_NAME_PAD);
 
-	if (do_init_col) {
 		// add the file's colour to the start of the output sequence
-		memcpy(out_ptr, init_ansi, init_ansi_len);
-		out_ptr += init_ansi_len;
-	}
+	if (do_init_col) sb_addcol(path_str, colour);
 
 	/* —— Escape & Add Each Char —————————————————————————————— */
 
+	char esc_buf[4] = {0}; // 4 is the maximum length of a character's escape sequence (`\x7F`)
+	uint8_t	esc_len = 0;
+
 	const char *inp_ptr = name;
 	while (*inp_ptr != '\0') {
-
 		if (DO_ANY_ESC(*inp_ptr)) {
-			CHECK_MEM_ALLOC(esc_ansi_len);
-
-			memcpy(out_ptr, esc_ansi, esc_ansi_len);
-			out_ptr += esc_ansi_len;
+			sb_addcol(path_str, esc_colour);
 
 			while (DO_ANY_ESC(*inp_ptr)) {
-				CHECK_MEM_ALLOC(4); // 4 is the maximum length of a character's escape sequence (`\x7F`)
-				out_ptr += escapeCharacter(out_ptr, *inp_ptr++);
+				esc_len = escapeCharacter(esc_buf, *inp_ptr++);
+				sb_addstr(path_str, esc_buf, esc_len);
 			}
 
 		} else {
-			if (inp_ptr != name) {
-				CHECK_MEM_ALLOC(file_ansi_len);
-
-				memcpy(out_ptr, file_ansi, file_ansi_len);
-				out_ptr += file_ansi_len;
-			}
-
-			while (*inp_ptr != '\0' && !DO_ANY_ESC(*inp_ptr)) {
-				CHECK_MEM_ALLOC(1);
-				*out_ptr++ = *inp_ptr++;
+			if (inp_ptr != name) sb_addcol(path_str, colour);
+			while (*inp_ptr != '\0' && !DO_ANY_ESC(*inp_ptr)) sb_addchr(path_str, *inp_ptr++);
 			}
 		}
-	}
-
-	*out_ptr = '\0';
 
 	/* —— Print, Free, & Cleanup —————————————————————————————— */
 
-	fputs(output, stdout);
-	efree(output); /* [free:escd-name-output] - alloced locally */
-
-	if (inp_ptr != name) setActive(DO_ANY_ESC(*(inp_ptr - 1)) ? esc_colour : colour);
-	return;
+	sb_putsf(path_str);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
