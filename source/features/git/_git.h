@@ -6,7 +6,9 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #include <git2.h>
+
 #include "hash.h"
+#include "model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -21,8 +23,6 @@
 
 static inline const char *getRepoDirname(const char *const repo_root);
 static inline const char *getBranchName(const git_reference *const head);
-static inline void parseStatuses(git_status_list *const status_list, const size_t status_count);
-static inline int getGitStatusList(git_status_list **const status_list, git_repository *const repo);
 static inline int getRepoInfo(
 	git_reference **const head, git_object **const commit, const char **const branch_name,
 	git_status_list **const status_list, size_t *status_count, git_repository *const repo

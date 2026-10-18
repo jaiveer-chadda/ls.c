@@ -32,8 +32,8 @@ static inline int getRepo(
 
 	/* ——————————————————————————————————————————————————————— */
 
-	/// I'm making the executive decision to not handle bare repos. With how complicated `git` already is, I don't need
-	///  any more unnecessary complexity, and they're so rare that they're not worth considering.
+	/// I'm making the executive decision to not handle bare repos. With how complicated `git` already is,
+	///  I don't need any more unnecessary complexity, and they're so rare that they're not worth considering.
 	/// @todo I may add support for them later, but not while I'm still setting the system up.
 	if (git_repository_is_bare(*repo)) return E_BARE_REPO;
 
@@ -61,6 +61,28 @@ static inline int getRepo(
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define STATUS_OPT_FLAGS ((git_status_opt_t)(					\
+	GIT_STATUS_OPT_INCLUDE_IGNORED			|					\
+	GIT_STATUS_OPT_INCLUDE_UNTRACKED		|					\
+	GIT_STATUS_OPT_INCLUDE_UNMODIFIED		|					\
+	GIT_STATUS_OPT_INCLUDE_UNREADABLE		| /* maybe...? */	\
+	\
+	GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS	|					\
+	GIT_STATUS_OPT_DISABLE_PATHSPEC_MATCH	| /* i think so */	\
+	\
+	GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX	|					\
+	GIT_STATUS_OPT_RENAMES_FROM_REWRITES	| /* maybe...? */	\
+	GIT_STATUS_OPT_RENAMES_INDEX_TO_WORKDIR						\
+))
+
+#define STATUS_OPT_OBJ_INIT ((git_status_options){	\
+	.version = GIT_STATUS_OPTIONS_VERSION,			\
+	.show	 = GIT_STATUS_SHOW_INDEX_AND_WORKDIR,	\
+	.flags	 = STATUS_OPT_FLAGS						\
+})
+
+/* ———————————————————————————————————————————————————————————————————————————————— */
 
 static inline int getRepoInfo(
 	git_reference **const head, git_object **const commit, const char **const branch_name,
@@ -98,8 +120,13 @@ static inline int getRepoInfo(
 	/* ———————————————————————————————————————————————————————————————————————————————— */
 
 	// from the repo, get the status of all ignored, modified, new, etc. files
-	error = getGitStatusList(status_list, repo);
-	if (error != 0) return error;
+	const git_status_options opts = STATUS_OPT_OBJ_INIT;
+	error = git_status_list_new(status_list, repo, &opts);
+
+	switch (error) {
+		case 0	: break;
+		default	: return error; // error is an `errno` code
+	}
 
 	*status_count = git_status_list_entrycount(*status_list);
 
@@ -125,3 +152,5 @@ static inline const char *getBranchName(const git_reference *const head) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #pragma GCC diagnostic pop
+
+// spell:ignoreRegexp /\bGIT_E\B|(?<=\n\s*#.+"-)W/g

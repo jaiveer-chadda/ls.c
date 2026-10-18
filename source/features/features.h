@@ -39,7 +39,7 @@ void freeFirmlinks(void);
 /* —— git.c ———————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void freeGitState(void);
-GitInfo *getGitInfo(const FileStat *const pFS);
+const GitInfo *getGitInfo(const FileStat *const pFS);
 
 /* —— inum.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

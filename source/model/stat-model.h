@@ -143,32 +143,31 @@ struct MountInfo {
 	flag_t	flags	; // 4		/** [Unused] Copy of mount-exported flags. */
 }; // 1048 + 0 pad = 1048 B
 
-/* —— GitInfo —————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-struct GitInfo {
-	union GitInfo_U_ { GitRepoInfo *repo; GitFileInfo *file; } data; // 8
-	enum  GitInfo_E_ { GITINFO_REPO		, GITINFO_FILE		 } type; // 4
-}; // 12 + 4 pad = 16 B
-
 /* —— GitRepoInfo —————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 // TEMP: I'll end up removing/changing some of the info in `GitRepoInfo` and `GitFileInfo` later, but I'm leaving
 //		  everything in for the moment, so that I have as much info to work with, while developing.
 
 struct GitRepoInfo {
+	git_repository *repo_obj; // 8
 	const char	*branch		; // 8 /** The name of the branch the file is on. */
+
 	const char	*root		; // 8 /** The path to the repo's `.git` directory. */
-	GitFileInfo	*files		; // 8 /** The array of files in the repo with statuses. */
 	hash_t		hash		; // 8 /** A unique ID, based on the path to the repo's `.git` directory. */
-	uint32_t	file_count	; // 4 /** The number of files in the `GitRepoInfo::files` array. */
+	/** Note that the hash is calculated before `getRepoDirname` is run on the root */
+
+	GitInfo		*files		; // 8 /** The array of files in the repo with statuses. */
+	uint32_t	count		; // 4 /** The number of files in the `GitRepoInfo::files` array. */
+
 	int			br_status	; // 4 /** Whether the branch is at/ahead/behind `main`. */
 }; // 40 + 0 pad = 40 B
 
-/* —— GitFileInfo —————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— GitInfo —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-struct GitFileInfo {
-	hash_t		rp_hash	; // 8 /** The unique ID of the repo which this file belongs to. */
+struct GitInfo {
+	const char	*path	; // 8 /** The file's path, relative to the repo root. */
 	GitRepoInfo	*repo	; // 8 /** A pointer to the `GitRepoInfo` object representing this file's repo. */
+	hash_t		rp_hash	; // 8 /** The unique ID of the repo which this file belongs to. */
 	git_status_t status	; // 4 /** The status flags of the file. */
 }; // 20 + 4 pad = 22 B
 

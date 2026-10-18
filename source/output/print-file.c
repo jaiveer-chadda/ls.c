@@ -100,7 +100,7 @@ static inline void printFields(const FileStat *const pFS) {
 	print_time(A_TIME); print_time(M_TIME);
 	print_time(C_TIME); print_time(B_TIME);
 
-	// print_field(git_info);
+	print_field(git_info);
 }
 
 /* —— stopRecursing() ————————————————————————————————————————————————————————————————————————————————————————————— */

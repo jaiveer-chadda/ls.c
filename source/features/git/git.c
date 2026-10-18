@@ -4,8 +4,9 @@
 #include <stdbool.h>
 
 #include "malloc.h"
+#include "strings.h"
 #include "debugging.h"
-#include "model/stat-model.h"
+#include "form/formatting.h"
 
 /* ——————————————————————————————————————————————————————— */
 
@@ -13,7 +14,6 @@
 ///	 using `static inline` functions, but I can also keep things neat & separated.
 #include "_git.h"
 #include "_repo.c"
-#include "_status.c"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -31,7 +31,20 @@ static inline void initGitState(void) {
 }
 
 void freeGitState(void) {
+	for (size_t i = 0; i < repo_count; i++) {
+		const GitRepoInfo *const repo = &all_repos[i];
+
+		for (uint32_t j = 0; j < repo->count; j++) {
+			efree((void*)repo->files[j].path);
+		}
+
+		efree((void*)repo->files);
+		efree((void*)repo->root);
+		git_repository_free(repo->repo_obj);
+	}
+
 	efree(all_repos);
+
 	if (!did_init) return;
 	if (git_libgit2_shutdown() != 0) debug(WARNING, "libgit2 not fully shut down");
 	did_init = false;
@@ -39,7 +52,7 @@ void freeGitState(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-GitInfo *getGitInfo(const FileStat *const pFS) {
+const GitInfo *getGitInfo(const FileStat *const pFS) {
 	printf("file      : %s", pFS->abspath);
 
 	// initialise `libgit2`'s global state
@@ -49,7 +62,7 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 	/* ——————————————————————————————————————————————————————— */
 
 	/** A pointer to the `GitInfo` object we're creating, which will be returned by the function. */
-	GitInfo *git_info_obj	= NULL;
+	const GitInfo *git_info_obj = NULL;
 
 	git_repository	*repo	= NULL; /** Repr. of an existing git repo, including all its object contents. */
 	git_reference	*head	= NULL; /** Information about the current branch of a repo. */
@@ -72,21 +85,42 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 	/// @todo now check if the repo already exists
 	///			based on that, branch off to either creating a new repo, or assigning one to a file
 
-	bool repo_exists = false;
+	GitRepoInfo *current_repo = NULL;
 
 	for (size_t i = 0; i < repo_count; i++) {
-		if (all_repos[i].hash != repo_hash) continue;
-		repo_exists = true;
+		if (all_repos[i].hash == repo_hash) {
+			current_repo = &all_repos[i];
+			break;
+		}
 	}
 
 	/* ——————————————————————————————————————————————————————— */
 
-	if (repo_exists) {
-		// ...
+	if (current_repo != NULL) { // repo already exists!
 		puts(" \33[33m( repo exists )\33[m");
+		printf("from repo : %s\n", current_repo->root);
+
+		if (strcmp(current_repo->root, pFS->abspath) == 0 ||
+			strcmp(			repo_root, pFS->abspath) == 0
+		) {
+			// file is root of repo
+		}
+
+		for (uint32_t i = 0; i < current_repo->count; i++) {
+			const GitInfo *const file = &current_repo->files[i];
+
+			if (strends(pFS->abspath, file->path)) {
+				git_info_obj = file;
+				setLen(FI_git_info, /*TEMP:*/10);
+
+				RETURN;
+			}
+		}
+
 		RETURN;
 	}
 
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 	/// @todo if the repo doesn't exist, start creating a new one...
@@ -104,20 +138,40 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 		all_repos = erealloc(all_repos, MULT_BY_1_5(repo_alloc) * sizeof(GitRepoInfo));
 	}
 
-	(void)getRepoDirname; /** @todo implement */
-
 	GitRepoInfo *const repo_info = &all_repos[repo_count++];
 	*repo_info = (GitRepoInfo){
-		.hash	= repo_hash,
-		.root	= repo_root,
-		.branch	= branch_name
+		.root		= getRepoDirname(repo_root),
+		.hash		= repo_hash,
+		.branch		= branch_name,
+		.repo_obj	= repo,
 	};
 
-	/* ——————————————————————————————————————————————————————— */
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
-	/// @todo now that we've successfully got all the repo info, parse the statuses of each file
+	uint32_t alloc = 0;
 
-	parseStatuses(status_list, status_count);
+	for (size_t i = 0; i < status_count; ++i) {
+		const git_status_entry *const entry = git_status_byindex(status_list, i);
+
+		// check for errors, i.e. whether the entry we got, or its diff object, is `NULL`
+		//	however, I don't actually know how I would catch/handle it - I think I'll just ignore it for now
+		if (entry == NULL || entry->index_to_workdir == NULL) continue;
+
+		const git_status_t status = entry->status;
+
+		/* ——————————————————————————————————————————————————————— */
+
+		if (repo_info->count + 1 > alloc) {
+			repo_info->files = erealloc(repo_info->files, MULT_BY_1_5(alloc) * sizeof(GitInfo));
+		}
+
+		repo_info->files[repo_info->count++] = (GitInfo){
+			.rp_hash = repo_info->hash,
+			.status = status,
+			.repo = repo_info,
+			.path = estrdup(entry->index_to_workdir->old_file.path),
+		};
+	}
 
 	/* —— */ LABEL_RETURN: /* ——————————————————————————————————————————————————————————————————————— */
 
@@ -126,7 +180,6 @@ GitInfo *getGitInfo(const FileStat *const pFS) {
 	//		I'd rather be safe than sorry
 	if (commit		!= NULL) git_object_free(commit);
 	if (head		!= NULL) git_reference_free(head);
-	if (repo		!= NULL) git_repository_free(repo);
 	if (status_list	!= NULL) git_status_list_free(status_list);
 
 	/* ——————————————————————————————————————————————————————— */
@@ -154,10 +207,12 @@ static inline const char *getRepoDirname(const char *const repo_root) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_git_info(const FileStat *const pFS) {
-	/*TEMP:*/ (void)pFS;
-	/*TEMP:*/ printf("%s%s", getcol(RESET_ALL), "g");
+	if (pFS->f == NULL || pFS->f->git == NULL) {
+		putspaces(getLen(FI_git_info));
+		return;
+	}
+
+	printf("%s%*d", getcol(RESET_ALL), getLen(FI_git_info), pFS->f->git->status);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-// spell:ignoreRegexp /\bGIT_E\B|commit|(?<=\n\s*#.+"-)W/g
