@@ -19,10 +19,12 @@
 
 void  e__free(void *ptr DEBUG_ARGS);
 void* e__malloc(size_t size DEBUG_ARGS);
+void* e__strdup(const char *str DEBUG_ARGS);
 void* e__calloc(size_t count, size_t size DEBUG_ARGS);
 void* e__realloc(void *ptr, size_t size DEBUG_ARGS);
 
 #define efree(ptr)				e__free((ptr) DEBUG_PARAMS)
+#define estrdup(str)			e__strdup((str) DEBUG_PARAMS)
 #define emalloc(size)			e__malloc((size) DEBUG_PARAMS)
 #define ecalloc(num, size)		e__calloc((num), (size) DEBUG_PARAMS)
 #define erealloc(ptr, size)		e__realloc((ptr), (size) DEBUG_PARAMS)

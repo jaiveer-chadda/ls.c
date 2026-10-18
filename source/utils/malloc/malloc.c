@@ -120,6 +120,11 @@ void* e__malloc(size_t size DEBUG_ARGS) {
 	return exitIfNull(log_alloc(malloc(size) DEBUG_PASSED));
 }
 
+void* e__strdup(const char *const str DEBUG_ARGS) {
+	const size_t size = strlen(str) + 1;
+	return memcpy(e__malloc(size DEBUG_PASSED), str, size);
+}
+
 void* e__calloc(size_t count, size_t size DEBUG_ARGS) {
 	return exitIfNull(log_alloc(calloc(count, size) DEBUG_PASSED));
 }
