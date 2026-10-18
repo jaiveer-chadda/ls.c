@@ -64,68 +64,100 @@ static inline uint8_t escapeCharacter(char *esc, const char chr) {
 	return 1;	// length = 1
 }
 
+/* —— getHOME() ———————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline const char *getHOME(size_t *const size) {
+	static const char *HOME = NULL;
+	static size_t home_size = 0;
+
+	// if we don't have a value for `$HOME` stored in the cache...
+	if (HOME == NULL) {
+		HOME = getenv("HOME");
+		if (HOME != NULL) home_size = strlen(HOME);
+	}
+
+	if (size != NULL) *size = home_size;
+	return HOME;
+}
+
 /* —— printEscdName() —————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define output_size ((size_t)(out_ptr - output))
-
-#define CHECK_MEM_ALLOC(max_increase) do {											\
-	if (output_size + (max_increase) + 1 <= alloc_size) break;						\
-	/* make sure we'll have enough allocated memory */								\
-	while (alloc_size < output_size + (max_increase) + 1) MULT_BY_1_5(alloc_size);	\
-	/* note down how much memory we've written to `output` already */				\
-	const size_t size = output_size;												\
-	output = erealloc(output, alloc_size);											\
-	/* move the output pointer to the new location of `output` */					\
-	out_ptr = output + size;														\
-} while (0)
+#define CHECK_HOME_MATCH()															\
+	/* if there's still a chance that we can match `$HOME` */						\
+	if (match_home) {																\
+		/* increment the pointer. if it doesn't match input, then we've failed */	\
+		if (*home_ptr++ != *inp_ptr) match_home = false;							\
+		/* if, however, the pointer is at '\0', then we know we've found `$HOME`*/	\
+		if (*home_ptr == '\0') {													\
+			/* if so, clear the string up to the beginning of the padding/colour */	\
+			sb_delete(path_str, sb_length(path_str) - pre_path_len);				\
+			/* add `~`, ignore the current char, and move on to the next char */	\
+			sb_addchr(path_str, '~');												\
+			inp_ptr++;																\
+			continue;																\
+		}																			\
+	}
 
 /* ———————————————————————————————————————————————————————————— */
 
 void printEscdName(const char *const name, const Colour colour, const bool do_padding) {
 
-	/* —— Colour Setup ———————————————————————————————————————— */
+	/* —— Setup ——————————————————————————————————————————————— */
 
-	// if the file's colour is different to the active colour, and the first char in the name isn't escaped,
-	//	then print some colour before the name
-	const bool do_init_col = !areEqual(colour, getActive()) && !DO_ANY_ESC(name[0]);
 	const Colour esc_colour = has_bg(colour) ? ESC_CHAR_BG_COLOUR : ESC_CHAR_FG_COLOUR;
-
-	/* —— Alloc & Ouput Setup ————————————————————————————————— */
-
-	/// @todo refactor this to use a `StringBuilder`
-	/// @todo while iterating through the string, keep checking if it matches `$HOME`
-	///			if it does, then replace `/Users/name` with `~`
-
 	StringBuilder path_str = sb_init(INIT_ALLOC_LEN);
 
 	/* —— Add Padding & Colour ———————————————————————————————— */
 
-		// if we add the padding to the output buffer, we can use `fputs`, rather than `printf` when printing
-	if (do_padding) sb_addlit(path_str, PRE_NAME_PAD);
+	/** The length we should revert back to if we find & replace `$HOME`. */
+	size_t pre_path_len = 0;
 
-		// add the file's colour to the start of the output sequence
-	if (do_init_col) sb_addcol(path_str, colour);
+	// if we add the padding to the output buffer, we can use `fputs`, rather than `printf` when printing
+	if (do_padding) pre_path_len += sb_addlit(path_str, PRE_NAME_PAD);
+
+	// add the file's colour to the start of the output sequence
+	if (!DO_ANY_ESC(name[0])) pre_path_len += sb_addcol(path_str, colour);
 
 	/* —— Escape & Add Each Char —————————————————————————————— */
+
+	const char *const HOME = getHOME(NULL);
+	bool match_home = true; /** Whether or not we're still trying to match `$HOME`. */
 
 	char esc_buf[4] = {0}; // 4 is the maximum length of a character's escape sequence (`\x7F`)
 	uint8_t	esc_len = 0;
 
 	const char *inp_ptr = name;
+	const char *home_ptr = HOME;
+
+	/* ———————————————————————————————————————————————————————— */
+
 	while (*inp_ptr != '\0') {
+
+		// if the current char needs to be escaped
 		if (DO_ANY_ESC(*inp_ptr)) {
+			// add the escape sequence colour
 			sb_addcol(path_str, esc_colour);
 
+			// iterate through all subsequent escpae characters, printing them one by one
+			//	printing them in sequence like this, prevents us from having to print a new
+			//	colour for each character every time
 			while (DO_ANY_ESC(*inp_ptr)) {
+				CHECK_HOME_MATCH();
+
 				esc_len = escapeCharacter(esc_buf, *inp_ptr++);
 				sb_addstr(path_str, esc_buf, esc_len);
 			}
 
-		} else {
+		} else { // if the current char _doesn't_ need to be escaped
+			// if we're not on the first char, add the file's colour to the output
 			if (inp_ptr != name) sb_addcol(path_str, colour);
-			while (*inp_ptr != '\0' && !DO_ANY_ESC(*inp_ptr)) sb_addchr(path_str, *inp_ptr++);
+
+			while (*inp_ptr != '\0' && !DO_ANY_ESC(*inp_ptr)) {
+				CHECK_HOME_MATCH();
+				sb_addchr(path_str, *inp_ptr++);
 			}
 		}
+	}
 
 	/* —— Print, Free, & Cleanup —————————————————————————————— */
 

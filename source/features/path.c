@@ -314,8 +314,17 @@ const char *getBasename(const char *const path) {
 	((!S_ISDIR((p_fs)->mode)) && ((p_fs)->s != NULL) && ((p_fs)->s->st_nlink > 1))
 
 static inline const char* choosePath(const FileStat *const pFS) {
-	if (pFS->abspath != NULL && DO_ABS ()) return pFS->abspath;
-	if (pFS->path != NULL && (DO_PATH() || pFS->parent == NULL)) return pFS->path;
+	if (pFS->abspath && (
+		DO_ABS() || (
+			pFS->name_len == 1 &&
+			pFS->name[0] == '.'
+		)
+	)) return pFS->abspath;
+
+	if (pFS->path && (DO_PATH() || pFS->parent == NULL)) {
+		return pFS->path;
+	}
+
 	return pFS->name;
 }
 
