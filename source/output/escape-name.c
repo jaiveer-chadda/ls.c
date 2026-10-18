@@ -10,7 +10,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/// How much memory we should allocate for each name, if we don't know the length of the original name
+/// How much memory we should allocate for each name, if we don't know the length of the original name.
 #define INIT_ALLOC_LEN 16
 
 /* ———————————————————————————————————————————————————————————— */
@@ -82,13 +82,15 @@ static inline const char *getHOME(size_t *const size) {
 
 /* —— printEscdName() —————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// note: I can't use `do/while` for this, since it has a `continue` statement in it
 #define CHECK_HOME_MATCH()															\
 	/* if there's still a chance that we can match `$HOME` */						\
-	if (match_home) {																\
+	if (ABBR_PATHS() && match_home) {												\
 		/* increment the pointer. if it doesn't match input, then we've failed */	\
 		if (*home_ptr++ != *inp_ptr) match_home = false;							\
 		/* if, however, the pointer is at '\0', then we know we've found `$HOME`*/	\
-		if (*home_ptr == '\0') {													\
+		/*	however, only match `$HOME` if it doesn't exactly match `name` */		\
+		if (*home_ptr == '\0' && *inp_ptr != '\0' && *(inp_ptr + 1) != '\0') {		\
 			/* if so, clear the string up to the beginning of the padding/colour */	\
 			sb_delete(path_str, sb_length(path_str) - pre_path_len);				\
 			/* add `~`, ignore the current char, and move on to the next char */	\
@@ -120,7 +122,8 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 
 	/* —— Escape & Add Each Char —————————————————————————————— */
 
-	const char *const HOME = getHOME(NULL);
+	// only get `$HOME` if we're actually going to use it
+	const char *const HOME = ABBR_PATHS() ? getHOME(NULL) : "";
 	bool match_home = true; /** Whether or not we're still trying to match `$HOME`. */
 
 	char esc_buf[4] = {0}; // 4 is the maximum length of a character's escape sequence (`\x7F`)

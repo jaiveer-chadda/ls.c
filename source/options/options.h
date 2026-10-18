@@ -26,7 +26,7 @@ I just assigned flags to them cos there was one available - not cos I want it to
 -,							-%
 -:							-+
 -.	DO_DIM_HIDDEN			-=
--@							-~
+-@							-~	ABBR_PATHS
 
 -A	DO_DOTFILES				-a
 -B	DO_ABS					-b
@@ -70,6 +70,7 @@ I just assigned flags to them cos there was one available - not cos I want it to
 	X(DO_PATH			, false	, false	, 'p',	{ "path"			, "full-path"			})	\
 	X(DO_CLEAR			, false	, false	, 'c',	{ "clear"									})	\
 	X(DO_HEADER			, false	, false	, 'H',	{ "header"			, "headers"				})	\
+	X(ABBR_PATHS		, true	, false	, '~',	{ "abbr"			, "abbr-paths"			})	\
 	X(DO_DOTFILES		, true	, false	, 'A',	{ "almost-all"								})	\
 	X(DO_DIVIDERS		, true	, false	, '_',	{ "divider"			, "dividers"			})	\
 	X(DO_MOUNTDEV		, true	, false	, 'M',	{ "mount"			, "mounts"				})	\
