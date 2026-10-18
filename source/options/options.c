@@ -12,7 +12,7 @@
 #include "model/global.h"
 
 #ifndef t
-#	define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug that my error checker has */
+#	define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug with my error checker */
 #	define f 0
 #endif
 
@@ -21,10 +21,11 @@
 // `U_DO_COLOUR` doesn't need a default - it's the only option that'll be set no matter what
 static bool U_DO_COLOUR, U_DO_TINY_FLAGS = false, U_DO_SHORT_FLAGS = true;
 static uint8_t U_DEPTH = 1;
+static TimeType U_SB_TIME = M_TIME;
 static SortByField U_SORT_BY = SB_DEFAULT;
 
 #define X(name, ...) [(BO_ ## name)] = (BinaryOption){ __VA_ARGS__ },
-BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
+	BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #undef X
 
 /* —— Generic Macros ——————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -55,14 +56,19 @@ BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 
 #define VALUE_OF(option) (BINARY_OPTS[(BO_ ## option)].value)
 
-#define CHECK_TIME_SETS()								\
+/* —————————————————————————————— */
+
+#define SET_TIME_OPT(ttype) times[(ttype)] = true; U_SB_TIME = (ttype);
+
+#define CHECK_TIME_SETS() do {							\
 	switch (opt_i) {									\
-		case BO_do_atime: times[A_TIME] = true; break;	\
-		case BO_do_mtime: times[M_TIME] = true; break;	\
-		case BO_do_ctime: times[C_TIME] = true; break;	\
-		case BO_do_btime: times[B_TIME] = true; break;	\
+		case BO_do_atime: SET_TIME_OPT(A_TIME); break;	\
+		case BO_do_mtime: SET_TIME_OPT(M_TIME); break;	\
+		case BO_do_ctime: SET_TIME_OPT(C_TIME); break;	\
+		case BO_do_btime: SET_TIME_OPT(B_TIME); break;	\
 		default: break;									\
-	}
+	}													\
+} while (0)
 
 #define CHECK_LONG_FLAG(prefix, bool_val) do {							\
 	snprintf(flag_buf, sizeof(CLIFlag_t), (prefix "%s"), base_flag);	\
@@ -93,6 +99,12 @@ BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 	"invalid argument `%s` for `%s`. "				\
 	"argument must be an integer between 0 and %d.",\
 	optarg, opt, RECURSION_LIMIT					\
+)
+
+#define ERR_TIME_ARG() ERR_BAD_ARG(								\
+	"\n - name (default)"	  "\n - (a|m|c|b)?time" "\n - size"	\
+	"\n - uid"	 "\n - gid"	  "\n - inode"	"\n - devno"		\
+	"\n - links" "\n - flags" "\n - mode"	"\n - none"			\
 )
 
 /* —— all Opts/Fields On() ——————————————————————————————————————————— */
@@ -248,7 +260,6 @@ int setOptions(const int argc, char *const *const argv) {
 			if		(OPTARG_IS("none" )						 ) U_SORT_BY = SB_NONE	;
 			else if	(OPTARG_IS("name" )						 ) U_SORT_BY = SB_NAME	;
 			else if	(OPTARG_IS("size" )						 ) U_SORT_BY = SB_SIZE	;
-			else if	(OPTARG_IS("time" )						 ) U_SORT_BY = SB_TIME	;
 			else if	(OPTARG_IS("inode")	|| OPTARG_IS("inum" )) U_SORT_BY = SB_INODE	;
 			else if	(OPTARG_IS("devno")						 ) U_SORT_BY = SB_DEVNO	;
 			else if	(OPTARG_IS("uid"  )	|| OPTARG_IS("user" )) U_SORT_BY = SB_UID	;
@@ -257,13 +268,24 @@ int setOptions(const int argc, char *const *const argv) {
 			else if	(OPTARG_IS("flags")						 ) U_SORT_BY = SB_FLAGS	;
 			else if	(OPTARG_IS("type" )						 ) U_SORT_BY = SB_TYPE	;
 			else if	(OPTARG_IS("mode" ) || OPTARG_IS("perms")) U_SORT_BY = SB_MODE	;
+			else if	(OPTARG_IS("time" )						 ) U_SORT_BY = SB_TIME	;
 
-			else if	(HAS_ARG) ERR_BAD_ARG(
-				"\n - name (default)"	  "\n - size"  "\n - time"
-				"\n - uid"   "\n - gid"   "\n - inode" "\n - devno"
-				"\n - links" "\n - flags" "\n - mode"  "\n - none"
-			);
-			else /* if (!HAS_ARG) */ ERR_TAKES_ARG();
+			//	 if  (	the arg is valid & its len >= 1	 ) && ( arg is [a single char] + "time" )
+			else if ((optarg != NULL && optarg[0] != '\0') && (strcmp(optarg + 1, "time") == 0) ) {
+				U_SORT_BY = SB_TIME;
+
+				// now we know that `optarg =~ /.time/`, determine which sort to use based on its first letter
+				switch (optarg[0]) {
+					case 'a': U_SB_TIME = A_TIME; break;
+					case 'm': U_SB_TIME = M_TIME; break;
+					case 'c': U_SB_TIME = C_TIME; break;
+					case 'b': U_SB_TIME = B_TIME; break;
+					default	: ERR_TIME_ARG(); // else optarg is something like `xtime`
+				}
+			}
+
+			else if	(HAS_ARG) ERR_TIME_ARG();
+			else			  ERR_TAKES_ARG();
 
 			CONSUME_ARG;
 			continue;
@@ -398,6 +420,7 @@ int setOptions(const int argc, char *const *const argv) {
 /* —— Define Getter Functions —————————————————————————————————————————————————————————————————————————————————————— */
 
 SortByField SORT_BY	(void) { return U_SORT_BY		; }
+TimeType SORT_TIME	(void) { return U_SB_TIME		; }
 uint8_t O__DEPTH	(void) { return U_DEPTH			; }
 bool DO_COLOUR		(void) { return U_DO_COLOUR		; }
 bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS	; }

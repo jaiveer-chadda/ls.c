@@ -169,13 +169,30 @@ QSORT_PROTOTYPE(inode) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+QSORT_PROTOTYPE(time) {
+	CHECK_VALID_STAT();
+	CHECK_DIRS();
+
+	int8_t result;
+
+	switch (SORT_TIME()) {
+		case A_TIME: result = GET_ORDERING(s->st_atime); break;
+		case B_TIME: result = GET_ORDERING(s->st_btime); break;
+		case C_TIME: result = GET_ORDERING(s->st_ctime); break;
+		default	   : result = GET_ORDERING(s->st_mtime); break;
+	}
+
+	return result ? result : compare_names(depth, file_1, file_2);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 DEFINE_COMPARE_FUNCTION(size )
 DEFINE_COMPARE_FUNCTION(dev	 )
 DEFINE_COMPARE_FUNCTION(uid	 )
 DEFINE_COMPARE_FUNCTION(gid	 )
 DEFINE_COMPARE_FUNCTION(nlink)
 DEFINE_COMPARE_FUNCTION(flags)
-DEFINE_COMPARE_FUNCTION(mtime) /** @todo make this work for other times too */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -219,7 +236,7 @@ void sortFiles(const uint8_t depth, void *const arr, const int arr_count) {
 		case SB_GID		: SORT_FILES_BY(gid	 ); break;
 		case SB_NLINK	: SORT_FILES_BY(nlink); break;
 		case SB_FLAGS	: SORT_FILES_BY(flags); break;
-		case SB_TIME	: SORT_FILES_BY(mtime); break; // note: not fully implemented
+		case SB_TIME	: SORT_FILES_BY(time ); break;
 
 		case SB_NONE	: return; // if we're not sorting this file, then we're not sorting any of its children either
 	}

@@ -125,10 +125,15 @@ bool DO_COLOUR		(void);	// auto		│ NSF	│ "color" "colour"	│ "", "always", 
 bool DO_TINY_FLAGS	(void);
 bool DO_SHORT_FLAGS	(void);
 
+#define MAX_DEPTH O__DEPTH()
+
 // note: the long options `--all` and `--all-fields` are also in use,
 //		  as well as all previous long options, with `--do-` and `--no-` prefixed to them
 
-#define MAX_DEPTH O__DEPTH()
+/* ————————————————————————————————————————————— */
+
+/// The time used for sorting, if the `--sort-by=time` option is given
+TimeType SORT_TIME(void);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
