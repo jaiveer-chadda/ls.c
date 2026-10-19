@@ -264,8 +264,13 @@ void getPureAbsPath(
 
 const char *getAbsPath(FileStat *const pFS) {
 
+	// if we've already found the path, then just return it
 	if (pFS->abspath != NULL) return pFS->abspath;
 
+	/* ——————————————————————————————————————————————— */
+
+	// base case: if this is the root file (i.e. a file that was passed in from the command line),
+	//	then it doesn't have any parent - get the absolute path from scratch
 	if (pFS->parent == NULL) {
 		getPureAbsPath(&pFS->abspath, &pFS->abs_len, pFS->path, getPathLen(pFS));
 		return pFS->abspath;
@@ -273,13 +278,18 @@ const char *getAbsPath(FileStat *const pFS) {
 
 	/* ——————————————————————————————————————————————— */
 
+	// recursively get the parent's path, if need be
 	const char *const parent_path = ( pFS->parent->abspath = getAbsPath(pFS->parent) );
 	const namlen_t parent_len = pFS->parent->abs_len;
 
+	//					parent_len + / + pFS->name_len + \0
 	namlen_t path_len = parent_len + 1 + pFS->name_len + 1;
+
+	// the path shouldn't be larger than what can be held in `namlen_t`
 	assert(path_len <= INT16_MAX);
 
-	char *const path = memcpy(emalloc(path_len), parent_path, parent_len); /* [alloc:abs-path] - see below */
+	// reconstruct the absolute path from the parent's path and this file's name
+	char *const path = memcpy(emalloc(path_len), parent_path, parent_len); /* [alloc:abs-path] - see getPureAbsPath */
 	path[parent_len] = '/';
 	memcpy(path + parent_len + 1, pFS->name, pFS->name_len);
 

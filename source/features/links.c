@@ -258,6 +258,18 @@ TargetInfo *getLink(FileStat *const pFS) {
 	tg_info->suffix = getTypeSuffix(tg_stat.st_mode);
 	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_info->mount, &tg_stat);
 
+	/* ———————————————————————————————————————————————————————— */
+
+	// if this link is an apple alias, then we have to update its absolute path
+	//	otherwise we won't be able to recurse into it if we need to
+	/// @todo make sure this doesn't interfere with any other processing that uses a file's `abspath`
+	if (is_apple) {
+		efree((void*)pFS->abspath); // free the old path so we don't have a memory leak
+		getPureAbsPath(&pFS->abspath, &pFS->abs_len, tg_info->path, strlen(tg_info->path));
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
 	return tg_info;
 }
 

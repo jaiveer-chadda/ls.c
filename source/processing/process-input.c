@@ -86,9 +86,14 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 
 	/* —— Open Dir & Error Check —————————————————————————————————— */
 
+	// if the file is a link, open the link's target instead of the file - symlinks will work fine, but it's
+	//	especially important to do for apple aliases, since they won't automatically be interpreted as directories
+	const bool do_open_alias_link = ((S_ISLNK(pFS_dir->mode) || S_ISREG(pFS_dir->mode)) && isFSDir(pFS_dir));
+	const char *const dir_to_open = do_open_alias_link ? pFS_dir->f->target->path : pFS_dir->abspath;
+
 	// firstly, open the directory and get a pointer to a `DIR` object
 	//	note: we can't get any info from `DIR`, it's use is to be passed into other functions
-	DIR *const p_dir = opendir(pFS_dir->abspath);
+	DIR *const p_dir = opendir(dir_to_open);
 
 	if (p_dir == NULL) { // if we can't open the directory...
 		// set the number of children to -1, so we know the difference between having 0 children,
