@@ -83,6 +83,16 @@ private const char *getRelativePath(const char *const file, const char *root) {
 #define RETURN(obj) do { git_info_obj = (obj); goto LABEL_RETURN; } while (0)
 
 public const GitInfo *getGitInfo(const FileStat *const pFS) {
+
+	// since this function takes so long, if `pFS` is a non-dir, whose parent isn't in a git repo, it can be skipped
+	if (!S_ISDIR(pFS->mode)			&&
+		pFS->parent			!= NULL	&&
+		pFS->parent->f		!= NULL	&&
+		pFS->parent->f->git	== NULL
+	) return NULL;
+
+	/* ——————————————————————————————————————————————————————— */
+
 	// initialise `libgit2`'s global state
 	//	note: this state will be released by `main`, at the end of the program
 	initGitState();
