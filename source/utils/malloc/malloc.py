@@ -12,14 +12,21 @@ from typing    import Callable, Final, NoReturn, Optional, TextIO
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
-error: Final[Callable[..., None]] = partial(print, file=stderr)
+ARROW_LEN  : Final[int] = len(" --> ")
+HEX_PTR_LEN: Final[int] = 12
 
+TO_HEX     : Final[Callable[[str], int]] = lambda s: int(s, 16)
+RJUST_PTR  : Final[Callable[[str], str]] = lambda s: s.rjust(HEX_PTR_LEN)
+
+error      : Final[Callable[... , None]] = partial(print, file=stderr)
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
 # 128 is the offset at which signals start to be defined
 SIGNAL: Final[int] = 128
 
-def catch_signal(signum: int | Signals, _f: Optional[FrameType]) -> NoReturn:
+def catch_signal(signum: int | Signals, __: Optional[FrameType]) -> NoReturn:
     match signum:
         case Signals.SIGTERM: pass
         case Signals.SIGINFO: print_report()
@@ -55,24 +62,24 @@ ptr_dict: PtrDict = {}
 def print_report() -> None:
     if len(ptr_dict) == 0: return
 
-    for _, (is_freed, old_ptrs, old_info, _) in ptr_dict.items():
+    for is_freed, old_ptrs, old_info, _ in ptr_dict.values():
         if is_freed: continue
         assert len(old_ptrs) == len(old_info)
 
         for o_ptr, o_info in zip(old_ptrs, old_info):
-            print(hex(o_ptr)[2:].rjust(12), o_info, sep='\t')
+            print(RJUST_PTR(hex(o_ptr)[2:]), o_info, sep='\t')
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
 def proc_realloc(old: Ptr, new: Ptr, info: info) -> None:
-    if new in ptr_dict: error("new in ptr_dict"); return
+    if new in ptr_dict: error("realloc assigned to a ptr already in `ptr_dict`"); return
 
     if old == NULL:
         proc_alloc(new, info + " [initialised from NULL pointer]")
         return
 
-    if old not in ptr_dict    : error("old not in ptr_dict")    ; return
-    if ptr_dict[old][IS_FREED]: error("ptr_dict[old][IS_FREED]"); return
+    if old not in ptr_dict    : error("realloc reassigned from an untracked ptr"); return
+    if ptr_dict[old][IS_FREED]: error("realloc trying to reassign a freed ptr"  ); return
 
     # I have to reassign the whole thing here,
     #  cos there's no other way t change the elems of a tuple otherwise
@@ -83,28 +90,23 @@ def proc_realloc(old: Ptr, new: Ptr, info: info) -> None:
 # —————————————————————————————————————————————————————— #
 
 def proc_alloc(ptr: Ptr, info: info) -> None:
-    if ptr in ptr_dict: error("ptr in ptr_dict"); return
+    if ptr in ptr_dict: error("malloc returned a ptr which was already being used"); return
     ptr_dict[ptr] = ( False, [ptr], [info], None )
 
 # —————————————————————————————————————————————————————— #
 
 def proc_free(ptr: Ptr, info: info) -> None:
-    if ptr == 0: error("ptr == 0"); return
-    if ptr not in ptr_dict: error("ptr not in ptr_dict"); return
+    if ptr == 0           : error("trying to free a null pointer (should have been caught)"); return
+    if ptr not in ptr_dict: error("trying to free a pointer which wasn't `malloc`ed"       ); return
 
     ptr_dict[ptr] = ( True, ptr_dict[ptr][OLD_PTRS], ptr_dict[ptr][OLD_INFO], info )
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
-TO_HEX: Final[Callable[[str], int]] = lambda str_: int(str_, 16)
-
-ARROW_LEN  : Final[int] = len(" --> ")
-HEX_PTR_LEN: Final[int] = 12
-
-FREED_SLICE: Final[slice] = slice(0, HEX_PTR_LEN)
-ARROW_SLICE: Final[slice] = slice(HEX_PTR_LEN, HEX_PTR_LEN + ARROW_LEN)
-ALLOC_SLICE: Final[slice] = slice(HEX_PTR_LEN + ARROW_LEN, (HEX_PTR_LEN * 2) + ARROW_LEN)
-EXTRA_SLICE: Final[slice] = slice((HEX_PTR_LEN * 2) + ARROW_LEN, -1)
+FREED_SLICE: Final[slice] = slice( 0, HEX_PTR_LEN                                                             )
+ARROW_SLICE: Final[slice] = slice(    HEX_PTR_LEN, HEX_PTR_LEN + ARROW_LEN                                    )
+ALLOC_SLICE: Final[slice] = slice(                 HEX_PTR_LEN + ARROW_LEN, (HEX_PTR_LEN * 2) + ARROW_LEN     )
+EXTRA_SLICE: Final[slice] = slice(                                          (HEX_PTR_LEN * 2) + ARROW_LEN, -1 )
 
 # —————————————————————————————————————————————————————— #
 
@@ -116,7 +118,7 @@ def process_line(line: str, output: TextIO) -> None:
 
     assert arrow in ( '', "-->" )
 
-    print(f"{freed.rjust(HEX_PTR_LEN)} | {alloc.rjust(HEX_PTR_LEN)} | {extra}", file=output)
+    print(f"{RJUST_PTR(freed)} | {RJUST_PTR(alloc)} | {extra}", file=output)
 
     if freed and alloc: proc_realloc(TO_HEX(freed), TO_HEX(alloc), extra)
     elif         alloc:   proc_alloc(               TO_HEX(alloc), extra)
@@ -124,13 +126,13 @@ def process_line(line: str, output: TextIO) -> None:
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
-WRITE_TO   : Final[str]  = "null" # "ttys001" # "stdout"
-OUTPUT_FILE: Final[Path] = Path("/dev") / WRITE_TO
+OUTPUT_FILE: Final[Path] = Path("/dev/null") # "ttys001" # "stdout"
 
-def process_pipe(input: TextIO):
+def process_pipe(input: TextIO) -> NoReturn:
     with open(OUTPUT_FILE, 'w') as output:
         while True:
-            for line in input: process_line(line, output)
+            for line in input:
+                process_line(line, output)
 
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 # ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
@@ -140,9 +142,7 @@ def main() -> int:
         error(f"usage: {argv[0]} <path-to-fifo>")
         return 1
 
-    log_pipe: Final[Path] = Path(argv[1])
-
-    with open(log_pipe, 'r') as pipe:
+    with open(argv[1], 'r') as pipe:
         process_pipe(pipe)
 
     return 0
