@@ -48,7 +48,7 @@
 #define NAME_LEN 8
 #define TIME_LEN (int)(sizeof("19:47:42") - 1)
 #define FUNC_LEN 12
-#define FILE_LEN 24
+#define FILE_LEN 26
 #define LNNO_LEN 3
 
 #define TOTAL_LEN (int)(\
