@@ -30,6 +30,9 @@ static inline int getRepoInfo(
 static inline int getRepo(
 	git_repository **const repo, const char **const repo_root, hash_t *repo_hash, const char *const path
 );
+static inline const GitInfo *getFileInfo(
+	const FileStat *const pFS, const GitRepoInfo *const repo, const char *const repo_root
+);
 
 /* ——————————————————————————————————————————————————————— */
 

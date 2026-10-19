@@ -17,8 +17,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define RETURN goto LABEL_RETURN
-
 static GitRepoInfo *all_repos = NULL;
 static size_t repo_count = 0, repo_alloc = 0;
 
@@ -52,6 +50,8 @@ void freeGitState(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define RETURN(obj) do { git_info_obj = (obj); goto LABEL_RETURN; } while (0)
+
 const GitInfo *getGitInfo(const FileStat *const pFS) {
 	printf("file      : %s", pFS->abspath);
 
@@ -77,7 +77,7 @@ const GitInfo *getGitInfo(const FileStat *const pFS) {
 	hash_t		repo_hash; /** The unique ID of the repo, based on the path to the repo's `.git` directory. */
 
 	// fill out the repo, branch, and commit info, returning `NULL` if one of them can't be found
-	if (getRepo(&repo, &repo_root, &repo_hash, pFS->path) != 0) RETURN;
+	if (getRepo(&repo, &repo_root, &repo_hash, pFS->path) != 0) RETURN(NULL);
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -85,39 +85,12 @@ const GitInfo *getGitInfo(const FileStat *const pFS) {
 	/// @todo now check if the repo already exists
 	///			based on that, branch off to either creating a new repo, or assigning one to a file
 
-	GitRepoInfo *current_repo = NULL;
-
 	for (size_t i = 0; i < repo_count; i++) {
+		// repo has already been found
 		if (all_repos[i].hash == repo_hash) {
-			current_repo = &all_repos[i];
-			break;
+			/*TEMP:*/ puts(" \33[33m( repo exists )\33[m");
+			RETURN(getFileInfo(pFS, &all_repos[i], repo_root));
 		}
-	}
-
-	/* ——————————————————————————————————————————————————————— */
-
-	if (current_repo != NULL) { // repo already exists!
-		puts(" \33[33m( repo exists )\33[m");
-		printf("from repo : %s\n", current_repo->root);
-
-		if (strcmp(current_repo->root, pFS->abspath) == 0 ||
-			strcmp(			repo_root, pFS->abspath) == 0
-		) {
-			// file is root of repo
-		}
-
-		for (uint32_t i = 0; i < current_repo->count; i++) {
-			const GitInfo *const file = &current_repo->files[i];
-
-			if (strends(pFS->abspath, file->path)) {
-				git_info_obj = file;
-				setLen(FI_git_info, /*TEMP:*/10);
-
-				RETURN;
-			}
-		}
-
-		RETURN;
 	}
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -129,8 +102,12 @@ const GitInfo *getGitInfo(const FileStat *const pFS) {
 	const char *branch_name;
 	size_t status_count;
 
-	if (getRepoInfo(&head, &commit, &branch_name, &status_list, &status_count, repo) != 0) RETURN;
-	/*TEMP:*/ printf("\nfrom repo : %s\non branch : %s\nrepo hash : %llu\n", repo_root, branch_name, repo_hash);
+	if (getRepoInfo(&head, &commit, &branch_name, &status_list, &status_count, repo) != 0) RETURN(NULL);
+
+	/*TEMP:*/ printf(
+		"\nfrom repo : %s (-.git)\non branch : %s\nrepo hash : %llu\n",
+		repo_root, branch_name, repo_hash
+	);
 
 	/* ——————————————————————————————————————————————————————— */
 
@@ -173,6 +150,11 @@ const GitInfo *getGitInfo(const FileStat *const pFS) {
 		};
 	}
 
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
+	assert(repo_info == &all_repos[repo_count - 1]);
+	RETURN(getFileInfo(pFS, repo_info, repo_root));
+
 	/* —— */ LABEL_RETURN: /* ——————————————————————————————————————————————————————————————————————— */
 
 	// free all allocations
@@ -186,6 +168,39 @@ const GitInfo *getGitInfo(const FileStat *const pFS) {
 
 	/*TEMP:*/ dline();
 	return git_info_obj;
+}
+
+#undef RETURN
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline const GitInfo *getFileInfo(
+	const FileStat *const pFS, const GitRepoInfo *const repo, const char *const repo_root
+) {
+	printf("\33[32mfile from \33[m: %s\n", repo->root);
+
+	// if abspath == /path/to/repo
+	// OR abspath == /path/to/repo/.git
+	if (strcmp(repo->root, pFS->abspath) == 0 ||
+		strcmp(repo_root , pFS->abspath) == 0
+	) {
+		// file is root of repo
+		puts("\33[35m-- repo root --\33[m");
+
+		/// @todo figure out what to return from here
+		return NULL;
+	}
+
+	for (uint32_t i = 0; i < repo->count; i++) {
+		const GitInfo *const file = &repo->files[i];
+
+		if (strends(pFS->abspath, file->path)) {
+			setLen(FI_git_info, /*TEMP:*/10);
+			return file;
+		}
+	}
+
+	return NULL;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -216,3 +231,5 @@ void print_git_info(const FileStat *const pFS) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignoreRegexp /\\(?:e|0?33)\[[0-9;]*m\B/g
