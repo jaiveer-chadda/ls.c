@@ -21,28 +21,9 @@
 
 /* ——————————————————————————————————————————————————— */
 
-/**
- * @enum TimeType
- * @brief A lookup table to determine which time type is being referenced.
- *
- * Contains 4 types and a count:
- * - `A_TIME`(0): Access		time: The time the file's contents were last accessed.
- * - `M_TIME`(1): Modification	time: The time the file's contents were last modified.
- * - `C_TIME`(2): Change		time: The time the file's inode information was last changed.
- * - `B_TIME`(3): Birth			time: The time the file was originally created.
- * - `TIME_COUNT`(4): The number of types in the enum.
- */
-typedef enum TimeType {
-	A_TIME,	 /** [A]ccess time		 - Time a file's contents were last accessed. */
-	M_TIME,	 /** [M]odification time - Time the contents of a file were last modified. */
-	C_TIME,	 /** [C]reation time	 - Time the inode information of a file was last changed. */
-	B_TIME,	 /** [B]irth time		 - Time the file was created (birthed). */
-	TT_COUNT
-} TimeType; // spell:ignoreRegexp /(?<=\[[A-Z]\])\w+/g
-
-/* ——————————————————————————————————————————————————— */
-
 typedef struct GitInfo			GitInfo;
+typedef struct GitRepoInfo		GitRepoInfo;
+
 /**
  * @struct TimeInfo
  * @brief Information about a file's time.
@@ -129,6 +110,31 @@ typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; /** `char flagstr[(MAX_
 
 /** `char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")]` = `20 + 6` = 26 */
 typedef char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")];
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+typedef enum GitBranchStatus { GBR_UPTODATE, GBR_BEHIND, GBR_AHEAD } GitBranchStatus;
+
+/* ——————————————————————————————————————————————————— */
+
+/**
+ * @enum TimeType
+ * @brief A lookup table to determine which time type is being referenced.
+ *
+ * Contains 4 types and a count:
+ * - `A_TIME`(0): Access		time: The time the file's contents were last accessed.
+ * - `M_TIME`(1): Modification	time: The time the file's contents were last modified.
+ * - `C_TIME`(2): Change		time: The time the file's inode information was last changed.
+ * - `B_TIME`(3): Birth			time: The time the file was originally created.
+ * - `TIME_COUNT`(4): The number of types in the enum.
+ */
+typedef enum TimeType {
+	A_TIME,	 /** [A]ccess time		 - Time a file's contents were last accessed. */
+	M_TIME,	 /** [M]odification time - Time the contents of a file were last modified. */
+	C_TIME,	 /** [C]reation time	 - Time the inode information of a file was last changed. */
+	B_TIME,	 /** [B]irth time		 - Time the file was created (birthed). */
+	TT_COUNT
+} TimeType; // spell:ignoreRegexp /(?<=\[[A-Z]\])\w+/g
 
 /* ——————————————————————————————————————————————————— */
 

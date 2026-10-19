@@ -38,12 +38,13 @@ public void freeGitState(void) {
 private const char *getBranchName(const git_reference *const head) {
 	/** The name of the branch. May be the alnum name (e.g. `main`), or the branch hash. */
 	const char *branch_name = git_reference_name(head);
+	if (branch_name == NULL) return NULL;
 
 	// if the branchname is formatted as, e.g., `origin/main`, or `ref/head/branch`, then only keep the final segment
 	const char *const branch_basename = strrchr(branch_name, '/');
 	if (branch_basename != NULL) branch_name = branch_basename + 1;
 
-	return branch_name;
+	return estrdup(branch_name);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -69,8 +70,8 @@ private const char *getRelativePath(const char *const file, const char *root) {
 		if (file[i] != root[i]) return NULL;
 	}
 
-	// `file` == `root`
-	if (file[i] == '\0') return "";
+	// `file` == `root` || `file` == `/.git`  then `file` is the root of the repo
+	if (file[i] == '\0' || strncmp(file, GIT_DIR_PATH, GIT_DIR_LEN)) return "";
 
 	// +1 to discard the leading `/`
 	return file + i + 1;
@@ -90,7 +91,7 @@ public const GitInfo *getGitInfo(const FileStat *const pFS) {
 	/* ——————————————————————————————————————————————————————— */
 
 	/** A pointer to the `GitInfo` object we're creating, which will be returned by the function. */
-	const GitInfo *git_info_obj = NULL;
+	GitInfo *git_info_obj = NULL;
 
 	git_repository *repo = NULL; /** Repr. of an existing git repo, including all its object contents. */
 	git_reference  *head = NULL; /** Information about the current branch of a repo. */
@@ -106,15 +107,15 @@ public const GitInfo *getGitInfo(const FileStat *const pFS) {
 	const char *const repo_root = git_repository_commondir(repo);
 	if (repo_root == NULL) RETURN(NULL);
 
-	const char *const branch_name = getBranchName(head);
-	if (branch_name == NULL) RETURN(NULL);
-
 	const char *const rel_path = getRelativePath(pFS->abspath, repo_root);
 	if (rel_path == NULL) RETURN(NULL);
 
-	git_status_opt_t status = -1;
+	const bool file_is_root = (rel_path[0] == '\0');
 
-	if (rel_path[0] != '\0') {
+	git_status_t status = -1;
+
+	// if this file isn't the repo's root
+	if (!file_is_root) {
 		switch (git_status_file(&status, repo, rel_path)) {
 			case  0				: break;
 			case GIT_ENOTFOUND	: puts("file not in repo"); RETURN(NULL);
@@ -125,7 +126,7 @@ public const GitInfo *getGitInfo(const FileStat *const pFS) {
 				if (S_ISDIR(pFS->mode)) {
 					/// @todo find a way to determine the status(es) of all child files
 				}
-				puts("ambiguous");
+				puts("-- ambiguous --");
 				RETURN(NULL);
 			}
 		}
@@ -133,10 +134,25 @@ public const GitInfo *getGitInfo(const FileStat *const pFS) {
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
+	git_info_obj = emalloc(sizeof(GitInfo));
+	*git_info_obj = (GitInfo){ .status = status };
+	setLen(FI_git_info, /*TEMP:*/8);
+
+	if (file_is_root) {
+		git_info_obj->repo = emalloc(sizeof(GitRepoInfo));
+		*git_info_obj->repo = (GitRepoInfo){
+			.branchname = getBranchName(head),
+			.status = GBR_UPTODATE /** @todo figure out the actual branch status */
+		};
+	}
+
+	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
+
 	printf("relative  : %s\n", rel_path);
 	printf("from repo : %s\n", repo_root);
-	printf("on branch : %s\n", branch_name);
-	printf("status    : %d\n", status);
+	if ( file_is_root) printf("on branch : %s\n", git_info_obj->repo->branchname);
+	if ( file_is_root) printf("repo stat : %d\n", git_info_obj->repo->status);
+	if (!file_is_root) printf("file stat : %d\n", status);
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 	/* —— */ LABEL_RETURN: /* ——————————————————————————————————————————————————————————————————————— */
@@ -163,8 +179,15 @@ public void print_git_info(const FileStat *const pFS) {
 		putspaces(getLen(FI_git_info));
 		return;
 	}
+	const GitInfo *const git_info = pFS->f->git;
 
-	printf("%s%*d", getcol(RESET_ALL), getLen(FI_git_info), pFS->f->git->status);
+	printf("%s%*d", getcol(RESET_ALL), getLen(FI_git_info), git_info->status);
+
+	/* ——————————————————————————————————————————————————————— */
+
+	if (git_info->repo != NULL) efree((void*)git_info->repo->branchname);
+	efree((void*)git_info->repo);
+	efree((void*)git_info);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
