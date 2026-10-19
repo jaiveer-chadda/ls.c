@@ -22,7 +22,7 @@
 /* ——————————————————————————————————————————————————— */
 
 typedef struct GitInfo			GitInfo;
-typedef struct GitRepoInfo		GitRepoInfo;
+typedef struct GitBranchInfo	GitBranchInfo;
 
 /**
  * @struct TimeInfo
@@ -94,6 +94,8 @@ typedef struct FileStatFields	FileStatFields;
 typedef uint32_t flag_t	 ; /** The user/system defined flag/flags associated with a file. */
 typedef wchar_t	 icon_t	 ; /** A single multibyte character defining the icon printed before a file's name. */
 typedef int16_t	 namlen_t; /** The length of a name or path. */
+typedef uint8_t  branchlen_t;
+
 typedef char	*link_t	 ; /** The path held by a symlink. */
 typedef char	 suff_t	 ; /** A file's suffix. Can be one of: `/`, `@`, `*`, `=`, `|`, `%` */
 typedef char	 unit_t	 ; /** The unit of a file's size. Also used to denote whether a size is zero, or is maj,min. */
@@ -113,7 +115,13 @@ typedef char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")];
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-typedef enum GitBranchStatus { GBR_UPTODATE, GBR_BEHIND, GBR_AHEAD } GitBranchStatus;
+typedef enum GitBranchStatus {
+	GBR_UNKNOWN	 = '?',
+
+	GBR_AHEAD	 = '+',
+	GBR_BEHIND	 = '-',
+	GBR_UPTODATE = '|',
+} GitBranchStatus;
 
 /* ——————————————————————————————————————————————————— */
 

@@ -269,6 +269,25 @@
 #define FL_S_FIRMLINK			toColour( .fg = G_MAGENTA		) // \e[35m
 #define FL_S_DATALESS			HL_DATALESS						  // \e[47m
 
+/* —— GitInfo ——————————————————————————————————————————————————————————————— */
+
+#define GIT_STRING_NO_BRANCH	"-- - "
+#define GIT_DEFAULT_STRING		"-- - -"
+
+typedef enum GitStatusChar {
+	GIT_CHR_CURRENT		= '-', 
+
+	GIT_CHR_NEW			= 'N',
+	GIT_CHR_MODIFIED	= 'M',
+	GIT_CHR_DELETED		= 'D',
+	GIT_CHR_RENAMED		= 'R',
+	GIT_CHR_TYPECHANGE	= 'T',
+	GIT_CHR_UNREADABLE	= '?',
+
+	GIT_CHR_IGNORED		= 'I',
+	GIT_CHR_CONFLICTED	= 'X',
+} GitStatusChar;
+
 /* —— Filetypes ————————————————————————————————————————————————————————————— */
 
 #define UNKNOWN_CHAR			'?'

@@ -38,6 +38,9 @@ void freeFirmlinks(void);
 
 /* —— git.c ———————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define GIT_NO_STATUS ((git_status_t)(-1))
+#define STRLEN(str) ((size_t)(sizeof((str)) - 1))
+
 void freeGitState(void);
 const GitInfo *getGitInfo(const FileStat *const pFS);
 

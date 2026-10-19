@@ -21,7 +21,7 @@
 #	define _MOUNTINF_SIZE sizeof(MountInfo)		 []
 #	define _TIMEINFO_SIZE sizeof(TimeInfo)		 []
 #	define _GIT_INFO_SIZE sizeof(GitInfo)		 []
-#	define _GIT_REPO_SIZE sizeof(GitRepoInfo)	 []
+#	define _GIT_REPO_SIZE sizeof(GitBranchInfo)	 []
 #endif
 
 /**
@@ -145,14 +145,15 @@ struct MountInfo {
 /* —— GitInfo —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 struct GitInfo {
-	GitRepoInfo	*repo	; // 8 /** If file is root of a repo, a pointer to info about the repo. NULL otherwise. */
-	git_status_t status	; // 4 /** The status flags of the file. */
-};
+	GitBranchInfo  *branch; // 8 /** If file is root of a repo, a pointer to info about the repo. NULL otherwise. */
+	git_status_t	status; // 4 /** The status flags of the file. */
+}; // 12 + 4 pad = 16 B
 
-struct GitRepoInfo {
+struct GitBranchInfo {
 	const char *branchname; // 8
 	GitBranchStatus status; // 4
-};
+	branchlen_t branch_len; // 1
+}; // 13 + 3 pad = 16 B
 
 /* —— TimeInfo ————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

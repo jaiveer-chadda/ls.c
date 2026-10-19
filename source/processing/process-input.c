@@ -137,11 +137,6 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 			|| strcmp(pDT_child->d_name, "..") == 0
 		) continue;
 
-		#ifdef DEBUG_MODE
-			if (strcmp(pDT_child->d_name, ".git") == 0) continue;
-			if (strcmp(pDT_child->d_name, "Icon\r") == 0) continue;
-		#endif
-
 		/* —— alloc mem for children —————————————————————————————————— */
 
 		if (pFS_dir->f->child_count >= child_alloc_count) {
