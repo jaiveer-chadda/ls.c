@@ -43,9 +43,6 @@ typedef enum TimeType {
 /* ——————————————————————————————————————————————————— */
 
 typedef struct GitInfo			GitInfo;
-typedef struct GitRepoInfo		GitRepoInfo;
-typedef struct GitFileInfo		GitFileInfo;
-
 /**
  * @struct TimeInfo
  * @brief Information about a file's time.
