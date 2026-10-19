@@ -2,6 +2,7 @@
 
 #include <git2.h>
 #include <stdio.h>
+#include <assert.h>
 #include <string.h>
 #include <stdbool.h>
 
@@ -47,6 +48,36 @@ private const char *getBranchName(const git_reference *const head) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define GIT_DIR_PATH "/.git"
+#define GIT_DIR_LEN ((size_t)(sizeof(GIT_DIR_PATH) - 1))
+
+private const char *getRelativePath(const char *const file, const char *root) {
+	size_t root_len = strlen(root);
+
+	// if the repo root ends with a `/`, then cut that slash off
+	if (root[root_len - 1] == '/') root_len--;
+
+	// if the repo root ends with `/.git`, then cut that off as well
+	if (strncmp(&root[root_len - GIT_DIR_LEN], GIT_DIR_PATH, GIT_DIR_LEN) == 0) {
+		root_len -= GIT_DIR_LEN;
+	}
+
+	/* ——————————————————————————————————————————————————————— */
+
+	size_t i;
+	for (i = 0; i < root_len; i++) {
+		if (file[i] != root[i]) return NULL;
+	}
+
+	// `file` == `root`
+	if (file[i] == '\0') return "";
+
+	// +1 to discard the leading `/`
+	return file + i + 1;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #define RETURN(obj) do { git_info_obj = (obj); goto LABEL_RETURN; } while (0)
 
 public const GitInfo *getGitInfo(const FileStat *const pFS) {
@@ -73,12 +104,39 @@ public const GitInfo *getGitInfo(const FileStat *const pFS) {
 	/* ——————————————————————————————————————————————————————— */
 
 	const char *const repo_root = git_repository_commondir(repo);
+	if (repo_root == NULL) RETURN(NULL);
+
 	const char *const branch_name = getBranchName(head);
+	if (branch_name == NULL) RETURN(NULL);
+
+	const char *const rel_path = getRelativePath(pFS->abspath, repo_root);
+	if (rel_path == NULL) RETURN(NULL);
+
+	git_status_opt_t status = -1;
+
+	if (rel_path[0] != '\0') {
+		switch (git_status_file(&status, repo, rel_path)) {
+			case  0				: break;
+			case GIT_ENOTFOUND	: puts("file not in repo"); RETURN(NULL);
+			case -1				: puts("other error"	 ); RETURN(NULL);
+			default				: puts("unknown error"	 ); RETURN(NULL);
+
+			case GIT_EAMBIGUOUS	: {
+				if (S_ISDIR(pFS->mode)) {
+					/// @todo find a way to determine the status(es) of all child files
+				}
+				puts("ambiguous");
+				RETURN(NULL);
+			}
+		}
+	}
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 
+	printf("relative  : %s\n", rel_path);
 	printf("from repo : %s\n", repo_root);
 	printf("on branch : %s\n", branch_name);
+	printf("status    : %d\n", status);
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
 	/* —— */ LABEL_RETURN: /* ——————————————————————————————————————————————————————————————————————— */
@@ -111,4 +169,4 @@ public void print_git_info(const FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-// spell:ignoreRegexp /\\(?:e|0?33)\[[0-9;]*m\B/g
+// spell:ignoreRegexp /\bGIT_E\B|\\(?:e|0?33)\[[0-9;]*m\B/g
