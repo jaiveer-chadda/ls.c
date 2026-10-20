@@ -2,10 +2,12 @@
 
 #include <git2.h>
 #include <stdio.h>
+#include <wchar.h>
 #include <string.h>
 
 #include "malloc.h"
 #include "strings.h"
+#include "strbuilder.h"
 
 #include "form/formatting.h"
 #include "model/stat-model.h"
@@ -13,29 +15,31 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline char getIndexStatus(const git_status_t status) {
-	if (status & GIT_STATUS_CONFLICTED		) return GIT_CHR_CONFLICTED	;
+#define RETURN_STATUS(type) do { *colour = (GFS_COL_##type); return (GFS_##type); } while (0)
 
-	if (status & GIT_STATUS_INDEX_TYPECHANGE) return GIT_CHR_TYPECHANGE	;
-	if (status & GIT_STATUS_INDEX_RENAMED	) return GIT_CHR_RENAMED	;
-	if (status & GIT_STATUS_INDEX_DELETED	) return GIT_CHR_DELETED	;
-	if (status & GIT_STATUS_INDEX_NEW		) return GIT_CHR_NEW		;
-	if (status & GIT_STATUS_INDEX_MODIFIED	) return GIT_CHR_MODIFIED	;
+static inline char getIndexStatus(Colour *const colour, const git_status_t status) {
+	if (status & GIT_STATUS_CONFLICTED		) RETURN_STATUS(CONFLICTED	);
 
-	return GIT_CHR_CURRENT;
+	if (status & GIT_STATUS_INDEX_TYPECHANGE) RETURN_STATUS(TYPECHANGE	);
+	if (status & GIT_STATUS_INDEX_RENAMED	) RETURN_STATUS(RENAMED		);
+	if (status & GIT_STATUS_INDEX_DELETED	) RETURN_STATUS(DELETED		);
+	if (status & GIT_STATUS_INDEX_NEW		) RETURN_STATUS(NEW			);
+	if (status & GIT_STATUS_INDEX_MODIFIED	) RETURN_STATUS(MODIFIED	);
+
+	RETURN_STATUS(CURRENT);
 }
 
-static inline char getWTreeStatus(const git_status_t status) {
-	if (status & GIT_STATUS_WT_TYPECHANGE	) return GIT_CHR_TYPECHANGE	;
-	if (status & GIT_STATUS_WT_RENAMED		) return GIT_CHR_RENAMED	;
-	if (status & GIT_STATUS_WT_DELETED		) return GIT_CHR_DELETED	;
-	if (status & GIT_STATUS_WT_NEW			) return GIT_CHR_NEW		;
-	if (status & GIT_STATUS_WT_MODIFIED		) return GIT_CHR_MODIFIED	;
+static inline char getWTreeStatus(Colour *const colour, const git_status_t status) {
+	if (status & GIT_STATUS_WT_TYPECHANGE	) RETURN_STATUS(TYPECHANGE	);
+	if (status & GIT_STATUS_WT_RENAMED		) RETURN_STATUS(RENAMED		);
+	if (status & GIT_STATUS_WT_DELETED		) RETURN_STATUS(DELETED		);
+	if (status & GIT_STATUS_WT_NEW			) RETURN_STATUS(NEW			);
+	if (status & GIT_STATUS_WT_MODIFIED		) RETURN_STATUS(MODIFIED	);
 
-	if (status & GIT_STATUS_WT_UNREADABLE	) return GIT_CHR_UNREADABLE	;
-	if (status & GIT_STATUS_IGNORED			) return GIT_CHR_IGNORED	;
+	if (status & GIT_STATUS_WT_UNREADABLE	) RETURN_STATUS(UNREADABLE	);
+	if (status & GIT_STATUS_IGNORED			) RETURN_STATUS(IGNORED		);
 
-	return GIT_CHR_CURRENT;
+	RETURN_STATUS(CURRENT);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -51,7 +55,7 @@ void print_git_info(const FileStat *const pFS) {
 	/* ——————————————————————————————————————————————————————— */
 
 	if (pFS->f == NULL || pFS->f->git == NULL) {
-		printf("%s%-*s%ls", getcol(RESET_ALL), gitinfo_len, GIT_DEFAULT_STRING, FIELD_PAD);
+		printf("%s%-*s%ls", getcol(PUNCT), gitinfo_len, GIT_DEFAULT_STRING, FIELD_PAD);
 		return;
 	}
 
@@ -60,26 +64,53 @@ void print_git_info(const FileStat *const pFS) {
 	const GitInfo *const git  = pFS->f->git;
 	const git_status_t status = git->status == GIT_NO_STATUS ? 0 : git->status;
 
-	colprint(RESET_ALL);
+	StringBuilder output = sb_init(STRLEN("-- - -"));
+	size_t outlen = 0;
 
-	char out_buf[STRLEN(GIT_STRING_NO_BRANCH) + MAX_GIT_BRANCH_LEN] = {
-		/* 0 */ getIndexStatus(status), // indicates staged changes
-		/* 1 */ getWTreeStatus(status), // indicates unstaged changes
-		/* 2 */ ' ',
-		/* 3 */ '-', // to be replaced with the branch status
-		/* 4 */ ' ', //		(replacements only made if `branch != NULL`)
-		/* 5 */ '-', // to be replaced with the branch's name
-	};
+	sb_addcol(output, RESET_ALL);
+
+	Colour index_col, wtree_col;
+
+	const char index_chr = getIndexStatus(&index_col, status); // staged changes
+	const char wtree_chr = getWTreeStatus(&wtree_col, status); // unstaged changes
+
+	sb_addcol(output, index_col); outlen += sb_addchr(output, index_chr);
+	sb_addcol(output, wtree_col); outlen += sb_addchr(output, wtree_chr);
+	outlen += sb_addchr(output, ' ');
 
 	if (git->branch != NULL) {
-		out_buf[3] = git->branch->status;
-		strncpy(out_buf + 5, git->branch->branchname, MAX_GIT_BRANCH_LEN);
+		const GitBranchInfo *const branch = git->branch;
+		sb_addcol(output, git_branch_colours[branch->status]);
 
-		efree((void*)git->branch->branchname);
-		efree((void*)git->branch);
+		outlen += sb_addchr(output, git_branch_chars[branch->status]);
+		outlen += sb_addchr(output, ' ');
+
+		Colour branch_col;
+
+		if (branch->branch_len >= STRLEN("main") &&
+			branch->branchname[0] == 'm'		 &&
+			branch->branchname[1] == 'a'		 && (
+				strcmp(branch->branchname + 2, "in"	 ) == 0 ||
+				strcmp(branch->branchname + 2, "ster") == 0
+			)
+		)	 branch_col = GIT_BRANCH_COLOUR_MAIN;
+		else branch_col = GIT_BRANCH_COLOUR_OTHER;
+
+		sb_addcol(output, branch_col);
+		outlen += sb_addstr(output, branch->branchname, branch->branch_len);
+
+		efree((void*)branch->branchname);
+		efree((void*)branch);
+
+	} else {
+		sb_addcol(output, PUNCT);
+		outlen += sb_addlit(output, "- -");
 	}
 
-	printf("%-*s%ls", gitinfo_len, out_buf, FIELD_PAD);
+	sb_putsf(output);
+	putspaces(gitinfo_len - outlen);
+
+	fputws(FIELD_PAD, stdout);
 
 	/* ——————————————————————————————————————————————————————— */
 
@@ -87,3 +118,5 @@ void print_git_info(const FileStat *const pFS) {
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+// spell:ignore wtree

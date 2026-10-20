@@ -274,28 +274,48 @@
 #define GIT_STRING_NO_BRANCH	"-- - "
 #define GIT_DEFAULT_STRING		"-- - -"
 
-typedef enum GitBranchStatus {
-	GBR_UNKNOWN	 = '?',
+#define GIT_BRANCH_COLOUR_MAIN	toColour( .fg = G_NO_FG	) /** \e[37m */
+#define GIT_BRANCH_COLOUR_OTHER	toColour( .fg = G_BMAG	) /** \e[95m */
 
-	GBR_AHEAD	 = '>',
-	GBR_BEHIND	 = '<',
-	GBR_UPTODATE = '|',
-	GBR_DIVERGED = 'V',
-} GitBranchStatus;
+#define GIT_BRANCH_TABLE \
+	X( GBR_UNKNOWN	, '?', toColour( .fg = G_BYEL ) ) /* \e[93m */ \
+	X( GBR_AHEAD	, '>', toColour( .fg = G_BBLU ) ) /* \e[94m */ \
+	X( GBR_BEHIND	, '<', toColour( .fg = G_BRED ) ) /* \e[95m */ \
+	X( GBR_UPTODATE	, '|', toColour( .fg = G_BGRN ) ) /* \e[92m */ \
+	X( GBR_DIVERGED	, 'V', toColour( .fg = G_RED  ) ) /* \e[31m */ \
+
+#define X(name, chr, colour) name,
+	typedef enum GitBranchStatus { GIT_BRANCH_TABLE GBR_COUNT } GitBranchStatus;
+#undef X
+
+const char	 git_branch_chars  [GBR_COUNT];
+const Colour git_branch_colours[GBR_COUNT];
 
 typedef enum GitFileStatus {
-	GIT_CHR_CURRENT		= '-', 
+	GFS_CURRENT		= '-', 
 
-	GIT_CHR_NEW			= 'N',
-	GIT_CHR_MODIFIED	= 'M',
-	GIT_CHR_DELETED		= 'D',
-	GIT_CHR_RENAMED		= 'R',
-	GIT_CHR_TYPECHANGE	= 'T',
-	GIT_CHR_UNREADABLE	= '?',
+	GFS_NEW			= 'N',
+	GFS_MODIFIED	= 'M',
+	GFS_DELETED		= 'D',
+	GFS_RENAMED		= 'R',
+	GFS_TYPECHANGE	= 'T',
+	GFS_UNREADABLE	= '?',
 
-	GIT_CHR_IGNORED		= 'I',
-	GIT_CHR_CONFLICTED	= 'X',
+	GFS_IGNORED		= 'I',
+	GFS_CONFLICTED	= 'X',
 } GitFileStatus;
+
+#define GFS_COL_CURRENT		PUNCT
+
+#define GFS_COL_NEW			toColour( .fg = G_BGRN	) // \e[92m
+#define GFS_COL_MODIFIED	toColour( .fg = G_BYEL	) // \e[93m
+#define GFS_COL_DELETED		toColour( .fg = G_BRED	) // \e[91m
+#define GFS_COL_RENAMED		toColour( .fg = G_BMAG	) // \e[95m
+#define GFS_COL_TYPECHANGE	toColour( .fg = G_BCYN	) // \e[96m
+
+#define GFS_COL_UNREADABLE	toColour( .fg = G_YEL	) // \e[33m
+#define GFS_COL_CONFLICTED	toColour( .fg = G_RED	) // \e[31m
+#define GFS_COL_IGNORED		toColour( .fg = G_BWHT, .style = G_DIM ) // \e[90m [kinda]
 
 /* —— Filetypes ————————————————————————————————————————————————————————————— */
 
