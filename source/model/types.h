@@ -21,30 +21,8 @@
 
 /* ——————————————————————————————————————————————————— */
 
-/**
- * @enum TimeType
- * @brief A lookup table to determine which time type is being referenced.
- *
- * Contains 4 types and a count:
- * - `A_TIME`(0): Access		time: The time the file's contents were last accessed.
- * - `M_TIME`(1): Modification	time: The time the file's contents were last modified.
- * - `C_TIME`(2): Change		time: The time the file's inode information was last changed.
- * - `B_TIME`(3): Birth			time: The time the file was originally created.
- * - `TIME_COUNT`(4): The number of types in the enum.
- */
-typedef enum TimeType {
-	A_TIME,	 /** [A]ccess time		 - Time a file's contents were last accessed. */
-	M_TIME,	 /** [M]odification time - Time the contents of a file were last modified. */
-	C_TIME,	 /** [C]reation time	 - Time the inode information of a file was last changed. */
-	B_TIME,	 /** [B]irth time		 - Time the file was created (birthed). */
-	TT_COUNT
-} TimeType; // spell:ignoreRegexp /(?<=\[[A-Z]\])\w+/g
-
-/* ——————————————————————————————————————————————————— */
-
 typedef struct GitInfo			GitInfo;
-typedef struct GitRepoInfo		GitRepoInfo;
-typedef struct GitFileInfo		GitFileInfo;
+typedef struct GitBranchInfo	GitBranchInfo;
 
 /**
  * @struct TimeInfo
@@ -116,6 +94,8 @@ typedef struct FileStatFields	FileStatFields;
 typedef uint32_t flag_t	 ; /** The user/system defined flag/flags associated with a file. */
 typedef wchar_t	 icon_t	 ; /** A single multibyte character defining the icon printed before a file's name. */
 typedef int16_t	 namlen_t; /** The length of a name or path. */
+typedef uint8_t  branchlen_t;
+
 typedef char	*link_t	 ; /** The path held by a symlink. */
 typedef char	 suff_t	 ; /** A file's suffix. Can be one of: `/`, `@`, `*`, `=`, `|`, `%` */
 typedef char	 unit_t	 ; /** The unit of a file's size. Also used to denote whether a size is zero, or is maj,min. */
@@ -132,6 +112,27 @@ typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; /** `char flagstr[(MAX_
 
 /** `char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")]` = `20 + 6` = 26 */
 typedef char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")];
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+/**
+ * @enum TimeType
+ * @brief A lookup table to determine which time type is being referenced.
+ *
+ * Contains 4 types and a count:
+ * - `A_TIME`(0): Access		time: The time the file's contents were last accessed.
+ * - `M_TIME`(1): Modification	time: The time the file's contents were last modified.
+ * - `C_TIME`(2): Change		time: The time the file's inode information was last changed.
+ * - `B_TIME`(3): Birth			time: The time the file was originally created.
+ * - `TIME_COUNT`(4): The number of types in the enum.
+ */
+typedef enum TimeType {
+	A_TIME,	 /** [A]ccess time		 - Time a file's contents were last accessed. */
+	M_TIME,	 /** [M]odification time - Time the contents of a file were last modified. */
+	C_TIME,	 /** [C]reation time	 - Time the inode information of a file was last changed. */
+	B_TIME,	 /** [B]irth time		 - Time the file was created (birthed). */
+	TT_COUNT
+} TimeType; // spell:ignoreRegexp /(?<=\[[A-Z]\])\w+/g
 
 /* ——————————————————————————————————————————————————— */
 

@@ -21,8 +21,7 @@
 #	define _MOUNTINF_SIZE sizeof(MountInfo)		 []
 #	define _TIMEINFO_SIZE sizeof(TimeInfo)		 []
 #	define _GIT_INFO_SIZE sizeof(GitInfo)		 []
-#	define _GIT_FILE_SIZE sizeof(GitFileInfo)	 []
-#	define _GIT_REPO_SIZE sizeof(GitRepoInfo)	 []
+#	define _GIT_REPO_SIZE sizeof(GitBranchInfo)	 []
 #endif
 
 /**
@@ -143,33 +142,18 @@ struct MountInfo {
 	flag_t	flags	; // 4		/** [Unused] Copy of mount-exported flags. */
 }; // 1048 + 0 pad = 1048 B
 
-/* —— GitRepoInfo —————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-// TEMP: I'll end up removing/changing some of the info in `GitRepoInfo` and `GitFileInfo` later, but I'm leaving
-//		  everything in for the moment, so that I have as much info to work with, while developing.
-
-struct GitRepoInfo {
-	git_repository *repo_obj; // 8
-	const char	*branch		; // 8 /** The name of the branch the file is on. */
-
-	const char	*root		; // 8 /** The path to the repo's `.git` directory. */
-	hash_t		hash		; // 8 /** A unique ID, based on the path to the repo's `.git` directory. */
-	/** Note that the hash is calculated before `getRepoDirname` is run on the root */
-
-	GitInfo		*files		; // 8 /** The array of files in the repo with statuses. */
-	uint32_t	count		; // 4 /** The number of files in the `GitRepoInfo::files` array. */
-
-	int			br_status	; // 4 /** Whether the branch is at/ahead/behind `main`. */
-}; // 40 + 0 pad = 40 B
-
 /* —— GitInfo —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 struct GitInfo {
-	const char	*path	; // 8 /** The file's path, relative to the repo root. */
-	GitRepoInfo	*repo	; // 8 /** A pointer to the `GitRepoInfo` object representing this file's repo. */
-	hash_t		rp_hash	; // 8 /** The unique ID of the repo which this file belongs to. */
-	git_status_t status	; // 4 /** The status flags of the file. */
-}; // 20 + 4 pad = 22 B
+	GitBranchInfo  *branch; // 8 /** If file is root of a repo, a pointer to info about the repo. NULL otherwise. */
+	git_status_t	status; // 4 /** The status flags of the file. */
+}; // 12 + 4 pad = 16 B
+
+struct GitBranchInfo {
+	const char *branchname; // 8
+	GitBranchStatus status; // 4
+	branchlen_t branch_len; // 1
+}; // 13 + 3 pad = 16 B
 
 /* —— TimeInfo ————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

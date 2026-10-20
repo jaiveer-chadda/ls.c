@@ -269,6 +269,54 @@
 #define FL_S_FIRMLINK			toColour( .fg = G_MAGENTA		) // \e[35m
 #define FL_S_DATALESS			HL_DATALESS						  // \e[47m
 
+/* —— GitInfo ——————————————————————————————————————————————————————————————— */
+
+#define GIT_STRING_NO_BRANCH	"-- - "
+#define GIT_DEFAULT_STRING		"-- - -"
+
+#define GIT_BRANCH_COLOUR_MAIN	toColour( .fg = G_NO_FG	) /** \e[37m */
+#define GIT_BRANCH_COLOUR_OTHER	toColour( .fg = G_BMAG	) /** \e[95m */
+
+#define GIT_BRANCH_TABLE \
+	X( GBR_UNKNOWN	, '?', toColour( .fg = G_BYEL ) ) /* \e[93m */ \
+	X( GBR_AHEAD	, '>', toColour( .fg = G_BBLU ) ) /* \e[94m */ \
+	X( GBR_BEHIND	, '<', toColour( .fg = G_BRED ) ) /* \e[95m */ \
+	X( GBR_UPTODATE	, '|', toColour( .fg = G_BGRN ) ) /* \e[92m */ \
+	X( GBR_DIVERGED	, 'V', toColour( .fg = G_RED  ) ) /* \e[31m */ \
+
+#define X(name, chr, colour) name,
+	typedef enum GitBranchStatus { GIT_BRANCH_TABLE GBR_COUNT } GitBranchStatus;
+#undef X
+
+const char	 git_branch_chars  [GBR_COUNT];
+const Colour git_branch_colours[GBR_COUNT];
+
+typedef enum GitFileStatus {
+	GFS_CURRENT		= '-', 
+
+	GFS_NEW			= 'N',
+	GFS_MODIFIED	= 'M',
+	GFS_DELETED		= 'D',
+	GFS_RENAMED		= 'R',
+	GFS_TYPECHANGE	= 'T',
+	GFS_UNREADABLE	= '?',
+
+	GFS_IGNORED		= 'I',
+	GFS_CONFLICTED	= 'X',
+} GitFileStatus;
+
+#define GFS_COL_CURRENT		PUNCT
+
+#define GFS_COL_NEW			toColour( .fg = G_BGRN	) // \e[92m
+#define GFS_COL_MODIFIED	toColour( .fg = G_BYEL	) // \e[93m
+#define GFS_COL_DELETED		toColour( .fg = G_BRED	) // \e[91m
+#define GFS_COL_RENAMED		toColour( .fg = G_BMAG	) // \e[95m
+#define GFS_COL_TYPECHANGE	toColour( .fg = G_BCYN	) // \e[96m
+
+#define GFS_COL_UNREADABLE	toColour( .fg = G_YEL	) // \e[33m
+#define GFS_COL_CONFLICTED	toColour( .fg = G_RED	) // \e[31m
+#define GFS_COL_IGNORED		toColour( .fg = G_BWHT, .style = G_DIM ) // \e[90m [kinda]
+
 /* —— Filetypes ————————————————————————————————————————————————————————————— */
 
 #define UNKNOWN_CHAR			'?'

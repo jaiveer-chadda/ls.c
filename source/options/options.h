@@ -101,7 +101,7 @@ I just assigned flags to them cos there was one available - not cos I want it to
 	X(do_usr_name		, true	, true	, 'U',	{ "uid-str"			, "usr-name", "user"	})	\
 	X(do_gid			, false	, true	, 'g',	{ "gid"										})	\
 	X(do_grp_name		, true	, true	, 'G',	{ "gid-str"			, "grp-name", "group"	})	\
-	X(do_git_info		, false	, true	, NSF,	{ "git"				, "git-status"			})	\
+	X(do_git_info		, true	, true	, NSF,	{ "git"				, "git-status"			})	\
    /*├──────────────────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
 	X(do_time			, false	, true	, 't',	{ "time"									})	\
 	X(do_time_str		, true	, true	, 'T',	{ "time-str"								})	\
