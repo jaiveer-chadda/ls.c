@@ -121,6 +121,7 @@ typedef enum GitBranchStatus {
 	GBR_AHEAD	 = '+',
 	GBR_BEHIND	 = '-',
 	GBR_UPTODATE = '|',
+	GBR_DIVERGED = 'V',
 } GitBranchStatus;
 
 /* ——————————————————————————————————————————————————— */

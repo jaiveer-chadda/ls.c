@@ -35,9 +35,7 @@ public void freeGitState(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-private const char *getBranchName(branchlen_t *const branch_len, const git_reference *const head) {
-	/** The name of the branch. May be the alnum name (e.g. `main`), or the branch hash. */
-	const char *branch_name = git_reference_name(head);
+private const char *abbrBranchName(branchlen_t *const branch_len, const char *branch_name) {
 	if (branch_name == NULL) return NULL;
 
 	// if the branchname is formatted as, e.g., `origin/main`, or `ref/head/branch`, then only keep the final segment
@@ -46,6 +44,33 @@ private const char *getBranchName(branchlen_t *const branch_len, const git_refer
 
 	*branch_len = strlen(branch_name);
 	return memcpy(emalloc(*branch_len + 1), branch_name, *branch_len + 1);
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+private int remoteDiffCount(
+	size_t *const ahead, size_t *const behind, git_repository *const repo, const char *const branchname
+) {
+	git_buf upstream_name = {0};
+
+	if (git_branch_upstream_name(&upstream_name, repo, branchname) < 0) {
+		/// @todo handle
+		return -1;
+	}
+
+	git_oid local_oid = {0}, remote_oid = {0};
+
+	git_reference_name_to_id(&local_oid	, repo, branchname		 ); // get local branch OID
+	git_reference_name_to_id(&remote_oid, repo, upstream_name.ptr); // get remote tracking branch OID
+
+	git_buf_dispose(&upstream_name); // clean up buffer
+
+	if (git_graph_ahead_behind(ahead, behind, repo, &local_oid, &remote_oid) != 0) {
+		/// @todo handle
+		return -1;
+	}
+
+	return 0;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -81,6 +106,8 @@ private const char *getRelativePath(const char *const file, const char *root) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define RETURN(obj) do { git_info_obj = (obj); goto LABEL_RETURN; } while (0)
+
+/// @todo for some reason, this isn't working with the `_complier` directory - figure out why
 
 public const GitInfo *getGitInfo(const FileStat *const pFS) {
 
@@ -146,21 +173,45 @@ public const GitInfo *getGitInfo(const FileStat *const pFS) {
 	git_info_obj = emalloc(sizeof(GitInfo));
 	*git_info_obj = (GitInfo){ .status = status };
 
-	setLen(FI_git_info, STRLEN(GIT_DEFAULT_STRING));
-
 	if (file_is_root) {
 		git_info_obj->branch = emalloc(sizeof(GitBranchInfo));
 
-		branchlen_t branch_len = 0; 
-		const char *const branchname = getBranchName(&branch_len, head);
+		branchlen_t branch_len = 0;
+
+		/** The name of the branch. May be the alnum name (e.g. `main`), or the branch hash. */
+		const char *const branchname = git_reference_name(head);
+		const char *const abbr_bname = abbrBranchName(&branch_len, branchname);
+
+		size_t ahead = 0, behind = 0;
+		if (remoteDiffCount(&ahead, &behind, repo, branchname) != 0) {
+			/// @todo handle
+
+			efree((void*)git_info_obj->branch);
+			efree((void*)git_info_obj);
+			efree((void*)abbr_bname);
+
+			RETURN(NULL);
+		}
+
+		GitBranchStatus brn_status = GBR_UNKNOWN;
+	
+		assert	(ahead >= 0 && behind >= 0);
+
+		if		(ahead == 0 && behind == 0) brn_status = GBR_UPTODATE;
+		else if	(ahead >  0 && behind == 0) brn_status = GBR_AHEAD	 ;
+		else if	(ahead == 0 && behind >  0) brn_status = GBR_BEHIND	 ;
+		else if	(ahead >  0 && behind >  0) brn_status = GBR_DIVERGED;
+		else assert(false && "impossible case - all options exhausted");
 
 		*git_info_obj->branch = (GitBranchInfo){
-			.branchname = branchname,
+			.branchname = abbr_bname,
 			.branch_len = branch_len,
-			.status = GBR_UPTODATE /** @todo figure out the actual branch status */
+			.status		= brn_status,
 		};
 
 		setLen(FI_git_info, STRLEN(GIT_STRING_NO_BRANCH) + branch_len);
+	} else {
+		setLen(FI_git_info, STRLEN(GIT_DEFAULT_STRING));
 	}
 
 	/* —————————————————————————————————————————————————————————————————————————————————————————————— */
