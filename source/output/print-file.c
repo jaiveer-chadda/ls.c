@@ -36,12 +36,14 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	print_link(pFS); // print targets of links
 	if (pFS->f != NULL) print_mount(pFS->f->mount); // print info about mounted filesystems
 
-	// with `puts`, end this entry's output by printing a newline
-	//	and make sure that no colours leak past the end of the line
+	// make sure that no colours leak past the end of the line
 	// I'm printing `RESET` directly, and then setting the active colour, just in case the colour system's failed
 	//	somewhere - cos this way, the end of the line will 100% be clear of any colour
-	puts(RESET);
+	if (DO_COLOUR()) fputs(RESET, stdout);
 	setActive(RESET_ALL);
+
+	// finally, end this entry's output by printing a newline
+	putchar('\n');
 
 	/* —— recurse ————————————————————————————————————————————————————————————————————————————————————— */
 
