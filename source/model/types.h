@@ -115,17 +115,6 @@ typedef char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")];
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-typedef enum GitBranchStatus {
-	GBR_UNKNOWN	 = '?',
-
-	GBR_AHEAD	 = '+',
-	GBR_BEHIND	 = '-',
-	GBR_UPTODATE = '|',
-	GBR_DIVERGED = 'V',
-} GitBranchStatus;
-
-/* ——————————————————————————————————————————————————— */
-
 /**
  * @enum TimeType
  * @brief A lookup table to determine which time type is being referenced.

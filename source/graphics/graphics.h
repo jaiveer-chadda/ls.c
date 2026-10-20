@@ -274,7 +274,16 @@
 #define GIT_STRING_NO_BRANCH	"-- - "
 #define GIT_DEFAULT_STRING		"-- - -"
 
-typedef enum GitStatusChar {
+typedef enum GitBranchStatus {
+	GBR_UNKNOWN	 = '?',
+
+	GBR_AHEAD	 = '>',
+	GBR_BEHIND	 = '<',
+	GBR_UPTODATE = '|',
+	GBR_DIVERGED = 'V',
+} GitBranchStatus;
+
+typedef enum GitFileStatus {
 	GIT_CHR_CURRENT		= '-', 
 
 	GIT_CHR_NEW			= 'N',
@@ -286,7 +295,7 @@ typedef enum GitStatusChar {
 
 	GIT_CHR_IGNORED		= 'I',
 	GIT_CHR_CONFLICTED	= 'X',
-} GitStatusChar;
+} GitFileStatus;
 
 /* —— Filetypes ————————————————————————————————————————————————————————————— */
 
