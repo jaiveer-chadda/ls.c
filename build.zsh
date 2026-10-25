@@ -15,17 +15,22 @@ function -- () {
   local mode=dev
   local -i 2 print_cmd=0 do_time=0 do_dump=0 alloc_dbg=1 run_cmd=1 do_clear=1
 
+  # I know there's a better way to do this, but this is simple, and it works
   while [[ -n "$1" ]] { #
     case "$1" {
-      ( --no-alloc-debug ) alloc_dbg=0 ;;
       ( --(print-|)cmd   ) print_cmd=1 ;;
-      ( --debug(ging|)   ) mode=debug  ;;
-      ( --prod(uction|)  ) mode=prod   ;;
-      ( --dev(elopment|) ) mode=dev    ;;
       ( --no-clear       ) do_clear=0  ;;
+      ( --compile        ) ;&
       ( --no-run         ) run_cmd=0   ;;
       ( --time           ) do_time=1   ;;
       ( --dump           ) do_dump=1   ;;
+
+      ( --no-alloc-debug | -x ) alloc_dbg=0 ;;
+      ( --debug          | -v ) mode=debug  ;;
+      ( --prod           | -p ) mode=prod   ;;
+      ( --dev            | -d ) mode=dev    ;;
+
+      ( -  ) ;;
       ( -- ) shift ;&
       ( *  ) break ;;
     }
@@ -116,6 +121,11 @@ function -- () {
 
   # ————————————————————————————————————————————————————————————————————————— #
   # —— Option Processing ———————————————————————————————————————————————————— #
+
+  # the `--no-alloc-debug` option implies that you still want `--debug`
+  if (( ! alloc_dbg )) mode=debug
+
+  # —— $CFLAGS ————————————————————————————————————————— #
 
   local optimisation
 
