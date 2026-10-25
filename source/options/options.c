@@ -168,8 +168,8 @@ int setOptions(const int argc, char *const *const argv) {
 
 				// handle `-h` (print usage), and `+h` (throw error)
 				if (*chr == 'h') {
-					if (turn_opt == '-') usage(EXIT_SUCCESS);
-					THROW_ERR("unknown option: `%c%h`", turn_opt);
+					if (opt[0] == '-') usage(EXIT_SUCCESS);
+					THROW_ERR("unknown option: `%ch`", opt[0]);
 				}
 
 				/* ————————————————————————————————— */
@@ -219,7 +219,7 @@ int setOptions(const int argc, char *const *const argv) {
 
 				// only print this error if none of the character options match
 				//	either the argument options or binary options
-				THROW_ERR("unknown option: `%c%c`", turn_opt, *chr);
+				THROW_ERR("unknown option: `%c%c`", opt[0], *chr);
 
 				next_char:
 					continue;
