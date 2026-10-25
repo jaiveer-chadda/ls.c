@@ -11,24 +11,36 @@
 #include "options.h"
 #include "model/global.h"
 
-#ifndef t
-#	define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug with my error checker */
-#	define f 0
-#endif
+static inline void allOptsOn(void), allFieldsOn(void);
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Initialise Options ——————————————————————————————————————————————————————————————————————————————————————————— */
 
-// `U_DO_COLOUR` doesn't need a default - it's the only option that'll be set no matter what
+// `U_DO_COLOUR` doesn't need a default - it's the only option that'll will _always_ be set by `setOptions`
 static bool U_DO_COLOUR, U_DO_TINY_FLAGS = false, U_DO_SHORT_FLAGS = true;
 static uint8_t U_DEPTH = 1;
 static TimeType U_SB_TIME = M_TIME;
 static SortByField U_SORT_BY = SB_DEFAULT;
 
-#define X(name, ...) [(BO_ ## name)] = (BinaryOption){ __VA_ARGS__ },
-	BinaryOption BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
+#define X(name, default, isfield, setall, s_flag, ...)	\
+	[(BO_ ## name)] = (binopt_t){		\
+		.value		= (	default	),		\
+		.is_field	= (	isfield	),		\
+		.set_all	= (	setall	),		\
+		.short_flag	= (	s_flag	),		\
+		.long_flags	= {	__VA_ARGS__	}	\
+	},
+
+	binopt_t BINARY_OPTS[] = { BINARY_OPTIONS_TABLE };
 #undef X
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Generic Macros ——————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#ifndef t
+#	define t 1 /* this doesn't do anything - it's just here to stop a rly annoying bug with my error checker */
+#	define f 0
+#endif
 
 #define ARG_EXISTS	((i + 1 < argc) && (argv[i+1][0] != '-') && (argv[i+1][0] != '+'))
 #define HAS_ARG		(optarg != NULL && optarg[0] != '\0')
@@ -107,26 +119,6 @@ static SortByField U_SORT_BY = SB_DEFAULT;
 	"\n - links" "\n - flags" "\n - mode"	"\n - none"			\
 )
 
-/* —— all Opts/Fields On() ——————————————————————————————————————————— */
-
-static inline void allOptsOn(void) {
-	for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
-		BINARY_OPTS[opt_i].value = true;
-	}
-
-	VALUE_OF(DIRS_AS_FILES) = false;
-	U_DO_TINY_FLAGS	 = false,
-	U_DO_SHORT_FLAGS = false;
-}
-
-static inline void allFieldsOn(void) {
-	for (int opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
-		if (BINARY_OPTS[opt_i].is_field) {
-			BINARY_OPTS[opt_i].value = true;
-		}
-	}
-}
-
 /* ── ── setOptions() ── ─────────────────────────────────────────────────────────────────────────────────────────── */
 
 int setOptions(const int argc, char *const *const argv) {
@@ -159,7 +151,7 @@ int setOptions(const int argc, char *const *const argv) {
 			const bool turn_opt = opt[0] == '-';
 
 			// don't accept options which are just `-` or `+`
-			if (opt[2] == '\0') ERR_INVALID_OPT();
+			if (opt[1] == '\0') ERR_INVALID_OPT();
 
 			/* ————————————————————————————————— */
 
@@ -203,8 +195,8 @@ int setOptions(const int argc, char *const *const argv) {
 				/* ————————————————————————————————— */
 
 				// iterate through all possible binary flags, and turn each one on/off if they're found
-				for (BinOptIdx opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
-					BinaryOption *const bin_opt = &BINARY_OPTS[opt_i];
+				for (binoptidx_t opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
+					binopt_t *const bin_opt = &BINARY_OPTS[opt_i];
 
 					// if the char matches the defined short flag...
 					if (*chr == bin_opt->short_flag) {
@@ -369,8 +361,8 @@ int setOptions(const int argc, char *const *const argv) {
 		CLIFlag_t flag_buf;
 
 		// iterate through the binary options and check them one at a time
-		for (BinOptIdx opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
-			BinaryOption *const bin_opt = &BINARY_OPTS[opt_i];
+		for (binoptidx_t opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
+			binopt_t *const bin_opt = &BINARY_OPTS[opt_i];
 
 			// then iterate through all the possible long flags for each bin opt, and check those
 			for (int flag_i = 0; NOT_REACHED_END_OF_ARR(flag_i, bin_opt->long_flags); flag_i++) {
@@ -426,6 +418,25 @@ int setOptions(const int argc, char *const *const argv) {
 
 	// returns how many options were parsed, and therefore where the names of the files/directories start
 	return i;
+}
+
+/* —— all Opts/Fields On() ——————————————————————————————————————————— */
+
+static inline void allOptsOn(void) {
+	for (binoptidx_t opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
+		BINARY_OPTS[opt_i].value = BINARY_OPTS[opt_i].set_all;
+	}
+
+	U_DO_TINY_FLAGS	 = false,
+	U_DO_SHORT_FLAGS = false;
+}
+
+static inline void allFieldsOn(void) {
+	for (binoptidx_t opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
+		if (BINARY_OPTS[opt_i].is_field) {
+			BINARY_OPTS[opt_i].value = true;
+		}
+	}
 }
 
 /* —— Define Getter Functions —————————————————————————————————————————————————————————————————————————————————————— */

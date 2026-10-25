@@ -62,55 +62,55 @@ I just assigned flags to them cos there was one available - not cos I want it to
 #define NSF '\0' /** No short flag. */
 
 #define BINARY_OPTIONS_TABLE \
-   /*┌──────────────────┬───────┬───────┬───────┬───────────────────────────────────────────┐*/	\
-   /*│ option name		│default│ is	│ short	│ long flags								│*/	\
-   /*│					│ value	│ field	│ flag	│											│*/	\
-   /*├──────────────────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
-	X(DO_ABS			, false	, false	, 'B',	{ "absolute-path"	, "abs-path", "abs"		})	\
-	X(DO_PATH			, false	, false	, 'p',	{ "path"			, "full-path"			})	\
-	X(DO_CLEAR			, false	, false	, 'c',	{ "clear"									})	\
-	X(DO_HEADER			, false	, false	, 'H',	{ "header"			, "headers"				})	\
-	X(ABBR_PATHS		, true	, false	, '~',	{ "abbr"			, "abbr-paths"			})	\
-	X(DO_DOTFILES		, true	, false	, 'A',	{ "almost-all"								})	\
-	X(DO_DIVIDERS		, true	, false	, '_',	{ "divider"			, "dividers"			})	\
-	X(DO_MOUNTDEV		, true	, false	, 'M',	{ "mount"			, "mounts"				})	\
-	X(DO_FIRMLINKS		, true	, false	, 'X',	{ "firmlinks"		, "check-firmlinks"		})	\
-	X(LINKS_AS_DIRS		, true	, false	, NSF,	{ "links-as-dirs"	, "recurse-links"		})	\
-	X(DIRS_AS_FILES		, false	, false	, 'd',	{ "dirs-as-files"	, "no-recurse-dirs"		})	\
-	X(DO_DIM_HIDDEN		, true	, false	, '.',	{ "dim-hidden"		, "dim"					})	\
-	X(DO_MOUNT_OWNER	, true	, false	, 'O',	{ "mount-owner"								})	\
-	X(DO_SORT_INPUTS	, false	, false	, 'S',	{ "sort-input"		, "sort-inputs"			})	\
-	X(DO_DEVNO_MAJMIN	, true	, false	, 'm',	{ "devno-majmin"	, "majmin-devno"		})	\
-	X(DO_REVERSE_SORT	, false	, false	, 'r',	{ "reverse"			, "rev"					})	\
-	X(SORT_DIRS_FIRST	, true	, false	, 'D',	{ "dirs-first"		, "sort-dirs-first"		})	\
-	X(SORT_CASE_SENSIT	, false	, false	, 'C',	{ "sort-case-sensitive"						})	\
-   /*├──────────────────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
-	X(do_icon			, true	, true	, 'I',	{ "icon"			, "icons"				})	\
-	X(do_suffix			, true	, true	, 'P',	{ "suffix"			, "mark-type"			})	\
-	X(do_link_to		, true	, true	, 'k',	{ "link-to"			, "symlinks"			})	\
-	X(do_nlink			, true	, true	, 'n',	{ "nlink"									})	\
-	X(do_dev_no			, false	, true	, 'N',	{ "dev-no"			, "device-number"		})	\
-	X(do_inum			, false	, true	, 'i',	{ "inode"			, "ino"		, "inum"	})	\
-	X(do_flags			, false	, true	, 'f',	{ "flags"									})	\
-	X(do_flag_str		, true	, true	, 'F',	{ "flag-str"		, "flags-str"			})	\
-	X(do_mode			, false	, true	, 'e',	{ "mode"									})	\
-	X(do_mode_str		, true	, true	, 'E',	{ "mode-str"								})	\
-	X(do_size			, false	, true	, 'z',	{ "size"									})	\
-	X(do_size_str		, true	, true	, 'Z',	{ "size-str"								})	\
-	X(do_uid			, false	, true	, 'u',	{ "uid"										})	\
-	X(do_usr_name		, true	, true	, 'U',	{ "uid-str"			, "usr-name", "user"	})	\
-	X(do_gid			, false	, true	, 'g',	{ "gid"										})	\
-	X(do_grp_name		, true	, true	, 'G',	{ "gid-str"			, "grp-name", "group"	})	\
-	X(do_git_info		, true	, true	, NSF,	{ "git"				, "git-status"			})	\
-   /*├──────────────────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
-	X(do_time			, false	, true	, 't',	{ "time"									})	\
-	X(do_time_str		, true	, true	, 'T',	{ "time-str"								})	\
-   /*├──────────────────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
-	X(do_atime			, false	, true	, NSF,	{ "atime"									})	\
-	X(do_mtime			, true	, true	, NSF,	{ "mtime"									})	\
-	X(do_ctime			, false	, true	, NSF,	{ "ctime"									})	\
-	X(do_btime			, false	, true	, NSF,	{ "btime"									})	\
-   /*└──────────────────┴───────┴───────┴───────┴───────────────────────────────────────────┘*/
+   /*┌──────────────────┬───────┬───────┬───────┬───────┬───────────────────────────────────────────┐*/	\
+   /*│ option name		│default│ is	│ set	│ short	│ long flags								│*/	\
+   /*│					│ value	│ field	│ --all │ flag	│											│*/	\
+   /*├──────────────────┼───────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
+	X(DO_ABS			, false	, false	, false	, 'B'	, "absolute-path"	, "abs-path", "abs"		)	\
+	X(DO_PATH			, false	, false	, false	, 'p'	, "path"			, "full-path"			)	\
+	X(DO_CLEAR			, false	, false	, true	, 'c'	, "clear"									)	\
+	X(DO_HEADER			, false	, false	, true	, 'H'	, "header"			, "headers"				)	\
+	X(ABBR_PATHS		, true	, false	, true	, '~'	, "abbr"			, "abbr-paths"			)	\
+	X(DO_DOTFILES		, true	, false	, true	, 'A'	, "almost-all"								)	\
+	X(DO_DIVIDERS		, true	, false	, true	, '_'	, "divider"			, "dividers"			)	\
+	X(DO_MOUNTDEV		, true	, false	, true	, 'M'	, "mount"			, "mounts"				)	\
+	X(DO_FIRMLINKS		, true	, false	, true	, 'X'	, "firmlinks"		, "check-firmlinks"		)	\
+	X(LINKS_AS_DIRS		, true	, false	, true	, NSF	, "links-as-dirs"	, "recurse-links"		)	\
+	X(DIRS_AS_FILES		, false	, false	, false	, 'd'	, "dirs-as-files"	, "no-recurse-dirs"		)	\
+	X(DO_DIM_HIDDEN		, true	, false	, true	, '.'	, "dim-hidden"		, "dim"					)	\
+	X(DO_MOUNT_OWNER	, true	, false	, true	, 'O'	, "mount-owner"								)	\
+	X(DO_SORT_INPUTS	, false	, false	, true	, 'S'	, "sort-input"		, "sort-inputs"			)	\
+	X(DO_DEVNO_MAJMIN	, true	, false	, true	, 'm'	, "devno-majmin"	, "majmin-devno"		)	\
+	X(DO_REVERSE_SORT	, false	, false	, false	, 'r'	, "reverse"			, "rev"					)	\
+	X(SORT_DIRS_FIRST	, true	, false	, true	, 'D'	, "dirs-first"		, "sort-dirs-first"		)	\
+	X(SORT_CASE_SENSIT	, false	, false	, false	, 'C'	, "sort-case-sensitive"						)	\
+   /*├──────────────────┼───────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
+	X(do_icon			, true	, true	, true	, 'I'	, "icon"			, "icons"				)	\
+	X(do_suffix			, true	, true	, true	, 'P'	, "suffix"			, "mark-type"			)	\
+	X(do_link_to		, true	, true	, true	, 'k'	, "link-to"			, "symlinks"			)	\
+	X(do_nlink			, true	, true	, true	, 'n'	, "nlink"									)	\
+	X(do_dev_no			, false	, true	, true	, 'N'	, "dev-no"			, "device-number"		)	\
+	X(do_inum			, false	, true	, true	, 'i'	, "inode"			, "ino"		, "inum"	)	\
+	X(do_flags			, false	, true	, true	, 'f'	, "flags"									)	\
+	X(do_flag_str		, true	, true	, true	, 'F'	, "flag-str"		, "flags-str"			)	\
+	X(do_mode			, false	, true	, true	, 'e'	, "mode"									)	\
+	X(do_mode_str		, true	, true	, true	, 'E'	, "mode-str"								)	\
+	X(do_size			, false	, true	, true	, 'z'	, "size"									)	\
+	X(do_size_str		, true	, true	, true	, 'Z'	, "size-str"								)	\
+	X(do_uid			, false	, true	, true	, 'u'	, "uid"										)	\
+	X(do_usr_name		, true	, true	, true	, 'U'	, "uid-str"			, "usr-name", "user"	)	\
+	X(do_gid			, false	, true	, true	, 'g'	, "gid"										)	\
+	X(do_grp_name		, true	, true	, true	, 'G'	, "gid-str"			, "grp-name", "group"	)	\
+	X(do_git_info		, false	, true	, true	, NSF	, "git"				, "git-status"			)	\
+   /*├──────────────────┼───────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
+	X(do_time			, false	, true	, true	, 't'	, "time"									)	\
+	X(do_time_str		, true	, true	, true	, 'T'	, "time-str"								)	\
+   /*├──────────────────┼───────┼───────┼───────┼───────┼───────────────────────────────────────────┤*/	\
+	X(do_atime			, false	, true	, false	, NSF	, "atime"									)	\
+	X(do_mtime			, true	, true	, true	, NSF	, "mtime"									)	\
+	X(do_ctime			, false	, true	, false	, NSF	, "ctime"									)	\
+	X(do_btime			, false	, true	, false	, NSF	, "btime"									)	\
+   /*└──────────────────┴───────┴───────┴───────┴───────┴───────────────────────────────────────────┘*/
 
 #define SORT_BY_CHR_FLAG 's'
 #define DEPTH_CHR_FLAG	 'L'
@@ -121,9 +121,8 @@ I just assigned flags to them cos there was one available - not cos I want it to
 SortByField SORT_BY (void);	// name		│ 's'	│ "sort"  "sort-by"	│ [see `SortByField`]
 uint8_t O__DEPTH	(void);	// 1		│ 'L'	│ "depth" "level"	│ 0 -> 16
 bool DO_COLOUR		(void);	// auto		│ NSF	│ "color" "colour"	│ "", "always", "never"
-// funcs handled by `--flags`  short	│ NSF	│ "flags"			│ "long", "tiny", "short"
-bool DO_TINY_FLAGS	(void);
-bool DO_SHORT_FLAGS	(void);
+/**/						// short	│ NSF	│ "flags"			│ "long", "tiny", "short"
+bool DO_TINY_FLAGS(void), DO_SHORT_FLAGS(void); // funcs handled by `--flags`
 
 #define MAX_DEPTH O__DEPTH()
 
@@ -138,20 +137,17 @@ TimeType SORT_TIME(void);
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define X(name, ...) BO_##name,
-	typedef enum BinOptIdx { BINARY_OPTIONS_TABLE BINOPT_COUNT } BinOptIdx;
+	typedef enum binoptidx_t { BINARY_OPTIONS_TABLE BINOPT_COUNT } binoptidx_t;
 #undef X
 
 /**
- * @struct BinaryOption
- *
- * @note For some reason, if I put the `long_flags` field first, it results in an error:
- *
- *	`integer conversion resulted in truncation – C/C++(69)`
+ * @struct binopt_t
  */
-typedef struct BinaryOption {
-	bool value, is_field;
-	char short_flag, long_flags[MAX_OPT_FLAG_NUM][MAX_OPT_FLAG_LEN];
-} BinaryOption;
+typedef struct binopt_t {
+	char long_flags[MAX_OPT_FLAG_NUM][MAX_OPT_FLAG_LEN]; // 60 ⨉ 1
+	char short_flag; // 1
+	bool value, is_field, set_all; // 3 ⨉ 1
+} binopt_t; // 64 + 0 pad = 64 B
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
