@@ -26,9 +26,9 @@ function -- () {
       ( --dump           ) do_dump=1   ;;
 
       ( --no-alloc-debug | -x ) alloc_dbg=0 ;;
-      ( --debug          | -v ) mode=debug  ;;
+      ( --debug          | -d ) mode=debug  ;;
       ( --prod           | -p ) mode=prod   ;;
-      ( --dev            | -d ) mode=dev    ;;
+      ( --dev            | -v ) mode=dev    ;;
 
       ( -  ) ;;
       ( -- ) shift ;&
