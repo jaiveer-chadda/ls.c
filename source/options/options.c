@@ -158,8 +158,19 @@ int setOptions(const int argc, char *const *const argv) {
 			// turn the option on, if the first char of `opt` was '-', and off if the first char was '+'
 			const bool turn_opt = opt[0] == '-';
 
+			// don't accept options which are just `-` or `+`
+			if (opt[2] == '\0') ERR_INVALID_OPT();
+
+			/* ————————————————————————————————— */
+
 			// iterate through each of the character options, i.e. if `-abc` is passed, iterate through 'a', 'b', 'c'
 			for (const char *chr = &opt[1]; *chr != '\0'; chr++) {
+
+				// handle `-h` (print usage), and `+h` (throw error)
+				if (*chr == 'h') {
+					if (turn_opt == '-') usage(EXIT_SUCCESS);
+					THROW_ERR("unknown option: `%c%h`", turn_opt);
+				}
 
 				/* ————————————————————————————————— */
 
@@ -208,7 +219,7 @@ int setOptions(const int argc, char *const *const argv) {
 
 				// only print this error if none of the character options match
 				//	either the argument options or binary options
-				THROW_ERR("unknown option: `%c%c`", opt[0], *chr);
+				THROW_ERR("unknown option: `%c%c`", turn_opt, *chr);
 
 				next_char:
 					continue;
