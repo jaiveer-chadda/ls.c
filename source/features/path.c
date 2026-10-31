@@ -1,6 +1,7 @@
 /// @file features/path/path.c
 
 #include <errno.h>
+#include <stdio.h>
 #include <assert.h>
 #include <string.h>
 #include <unistd.h>
@@ -288,10 +289,25 @@ const char *getAbsPath(FileStat *const pFS) {
 	// the path shouldn't be larger than what can be held in `namlen_t`
 	assert(path_len <= INT16_MAX);
 
-	// reconstruct the absolute path from the parent's path and this file's name
-	char *const path = memcpy(emalloc(path_len), parent_path, parent_len); /* [alloc:abs-path] - see getPureAbsPath */
-	path[parent_len] = '/';
-	memcpy(path + parent_len + 1, pFS->name, pFS->name_len);
+	char *path;
+
+	// if the parent isn't the root directory
+	if (!(parent_len == 1 && parent_path[0] == '/')) {
+		// reconstruct the absolute path from the parent's path and this file's name
+		// copy the parent's path into the buffer
+		path = memcpy(emalloc(path_len), parent_path, parent_len); /* [alloc:abs-path] - see getPureAbsPath */
+		// then add the path separator
+		path[parent_len] = '/';
+		// then copy the file's name
+		memcpy(path + parent_len + 1, pFS->name, pFS->name_len);
+
+	} else { // if the parent _is_ the root directory
+		path_len--; // since we won't be using the parent's name, we don't have to account for its length
+		path = emalloc(path_len);
+
+		path[0] = '/'; // just add a `/` to the start of the path
+		memcpy(path + 1, pFS->name, pFS->name_len); // then append the file's name
+	}
 
 	path[path_len - 1] = '\0';
 
