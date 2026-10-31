@@ -185,61 +185,87 @@ static inline bool resolveAppleAlias(
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-TargetInfo *getLink(FileStat *const pFS) {
-	const mode_t mode = pFS->mode;
+static inline bool getLinkTargetPath(bool *const is_valid, bool *const is_apple,
+	char **const target_path, ssize_t *const target_len, FileStat *const pFS
+) {
+	*is_valid = false, *is_apple = false;
 
+	/* ———————————————————————————————————————————————————————— */
+
+	if (!S_ISLNK(pFS->mode)) {
+		// if the file's a regular file, then check if it's an apple alias - if not, then return
+		if (!resolveAppleAlias(*target_path, target_len, is_valid, pFS->abspath)) return false;
+		*is_apple = true; // if we're here, we've successfully parsed the apple alias
+		return true;
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
+	// if the file is a symlink, then simply call `readlink` on it
+	if (( *target_len = readlink(pFS->abspath, *target_path, sizeof(path_t)) ) == -1) {
+		pFS->err_no = errno;
+		return false;
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
+	// if the path is already an absolute path, then we just have to confirm that it's valid
+	if (*target_path[0] == '/' || *target_path[0] == '\0' || pFS->parent == NULL) {
+		*is_valid = FILE_EXISTS(*target_path);
+		return true;
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
+	// we need to have the absolute path to the link, so that we can access/parse links that aren't in $PWD
+	//	so we need to recreate the link's path step by step
+	const namlen_t parent_len = getPathLen(pFS->parent);
+
+	// move the link path over by enough to fit its parent's path before it
+	memmove(*target_path + parent_len + 1, *target_path, *target_len);
+	// then copy its parent's path over
+	memcpy(*target_path, pFS->parent->path, parent_len);
+	// then fill in the one-byte gap with the path separator
+	(*target_path)[parent_len] = '/';
+
+	// finally, now that we have the absolute path to the target, check if it exists
+	*is_valid = FILE_EXISTS(*target_path);
+
+	// now move the `*target_path` pointer back to where the original path starts
+	*target_path += parent_len + 1;
+
+	/* ———————————————————————————————————————————————————————— */
+
+	return true;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+TargetInfo *getLink(FileStat *const pFS) {
 	// we're looking for symlinks or apple links (which can only be regular files), so ignore everything else
-	if (!(S_ISLNK(mode) || S_ISREG(mode))
+	if (!(S_ISLNK(pFS->mode) || S_ISREG(pFS->mode))
 		// also ignore dataless files - we don't want to try and read them if they're not dowloaded locally
 		|| pFS->s == NULL || pFS->s->st_flags & SF_DATALESS
 	) return NULL;
 
 	/* ———————————————————————————————————————————————————————— */
 
-	path_t abs_tg_path = {0};
-	char *target_path = abs_tg_path;
+	/**
+	 * @brief This variable just exists as a buffer to be referenced by `target_path`.
+	 *	It's easier & quicker than allocating heap memory for it.
+	 *	It shouldn't be (and isn't) referenced by anything else.
+	 */
+	path_t pbuf__ = {0};
+	char *target_path = pbuf__;
 
-	ssize_t target_len = 0;
-	bool is_valid = false, is_apple = false;
+	ssize_t target_len;
+	bool is_valid, is_apple;
 
-	if (S_ISLNK(mode)) {
-		// if the file is a symlink, then simply call `readlink` on it
-		if (( target_len = readlink(pFS->abspath, target_path, sizeof(path_t)) ) == -1) {
-			pFS->err_no = errno;
-			return NULL;
-		}
-
-		// we need to have the absolute path to the link, so that we can access/parse links that aren't in $PWD
-		//	so we need to recreate the link's path step by step
-		if (target_path[0] != '/' && target_path[0] != '\0' && pFS->parent != NULL) {
-			const namlen_t parent_len = getPathLen(pFS->parent);
-
-			// move the link path over by enough to fit its parent's path before it
-			memmove(target_path + parent_len + 1, target_path, target_len);
-			// then copy its parent's path over
-			memcpy(target_path, pFS->parent->path, parent_len);
-			// then fill in the one-byte gap with the path separator
-			target_path[parent_len] = '/';
-
-			// finally, now that we have the absolute path to the target, check if it exists
-			is_valid = FILE_EXISTS(target_path);
-
-			// now move the `target_path` pointer back to where the original path starts
-			target_path += parent_len + 1;
-
-		} else {
-			is_valid = FILE_EXISTS(target_path);
-		}
-
-	} else {
-		// if the file's a regular file, then check if it's an apple alias - if not, then return
-		if (!resolveAppleAlias(target_path, &target_len, &is_valid, pFS->abspath)) return NULL;
-		is_apple = true; // if we're here, we've successfully parsed the apple alias
-	}
+	if (!getLinkTargetPath(&is_valid, &is_apple, &target_path, &target_len, pFS)) return NULL;
 
 	/* ———————————————————————————————————————————————————————— */
 
-	// this memory is freed once the target is printed (in `print_link()`)
+	// this memory is freed once the target is printed
 	TargetInfo *const tg_info = ecalloc(1, sizeof(TargetInfo)); /* [alloc:targinfo] - freed in `printFile` */
 	memcpy(tg_info->path, target_path, target_len);
 
@@ -252,9 +278,9 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	struct stat tg_stat = {0};
 	// when statting the file, use the absolute path - we won't be able to guarantee the information otherwise
-	if (lstat(abs_tg_path, &tg_stat) == -1) return tg_info;
+	if (lstat(target_path, &tg_stat) == -1) return tg_info;
 
-	tg_info->mount	= getMountPoint(abs_tg_path, S_ISDIR(tg_stat.st_mode));
+	tg_info->mount	= getMountPoint(target_path, S_ISDIR(tg_stat.st_mode));
 	tg_info->suffix = getTypeSuffix(tg_stat.st_mode);
 	tg_info->colour = setFileColour(tg_info->path, tg_stat.st_mode, tg_info->mount, &tg_stat);
 

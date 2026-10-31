@@ -247,7 +247,7 @@ function -- () {
 
   # if everything compiled, and the function ran without errors,
   #  then copy the binary into `$CS/bin`
-  cp "$TARGET" "$CS/bin/${TARGET##*/}"
+  if [[ $mode == 'prod' ]] cp "$TARGET" "$CS/bin/${TARGET##*/}"
 
   # —— Return ——————————————————————————————————————————————————————————————— #
 
