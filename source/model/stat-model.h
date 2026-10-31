@@ -111,12 +111,13 @@ struct FileStatFields {
  * @var TargetInfo::is_apple Whether the source of this link is a symbolic link, or an Apple alias file.
  */
 struct TargetInfo {
-	path_t			path	; // 1024	/** The contents of the link (usually the absolute path to the target file). */
+	path_t			abspath	; // 1024	/** The absolute path to the target file. */
 	const MountInfo	*mount	; // 8		/** Information about a mount point. NULL if target isn't a mount point. */
 	FileColour		colour	; // 4		/** The colour that the file should be displayed in. */
+	namlen_t		path_off; // 2		/** The point in `abspath` where the raw `readlink`ed name begins. */
 	char			suffix	; // 1		/** The symbol to be shown after the target's name. */
 	bool			is_apple; // 1		/** Whether the link that pointed to this target was an apple alias. */
-}; // 1038 + 2 pad = 1040 B
+}; // 1040 + 0 pad = 1040 B
 
 /* —— MountInfo ———————————————————————————————————————————————————————————————————————————————————————————————————— */
 

@@ -63,6 +63,7 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 	// run `lstat` on the path
 	if (lstat(pFS_child->abspath, pFS_child->s) == -1) {
 		// if it fails, note down the errno
+		debug(WARNING, "errno set - %s", pFS_child->abspath);
 		pFS_child->err_no = errno;
 
 		// free the memory we allocated for the file's `stat` object
@@ -89,7 +90,7 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 	// if the file is a link, open the link's target instead of the file - symlinks will work fine, but it's
 	//	especially important to do for apple aliases, since they won't automatically be interpreted as directories
 	const bool do_open_alias_link = ((S_ISLNK(pFS_dir->mode) || S_ISREG(pFS_dir->mode)) && isFSDir(pFS_dir));
-	const char *const dir_to_open = do_open_alias_link ? pFS_dir->f->target->path : pFS_dir->abspath;
+	const char *const dir_to_open = do_open_alias_link ? pFS_dir->f->target->abspath : pFS_dir->abspath;
 
 	// firstly, open the directory and get a pointer to a `DIR` object
 	//	note: we can't get any info from `DIR`, it's use is to be passed into other functions
@@ -99,6 +100,7 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 		// set the number of children to -1, so we know the difference between having 0 children,
 		//	and not being able to search for children
 		pFS_dir->f->child_count = -1;
+		debug(WARNING, "errno set - %s", dir_to_open);
 		pFS_dir->err_no = errno;
 
 		// even though we didn't get any of the dir's contents, this shouldn't be too bad for the base directory itself

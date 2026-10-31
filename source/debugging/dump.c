@@ -79,7 +79,7 @@ void d__dump(const FileStat *const fs) {
 
 		err("    "T" "V(TargetInfo) S"target"E PTR, ptr(fsf->target));
 		if (fsf->target != NULL) {
-			err("    "I"  "T     CHAR "   " S "path    "E STR    , str(fsf->target->path)      );
+			err("    "I"  "T     CHAR "   " S "path    "E STR    , str(fsf->target->abspath)   );
 			err("    "I"  "T" "V(FileColour) " colour  "E NUM(%u), fsf->target->colour         );
 			err("    "I"  "T     CHAR   "      suffix  "E CHR    , fsf->target->suffix         );
 			err("    "I"  "O     BOOL   "      is_apple"E"%s"    , pbool(fsf->target->is_apple));
