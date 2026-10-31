@@ -46,8 +46,10 @@ function -- () {
 
   local -r _alloc_debugger="$_source/utils/malloc/malloc.py"
 
+  local -r _temp_dir="$( mktemp -d )"
+
   local -r _log_file="$_proj_root/logs/allocations.log"
-  local -r _log_pipe="$_proj_root/logs/allocations.fifo"
+  local -r _log_pipe="$_temp_dir/allocations.fifo"
 
   local -r CC='clang'
   local -a CFLAGS=( )
@@ -218,6 +220,7 @@ function -- () {
   # —— Run Program ————————————————————————————————————— #
 
   if [[ "$mode" == 'debug' && "$alloc_dbg" -eq 1 ]] {
+    mkfifo "$_log_pipe"
     "$_alloc_debugger" "$_log_pipe" &
     local -ri 10 debugger_pid=$!
   }
@@ -231,6 +234,10 @@ function -- () {
     if [[ "$mode" == 'debug' && "$alloc_dbg" -eq 1 ]] {
       if (( retcode == 0 )) { =kill -s SIGINFO $debugger_pid; } \
       else                  { =kill -s SIGTERM $debugger_pid; }
+
+      { command rm -f "$_log_pipe"
+        command rmdir "$_temp_dir"
+      } || echo -E "warning: failed to delete \`$_log_pipe\`" >&2
     }
   }
 
