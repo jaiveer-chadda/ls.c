@@ -114,6 +114,7 @@ static inline bool stopRecursing(const FileStat *const pFS, const uint8_t depth,
 	return ( // stop recursing if ...
 		fileError(pFS, depth, new_lines)	// the file raised an error while parsing/processing,
 		|| !isFSDir(pFS)					// the file isn't a directory,
+		|| (pFS->s->st_flags & SF_DATALESS) // the file/directory is dataless,
 		|| (depth) + 1 > MAX_DEPTH			// we've reached the user's chosen recursion level,
 		|| dirEmpty(pFS, depth, new_lines)	// we're trying to recurse into an empty directory
 	);

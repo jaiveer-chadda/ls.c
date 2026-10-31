@@ -180,7 +180,7 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 		parseFile(pFS_child);
 
 		// now that the child's been processed & parsed, check if we should recurse into it to calculate deeper
-		if (isFSDir(pFS_child) && depth + 1 <= MAX_DEPTH && pFS_child->f != NULL) {
+		if (isFSDir(pFS_child) && depth + 1 <= MAX_DEPTH && !(pFS_child->s->st_flags & SF_DATALESS)) {
 			// if we should, then process the child in the same way we processed this dir
 			processDir(pFS_child, depth + 1);
 		}
@@ -275,8 +275,9 @@ FileStat *processInput(char *const path) {
 	parseFile(pFS);
 
 	// if the input was just a file, i.e. not a dir (or if we're treating dirs as if they were files),
+	//	or if we've reached the max depth, or the directory is dataless
 	//	then there's nothing else to do at this stage - send it off for parsing
-	if (isFSDir(pFS) && MAX_DEPTH != 0) {
+	if (isFSDir(pFS) && !(MAX_DEPTH == 0 || pFS->s->st_flags & SF_DATALESS)) {
 		// if the input was a directory, however, we need to find & process its children
 		output = processDir(pFS, 1);
 	}
