@@ -185,29 +185,31 @@ static inline bool resolveAppleAlias(
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline bool getLinkTargetPath(bool *const is_valid, bool *const is_apple,
-	char **const target_path, ssize_t *const target_len, FileStat *const pFS
+static inline bool getLinkTargetPath(
+	bool *const is_valid, bool *const is_apple, uint8_t *const err_no,
+	char **const target_path, ssize_t *const target_len,
+	const mode_t mode, const char *const abspath, const FileStat *const parent
 ) {
 	*is_valid = false, *is_apple = false;
 
 	/* ———————————————————————————————————————————————————————— */
 
-	if (S_ISREG(pFS->mode)) {
+	if (S_ISREG(mode)) {
 		// if the file's a regular file, then check if it's an apple alias - if not, then return
-		if (!resolveAppleAlias(*target_path, target_len, is_valid, pFS->abspath)) return false;
+		if (!resolveAppleAlias(*target_path, target_len, is_valid, abspath)) return false;
 		*is_apple = true; // if we're here, we've successfully parsed the apple alias
 		return true;
 	}
 
 	/* ———————————————————————————————————————————————————————— */
 
-	assert(S_ISLNK(pFS->mode));
+	assert(S_ISLNK(mode));
 	errno = 0;
 
 	// if the file is a symlink, then simply call `readlink` on it
-	if (( *target_len = readlink(pFS->abspath, *target_path, sizeof(path_t)) ) == -1) {
+	if (( *target_len = readlink(abspath, *target_path, sizeof(path_t)) ) == -1) {
 		debug(WARNING, "errno set");
-		pFS->err_no = errno;
+		*err_no = errno;
 		return false;
 	}
 
@@ -233,20 +235,20 @@ static inline bool getLinkTargetPath(bool *const is_valid, bool *const is_apple,
 	namlen_t parent_len;
 
 	// if the link file doesn't have a parent, then we have to figure it out manually
-	if (pFS->parent == NULL) {
-		const char *const basename = strrchr(pFS->abspath, '/');
+	if (parent == NULL) {
+		const char *const basename = strrchr(abspath, '/');
 
 		if (basename == NULL) {
 			parent_path = "";
 			parent_len = 0;
 		} else {
-			parent_path = pFS->abspath;
-			parent_len = (namlen_t)(basename - pFS->abspath);
+			parent_path = abspath;
+			parent_len = (namlen_t)(basename - abspath);
 		}
 
 	} else {
-		parent_path = pFS->parent->path;
-		parent_len = getPathLen(pFS->parent);
+		parent_path = parent->path;
+		parent_len = getPathLen(parent);
 	}
 
 	/* ———————————————————————————————————————————————————————— */
@@ -274,11 +276,15 @@ static inline bool getLinkTargetPath(bool *const is_valid, bool *const is_apple,
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-TargetInfo *getLink(FileStat *const pFS) {
+static inline TargetInfo *getLink_internal(
+	uint8_t *const err_no, bool *const is_apple,
+	const mode_t mode, const flag_t flags, const FileStat *const parent, const char *const abspath
+) {
+
 	// we're looking for symlinks or apple links (which can only be regular files), so ignore everything else
-	if (!(S_ISLNK(pFS->mode) || S_ISREG(pFS->mode))
+	if (!(S_ISLNK(mode) || S_ISREG(mode))
 		// also ignore dataless files - we don't want to try and read them if they're not dowloaded locally
-		|| pFS->s == NULL || pFS->s->st_flags & SF_DATALESS
+		|| flags & SF_DATALESS
 	) return NULL;
 
 	/* ———————————————————————————————————————————————————————— */
@@ -287,9 +293,13 @@ TargetInfo *getLink(FileStat *const pFS) {
 	char * target_path = abs_tg_path;
 
 	ssize_t target_len;
-	bool is_valid, is_apple;
+	bool is_valid;
 
-	if (!getLinkTargetPath(&is_valid, &is_apple, &target_path, &target_len, pFS)) return NULL;
+	if (!getLinkTargetPath(
+		&is_valid, is_apple, err_no,
+		&target_path, &target_len,
+		mode, abspath, parent
+	)) return NULL;
 
 	/* ———————————————————————————————————————————————————————— */
 
@@ -314,6 +324,21 @@ TargetInfo *getLink(FileStat *const pFS) {
 	target->suffix = getTypeSuffix(targ_stat.st_mode);
 	target->colour = setFileColour(target->abspath, targ_stat.st_mode, target->mount, &targ_stat);
 
+	return target;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+TargetInfo *getLink(FileStat *const pFS) {
+
+	bool is_apple = false;
+	const flag_t flags = pFS->s ? pFS->s->st_flags : 0;
+
+	TargetInfo *const target = getLink_internal(
+		&pFS->err_no, &is_apple,
+		pFS->mode, flags, pFS->parent, pFS->abspath
+	);
+
 	/* ———————————————————————————————————————————————————————— */
 
 	// if this link is an apple alias, then we have to update its absolute path
@@ -329,6 +354,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 	return target;
 }
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_link(const FileStat *const pFS) {
