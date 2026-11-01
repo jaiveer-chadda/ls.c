@@ -65,6 +65,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	if (pFS->path != pFS->name && depth != 0) efree((void*)pFS->path);	/* [free:filepath] - alloced in getPath		 */
 	if (pFS->abspath != pFS->name) efree((void*)pFS->abspath);			/* [free:abs-path] - alloced in getAbsPath	 */
 	if (pFS->f != NULL) efree((void*)pFS->f->children);					/* [free:children] - alloced in processDir	 */
+	// `target` can't be freed earlier, since its needed by `isFSDir` in `stopRecursing`
 	if (pFS->f != NULL) efree((void*)pFS->f->target);					/* [free:targinfo] - alloced in getLink		 */
 	efree((void*)pFS->f);												/* [free:filestat] - alloced in processChild */
 	efree((void*)pFS->s);												/* [free:fsstat]   - alloced in processChild */
@@ -114,7 +115,7 @@ static inline bool stopRecursing(const FileStat *const pFS, const uint8_t depth,
 	return ( // stop recursing if ...
 		fileError(pFS, depth, new_lines)	// the file raised an error while parsing/processing,
 		|| !isFSDir(pFS)					// the file isn't a directory,
-		|| (pFS->s->st_flags & SF_DATALESS) // the file/directory is dataless,
+		|| (pFS->s->st_flags & SF_DATALESS)	// the file/directory is dataless,
 		|| (depth) + 1 > MAX_DEPTH			// we've reached the user's chosen recursion level,
 		|| dirEmpty(pFS, depth, new_lines)	// we're trying to recurse into an empty directory
 	);

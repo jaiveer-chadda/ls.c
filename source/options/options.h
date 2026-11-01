@@ -75,9 +75,10 @@ I just assigned flags to them cos there was one available - not cos I want it to
 	X(DO_DIVIDERS		, true	, false	, true	, '_'	, "divider"			, "dividers"			)	\
 	X(DO_MOUNTDEV		, true	, false	, true	, 'M'	, "mount"			, "mounts"				)	\
 	X(DO_FIRMLINKS		, true	, false	, true	, 'X'	, "firmlinks"		, "check-firmlinks"		)	\
-	X(LINKS_AS_DIRS		, true	, false	, true	, NSF	, "links-as-dirs"	, "recurse-links"		)	\
+	X(LINKS_AS_DIRS		, true	, false	, true	, NSF	, "links-as-dirs"							)	\
 	X(DIRS_AS_FILES		, false	, false	, false	, 'd'	, "dirs-as-files"	, "no-recurse-dirs"		)	\
 	X(DO_DIM_HIDDEN		, true	, false	, true	, '.'	, "dim-hidden"		, "dim"					)	\
+	X(LINKS_TO_LINKS	, true	, false	, true	, NSF	, "links-to-links"	, "recurse-links"		)	\
 	X(DO_MOUNT_OWNER	, true	, false	, true	, 'O'	, "mount-owner"								)	\
 	X(DO_SORT_INPUTS	, false	, false	, true	, 'S'	, "sort-input"		, "sort-inputs"			)	\
 	X(DO_DEVNO_MAJMIN	, true	, false	, true	, 'm'	, "devno-majmin"	, "majmin-devno"		)	\

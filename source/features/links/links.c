@@ -6,6 +6,7 @@
 
 #include "malloc.h"
 #include "debugging.h"
+#include "options/options.h" // LINKS_TO_LINKS()
 #include "features/features.h" // FILE_EXISTS()
 
 /* ── Definitions & Declarations ─────────────────────────────────────────────────────────────────────────────────── */
@@ -112,7 +113,7 @@ static inline bool getLinkTargetPath(
 
 static inline TargetInfo *getLink_internal(
 	uint8_t *const err_no, bool *const is_apple,
-	const mode_t mode, const flag_t flags, const FileStat *const parent, const char *const abspath
+	const mode_t mode, const flag_t flags, const FileStat *const parent, const char *const abspath, const uint8_t depth
 ) {
 
 	/* —— Prune Non-Link Files ———————————————————————————————— */
@@ -123,8 +124,8 @@ static inline TargetInfo *getLink_internal(
 
 	/* —— Get Target's Absolute Path —————————————————————————— */
 
-	path_t abs_tg_path = {0};
-	char * target_path = abs_tg_path;
+	path_t targ_abspath = {0};
+	char *target_path = targ_abspath;
 
 	ssize_t target_len;
 	bool is_valid;
@@ -140,10 +141,10 @@ static inline TargetInfo *getLink_internal(
 	// this memory is freed once the target is printed
 	TargetInfo *const target = ecalloc(1, sizeof(TargetInfo)); /* [alloc:targinfo] - freed in `printFile` */
 
-	strlcpy(target->abspath, abs_tg_path, sizeof(path_t));
-	target->path_off = (namlen_t)(target_path - abs_tg_path);
+	strlcpy(target->abspath, targ_abspath, sizeof(path_t));
+	target->path_off = (namlen_t)(target_path - targ_abspath);
 
-	target->is_apple = is_apple;
+	target->is_apple = *is_apple;
 	target->suffix = INVALID_LINK;
 
 	if (!is_valid) return target;
@@ -152,11 +153,20 @@ static inline TargetInfo *getLink_internal(
 
 	struct stat targ_stat = {0};
 	// when statting the file, use the absolute target path - we won't be able to guarantee the information otherwise
-	if (lstat(abs_tg_path, &targ_stat) == -1) return target;
+	if (lstat(targ_abspath, &targ_stat) == -1) return target;
 
-	target->mount  = getMountPoint(abs_tg_path, S_ISDIR(targ_stat.st_mode));
+	target->mount  = getMountPoint(targ_abspath, S_ISDIR(targ_stat.st_mode));
 	target->suffix = getTypeSuffix(targ_stat.st_mode);
 	target->colour = setFileColour(target->abspath, targ_stat.st_mode, target->mount, &targ_stat);
+
+	/* —— Recurse ————————————————————————————————————————————— */
+
+	if (LINKS_TO_LINKS() && depth < MAXSYMLINKS) {
+		bool r_is_apple = false;
+		target->target = getLink_internal(
+			err_no, &r_is_apple, targ_stat.st_mode, targ_stat.st_flags, /*parent*/ NULL, targ_abspath, depth + 1
+		);
+	}
 
 	/* —— Return —————————————————————————————————————————————— */
 
@@ -175,7 +185,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	TargetInfo *const target = getLink_internal(
 		&pFS->err_no, &is_apple,
-		pFS->mode, flags, pFS->parent, pFS->abspath
+		pFS->mode, flags, pFS->parent, pFS->abspath, /*depth*/ 0
 	);
 
 	/* —— Set Abspath if Apple ———————————————————————————————— */

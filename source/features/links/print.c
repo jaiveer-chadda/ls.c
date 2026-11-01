@@ -3,15 +3,16 @@
 #include <stdio.h>
 #include <string.h> // strerror(), strncpy()
 
+#include "malloc.h"
 #include "output/output.h"
+#include "options/options.h" // LINKS_TO_LINKS()
 #include "features/features.h" // getBasename(), print_mount()
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void print_link(const FileStat *const pFS) {
-	if (pFS->f == NULL || (pFS->f->target == NULL && !S_ISLNK(pFS->mode))) return;
+static inline void print_link_internal(const TargetInfo *const target, const suff_t suffix, const uint8_t err_no) {
 
-	const TargetInfo *const target = pFS->f->target;
+	if (target == NULL && suffix != SYMLINK_SUFFIX) return;
 
 	/* —— Target Error ———————————————————————————————————————— */
 
@@ -22,9 +23,9 @@ void print_link(const FileStat *const pFS) {
 			*const error_ansi = getcol(LINK_ERR_MSG_COL		);
 
 		printf("%s%s%s[ "  "%serror %hu%s:"  "%s %s %s]",
-			arrow_ansi, EACCES_ARROW		 , punct_ansi,
-			error_ansi, pFS->err_no			 , punct_ansi,
-			error_ansi, strerror(pFS->err_no), punct_ansi
+			arrow_ansi, EACCES_ARROW	, punct_ansi,
+			error_ansi, err_no			, punct_ansi,
+			error_ansi, strerror(err_no), punct_ansi
 		);
 
 		setActive(LINK_ERR_PUNCT_COL);
@@ -74,6 +75,19 @@ void print_link(const FileStat *const pFS) {
 
 	// print info about the target's mount device / mounted filesystems
 	print_mount(target->mount);
+
+	/* —— Recurse ————————————————————————————————————————————— */
+
+	if (LINKS_TO_LINKS()) {
+		print_link_internal(target->target, target->suffix, err_no);
+		efree(target->target);
+	}
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+void print_link(const FileStat *const pFS) {
+	if (pFS->f != NULL) print_link_internal(pFS->f->target, pFS->mode, pFS->err_no);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
