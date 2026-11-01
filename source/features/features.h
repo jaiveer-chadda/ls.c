@@ -3,6 +3,8 @@
 #ifndef FEATURES_H
 #define FEATURES_H
 
+#include <unistd.h> // access(), F_OK
+
 #include "model/types.h"
 #include "graphics/graphics.h"
 
@@ -36,7 +38,7 @@ void print_mount(const MountInfo *const mount);
 char *parseFlags(FileStat *const pFS);
 void freeFirmlinks(void);
 
-/* —— git.c ———————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— git/ ————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define GIT_NO_STATUS ((git_status_t)(-1))
 #define STRLEN(str) ((size_t)(sizeof((str)) - 1))
@@ -49,8 +51,9 @@ const GitInfo *getGitInfo(const FileStat *const pFS);
 void processInum(const ino_t inum);
 void freeInums(void);
 
-/* —— links.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— links/ ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define FILE_EXISTS(path) (access((path), F_OK) == 0)
 TargetInfo *getLink(FileStat *const pFS);
 
 /* —— mode.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */

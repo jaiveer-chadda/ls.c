@@ -1,0 +1,190 @@
+/// @file features/links/links.c
+
+#include <errno.h>
+#include <assert.h>
+#include <string.h> // strlcpy(), strrchr(), strlen(), memcpy(), memmove()
+
+#include "malloc.h"
+#include "debugging.h"
+#include "features/features.h" // FILE_EXISTS()
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+bool resolveAppleAlias(
+	path_t target_buffer, ssize_t *const target_len,
+	bool *const is_valid_alias, const path_t alias_path
+); // defined in features/links/apple.c
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline bool getLinkTargetPath(
+	bool *const is_valid, bool *const is_apple, uint8_t *const err_no,
+	char **const target_path, ssize_t *const target_len,
+	const mode_t mode, const char *const abspath, const FileStat *const parent
+) {
+	*is_valid = false, *is_apple = false;
+
+	/* ———————————————————————————————————————————————————————— */
+
+	if (S_ISREG(mode)) {
+		// if the file's a regular file, then check if it's an apple alias - if not, then return
+		if (!resolveAppleAlias(*target_path, target_len, is_valid, abspath)) return false;
+		*is_apple = true; // if we're here, we've successfully parsed the apple alias
+		return true;
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
+	assert(S_ISLNK(mode));
+	errno = 0;
+
+	// if the file is a symlink, then simply call `readlink` on it
+	if (( *target_len = readlink(abspath, *target_path, sizeof(path_t)) ) == -1) {
+		debug(WARNING, "errno set");
+		*err_no = errno;
+		return false;
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
+	// empty link target
+	if ((*target_path)[0] == '\0') {
+		*is_valid = false;
+		return true;
+	}
+
+	// if the path is already an absolute path, then we just have to confirm that it's valid
+	if ((*target_path)[0] == '/') {
+		*is_valid = FILE_EXISTS(*target_path);
+		return true;
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
+	// we now know that the path is a relative path
+
+	const char *parent_path;
+	namlen_t parent_len;
+
+	// if the link file doesn't have a parent, then we have to figure it out manually
+	if (parent == NULL) {
+		const char *const basename = strrchr(abspath, '/');
+
+		if (basename == NULL) {
+			parent_path = "";
+			parent_len = 0;
+		} else {
+			parent_path = abspath;
+			parent_len = (namlen_t)(basename - abspath);
+		}
+
+	} else {
+		parent_path = parent->path;
+		parent_len = getPathLen(parent);
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
+	// we need to have the absolute path to the link, so that we can access/parse links that aren't in $PWD
+	//	so we need to recreate the link's path step by step
+
+	// move the link path over by enough to fit its parent's path before it
+	memmove(*target_path + parent_len + 1, *target_path, *target_len);
+	// then copy its parent's path over
+	memcpy(*target_path, parent_path, parent_len);
+	// then fill in the one-byte gap with the path separator
+	(*target_path)[parent_len] = '/';
+
+	// finally, now that we have the absolute path to the target, check if it exists
+	*is_valid = FILE_EXISTS(*target_path);
+
+	// now move the `*target_path` pointer back to where the original path starts
+	*target_path += parent_len + 1;
+
+	/* ———————————————————————————————————————————————————————— */
+
+	return true;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+static inline TargetInfo *getLink_internal(
+	uint8_t *const err_no, bool *const is_apple,
+	const mode_t mode, const flag_t flags, const FileStat *const parent, const char *const abspath
+) {
+
+	// we're looking for symlinks or apple links (which can only be regular files), so ignore everything else
+	if (!(S_ISLNK(mode) || S_ISREG(mode))
+		// also ignore dataless files - we don't want to try and read them if they're not dowloaded locally
+		|| flags & SF_DATALESS
+	) return NULL;
+
+	/* ———————————————————————————————————————————————————————— */
+
+	path_t abs_tg_path = {0};
+	char * target_path = abs_tg_path;
+
+	ssize_t target_len;
+	bool is_valid;
+
+	if (!getLinkTargetPath(
+		&is_valid, is_apple, err_no,
+		&target_path, &target_len,
+		mode, abspath, parent
+	)) return NULL;
+
+	/* ———————————————————————————————————————————————————————— */
+
+	// this memory is freed once the target is printed
+	TargetInfo *const target = ecalloc(1, sizeof(TargetInfo)); /* [alloc:targinfo] - freed in `printFile` */
+
+	strlcpy(target->abspath, abs_tg_path, sizeof(path_t));
+	target->path_off = (namlen_t)(target_path - abs_tg_path);
+
+	target->is_apple = is_apple;
+	target->suffix = INVALID_LINK;
+
+	if (!is_valid) return target;
+
+	/* ———————————————————————————————————————————————————————— */
+
+	struct stat targ_stat = {0};
+	// when statting the file, use the absolute target path - we won't be able to guarantee the information otherwise
+	if (lstat(abs_tg_path, &targ_stat) == -1) return target;
+
+	target->mount	= getMountPoint(abs_tg_path, S_ISDIR(targ_stat.st_mode));
+	target->suffix = getTypeSuffix(targ_stat.st_mode);
+	target->colour = setFileColour(target->abspath, targ_stat.st_mode, target->mount, &targ_stat);
+
+	return target;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+TargetInfo *getLink(FileStat *const pFS) {
+
+	bool is_apple = false;
+	const flag_t flags = pFS->s ? pFS->s->st_flags : 0;
+
+	TargetInfo *const target = getLink_internal(
+		&pFS->err_no, &is_apple,
+		pFS->mode, flags, pFS->parent, pFS->abspath
+	);
+
+	/* ———————————————————————————————————————————————————————— */
+
+	// if this link is an apple alias, then we have to update its absolute path
+	//	otherwise we won't be able to recurse into it if we need to
+	/// @todo make sure this doesn't interfere with any other processing that uses a file's `abspath`
+	if (is_apple) {
+		efree((void*)pFS->abspath); // free the old path so we don't have a memory leak
+		// the length of `target->abspath` is only needed once - here - so it's fine that we use `strlen` on it
+		getPureAbsPath(&pFS->abspath, &pFS->abs_len, target->abspath, strlen(target->abspath));
+	}
+
+	/* ———————————————————————————————————————————————————————— */
+
+	return target;
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
