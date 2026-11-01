@@ -59,7 +59,7 @@ struct FileStat {
 	bool		has_xat	; // 1 /** Whether this file has extended attributes. */
 	bool		has_acl	; // 1 /** Whether this file has an access control list. */
 	suff_t		suffix	; // 1 /** The symbol to be shown after a filename. From: `/` `@` `*` `=` `|` `%`. */
-	uint8_t		err_no	; // 1 /** The `errno` of a file if it fails to process for some reason. */
+	error_t		err_no	; // 1 /** The `errno` of a file, if it fails to process for some reason. */
 
 	FileColour	file_col; // 4 /** The colour which the file should be printed in. */
 	icon_t		icon	; // 4 /** The icon to be shown before a filename. */

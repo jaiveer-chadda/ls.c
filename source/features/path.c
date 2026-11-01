@@ -33,7 +33,7 @@ static inline const char *getPWD(size_t *const len) {
 
 	static char *PWD = NULL;
 	static size_t PWD_len = 0;
-	static uint8_t PWD_errno = 0;
+	static error_t PWD_errno = 0;
 
 	/* —— return cached data ————————————————————————— */
 

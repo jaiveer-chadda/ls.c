@@ -13,7 +13,40 @@
 #include <sys/stat.h>
 #include <sys/mount.h>
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#include <errno.h>
+
+#ifdef ELAST
+#	if UINT8_MAX >= ELAST
+#		define error_t__ uint8_t
+#		define ERROR_T_FMT "hhu"
+#	elif UINT16_MAX >= ELAST
+#		define error_t__ uint16_t
+#		define ERROR_T_FMT "hu"
+#	else
+#		define error_t__ unsigned int
+#		define ERROR_T_FMT "u"
+#	endif
+#else
+#	define error_t__ unsigned int
+#	define ERROR_T_FMT "u"
+#	if __STDC_VERSION__ >= 202300L
+#		warning ELAST not defined
+#	else
+#		pragma message "ELAST not defined"
+#	endif
+#endif
+
+typedef error_t__ error_t; /** An unsigned integer guaranteed to be large enough to hold an `errno`. */
+
+#undef error_t__
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 #include "consts.h"
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define st_btimespec st_birthtimespec
 #define st_btime	 st_btimespec.tv_sec

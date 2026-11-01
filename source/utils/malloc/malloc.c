@@ -23,7 +23,7 @@
 #	define DIFF_FMT(chr)	" [" #chr "=%3zu %lc=%3zd] "
 
 #	define tolog(fpath, mode, fmt, ...) do {							\
-		const int err_no = errno;										\
+		const error_t err_no = errno;									\
 		FILE *const log_file = fopen(fpath, first_write ? "w" : mode);	\
 		first_write = false;											\
 		\

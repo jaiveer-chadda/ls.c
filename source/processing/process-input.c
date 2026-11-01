@@ -257,7 +257,7 @@ FileStat *processInput(char *const path) {
 	//	whether its a directory or not, so we might as well store the stat information if we have it
 	// pass the absolute path, however, if `getPureAbsPath` failed, fall back to the original input path
 	if (lstat(( abs_path ? abs_path : path ), pFS->s) == -1) {
-		if (errno == ENOENT) { /** @todo handle */ }
+		if (errno == (error_t)ENOENT) { /** @todo handle */ }
 
 		// if it fails, free all the allocated memory, print an error, and move onto the next file
 		efree((void*)pFS->abspath);

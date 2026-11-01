@@ -20,7 +20,7 @@ bool resolveAppleAlias(
 /* ── ── getLinkTargetPath() ── ──────────────────────────────────────────────────────────────────────────────────── */
 
 static inline bool getLinkTargetPath(
-	bool *const is_valid, bool *const is_apple, uint8_t *const err_no,
+	bool *const is_valid, bool *const is_apple, error_t *const err_no,
 	char **const target_path, ssize_t *const target_len,
 	const mode_t mode, const char *const abspath, const FileStat *const parent
 ) {
@@ -112,7 +112,7 @@ static inline bool getLinkTargetPath(
 /* ── ── getLink_internal() ── ───────────────────────────────────────────────────────────────────────────────────── */
 
 static inline TargetInfo *getLink_internal(
-	uint8_t *const err_no, bool *const is_apple,
+	error_t *const err_no, bool *const is_apple,
 	const mode_t mode, const flag_t flags, const FileStat *const parent, const char *const abspath, const uint8_t depth
 ) {
 

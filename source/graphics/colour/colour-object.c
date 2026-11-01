@@ -319,7 +319,7 @@ static inline int d_snprintf(char *restrict str, size_t size, const char *restri
 	va_start(va_args, format);
 
 	const int f_retcode = vsnprintf(str, size, format, va_args);
-	const int f_errno = errno;
+	const error_t f_errno = errno;
 	va_end(va_args);
 
 	if ((size_t)f_retcode >= size || f_retcode == EOF) {

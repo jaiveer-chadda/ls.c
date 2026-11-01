@@ -10,7 +10,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline void print_link_internal(const TargetInfo *const target, const suff_t suffix, const uint8_t err_no) {
+static inline void print_link_internal(const TargetInfo *const target, const suff_t suffix, const error_t err_no) {
 
 	if (target == NULL && suffix != SYMLINK_SUFFIX) return;
 
@@ -22,7 +22,9 @@ static inline void print_link_internal(const TargetInfo *const target, const suf
 			*const punct_ansi = getcol(LINK_ERR_PUNCT_COL	),
 			*const error_ansi = getcol(LINK_ERR_MSG_COL		);
 
-		printf("%s%s%s[ "  "%serror %hu%s:"  "%s %s %s]",
+		printf("%s%s%s[ "
+			/**/		"%serror %"ERROR_T_FMT"%s:"
+			/**/								  "%s %s %s]",
 			arrow_ansi, EACCES_ARROW	, punct_ansi,
 			error_ansi, err_no			, punct_ansi,
 			error_ansi, strerror(err_no), punct_ansi

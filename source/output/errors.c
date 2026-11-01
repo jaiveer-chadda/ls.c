@@ -25,7 +25,7 @@ bool fileError(const FileStat *const pFS, const uint8_t depth, const lines_t new
 
 	print_empty_tree();
 
-	printf(/**/"%s%s[ "/**/"%s%s "/**/"%hu%s: "/**/"%s%s "/**/"%s]\n"/**/,
+	printf(/**/"%s%s[ "/**/"%s%s "/**/"%"ERROR_T_FMT"%s: "/**/"%s%s "/**/"%s]\n"/**/,
 		// make the opening bracket red and dim
 		PRE_NAME_PAD, (ERR_FILE_BR_ANSI),						// "%s%s[ "	--> " \e[31;2m[␣"
 		// remove the dimming, leaving the "error" string just red
