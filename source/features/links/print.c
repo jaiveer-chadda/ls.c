@@ -13,7 +13,7 @@ void print_link(const FileStat *const pFS) {
 
 	const TargetInfo *const target = pFS->f->target;
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Target Error ———————————————————————————————————————— */
 
 	if (target == NULL) {
 		const char
@@ -31,7 +31,7 @@ void print_link(const FileStat *const pFS) {
 		return;
 	}
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Invalid Target —————————————————————————————————————— */
 
 	const char *const arrow = target->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
 	const char *const path  = target->abspath + target->path_off;
@@ -46,7 +46,7 @@ void print_link(const FileStat *const pFS) {
 		return;
 	}
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Print & Colour Target ——————————————————————————————— */
 
 	const char *const basename = getBasename(path);
 
@@ -66,6 +66,8 @@ void print_link(const FileStat *const pFS) {
 		// if we didn't find a basename, then the path is relative, and we should just print it all at once
 		printEscdName(path, file_colour_esc[target->colour], false);
 	}
+
+	/* —— Print Suffix & Mount Info ——————————————————————————— */
 
 	// if the path should have a suffix, then reset colours and print the suffix
 	if (target->suffix != '\0') printf("%s%c", getcol(RESET_ALL), target->suffix);

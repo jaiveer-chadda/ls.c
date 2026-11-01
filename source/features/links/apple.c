@@ -35,7 +35,7 @@ bool resolveAppleAlias(
 ) {
 	*is_valid_alias = false, *target_len = -1;
 
-	/* ——————————————————————————————————————————————————————————— */
+	/* —— Make CFURL Object —————————————————————————————————————— */
 
 	// convert `alias_path` to a CF URL object
 	//	this just reads the raw path and converts it into a format that the CF library can understand
@@ -53,7 +53,7 @@ bool resolveAppleAlias(
 		return FILE_IS_NOT_APPLE_ALIAS;
 	}
 
-	/* ——————————————————————————————————————————————————————————— */
+	/* —— Convert to CFData Object ——————————————————————————————— */
 
 	// read the alias file into a bookmark `CFData` object
 	//	this function is the one which opens and reads the file provided
@@ -78,7 +78,7 @@ bool resolveAppleAlias(
 		return FILE_IS_NOT_APPLE_ALIAS;
 	}
 
-	/* ——————————————————————————————————————————————————————————— */
+	/* —— Extract Target Path String ————————————————————————————— */
 
 	// extract the metadata stored in the bookmark, and convert it to a CF's string type
 	const CFStringRef alias_string = CFURLCreateResourcePropertyForKeyFromBookmarkData(
@@ -96,7 +96,7 @@ bool resolveAppleAlias(
 		return FILE_IS_APPLE_ALIAS;
 	}
 
-	/* ——————————————————————————————————————————————————————————— */
+	/* —— Convert CFString to CString ———————————————————————————— */
 
 	// one reason `CFStringGetFileSystemRepresentation` can fail, is because the provided buffer is
 	//	too small to hold the string that's supposed to be assigned to it
@@ -118,7 +118,7 @@ bool resolveAppleAlias(
 		goto return_1;
 	}
 
-	/* ——————————————————————————————————————————————————————————— */
+	/* —— On Failure - Check Why ————————————————————————————————— */
 
 	// check if the target path was too long to fit in the buffer
 	if (target_path_len <= (CFIndex)sizeof(path_t))
@@ -164,7 +164,7 @@ bool resolveAppleAlias(
 		/* maxBufLen */ sizeof(path_t)
 	);
 
-	/* ——————————————————————————————————————————————————————————— */
+	/* —— Cleanup & Return ——————————————————————————————————————— */
 
 	return_4: CFRelease(trunc_t_path);
 	return_3: CFRelease(cf_t_path);
@@ -174,3 +174,5 @@ bool resolveAppleAlias(
 	*target_len = target_path_len;
 	return FILE_IS_APPLE_ALIAS;
 }
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

@@ -8,7 +8,7 @@
 #include "debugging.h"
 #include "features/features.h" // FILE_EXISTS()
 
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── Definitions & Declarations ─────────────────────────────────────────────────────────────────────────────────── */
 
 bool resolveAppleAlias(
 	path_t target_buffer, ssize_t *const target_len,
@@ -16,6 +16,7 @@ bool resolveAppleAlias(
 ); // defined in features/links/apple.c
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── getLinkTargetPath() ── ──────────────────────────────────────────────────────────────────────────────────── */
 
 static inline bool getLinkTargetPath(
 	bool *const is_valid, bool *const is_apple, uint8_t *const err_no,
@@ -24,7 +25,7 @@ static inline bool getLinkTargetPath(
 ) {
 	*is_valid = false, *is_apple = false;
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Handle Apple Aliases ———————————————————————————————— */
 
 	if (S_ISREG(mode)) {
 		// if the file's a regular file, then check if it's an apple alias - if not, then return
@@ -33,7 +34,7 @@ static inline bool getLinkTargetPath(
 		return true;
 	}
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Read Raw Symlink Target ————————————————————————————— */
 
 	assert(S_ISLNK(mode));
 	errno = 0;
@@ -45,7 +46,7 @@ static inline bool getLinkTargetPath(
 		return false;
 	}
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Path Empty / Already Absolute ——————————————————————— */
 
 	// empty link target
 	if ((*target_path)[0] == '\0') {
@@ -59,7 +60,7 @@ static inline bool getLinkTargetPath(
 		return true;
 	}
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Find Parent Path ———————————————————————————————————— */
 
 	// we now know that the path is a relative path
 
@@ -83,7 +84,7 @@ static inline bool getLinkTargetPath(
 		parent_len = getPathLen(parent);
 	}
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Construct Absolute Path ————————————————————————————— */
 
 	// we need to have the absolute path to the link, so that we can access/parse links that aren't in $PWD
 	//	so we need to recreate the link's path step by step
@@ -101,25 +102,26 @@ static inline bool getLinkTargetPath(
 	// now move the `*target_path` pointer back to where the original path starts
 	*target_path += parent_len + 1;
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Return —————————————————————————————————————————————— */
 
 	return true;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── getLink_internal() ── ───────────────────────────────────────────────────────────────────────────────────── */
 
 static inline TargetInfo *getLink_internal(
 	uint8_t *const err_no, bool *const is_apple,
 	const mode_t mode, const flag_t flags, const FileStat *const parent, const char *const abspath
 ) {
 
-	// we're looking for symlinks or apple links (which can only be regular files), so ignore everything else
-	if (!(S_ISLNK(mode) || S_ISREG(mode))
-		// also ignore dataless files - we don't want to try and read them if they're not dowloaded locally
-		|| flags & SF_DATALESS
-	) return NULL;
+	/* —— Prune Non-Link Files ———————————————————————————————— */
 
-	/* ———————————————————————————————————————————————————————— */
+	// we're looking for symlinks or apple links (which can only be regular files), so ignore everything else
+	// also ignore dataless files - we don't want to try and read them if they're not dowloaded locally
+	if (!(S_ISLNK(mode) || S_ISREG(mode)) || flags & SF_DATALESS) return NULL;
+
+	/* —— Get Target's Absolute Path —————————————————————————— */
 
 	path_t abs_tg_path = {0};
 	char * target_path = abs_tg_path;
@@ -133,7 +135,7 @@ static inline TargetInfo *getLink_internal(
 		mode, abspath, parent
 	)) return NULL;
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Create Target Object & Validate ————————————————————— */
 
 	// this memory is freed once the target is printed
 	TargetInfo *const target = ecalloc(1, sizeof(TargetInfo)); /* [alloc:targinfo] - freed in `printFile` */
@@ -146,22 +148,27 @@ static inline TargetInfo *getLink_internal(
 
 	if (!is_valid) return target;
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— `lstat` Target Path ————————————————————————————————— */
 
 	struct stat targ_stat = {0};
 	// when statting the file, use the absolute target path - we won't be able to guarantee the information otherwise
 	if (lstat(abs_tg_path, &targ_stat) == -1) return target;
 
-	target->mount	= getMountPoint(abs_tg_path, S_ISDIR(targ_stat.st_mode));
+	target->mount  = getMountPoint(abs_tg_path, S_ISDIR(targ_stat.st_mode));
 	target->suffix = getTypeSuffix(targ_stat.st_mode);
 	target->colour = setFileColour(target->abspath, targ_stat.st_mode, target->mount, &targ_stat);
+
+	/* —— Return —————————————————————————————————————————————— */
 
 	return target;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ── ── getLink() ── ────────────────────────────────────────────────────────────────────────────────────────────── */
 
 TargetInfo *getLink(FileStat *const pFS) {
+
+	/* —— Get Main Link Object ———————————————————————————————— */
 
 	bool is_apple = false;
 	const flag_t flags = pFS->s ? pFS->s->st_flags : 0;
@@ -171,7 +178,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 		pFS->mode, flags, pFS->parent, pFS->abspath
 	);
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Set Abspath if Apple ———————————————————————————————— */
 
 	// if this link is an apple alias, then we have to update its absolute path
 	//	otherwise we won't be able to recurse into it if we need to
@@ -182,7 +189,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 		getPureAbsPath(&pFS->abspath, &pFS->abs_len, target->abspath, strlen(target->abspath));
 	}
 
-	/* ———————————————————————————————————————————————————————— */
+	/* —— Return —————————————————————————————————————————————— */
 
 	return target;
 }
