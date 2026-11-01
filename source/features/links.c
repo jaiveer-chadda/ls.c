@@ -294,25 +294,25 @@ TargetInfo *getLink(FileStat *const pFS) {
 	/* ———————————————————————————————————————————————————————— */
 
 	// this memory is freed once the target is printed
-	TargetInfo *const tg_info = ecalloc(1, sizeof(TargetInfo)); /* [alloc:targinfo] - freed in `printFile` */
+	TargetInfo *const target = ecalloc(1, sizeof(TargetInfo)); /* [alloc:targinfo] - freed in `printFile` */
 
-	strlcpy(tg_info->abspath, abs_tg_path, sizeof(path_t));
-	tg_info->path_off = (namlen_t)(target_path - abs_tg_path);
+	strlcpy(target->abspath, abs_tg_path, sizeof(path_t));
+	target->path_off = (namlen_t)(target_path - abs_tg_path);
 
-	tg_info->is_apple = is_apple;
-	tg_info->suffix = INVALID_LINK;
+	target->is_apple = is_apple;
+	target->suffix = INVALID_LINK;
 
-	if (!is_valid) return tg_info;
+	if (!is_valid) return target;
 
 	/* ———————————————————————————————————————————————————————— */
 
-	struct stat tg_stat = {0};
+	struct stat targ_stat = {0};
 	// when statting the file, use the absolute target path - we won't be able to guarantee the information otherwise
-	if (lstat(abs_tg_path, &tg_stat) == -1) return tg_info;
+	if (lstat(abs_tg_path, &targ_stat) == -1) return target;
 
-	tg_info->mount	= getMountPoint(abs_tg_path, S_ISDIR(tg_stat.st_mode));
-	tg_info->suffix = getTypeSuffix(tg_stat.st_mode);
-	tg_info->colour = setFileColour(tg_info->abspath, tg_stat.st_mode, tg_info->mount, &tg_stat);
+	target->mount	= getMountPoint(abs_tg_path, S_ISDIR(targ_stat.st_mode));
+	target->suffix = getTypeSuffix(targ_stat.st_mode);
+	target->colour = setFileColour(target->abspath, targ_stat.st_mode, target->mount, &targ_stat);
 
 	/* ———————————————————————————————————————————————————————— */
 
@@ -321,12 +321,12 @@ TargetInfo *getLink(FileStat *const pFS) {
 	/// @todo make sure this doesn't interfere with any other processing that uses a file's `abspath`
 	if (is_apple) {
 		efree((void*)pFS->abspath); // free the old path so we don't have a memory leak
-		getPureAbsPath(&pFS->abspath, &pFS->abs_len, tg_info->abspath, strlen(tg_info->abspath));
+		getPureAbsPath(&pFS->abspath, &pFS->abs_len, target->abspath, strlen(target->abspath));
 	}
 
 	/* ———————————————————————————————————————————————————————— */
 
-	return tg_info;
+	return target;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -334,11 +334,11 @@ TargetInfo *getLink(FileStat *const pFS) {
 void print_link(const FileStat *const pFS) {
 	if (pFS->f == NULL || (pFS->f->target == NULL && !S_ISLNK(pFS->mode))) return;
 
-	const TargetInfo *const tg_info = pFS->f->target;
+	const TargetInfo *const target = pFS->f->target;
 
 	/* ———————————————————————————————————————————————————————— */
 
-	if (tg_info == NULL) {
+	if (target == NULL) {
 		const char
 			*const arrow_ansi = getcol(INVALID_ARROW_COLOUR	),
 			*const punct_ansi = getcol(LINK_ERR_PUNCT_COL	),
@@ -356,11 +356,11 @@ void print_link(const FileStat *const pFS) {
 
 	/* ———————————————————————————————————————————————————————— */
 
-	const char *const arrow = tg_info->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
-	const char *const path  = tg_info->abspath + tg_info->path_off;
+	const char *const arrow = target->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
+	const char *const path  = target->abspath + target->path_off;
 
 	// if this is an invalid link
-	if (tg_info->suffix == INVALID_LINK) {
+	if (target->suffix == INVALID_LINK) {
 		const char *const arrow_ansi = getcol(INVALID_ARROW_COLOUR);
 
 		printf("%s%s", arrow_ansi, arrow);
@@ -383,18 +383,18 @@ void print_link(const FileStat *const pFS) {
 		strncpy(dirname, path, (basename + 1) - path);
 
 		printEscdName(dirname, LINK_PATH_COLOUR, false);
-		printEscdName(basename + 1, file_colour_esc[tg_info->colour], false);
+		printEscdName(basename + 1, file_colour_esc[target->colour], false);
 
 	} else {
 		// if we didn't find a basename, then the path is relative, and we should just print it all at once
-		printEscdName(path, file_colour_esc[tg_info->colour], false);
+		printEscdName(path, file_colour_esc[target->colour], false);
 	}
 
 	// if the path should have a suffix, then reset colours and print the suffix
-	if (tg_info->suffix != '\0') printf("%s%c", getcol(RESET_ALL), tg_info->suffix);
+	if (target->suffix != '\0') printf("%s%c", getcol(RESET_ALL), target->suffix);
 
 	// print info about the target's mount device / mounted filesystems
-	print_mount(tg_info->mount);
+	print_mount(target->mount);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

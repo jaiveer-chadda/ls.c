@@ -13,7 +13,6 @@
 #include <sys/stat.h>
 #include <sys/mount.h>
 
-#include "hash.h"
 #include "consts.h"
 
 #define st_btimespec st_birthtimespec
@@ -91,14 +90,14 @@ typedef struct FileStatFields	FileStatFields;
 
 /* ——————————————————————————————————————————————————— */
 
-typedef uint32_t flag_t	 ; /** The user/system defined flag/flags associated with a file. */
-typedef wchar_t	 icon_t	 ; /** A single multibyte character defining the icon printed before a file's name. */
-typedef int16_t	 namlen_t; /** The length of a name or path. */
-typedef uint8_t  branchlen_t;
+typedef uint32_t flag_t	 	; /** The user/system defined flag/flags associated with a file. */
+typedef wchar_t	 icon_t	 	; /** A single multibyte character defining the icon printed before a file's name. */
+typedef int16_t	 namlen_t	; /** The length of a name or path. */
+typedef uint8_t  branchlen_t; /** The length of a git branch's name. */
 
-typedef char	*link_t	 ; /** The path held by a symlink. */
-typedef char	 suff_t	 ; /** A file's suffix. Can be one of: `/`, `@`, `*`, `=`, `|`, `%` */
-typedef char	 unit_t	 ; /** The unit of a file's size. Also used to denote whether a size is zero, or is maj,min. */
+typedef char *link_t; /** The path held by a symlink. */
+typedef char  suff_t; /** A file's suffix. Can be one of: `/`, `@`, `*`, `=`, `|`, `%` */
+typedef char  unit_t; /** The unit of a file's size. Also used to denote whether a size is zero, or is maj,min. */
 
 typedef char  name_t[MAX_NAME_LEN];		/** `char  name_t[MAX_NAME_LEN]` = 255 */
 typedef char  path_t[MAX_PATH_LEN];		/** `char  path_t[MAX_PATH_LEN]` = 1024 */
