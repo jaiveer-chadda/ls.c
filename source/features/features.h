@@ -3,8 +3,6 @@
 #ifndef FEATURES_H
 #define FEATURES_H
 
-#include <unistd.h> // access(), F_OK
-
 #include "model/types.h"
 #include "graphics/graphics.h"
 
@@ -53,7 +51,6 @@ void freeInums(void);
 
 /* —— links/ ——————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define FILE_EXISTS(path) (access((path), F_OK) == 0)
 TargetInfo *getLink(FileStat *const pFS);
 
 /* —— mode.c ——————————————————————————————————————————————————————————————————————————————————————————————————————— */

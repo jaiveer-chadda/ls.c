@@ -81,7 +81,7 @@ static inline void print_link_internal(const TargetInfo *const target, const suf
 	/* —— Recurse ————————————————————————————————————————————— */
 
 	if (LINKS_TO_LINKS()) {
-		print_link_internal(target->target, target->suffix, err_no);
+		print_link_internal(target->target, target->suffix, target->targ_err);
 		efree(target->target);
 	}
 }
@@ -89,7 +89,7 @@ static inline void print_link_internal(const TargetInfo *const target, const suf
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_link(const FileStat *const pFS) {
-	if (pFS->f != NULL) print_link_internal(pFS->f->target, pFS->mode, pFS->err_no);
+	if (pFS->f != NULL) print_link_internal(pFS->f->target, pFS->suffix, pFS->f->targ_err);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

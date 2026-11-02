@@ -1,6 +1,9 @@
 /// @file features/links/apple.c
 
+#include <fcntl.h> // AT_FDCWD, AT_SYMLINK_NOFOLLOW
+#include <unistd.h> // faccessat(), F_OK
 #include <string.h> // strlen(), strcasestr()
+
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "malloc.h"
@@ -14,6 +17,8 @@
 
 #define FILE_IS_APPLE_ALIAS		true
 #define FILE_IS_NOT_APPLE_ALIAS	false
+
+#define FILE_EXISTS(path) (faccessat(AT_FDCWD, (path), F_OK, AT_SYMLINK_NOFOLLOW) == 0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

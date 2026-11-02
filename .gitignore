@@ -10,6 +10,7 @@ archive/
 *.tmp*
 
 _*
+[ab]
 
 !**/_defs.h
 !**/git/_*

@@ -90,8 +90,9 @@ struct FileStatFields {
 
 	FileStat	*children	; // 8 /** If this file is a dir, then `children` points to an array of `FileStat`s. */
 	int32_t		child_count	; // 4 /** The number of children that the directory has. If not a directory, then -1. */
+	error_t		targ_err	; // 1
 	unit_t		size_unit	; // 1 /** The unit of a file's size. Also indicates if size is in `maj,min` format. */
-}; // 101 + 3 pad = 104 B
+}; // 102 + 2 pad = 104 B
 
 /* —— TargetInfo ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -116,9 +117,10 @@ struct TargetInfo {
 	const MountInfo	*mount	; // 8		/** Information about a mount point. NULL if target isn't a mount point. */
 	FileColour		colour	; // 4		/** The colour that the file should be displayed in. */
 	namlen_t		path_off; // 2		/** The point in `abspath` where the raw `readlink`ed name begins. */
-	char			suffix	; // 1		/** The symbol to be shown after the target's name. */
+	error_t			targ_err; // 1		/** The errno from reading `TargetInfo::target` (not this target itself). */
+	suff_t			suffix	; // 1		/** The symbol to be shown after the target's name. */
 	bool			is_apple; // 1		/** Whether the link that pointed to this target was an apple alias. */
-}; // 1040 + 0 pad = 1040 B
+}; // 1049 + 7 pad = 1056 B
 
 /* —— MountInfo ———————————————————————————————————————————————————————————————————————————————————————————————————— */
 

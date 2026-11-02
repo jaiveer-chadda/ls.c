@@ -1,7 +1,9 @@
 /// @file features/links/links.c
 
 #include <errno.h>
+#include <fcntl.h> // AT_FDCWD, AT_SYMLINK_NOFOLLOW
 #include <assert.h>
+#include <unistd.h> // faccessat(), F_OK
 #include <string.h> // strlcpy(), strrchr(), strlen(), memcpy(), memmove()
 
 #include "malloc.h"
@@ -15,6 +17,8 @@ bool resolveAppleAlias(
 	path_t target_buffer, ssize_t *const target_len,
 	bool *const is_valid_alias, const path_t alias_path
 ); // defined in features/links/apple.c
+
+#define FILE_EXISTS(path) (faccessat(AT_FDCWD, (path), F_OK, AT_SYMLINK_NOFOLLOW) == 0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── getLinkTargetPath() ── ──────────────────────────────────────────────────────────────────────────────────── */
@@ -42,7 +46,6 @@ static inline bool getLinkTargetPath(
 
 	// if the file is a symlink, then simply call `readlink` on it
 	if (( *target_len = readlink(abspath, *target_path, sizeof(path_t)) ) == -1) {
-		debug(WARNING, "errno set");
 		*err_no = errno;
 		return false;
 	}
@@ -161,11 +164,16 @@ static inline TargetInfo *getLink_internal(
 
 	/* —— Recurse ————————————————————————————————————————————— */
 
-	if (LINKS_TO_LINKS() && depth < MAXSYMLINKS) {
-		bool r_is_apple = false;
-		target->target = getLink_internal(
-			err_no, &r_is_apple, targ_stat.st_mode, targ_stat.st_flags, /*parent*/ NULL, targ_abspath, depth + 1
-		);
+	if (LINKS_TO_LINKS()) {
+		if (depth < MAXSYMLINKS) {
+			bool r_is_apple = false;
+			target->target = getLink_internal(
+				&target->targ_err, &r_is_apple,
+				targ_stat.st_mode, targ_stat.st_flags, /*parent*/ NULL, targ_abspath, depth + 1
+			);
+		} else {
+			target->targ_err = (error_t)ELOOP;
+		}
 	}
 
 	/* —— Return —————————————————————————————————————————————— */
@@ -181,12 +189,15 @@ TargetInfo *getLink(FileStat *const pFS) {
 	/* —— Get Main Link Object ———————————————————————————————— */
 
 	bool is_apple = false;
+	error_t targ_err = ( errno = 0 );
 	const flag_t flags = pFS->s ? pFS->s->st_flags : 0;
 
 	TargetInfo *const target = getLink_internal(
-		&pFS->err_no, &is_apple,
+		&targ_err, &is_apple,
 		pFS->mode, flags, pFS->parent, pFS->abspath, /*depth*/ 0
 	);
+
+	if (pFS->f != NULL) pFS->f->targ_err = targ_err;
 
 	/* —— Set Abspath if Apple ———————————————————————————————— */
 
