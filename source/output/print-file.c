@@ -33,7 +33,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	// then print the file's icon, name, and suffix
 	print_icon(pFS); print_name(pFS); print_suff(pFS);
 
-	print_link(pFS); // print targets of links
+	print_link(pFS, new_lines, depth); // print targets of links
 	if (pFS->f != NULL) print_mount(pFS->f->mount); // print info about mounted filesystems
 
 	// make sure that no colours leak past the end of the line

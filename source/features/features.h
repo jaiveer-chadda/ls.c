@@ -12,7 +12,6 @@
 void print_uid(const FileStat *const pFS);
 void print_gid(const FileStat *const pFS);
 void print_inum(const FileStat *const pFS);
-void print_link(const FileStat *const pFS);
 void print_mode(const FileStat *const pFS);
 void print_name(const FileStat *const pFS);
 void print_size(const FileStat *const pFS);
@@ -29,6 +28,7 @@ void print_time_str(const FileStat *const pFS, const TimeType type);
 void print_time_raw(const FileStat *const pFS, const TimeType type);
 
 void print_mount(const MountInfo *const mount);
+void print_link(const FileStat *const pFS, const lines_t lines, const uint8_t depth);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— flags.c —————————————————————————————————————————————————————————————————————————————————————————————————————— */

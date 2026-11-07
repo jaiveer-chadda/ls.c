@@ -3,11 +3,23 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
+#include "strings.h" // putspaces()
+#include "form/formatting.h" // getTotalLen()
 #include "model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define NO_LINES ((const bool[RECURSION_LIMIT]){0})
+
+#define LAST_TREE_BRANCH	 true
+#define NOT_LAST_TREE_BRANCH false
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define print_empty_tree(lines, depth, is_last) do {	\
+	putspaces(getTotalLen());							\
+	print_tree(NULL, (lines), (depth), (is_last));		\
+} while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

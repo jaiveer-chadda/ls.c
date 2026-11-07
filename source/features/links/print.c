@@ -4,19 +4,27 @@
 #include <string.h> // strerror(), strncpy()
 
 #include "malloc.h"
+#include "debugging.h"
 #include "output/output.h"
 #include "options/options.h" // LINKS_TO_LINKS()
 #include "features/features.h" // getBasename(), print_mount()
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline void print_link_internal(const TargetInfo *const target, const suff_t suffix, const error_t err_no) {
+static inline void print_link_internal(
+	const TargetInfo *const target, const suff_t suffix, const error_t err_no,
+	const lines_t lines, const uint8_t depth
+) {
+	(void)lines, (void)depth;
 
 	if (target == NULL && suffix != SYMLINK_SUFFIX) return;
 
 	/* —— Target Error ———————————————————————————————————————— */
 
 	if (target == NULL) {
+		putchar('\n');
+		print_empty_tree(lines, depth, LAST_TREE_BRANCH);
+
 		const char
 			*const arrow_ansi = getcol(INVALID_ARROW_COLOUR	),
 			*const punct_ansi = getcol(LINK_ERR_PUNCT_COL	),
@@ -81,15 +89,15 @@ static inline void print_link_internal(const TargetInfo *const target, const suf
 	/* —— Recurse ————————————————————————————————————————————— */
 
 	if (LINKS_TO_LINKS()) {
-		print_link_internal(target->target, target->suffix, target->targ_err);
+		print_link_internal(target->target, target->suffix, target->targ_err, lines, depth + 1);
 		efree(target->target);
 	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void print_link(const FileStat *const pFS) {
-	if (pFS->f != NULL) print_link_internal(pFS->f->target, pFS->suffix, pFS->f->targ_err);
+void print_link(const FileStat *const pFS, const lines_t lines, const uint8_t depth) {
+	if (pFS->f != NULL) print_link_internal(pFS->f->target, pFS->suffix, pFS->f->targ_err, lines, depth + 1);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
