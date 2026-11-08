@@ -15,7 +15,7 @@ _*
 !**/_defs.h
 !**/git/_*
 
-Icon?
+Icon[^s]
 *_chrdv*
 
 resources/icons/icons.rs

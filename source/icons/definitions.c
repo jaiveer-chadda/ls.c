@@ -15,153 +15,153 @@ const icon_t DEFAULT_DIR_ICON  = IC_FOLDER;
 /// An array containing the basenames of directories, and their associated icons.
 /// This array should contain all the directories that have custom icons.
 const Icon DIRNAME_ICONS[] = {
-	{ "__filepaths__"	, IC_FILEPATHS 		}, //   – JV
-	{ ".archive"		, IC_ARCHIVE 		}, // 󱝏  – JV
-	{ ".cache"			, IC_CACHE 			}, //   – JV
-	{ ".config"			, IC_GEAR			}, //   – JV
+	{ "__filepaths__"	, IC_FILEPATHS 		}, // 
+	{ ".archive"		, IC_ARCHIVE 		}, // 󱝏
+	{ ".cache"			, IC_CACHE 			}, // 
+	{ ".config"			, IC_GEAR			}, // 
 	{ ".exercism"		, IC_EXERCISM		}, // 
-	{ ".git"			, IC_FOLDER_GIT		}, // 󰊢  – JV
+	{ ".git"			, IC_FOLDER_GIT		}, // 󰊢
 	{ ".github"			, IC_FOLDER_GITHUB	}, // 
-	{ ".history"		, IC_CLOCK 			}, //   – JV
-	{ ".idea"			, IC_INTELLIJ		}, //   – JV
-	{ ".local"			, IC_LAPTOP 		}, //   – JV
-	{ ".nofollow"		, IC_NOFOLLOW		}, //   – JV
+	{ ".history"		, IC_CLOCK 			}, // 
+	{ ".idea"			, IC_INTELLIJ		}, // 
+	{ ".local"			, IC_LAPTOP 		}, // 
+	{ ".nofollow"		, IC_NOFOLLOW		}, // 
 	{ ".npm"			, IC_FOLDER_NPM		}, // 
 	{ ".opam"			, IC_LANG_OCAML		}, // 
-	{ ".resolve"		, IC_RESOLVE 		}, // 󰕟  – JV
+	{ ".resolve"		, IC_RESOLVE 		}, // 󰕟
 	{ ".ssh"			, IC_FOLDER_KEY		}, // 󰢬
-	{ ".swiftpm"		, IC_SWIFT 			}, //   – JV
+	{ ".swiftpm"		, IC_SWIFT 			}, // 
 	{ ".trash"			, IC_TRASH			}, // 
-	{ ".vol"			, IC_VOLUME 		}, // 󰥠  – JV
-	{ ".vscode-shared"	, IC_VSC_SHARED 	}, //   – JV
-	{ ".vscode"			, IC_VSCODE 		}, // 󰨞  – JV
-	{ "anaconda"		, IC_CONDA 			}, //   – JV
-	{ "applescript"		, IC_OS_APPLE 		}, //   – JV
-	{ "applications"	, IC_APPLICATIONS	}, //   – JV
-	{ "apps"			, IC_APPLICATIONS	}, //   – JV
-	{ "archive"			, IC_ARCHIVE		}, // 󱝏  – JV
-	{ "archives"		, IC_ARCHIVE		}, // 󱝏  – JV
-	{ "bash"			, IC_BASH 			}, //   – JV
-	{ "bin"				, IC_BINARY			}, //   – JV
-	{ "bottom"			, IC_TOP 			}, // 󰨇  – JV
-	{ "bpytop"			, IC_TOP 			}, // 󰨇  – JV
-	{ "brew"			, IC_HOMEBREW 		}, // 󱄖  – JV
+	{ ".vol"			, IC_VOLUME 		}, // 󰥠
+	{ ".vscode-shared"	, IC_VSC_SHARED 	}, // 
+	{ ".vscode"			, IC_VSCODE 		}, // 󰨞
+	{ "anaconda"		, IC_CONDA 			}, // 
+	{ "applescript"		, IC_OS_APPLE 		}, // 
+	{ "applications"	, IC_APPLICATIONS	}, // 
+	{ "apps"			, IC_APPLICATIONS	}, // 
+	{ "archive"			, IC_ARCHIVE		}, // 󱝏
+	{ "archives"		, IC_ARCHIVE		}, // 󱝏
+	{ "bash"			, IC_BASH 			}, // 
+	{ "bin"				, IC_BINARY			}, // 
+	{ "bottom"			, IC_TOP 			}, // 󰨇
+	{ "bpytop"			, IC_TOP 			}, // 󰨇
+	{ "brew"			, IC_HOMEBREW 		}, // 󱄖
 	{ "build"			, IC_FOLDER_BUILD	}, // 󱧼
-	{ "c"				, IC_LANG_C 		}, //   – JV
-	{ "c#"				, IC_LANG_CSHARP 	}, // 󰌛  – JV
+	{ "c"				, IC_LANG_C 		}, // 
+	{ "c#"				, IC_LANG_CSHARP 	}, // 󰌛
 	{ "cabal"			, IC_LANG_HASKELL	}, // 
-	{ "cargo"			, IC_LANG_RUST 		}, //   – JV
-	{ "conda"			, IC_CONDA 			}, //   – JV
+	{ "cargo"			, IC_LANG_RUST 		}, // 
+	{ "conda"			, IC_CONDA 			}, // 
 	{ "config"			, IC_FOLDER_CONFIG	}, // 
-	{ "configstore"		, IC_GEAR 			}, //   – JV
+	{ "configstore"		, IC_GEAR 			}, // 
 	{ "contacts"		, IC_CONTACTS		}, // 󰉌
-	{ "cores"			, IC_COREDUMP 		}, //   – JV
+	{ "cores"			, IC_COREDUMP 		}, // 
 	{ "cron.d"			, IC_FOLDER_CONFIG	}, // 
 	{ "cron.daily"		, IC_FOLDER_CONFIG	}, // 
 	{ "cron.hourly"		, IC_FOLDER_CONFIG	}, // 
 	{ "cron.minutely"	, IC_FOLDER_CONFIG	}, // 
 	{ "cron.monthly"	, IC_FOLDER_CONFIG	}, // 
 	{ "cron.weekly"		, IC_FOLDER_CONFIG	}, // 
-	{ "cs"				, IC_CHIP 			}, //   – JV
-	{ "debug"			, IC_DEBUG 			}, //   – JV
-	{ "debugging"		, IC_DEBUG 			}, //   – JV
+	{ "cs"				, IC_CHIP 			}, // 
+	{ "debug"			, IC_DEBUG 			}, // 
+	{ "debugging"		, IC_DEBUG 			}, // 
 	{ "desktop"			, IC_DESKTOP		}, // 
-	{ "dev"				, IC_DEVICES 		}, // 󰾰  – JV
-	{ "discord"			, IC_DISCORD 		}, //   – JV
+	{ "dev"				, IC_DEVICES 		}, // 󰾰
+	{ "discord"			, IC_DISCORD 		}, // 
 	{ "documents"		, IC_DOCUMENTS		}, // 󰲂
 	{ "downloads"		, IC_DOWNLOADS		}, // 󰉍
 	{ "etc"				, IC_FOLDER_CONFIG	}, // 
-	{ "expressvpn"		, IC_VPN 			}, // 󰲝  – JV
-	{ "ey"				, IC_BUILDING 		}, // 󱔟  – JV
-	{ "eza"				, IC_EZA 			}, // 󰉻  – JV
+	{ "expressvpn"		, IC_VPN 			}, // 󰲝
+	{ "ey"				, IC_BUILDING 		}, // 󱔟
+	{ "eza"				, IC_EZA 			}, // 󰉻
 	{ "favorites"		, IC_FAVORITES		}, // 󰚝
-	{ "fish"			, IC_FISH 			}, //   – JV
-	{ "fontforge"		, IC_FONTFORGE 		}, //   – JV
-	{ "functions"		, IC_FUNCTIONS 		}, // 󰡱  – JV
-	{ "gem"				, IC_GEM 			}, //   – JV
-	{ "gh"				, IC_GIT 			}, // 󰊢  – JV
-	{ "git"				, IC_GIT 			}, // 󰊢  – JV
-	{ "hdd"				, IC_VOLUME 		}, // 󰥠  – JV
+	{ "fish"			, IC_FISH 			}, // 
+	{ "fontforge"		, IC_FONTFORGE 		}, // 
+	{ "functions"		, IC_FUNCTIONS 		}, // 󰡱
+	{ "gem"				, IC_GEM 			}, // 
+	{ "gh"				, IC_GIT 			}, // 󰊢
+	{ "git"				, IC_GIT 			}, // 󰊢
+	{ "hdd"				, IC_VOLUME 		}, // 󰥠
 	{ "hidden"			, IC_FOLDER_HIDDEN	}, // 󱞞
 	{ "home"			, IC_HOME			}, // 󱂵
-	{ "homebrew"		, IC_HOMEBREW 		}, // 󱄖  – JV
-	{ "house of lords"	, IC_CROWN 			}, //   – JV
-	{ "htop"			, IC_TOP 			}, // 󰨇  – JV
+	{ "homebrew"		, IC_HOMEBREW 		}, // 󱄖
+	{ "house of lords"	, IC_CROWN 			}, // 
+	{ "htop"			, IC_TOP 			}, // 󰨇
 	{ "include"			, IC_FOLDER_CONFIG	}, // 
-	{ "ipython"			, IC_LANG_PYTHON 	}, //   – JV
-	{ "iterm2"			, IC_ITERM2 		}, //   – JV
-	{ "java"			, IC_LANG_JAVA 		}, //   – JV
-	{ "jgit"			, IC_GIT 			}, // 󰊢  – JV
-	{ "jupyter"			, IC_JUPYTER 		}, //   – JV
-	{ "jv"				, IC_JV				}, // ↧  – JV
-	{ "karabiner"		, IC_KEYBOARD 		}, //   – JV
-	{ "labour"			, IC_ROSE 			}, // 󰧲  – JV
-	{ "lazygit"			, IC_GIT 			}, // 󰊢  – JV
-	{ "lib"				, IC_LIBRARY 		}, //   – JV
-	{ "library"			, IC_LIBRARY 		}, //   – JV
-	{ "linearmouse"		, IC_LINEARMOUSE 	}, // 󰍽  – JV
+	{ "ipython"			, IC_LANG_PYTHON 	}, // 
+	{ "iterm2"			, IC_ITERM2 		}, // 
+	{ "java"			, IC_LANG_JAVA 		}, // 
+	{ "jgit"			, IC_GIT 			}, // 󰊢
+	{ "jupyter"			, IC_JUPYTER 		}, // 
+	{ "jv"				, IC_JV				}, // ↧
+	{ "karabiner"		, IC_KEYBOARD 		}, // 
+	{ "labour"			, IC_ROSE 			}, // 󰧲
+	{ "lazygit"			, IC_GIT 			}, // 󰊢
+	{ "lib"				, IC_LIBRARY 		}, // 
+	{ "library"			, IC_LIBRARY 		}, // 
+	{ "linearmouse"		, IC_LINEARMOUSE 	}, // 󰍽
 	{ "mail"			, IC_MAIL			}, // 󰇰
-	{ "man pages"		, IC_MAN_PAGES 		}, // 󰺄  – JV
-	{ "mclaren"			, IC_CAR 			}, // 󰞬  – JV
+	{ "man pages"		, IC_MAN_PAGES 		}, // 󰺄
+	{ "mclaren"			, IC_CAR 			}, // 󰞬
 	{ "movies"			, IC_MOVIES			}, // 󰿎
 	{ "music"			, IC_MUSIC			}, // 󱍙
-	{ "neofetch"		, IC_NEOFETCH 		}, // 󱥈  – JV
+	{ "neofetch"		, IC_NEOFETCH 		}, // 󱥈
 	{ "node_modules"	, IC_FOLDER_NPM		}, // 
-	{ "notes"			, IC_NOTES 			}, //   – JV
+	{ "notes"			, IC_NOTES 			}, // 
 	{ "npm_cache"		, IC_FOLDER_NPM		}, // 
-	{ "npm"				, IC_FOLDER_NPM 	}, //   – JV
-	{ "nvim"			, IC_VIM 			}, //   – JV
-	{ "nvm"				, IC_NVM 			}, //   – JV
-	{ "old desktop"		, IC_DESKTOP 		}, //   – JV
-	{ "opt"				, IC_OPT 			}, //   – JV
-	{ "out"				, IC_FOLDER_BUILD	}, // 󱧼  – JV
+	{ "npm"				, IC_FOLDER_NPM 	}, // 
+	{ "nvim"			, IC_VIM 			}, // 
+	{ "nvm"				, IC_NVM 			}, // 
+	{ "old desktop"		, IC_DESKTOP 		}, // 
+	{ "opt"				, IC_OPT 			}, // 
+	{ "out"				, IC_FOLDER_BUILD	}, // 󱧼
 	{ "pacman.d"		, IC_FOLDER_CONFIG	}, // 
 	{ "pam.d"			, IC_FOLDER_KEY		}, // 󰢬
 	{ "pictures"		, IC_PICTURES		}, // 󰉏
-	{ "pip"				, IC_PIP 			}, //   – JV
-	{ "pipes-rs"		, IC_PIPES 			}, // 󰟥  – JV
-	{ "powershell"		, IC_POWERSHELL 	}, //   – JV
-	{ "private"			, IC_LOCK			}, //   – JV
-	{ "public"			, IC_PUBLIC 		}, // 󰛍  – JV
-	{ "python"			, IC_LANG_PYTHON 	}, //   – JV
-	{ "ra"				, IC_HAMMER 		}, // 󰣪  – JV
-	{ "raycast"			, IC_RAYCAST 		}, //   – JV
-	{ "rdoc"			, IC_LANG_RUBY 		}, //   – JV
-	{ "resources"		, IC_RESOURCES		}, // 󱂸  – JV
-	{ "rn"				, IC_SHIP 			}, //   – JV
-	{ "rust"			, IC_LANG_RUST 		}, //   – JV
-	{ "rustup"			, IC_LANG_RUST 		}, //   – JV
-	{ "sbin"			, IC_BINARY			}, //   – JV
-	{ "screenshots"		, IC_CAMERA 		}, // 󰄀  – JV
-	{ "shared"			, IC_SHARED 		}, // 󱒃  – JV
-	{ "shellscript"		, IC_LANG_SHELL 	}, //   – JV
-	{ "shpotify"		, IC_SPOTIFY 		}, //   – JV
-	{ "source"			, IC_SRC			}, // 󰣞  – JV
-	{ "spicetify"		, IC_SPOTIFY 		}, //   – JV
-	{ "spotify-player"	, IC_SPOTIFY 		}, //   – JV
+	{ "pip"				, IC_PIP 			}, // 
+	{ "pipes-rs"		, IC_PIPES 			}, // 󰟥
+	{ "powershell"		, IC_POWERSHELL 	}, // 
+	{ "private"			, IC_LOCK			}, // 
+	{ "public"			, IC_PUBLIC 		}, // 󰛍
+	{ "python"			, IC_LANG_PYTHON 	}, // 
+	{ "ra"				, IC_HAMMER 		}, // 󰣪
+	{ "raycast"			, IC_RAYCAST 		}, // 
+	{ "rdoc"			, IC_LANG_RUBY 		}, // 
+	{ "resources"		, IC_RESOURCES		}, // 󱂸
+	{ "rn"				, IC_SHIP 			}, // 
+	{ "rust"			, IC_LANG_RUST 		}, // 
+	{ "rustup"			, IC_LANG_RUST 		}, // 
+	{ "sbin"			, IC_BINARY			}, // 
+	{ "screenshots"		, IC_CAMERA 		}, // 󰄀
+	{ "shared"			, IC_SHARED 		}, // 󱒃
+	{ "shellscript"		, IC_LANG_SHELL 	}, // 
+	{ "shpotify"		, IC_SPOTIFY 		}, // 
+	{ "source"			, IC_SRC			}, // 󰣞
+	{ "spicetify"		, IC_SPOTIFY 		}, // 
+	{ "spotify-player"	, IC_SPOTIFY 		}, // 
 	{ "src"				, IC_SRC			}, // 󰣞
 	{ "ssh"				, IC_FOLDER_KEY		}, // 󰢬
 	{ "sudoers.d"		, IC_FOLDER_KEY		}, // 󰢬
-	{ "svn"				, IC_SVN 			}, //   – JV
-	{ "swift"			, IC_SWIFT 			}, //   – JV
-	{ "system"			, IC_SYSTEM 		}, // 󰡀  – JV
-	{ "tmp"				, IC_TEMP 			}, // 󰔛  – JV
-	{ "university work"	, IC_GRAD_CAP 		}, //   – JV
-	{ "users"			, IC_USERS 			}, //   – JV
-	{ "usr"				, IC_USER 			}, //   – JV
-	{ "var"				, IC_VAR 			}, // 󰫧  – JV
+	{ "svn"				, IC_SVN 			}, // 
+	{ "swift"			, IC_SWIFT 			}, // 
+	{ "system"			, IC_SYSTEM 		}, // 󰡀
+	{ "tmp"				, IC_TEMP 			}, // 󰔛
+	{ "university work"	, IC_GRAD_CAP 		}, // 
+	{ "users"			, IC_USERS 			}, // 
+	{ "usr"				, IC_USER 			}, // 
+	{ "var"				, IC_VAR 			}, // 󰫧
 	{ "videos"			, IC_VIDEOS			}, // 
-	{ "vim"				, IC_VIM 			}, //   – JV
-	{ "volumes"			, IC_VOLUME 		}, // 󰥠  – JV
-	{ "vs_code"			, IC_VSCODE 		}, // 󰨞  – JV
-	{ "vscode-custom"	, IC_VSCODE 		}, // 󰨞  – JV
-	{ "web"				, IC_WEB 			}, // 󰖟  – JV
-	{ "x_automation"	, IC_ROBOT 			}, // 󰚩  – JV
+	{ "vim"				, IC_VIM 			}, // 
+	{ "volumes"			, IC_VOLUME 		}, // 󰥠
+	{ "vs_code"			, IC_VSCODE 		}, // 󰨞
+	{ "vscode-custom"	, IC_VSCODE 		}, // 󰨞
+	{ "web"				, IC_WEB 			}, // 󰖟
+	{ "x_automation"	, IC_ROBOT 			}, // 󰚩
 	{ "xbps.d"			, IC_FOLDER_CONFIG	}, // 
 	{ "xorg.conf.d"		, IC_FOLDER_CONFIG	}, // 
-	{ "y_settings_etc"	, IC_GEAR 			}, //   – JV
-	{ "z_other"			, IC_ARCHIVE 		}, // 󱝏  – JV
-	{ "zsh"				, IC_SHELL_CMD 		}, //   – JV
+	{ "y_settings_etc"	, IC_GEAR 			}, // 
+	{ "z_other"			, IC_ARCHIVE 		}, // 󱝏
+	{ "zsh"				, IC_SHELL_CMD 		}, // 
 	END_OF_ICONS
 };
 
@@ -177,7 +177,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".bash_logout"				, IC_SHELL				}, // 󱆃
 	{ ".bash_profile"				, IC_SHELL				}, // 󱆃
 	{ ".bashrc"						, IC_SHELL				}, // 󱆃
-	{ ".cfusertextencoding"			, IC_TRANSLATION		}, // 󰗊  — JV
+	{ ".cfusertextencoding"			, IC_TRANSLATION		}, // 󰗊
 	{ ".clang-format"				, IC_CONFIG				}, // 󱁻
 	{ ".clang-tidy"					, IC_CONFIG				}, // 󱁻
 	{ ".codespellrc"				, IC_CODESPELL			}, // 󰓆
@@ -211,7 +211,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".ideavimrc"					, IC_VIM				}, // 
 	{ ".inputrc"					, IC_CONFIG				}, // 󱁻
 	{ ".kshrc"						, IC_SHELL				}, // 󱆃
-	{ ".localized"					, IC_TRANSLATION		}, // 󰗊  — JV
+	{ ".localized"					, IC_TRANSLATION		}, // 󰗊
 	{ ".login"						, IC_SHELL				}, // 󱆃
 	{ ".logout"						, IC_SHELL				}, // 󱆃
 	{ ".luacheckrc"					, IC_CONFIG				}, // 󱁻
@@ -243,7 +243,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".tcshrc"						, IC_SHELL				}, // 󱆃
 	{ ".viminfo"					, IC_VIM				}, // 
 	{ ".vimrc"						, IC_VIM				}, // 
-	{ ".volumeicon.icns"			, IC_IMAGE				}, //   — JV
+	{ ".volumeicon.icns"			, IC_IMAGE				}, // 
 	{ ".xauthority"					, IC_XORG				}, // 
 	{ ".xinitrc"					, IC_XORG				}, // 
 	{ ".xresources"					, IC_XORG				}, // 
@@ -332,7 +332,7 @@ const Icon FILENAME_ICONS[] = {
 	{ "gulpfile.coffee"				, IC_GULP				}, // 
 	{ "gulpfile.js"					, IC_GULP				}, // 
 	{ "gulpfile.ls"					, IC_GULP				}, // 
-	{ "hdd"							, IC_VOLUME 			}, // 󰥠  — JV
+	{ "hdd"							, IC_VOLUME 			}, // 󰥠
 	{ "heroku.yml"					, IC_HEROKU				}, // 
 	{ "hostname"					, IC_CONFIG				}, // 󱁻
 	{ "hypridle.conf"				, IC_HYPRLAND			}, // 
@@ -341,7 +341,7 @@ const Icon FILENAME_ICONS[] = {
 	{ "hyprpaper.conf"				, IC_HYPRLAND			}, // 
 	{ "i3blocks.conf"				, IC_I3					}, // 
 	{ "i3status.conf"				, IC_I3					}, // 
-	{ "icon\r"						, IC_MACOS_ICON_R		}, //   — JV
+	{ "icon\r"						, IC_MACOS_ICON_R		}, // 
 	{ "id_dsa"						, IC_PRIVATE_KEY		}, // 󰌆
 	{ "id_ecdsa"					, IC_PRIVATE_KEY		}, // 󰌆
 	{ "id_ecdsa_sk"					, IC_PRIVATE_KEY		}, // 󰌆
@@ -451,8 +451,8 @@ const Icon FILENAME_ICONS[] = {
 
 /// Array of lowercase file extensions and their icons.
 const Icon DIR_EXT_ICONS[] = {
-	{ "bak"				, IC_BACKUP_DIR		}, // 󰴋  – JV
-	{ "app"				, IC_APP			}, //   – JV
+	{ "bak"				, IC_BACKUP_DIR		}, // 󰴋
+	{ "app"				, IC_APP			}, // 
 	END_OF_ICONS
 };
 
@@ -481,7 +481,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "android"			, IC_OS_ANDROID		}, // 
 	{ "ape"				, IC_AUDIO			}, // 
 	{ "apk"				, IC_OS_ANDROID		}, // 
-	{ "app"				, IC_BINARY			}, // 
+	{ "app"				, IC_BINARY			}, // 
 	{ "apple"			, IC_OS_APPLE		}, // 
 	{ "applescript"		, IC_OS_APPLE		}, // 
 	{ "ar"				, IC_COMPRESSED		}, // 
@@ -495,13 +495,13 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "avif"			, IC_IMAGE			}, // 
 	{ "avro"			, IC_JSON			}, // 
 	{ "awk"				, IC_SHELL_CMD		}, // 
-	{ "bak"				, IC_BACKUP_FILE	}, // 󰁯  – JV
+	{ "bak"				, IC_BACKUP_FILE	}, // 󰁯
 	{ "bash"			, IC_SHELL_CMD		}, // 
 	{ "bat"				, IC_OS_WINDOWS_CMD	}, // 
 	{ "bats"			, IC_SHELL_CMD		}, // 
 	{ "bdf"				, IC_FONT			}, // 
 	{ "bib"				, IC_LANG_TEX		}, // 
-	{ "bin"				, IC_BINARY			}, // 
+	{ "bin"				, IC_BINARY			}, // 
 	{ "blend"			, IC_BLEND			}, // 󰂫
 	{ "bmp"				, IC_IMAGE			}, // 
 	{ "br"				, IC_COMPRESSED		}, // 
@@ -590,7 +590,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "ejs"				, IC_EJS			}, // 
 	{ "el"				, IC_EMACS			}, // 
 	{ "elc"				, IC_EMACS			}, // 
-	{ "elf"				, IC_BINARY			}, // 
+	{ "elf"				, IC_BINARY			}, // 
 	{ "elm"				, IC_ELM			}, // 
 	{ "eml"				, IC_EML			}, // 
 	{ "env"				, IC_ENV			}, // 
@@ -673,7 +673,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "gv"				, IC_GRAPH			}, // 󱁉
 	{ "gvy"				, IC_LANG_GROOVY	}, // 
 	{ "gz"				, IC_COMPRESSED		}, // 
-	{ "h"				, IC_LANG_C_HEADER	}, //   – JV
+	{ "h"				, IC_LANG_C_HEADER	}, // 
 	{ "h++"				, IC_LANG_CPP		}, // 
 	{ "h264"			, IC_VIDEOS			}, // 
 	{ "haml"			, IC_HAML			}, // 
@@ -684,7 +684,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "heif"			, IC_IMAGE			}, // 
 	{ "hex"				, IC_HEX			}, // 󱊧
 	{ "hh"				, IC_LANG_CPP		}, // 
-	{ "hi"				, IC_BINARY			}, // 
+	{ "hi"				, IC_BINARY			}, // 
 	{ "hpp"				, IC_LANG_CPP		}, // 
 	{ "hrl"				, IC_ERLANG			}, // 
 	{ "hs"				, IC_LANG_HASKELL	}, // 
@@ -827,7 +827,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "norg"			, IC_NORG			}, // 
 	{ "nsp"				, IC_SWITCH			}, // 󰟡
 	{ "nu"				, IC_SHELL_CMD		}, // 
-	{ "o"				, IC_BINARY			}, // 
+	{ "o"				, IC_BINARY			}, // 
 	{ "obj"				, IC_FILE_3D		}, // 󰆧
 	{ "odb"				, IC_DATABASE		}, // 
 	{ "odf"				, IC_ODF			}, // 
