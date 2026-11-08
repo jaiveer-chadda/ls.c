@@ -18,7 +18,6 @@
 #ifndef ICONS_INITIALISED
 #define ICONS_INITIALISED
 
-#include <wchar.h>
 #include "model/stat-model.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -28,14 +27,12 @@ void print_icon(const FileStat *const pFS);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-typedef struct {
+typedef struct Icon {
 	char *pattern;
 	icon_t icon;
 } Icon;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-#define IC_ERROR L'󰟢' /** The icon displayed when the value of an icon is `NO_ICON`/`((icon_t)L'\0')`. */
 
 #define NO_PATTERN	 ((char *)NULL)
 #define NO_ICON		 ((icon_t)L'\0')
