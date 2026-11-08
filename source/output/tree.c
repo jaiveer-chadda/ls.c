@@ -7,26 +7,38 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void print_tree(lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last) {
+void print_tree(
+	lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last, size_t *const line_len
+) {
 	// for depth 0 (the original inputs), there aren't any tree levels to print
 	if (depth == 0) return;
 
 	colprint(PUNCT);
 
+	// print all leading lines
 	for (int level = 0; level < depth - 1; level++) {
+		// add 2 spaces of padding on every level except the 1ˢᵗ one, in which case, add 1
+		const int leading_pad = level == 0 ? TREE_LV1_PAD : TREE_PAD;
+
 		printf("%*s" "%s",
-			level == 0 ? TREE_LV1_PAD : TREE_PAD, "", // add 2 spaces of padding on every level except the 1ˢᵗ one
+			leading_pad, "",
 			lines[level] ? TREE_VERT : " " // only if this level needs a line should you print one
 		);
+
+		if (line_len != NULL) *line_len += leading_pad + 1; // the +1 is for the `│` or ` `
 	}
 
+	// add 2 spaces of padding on every level except the 1ˢᵗ one
+	const int tree_pad = depth == 1 ? TREE_LV1_PAD : TREE_PAD;
+
 	printf("%*s" "%s%s",
-		// add 2 spaces of padding on every level except the 1ˢᵗ one
-		depth == 1 ? TREE_LV1_PAD : TREE_PAD, "",
+		tree_pad, "",
 		// print `├` before every file except the last one, where we print `└`
 		is_last ? TREE_CORNER : TREE_BRANCH,
 		TREE_HORI
 	);
+
+	if (line_len != NULL) *line_len += tree_pad + 2; // +1 for `├`, and +1 for `─`
 
 	if (new_lines == NULL) return;
 

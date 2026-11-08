@@ -91,18 +91,20 @@ static inline const char *getHOME(size_t *const size) {
 		/* if, however, the pointer is at '\0', then we know we've found `$HOME`*/	\
 		/*	however, only match `$HOME` if it doesn't exactly match `name` */		\
 		if (*home_ptr == '\0' && *inp_ptr != '\0' && *(inp_ptr + 1) != '\0') {		\
+			const size_t deletion_len = sb_length(path_str) - pre_path_len;			\
 			/* if so, clear the string up to the beginning of the padding/colour */	\
-			sb_delete(path_str, sb_length(path_str) - pre_path_len);				\
+			sb_delete(path_str, deletion_len);										\
 			/* add `~`, ignore the current char, and move on to the next char */	\
 			sb_addchr(path_str, '~');												\
 			inp_ptr++;																\
+			local_len -= (deletion_len - 1);										\
 			continue;																\
 		}																			\
 	}
 
 /* ———————————————————————————————————————————————————————————— */
 
-void printEscdName(const char *const name, const Colour colour, const bool do_padding) {
+void printEscdNameLen(const char *const name, const Colour colour, const bool do_padding, size_t *const line_len) {
 
 	/* —— Setup ——————————————————————————————————————————————— */
 
@@ -113,9 +115,10 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 
 	/** The length we should revert back to if we find & replace `$HOME`. */
 	size_t pre_path_len = 0;
+	size_t local_len = 0;
 
 	// if we add the padding to the output buffer, we can use `fputs`, rather than `printf` when printing
-	if (do_padding) pre_path_len += sb_addlit(path_str, PRE_NAME_PAD);
+	if (do_padding) local_len = ( pre_path_len += sb_addlit(path_str, PRE_NAME_PAD) );
 
 	// add the file's colour to the start of the output sequence
 	if (!DO_ANY_ESC(name[0])) pre_path_len += sb_addcol(path_str, colour);
@@ -148,7 +151,7 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 				CHECK_HOME_MATCH();
 
 				esc_len = escapeCharacter(esc_buf, *inp_ptr++);
-				sb_addstr(path_str, esc_buf, esc_len);
+				local_len += sb_addstr(path_str, esc_buf, esc_len);
 			}
 
 		} else { // if the current char _doesn't_ need to be escaped
@@ -158,9 +161,13 @@ void printEscdName(const char *const name, const Colour colour, const bool do_pa
 			while (*inp_ptr != '\0' && !DO_ANY_ESC(*inp_ptr)) {
 				CHECK_HOME_MATCH();
 				sb_addchr(path_str, *inp_ptr++);
+
+				local_len++;
 			}
 		}
 	}
+
+	if (line_len != NULL) *line_len += local_len;
 
 	/* —— Print, Free, & Cleanup —————————————————————————————— */
 

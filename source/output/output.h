@@ -18,16 +18,21 @@
 
 #define print_empty_tree(lines, depth, is_last) do {	\
 	putspaces(getTotalLen());							\
-	print_tree(NULL, (lines), (depth), (is_last));		\
+	print_tree(NULL, (lines), (depth), (is_last), NULL);\
 } while (0)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void printHeaders(void);
-void printEscdName(const char *const name, const Colour colour, const bool do_padding);
+void printEscdNameLen(const char *const name, const Colour colour, const bool do_padding, size_t *const line_len);
+
+#define printEscdName(name ,  colour ,	do_padding) \
+	printEscdNameLen((name), (colour), (do_padding), NULL)
 
 void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_last, const lines_t lines);
-void print_tree(lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last);
+void print_tree(
+	lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last, size_t *const line_len
+);
 
 bool  dirEmpty(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines);
 bool fileError(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines);

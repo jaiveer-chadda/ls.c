@@ -354,14 +354,14 @@ static inline const char* choosePath(const FileStat *const pFS) {
 	return pFS->name;
 }
 
-void print_name(const FileStat *const pFS) {
+void print_name(const FileStat *const pFS, size_t *const line_len) {
 	const char *const name_or_path = choosePath(pFS);
 
 	Colour colour = file_colour_esc[pFS->file_col];
 	if (isFSHardlink(pFS)) colour.style |= G_HARDLINK;
 	if (doDimFile(pFS) && !has_bg(colour)) colour.style |= G_DIM;
 
-	printEscdName(name_or_path, colour, true);
+	printEscdNameLen(name_or_path, colour, true, line_len);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

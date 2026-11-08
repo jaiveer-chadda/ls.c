@@ -12,8 +12,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline void print_suff(const FileStat *const pFS);
 static inline void printFields(const FileStat *const pFS);
+static inline void print_suff(const FileStat *const pFS, size_t *const line_len);
 static inline bool stopRecursing(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines);
 
 /* —— printFile() —————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -28,10 +28,14 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	printFields(pFS); // print all "feature" fields (i.e. fields which are defined in `features.h`)
 
+	size_t line_len = getTotalLen() + (do_icon() ? 2 : 0);
+
 	// after the fields, print the tree stucture
-	print_tree(new_lines, lines, depth, is_last);
+	print_tree(new_lines, lines, depth, is_last, &line_len);
 	// then print the file's icon, name, and suffix
-	print_icon(pFS); print_name(pFS); print_suff(pFS);
+	print_icon(pFS);
+	print_name(pFS, &line_len);
+	print_suff(pFS, &line_len);
 
 	print_link(pFS, new_lines, depth); // print targets of links
 	if (pFS->f != NULL) print_mount(pFS->f->mount); // print info about mounted filesystems
@@ -44,6 +48,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	// finally, end this entry's output by printing a newline
 	putchar('\n');
+	// putspaces(line_len); puts("│");
 
 	/* —— recurse ————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -74,9 +79,10 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— print_suff() ————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline void print_suff(const FileStat *const pFS) {
+static inline void print_suff(const FileStat *const pFS, size_t *const line_len) {
 	if (!do_suffix() || pFS->suffix == '\0') return;
 	printf("%s%c", getcol(doDimFile(pFS) ? toColour(.style = G_DIM) : RESET_ALL), pFS->suffix);
+	(*line_len)++;
 }
 
 /* —— printFields() ———————————————————————————————————————————————————————————————————————————————————————————————— */
