@@ -40,7 +40,7 @@ const MountInfo *getMountPoint(const char *const path, const bool is_dir) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void print_mount(const MountInfo *const mount) {
+void print_mount(const MountInfo *const mount, size_t *const line_len) {
 	if (mount == NULL || !DO_MOUNTDEV()) return;
 
 	const char
@@ -58,9 +58,17 @@ void print_mount(const MountInfo *const mount) {
 		punct_ansi, DO_MOUNT_OWNER() || !DO_COLOUR() ? "" : RESET
 	);
 
+	// the `strlen`s here are the only place in the program
+	// where we need to know the lengths of the `fromname` or `typename`s
+	*line_len += STRLEN(" [ ()]") + strlen(mount->fromname) + strlen(mount->typename);
+
 	// `[owner]`
 	if (DO_MOUNT_OWNER()) {
 		printf(" [%s%s%s]%s", username_ansi, username, punct_ansi, IFCOLOUR(RESET));
+		// we could technically get the length of the username from `getUser`, but that would mean a pretty
+		//	hefty refactor, and since `username` is usually pretty short, this shouldn't be that bad
+		*line_len += STRLEN(" []") + strlen(username);
+
 		efree((void*)username); /* [free:mount-username] - alloced in `getUser` */
 	}
 

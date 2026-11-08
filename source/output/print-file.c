@@ -37,8 +37,8 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	print_name(pFS, &line_len);
 	print_suff(pFS, &line_len);
 
-	print_link(pFS, new_lines, depth); // print targets of links
-	if (pFS->f != NULL) print_mount(pFS->f->mount); // print info about mounted filesystems
+	print_link(pFS, new_lines, depth, &line_len); // print targets of links
+	if (pFS->f != NULL) print_mount(pFS->f->mount, &line_len); // print info about mounted filesystems
 
 	// make sure that no colours leak past the end of the line
 	// I'm printing `RESET` directly, and then setting the active colour, just in case the colour system's failed
@@ -46,9 +46,9 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	if (DO_COLOUR()) fputs(RESET, stdout);
 	setActive(RESET_ALL);
 
-	// finally, end this entry's output by printing a newline
+	// finally, end this entry's output with a newline
 	putchar('\n');
-	// putspaces(line_len); puts("│");
+	// puts("│"); putspaces(line_len); puts("│");
 
 	/* —— recurse ————————————————————————————————————————————————————————————————————————————————————— */
 

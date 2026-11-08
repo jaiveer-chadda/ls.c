@@ -16,10 +16,14 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define print_empty_tree(lines, depth, is_last) do {	\
-	putspaces(getTotalLen());							\
-	print_tree(NULL, (lines), (depth), (is_last), NULL);\
+#define print_empty_tree_addlen(lines, depth, is_last, line_len) do {	\
+	putspaces(getTotalLen());											\
+	if ((line_len) != NULL) (*(size_t*)(line_len)) = getTotalLen();		\
+	print_tree(NULL, (lines), (depth), (is_last), (line_len));			\
 } while (0)
+
+#define print_empty_tree(lines, depth, is_last) \
+	print_empty_tree_addlen(lines, depth, is_last, NULL)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
