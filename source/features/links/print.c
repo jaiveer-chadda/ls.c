@@ -7,7 +7,7 @@
 #include "malloc.h"
 #include "debugging.h"
 #include "output/output.h"
-#include "options/options.h" // LINKS_TO_LINKS()
+#include "options/options.h" // LINKS_TO_LINKS(), VERTICAL_LINKS()
 #include "features/features.h" // getBasename(), print_mount()
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -18,15 +18,28 @@ static inline void print_link_internal(
 ) {
 	if (target == NULL && suffix != SYMLINK_SUFFIX) return;
 
+	/* —— Print Vertical Tree ————————————————————————————————— */
+
+	// if we're printing links vertically, then print a newline and reset the line length
+	if (VERTICAL_LINKS()) {
+		putchar('\n');
+		*line_len = getTotalLen(); // resetting the line len due to the newline
+
+		const bool is_last_branch = (
+			(target			== NULL			) || // if there's an error
+			(target->suffix	== INVALID_LINK	) || // or this is an invalid target
+			!(
+				target->target != NULL		  || // or `target` isn't a link
+				target->targ_err				 // or `target` is an invalid link
+			)
+		);
+
+		print_empty_tree_addlen(lines, depth, is_last_branch, line_len);
+	}
+
 	/* —— Target Error ———————————————————————————————————————— */
 
 	if (target == NULL) {
-		/*TEMP:*/ {
-			putchar('\n');
-			*line_len = getTotalLen(); // note: resetting the line len due to the newline
-			print_empty_tree_addlen(lines, depth, LAST_TREE_BRANCH, line_len);
-		}
-
 		const char
 			*const arrow_ansi = getcol(INVALID_ARROW_COLOUR	),
 			*const punct_ansi = getcol(LINK_ERR_PUNCT_COL	),

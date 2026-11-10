@@ -8,7 +8,7 @@
 
 #include "malloc.h"
 #include "debugging.h"
-#include "options/options.h" // LINKS_TO_LINKS()
+#include "options/options.h" // LINKS_TO_LINKS(), MAX_LINKS()
 #include "features/features.h" // FILE_EXISTS()
 
 /* ── Definitions & Declarations ─────────────────────────────────────────────────────────────────────────────────── */
@@ -165,8 +165,10 @@ static inline TargetInfo *getLink_internal(
 	/* —— Recurse ————————————————————————————————————————————— */
 
 	if (LINKS_TO_LINKS()) {
-		if (depth < MAXSYMLINKS) {
+		// `MAX_LINKS` is usually equivalent to `MAXSYMLINKS`
+		if (depth < MAX_LINKS()) {
 			bool r_is_apple = false;
+
 			target->target = getLink_internal(
 				&target->targ_err, &r_is_apple,
 				targ_stat.st_mode, targ_stat.st_flags, /*parent*/ NULL, targ_abspath, depth + 1
@@ -194,7 +196,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	TargetInfo *const target = getLink_internal(
 		&targ_err, &is_apple,
-		pFS->mode, flags, pFS->parent, pFS->abspath, /*depth*/ 0
+		pFS->mode, flags, pFS->parent, pFS->abspath, /*depth*/ 1
 	);
 
 	if (pFS->f != NULL) pFS->f->targ_err = targ_err;

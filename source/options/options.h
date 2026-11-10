@@ -49,12 +49,11 @@ I just assigned flags to them cos there was one available - not cos I want it to
 -S	DO_SORT_INPUTS			-s	SORT_BY
 -T	do_time_str				-t	do_time
 -U	do_usr_name				-u	do_uid
--V							-v
+-V	VERTICAL_LINKS			-v
 -W							-w
 -X	DO_FIRMLINKS			-x
 -Y							-y
 -Z	do_size_str				-z	do_size
-
 */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -81,6 +80,7 @@ I just assigned flags to them cos there was one available - not cos I want it to
 	X(LINKS_TO_LINKS	, true	, false	, true	, NSF	, "links-to-links"	, "recurse-links"		)	\
 	X(DO_MOUNT_OWNER	, true	, false	, true	, 'O'	, "mount-owner"								)	\
 	X(DO_SORT_INPUTS	, false	, false	, true	, 'S'	, "sort-input"		, "sort-inputs"			)	\
+	X(VERTICAL_LINKS	, false	, false	, false	, 'V'	, "vertical-links"	, "list-links"			)	\
 	X(DO_DEVNO_MAJMIN	, true	, false	, true	, 'm'	, "devno-majmin"	, "majmin-devno"		)	\
 	X(DO_REVERSE_SORT	, false	, false	, false	, 'r'	, "reverse"			, "rev"					)	\
 	X(SORT_DIRS_FIRST	, true	, false	, true	, 'D'	, "dirs-first"		, "sort-dirs-first"		)	\
@@ -112,17 +112,20 @@ I just assigned flags to them cos there was one available - not cos I want it to
 	X(do_ctime			, false	, true	, false	, NSF	, "ctime"									)	\
 	X(do_btime			, false	, true	, false	, NSF	, "btime"									)	\
    /*└──────────────────┴───────┴───────┴───────┴───────┴───────────────────────────────────────────┘*/
+/**/
 
+// options with arguments
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// declare the argument-option functions
 #define SORT_BY_CHR_FLAG 's'
 #define DEPTH_CHR_FLAG	 'L'
-
-// options which take an argument
-//							   default	│ short	│ long				│ options
-//							  ──────────┼───────┼───────────────────┼──────────────────────────
-SortByField SORT_BY (void);	// name		│ 's'	│ "sort"  "sort-by"	│ [see `SortByField`]
-uint8_t O__DEPTH	(void);	// 1		│ 'L'	│ "depth" "level"	│ 0 -> 16
-bool DO_COLOUR		(void);	// auto		│ NSF	│ "color" "colour"	│ "", "always", "never"
-/**/						// short	│ NSF	│ "flags"			│ "long", "tiny", "short"
+//							   default		│ short	│ long				│ options
+//							  ──────────────┼───────┼───────────────────┼──────────────────────────
+SortByField SORT_BY (void);	// name			│ 's'	│ "sort"  "sort-by"	│ [see `SortByField`]
+uint8_t MAX_LINKS	(void);	// MAXSYMLINKS	│ NSF	│ "max-links"		│ 1 -> MAXSYMLINKS
+uint8_t O__DEPTH	(void);	// 1			│ 'L'	│ "depth" "level"	│ 0 -> 16
+bool DO_COLOUR		(void);	// auto			│ NSF	│ "color" "colour"	│ "", "always", "never"
+/**/						// short		│ NSF	│ "flags"			│ "long", "tiny", "short"
 bool DO_TINY_FLAGS(void), DO_SHORT_FLAGS(void); // funcs handled by `--flags`
 
 #define MAX_DEPTH O__DEPTH()
@@ -137,6 +140,7 @@ TimeType SORT_TIME(void);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// define the enum of all binary options
 #define X(name, ...) BO_##name,
 	typedef enum binoptidx_t { BINARY_OPTIONS_TABLE BINOPT_COUNT } binoptidx_t;
 #undef X
@@ -152,6 +156,7 @@ typedef struct binopt_t {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+// declare each of the binary option functions
 #define X(name, ...) bool name(void);
 	BINARY_OPTIONS_TABLE
 #undef X

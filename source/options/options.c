@@ -1,7 +1,6 @@
 /// @file options/options.c
 
 #include <stdio.h>
-#include <errno.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -18,7 +17,7 @@ static inline void allOptsOn(void), allFieldsOn(void);
 
 // `U_DO_COLOUR` doesn't need a default - it's the only option that'll will _always_ be set by `setOptions`
 static bool U_DO_COLOUR, U_DO_TINY_FLAGS = false, U_DO_SHORT_FLAGS = true;
-static uint8_t U_DEPTH = 1;
+static uint8_t U_DEPTH = 1, U_MAX_LINKS = MAXSYMLINKS;
 static TimeType U_SB_TIME = M_TIME;
 static SortByField U_SORT_BY = SB_DEFAULT;
 
@@ -100,17 +99,17 @@ static SortByField U_SORT_BY = SB_DEFAULT;
 		usage(EXIT_FAILURE);									\
 	} while (0)
 
-#define ERR_INVALID_OPT() THROW_ERR("unknown option: `%s`", opt)
-#define ERR_TAKES_ARG()	  THROW_ERR("`%s` takes an argument", opt)
-#define ERR_EMPTY_ARG()	  THROW_ERR("argument for `%s` is empty", opt)
-#define ERR_NO_ARGS()	  THROW_ERR("`%s` doesn't take an argument", opt)
-#define ERR_NO_OFF()	  THROW_ERR("`+%c`: '+' can only be used for binary options", *chr)
+#define ERR_INVALID_OPT()	THROW_ERR("unknown option: `%s`", opt)
+#define ERR_TAKES_ARG()		THROW_ERR("`%s` takes an argument", opt)
+#define ERR_EMPTY_ARG()		THROW_ERR("argument for `%s` is empty", opt)
+#define ERR_NO_ARGS()		THROW_ERR("`%s` doesn't take an argument", opt)
+#define ERR_NO_OFF()		THROW_ERR("`+%c`: '+' can only be used for binary options", *chr)
 
-#define ERR_BAD_ARG(args) THROW_ERR("invalid argument `%s` for `%s`. possible arguments are: %s", optarg, opt, (args))
-#define ERR_DEPTH()		  THROW_ERR(				\
-	"invalid argument `%s` for `%s`. "				\
-	"argument must be an integer between 0 and %d.",\
-	optarg, opt, RECURSION_LIMIT					\
+#define ERR_BAD_ARG(args)	THROW_ERR("invalid argument `%s` for `%s`. possible arguments are: %s", optarg, opt, args)
+#define ERR_DEPTH(max, min)	THROW_ERR(					\
+	"invalid argument `%s` for `%s`. "					\
+	"argument must be an integer between %d and %d.",	\
+	optarg, opt, ((int)(max)), ((int)(min))				\
 )
 
 #define ERR_TIME_ARG() ERR_BAD_ARG(								\
@@ -340,14 +339,35 @@ int setOptions(const int argc, char *const *const argv) {
 			// convert the string to a `long`
 			const long int_arg = strtol(optarg, &p_strend, BASE_10);
 
-			if (int_arg <= RECURSION_LIMIT && int_arg >= 0 && // if its within the set limits
+			if ((0 <= int_arg && int_arg <= RECURSION_LIMIT) && // if its within the set limits
 				p_strend > optarg && // and some characters were read
 				p_strend[0] == '\0' // and all characters were read
 			) { // then set it as the globally available depth (and convert it down to an unsigned char)
 				U_DEPTH = (uint8_t)int_arg;
-			} else ERR_DEPTH();
+			} else ERR_DEPTH(0, RECURSION_LIMIT);
 
 			CONSUME_ARG;
+			continue;
+		}
+
+		/* —— --max-links ———————————————————————————————————————————————— */
+
+		if (OPTION_IS("--max-links")) {
+			if (!HAS_ARG) ERR_TAKES_ARG();
+
+			char *p_end; // pointer to the end of the argument string
+			const long int_arg = strtol(optarg, &p_end, BASE_10); // convert the string to a long
+
+			if ((1 <= int_arg && int_arg <= MAXSYMLINKS) // if its within the set limits
+				&& p_end > optarg						 // and some characters were read
+				&& p_end[0] == '\0'						 // and all characters were read
+			) { // then set it as the maximum number of symlink levels
+				U_MAX_LINKS = (uint8_t)int_arg;
+			} else {
+				ERR_DEPTH(1, MAXSYMLINKS);
+			}
+
+			CONSUME_ARG; // consume the argument and continue
 			continue;
 		}
 
@@ -443,6 +463,7 @@ static inline void allFieldsOn(void) {
 
 SortByField SORT_BY	(void) { return U_SORT_BY		; }
 TimeType SORT_TIME	(void) { return U_SB_TIME		; }
+uint8_t MAX_LINKS	(void) { return U_MAX_LINKS		; }
 uint8_t O__DEPTH	(void) { return U_DEPTH			; }
 bool DO_COLOUR		(void) { return U_DO_COLOUR		; }
 bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS	; }

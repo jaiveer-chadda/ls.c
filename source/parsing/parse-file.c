@@ -36,6 +36,11 @@
 	}										\
 } while (0)
 
+
+#define getAllTimes() do { \
+	parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); \
+} while (0)
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 /**
@@ -107,6 +112,7 @@ void parseFile(FileStat *const pfile) {
 
 	/* ————————————————————————————————————————————————————————— */
 
+	// get all field info
 	if (DO_MOUNTDEV()) pfsf->mount		= getMountPoint(pfile->path, S_ISDIR(pfile->mode));
 	if (do_link_to ()) pfsf->target		= getLink(pfile);
 	if (do_usr_name()) pfsf->usr_name	= getUser(pstat->st_uid, true);
@@ -114,11 +120,11 @@ void parseFile(FileStat *const pfile) {
 	if (do_size_str()) pfsf->size_str	= parseSize(&pfsf->size_unit, pstat->st_size, pstat->st_rdev);
 	if (do_flag_str()) pfsf->flag_str	= parseFlags(pfile);
 	if (do_git_info()) pfsf->git		= getGitInfo(pfile);
+	if (do_time_str() || do_time())		  getAllTimes();
+
+	// get the graphical info last
 	if (do_icon	   ()) pfile->icon		= getIcon(pfile);
 	if (DO_COLOUR  ()) pfile->file_col	= setFileColour(pfile->name, pfile->mode, pfsf->mount, pstat);
-	if (do_time_str() || do_time()) {
-		parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME);
-	}
 
 	// calculate the lengths of all numerical (i.e., non-string) fields
 	checkLengths(pfile, CHECK_ALL_LENS);
