@@ -40,7 +40,7 @@ static inline bool getLinkTargetPath(
 
 	/* —— Read Raw Symlink Target ————————————————————————————— */
 
-	assert(S_ISLNK(mode));
+	assert(S_ISLNK(mode), "file isn't a regular file, so must be a symlink");
 	errno = 0;
 
 	// if the file is a symlink, then simply call `readlink` on it

@@ -28,6 +28,12 @@ typedef struct LogLevel {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define builtin_assert(expr) ( \
+	__builtin_expect(!(expr), 0) \
+		? __assert_rtn(__func__, __FILE_NAME__, __LINE__, #expr) \
+		: (void)0 \
+)
+
 #if (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 202300L) && !defined(static_assert)
 #	define st_as__arg2(expr, msg) _Static_assert((expr), msg)
 #	define st_as__arg1(expr		)	 st_as__arg2( expr , ""	)

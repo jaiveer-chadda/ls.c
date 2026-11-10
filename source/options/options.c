@@ -136,7 +136,7 @@ int setOptions(const int argc, char *const *const argv) {
 		/// The argument given to an option either as `--opt arg`, or `--opt=arg`. An empty string if no arg is passed.
 		const char *optarg = ARG_EXISTS ? argv[i + 1] : (char *){0};
 
-		assert(opt != NULL);
+		assert(opt != NULL, "none of the elements of `argv[]` should be `NULL`");
 
 		/* —— End Option Parsing ————————————————————————————————————————— */
 
@@ -187,7 +187,7 @@ int setOptions(const int argc, char *const *const argv) {
 					switch (*chr) {
 						case SORT_BY_CHR_FLAG: goto parse_sort_by;
 						case   DEPTH_CHR_FLAG: goto parse_depth;
-						default: assert(false && "impossible case");
+						default:  __builtin_unreachable(); // impossible case
 					}
 				}
 

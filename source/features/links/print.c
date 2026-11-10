@@ -44,7 +44,7 @@ static inline void print_link_internal(
 			*const error_ansi = getcol(LINK_ERR_MSG_COL		);
 
 		assert(0 <= err_no && err_no <= ELAST, "errno is out of range");
-		static_assert(ELAST < 1000, "ELAST is unreasonably large");
+		static_assert(ELAST < 1000, "ELAST is much larger than expected");
 
 		// this length calculation will work so long as `err_no` isn't negative,
 		//	and is less than ELAST, which is less than 1000, hence the assertions above

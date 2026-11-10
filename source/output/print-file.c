@@ -2,10 +2,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
 #include "output.h"
 #include "malloc.h"
+#include "debugging.h"
 #include "icons/icons.h"
 #include "options/options.h"
 #include "features/features.h"
@@ -115,8 +115,8 @@ static inline void printFields(const FileStat *const pFS) {
 /* —— stopRecursing() ————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline bool stopRecursing(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines) {
-	assert(pFS->f == NULL ? pFS->err_no != 0 : true);  // if `pFS->f` is NULL, errno should always be set
-	assert(depth + 1 < RECURSION_LIMIT);  // there shouldn't be a way to ever go over the maximum recursion limit
+	assert(pFS->f == NULL ? pFS->err_no != 0 : true, "if `pFS->f` is NULL, `errno` should always be set");
+	assert(depth + 1 < RECURSION_LIMIT, "there shouldn't be a way to ever go over the maximum recursion limit");
 
 	return ( // stop recursing if ...
 		fileError(pFS, depth, new_lines)	// the file raised an error while parsing/processing,

@@ -46,7 +46,7 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 	/* —— get path to child ——————————————————————————————————————— */
 
 	// none of these files should be parentless - its pretty much impossible
-	assert(pFS_child->parent != NULL);
+	assert(pFS_child->parent != NULL, "impossible case - file should have parent");
 
 	if (( pFS_child->path	 =	  getPath(pFS_child) ) == NULL) return;
 	if (( pFS_child->abspath = getAbsPath(pFS_child) ) == NULL) return;
@@ -188,7 +188,9 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 		}
 	}
 
-	assert(isValidFS(pFS_dir));
+	assert(isValidFS(pFS_dir),
+		"`pFS_dir` should be fully initialised by now - there isn't a case in which it can't be"
+	);
 
 	closedir(p_dir);
 	return pFS_dir;
@@ -222,7 +224,9 @@ FileStat *processInput(char *const path) {
 	const char *abs_path = NULL;
 	namlen_t abs_len = -1;
 
-	assert(input_len <= INT16_MAX && input_len <= MAX_PATH_LEN);
+	assert(input_len <= INT16_MAX && input_len <= MAX_PATH_LEN,
+		"we're about to implicitly cast `input_len` to `namlen_t`, so we need to ensure it's in bounds"
+	);
 
 	// get the absolute path to the input - this is the only way we can 100% guarantee that we get
 	//	accurate results from `lstat` - especially in the case where the input is a symlinked dir

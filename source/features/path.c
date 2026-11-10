@@ -97,8 +97,7 @@ const char *getPath(FileStat *const file) {
 		return file->name;
 	}
 
-	// neither of their lengths should be 0 or -1
-	assert(file->name_len >= 1 && parent->name_len >= 1);
+	assert(file->name_len >= 1 && parent->name_len >= 1, "neither the filename nor the parent name should be 0 or -1");
 
 	/* —— get parent's path ————————————————————————————————— */
 
@@ -225,7 +224,7 @@ void getPureAbsPath(
 
 	/* —— concatenate segments ——————————————————————— */
 
-	assert(total_len + seg_count + 1 <= INT16_MAX);
+	assert(total_len + seg_count + 1 <= INT16_MAX, "path's length should never be able to exceed INT16_MAX");
 
 	// the total length of the path segments, +1 for each segment (to add `/`), +1 for the null terminator
 	//	however, always make sure that the length is at least 2, in the case of the `/\0` path
@@ -254,8 +253,7 @@ void getPureAbsPath(
 	// null-terminate the output string, and return the result
 	*outptr++ = '\0';
 
-	// the length of the output should be the same as the output length we calculated
-	assert((namlen_t)(outptr - *output) == *output_len);
+	assert((namlen_t)(outptr - *output) == *output_len, "length of output should match the calculated output length");
 
 	(*output_len)--; // -1 to account for the null byte
 }
@@ -285,8 +283,7 @@ const char *getAbsPath(FileStat *const pFS) {
 	//					parent_len + / + pFS->name_len + \0
 	namlen_t path_len = parent_len + 1 + pFS->name_len + 1;
 
-	// the path shouldn't be larger than what can be held in `namlen_t`
-	assert(path_len <= INT16_MAX);
+	assert(path_len <= INT16_MAX, "the path shouldn't be larger than what can be held in `namlen_t`");
 
 	char *path;
 

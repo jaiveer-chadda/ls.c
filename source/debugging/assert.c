@@ -18,12 +18,11 @@ bool d__assert(
 	if (expr) return true;
 
 	const char *const message = message_ ? message_	: "";
-	const char *const newline = message_ ? "\n"		: "";
 	const char *const msg_col = message_ ? BRED		: "";
 
 	fprintf(stderr,
-		NRED	"assertion failed:\n"
-		"%s"	"%s%s"		// [msg_col], message, newline
+		NRED	"assertion failed: "
+		"%s"	"%s\n"		// [msg_col], message
 		BMAG	"\t%s\n"	// expr_str
 		BBLUE	"%s"		// funcname
 		RESET	"() @ "
@@ -31,7 +30,7 @@ bool d__assert(
 		NBLUE	"(%d)\n"	// line
 		RESET,
 
-		msg_col, message, newline,
+		msg_col, message,
 		expr_str,
 		funcname,
 		REL_PATH(filepath),

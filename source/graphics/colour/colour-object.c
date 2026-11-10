@@ -299,7 +299,7 @@ static inline void simplify_fgbg(
 /* ── ── `toRGB_t()` ── ───────────────────────────────────────────────────────────────────────────────────────────── */
 
 static inline rgb_t toRGB_t(const colour_t raw) {
-	assert(raw >= COLOUR_24_MIN);
+	assert(raw >= COLOUR_24_MIN, "if this function is accessed, `raw` should in the defined rgb format");
 	const int rgb = (raw - COLOUR_24_MIN);
 
 	return (rgb_t){
@@ -341,8 +341,8 @@ static inline int d_snprintf(char *restrict str, size_t size, const char *restri
  * @return int: The ANSI code representing turning the input style on or off. Returns 6 or 26 if `style` was invalid.
  */
 static inline int stylelookup(const style_t style, const bool turn_style) {
-	assert(0x0000 < style && style <= 0x0200); // `style` is in range
-	assert((style & (style - 1)) == 0 && style != 0); // `style` is a power of 2
+	assert(0x0000 < style && style <= 0x0200		  , "`style` should be in range"	);
+	assert((style != 0	  && style & (style - 1)) == 0, "`style` should be a power of 2");
 
 	if (turn_style == OFF) {
 		// bold and double underline don't conform to the normal escape

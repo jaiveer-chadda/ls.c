@@ -193,8 +193,8 @@ public const GitInfo *getGitInfo(const FileStat *const pFS) {
 		}
 
 		GitBranchStatus brn_status = GBR_UNKNOWN;
-	
-		assert	(ahead >= 0 && behind >= 0);
+
+		assert	(ahead >= 0 && behind >= 0, "impossible case");
 
 		if		(ahead == 0 && behind == 0) brn_status = GBR_UPTODATE;
 		else if	(ahead >  0 && behind == 0) brn_status = GBR_AHEAD	 ;

@@ -55,7 +55,7 @@ static inline void sb_realloc(StringBuilder p_strb, const size_t increase) {
 
 	// Keep multiplying the size until we have enough allocated memory to fit the requested amount.
 	while (p_strb->size < length(p_strb) + increase) MULT_BY_1_5(p_strb->size);
-	assert(p_strb->size > 0);
+	assert(p_strb->size > 0, "the while loop above shouldn't be able to yield a size < 1");
 
 	// Note down how man bytes we've written to memory already,
 	//	since this info won't be correct if `root` changes during reallocation.

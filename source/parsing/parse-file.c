@@ -34,7 +34,6 @@
 	}										\
 } while (0)
 
-
 #define getAllTimes() do { \
 	parseTime_t(A_TIME); parseTime_t(M_TIME); parseTime_t(C_TIME); parseTime_t(B_TIME); \
 } while (0)
@@ -48,15 +47,15 @@
  * @param pfile[in/out] A pointer to a `FileStat` object, where the information for a given file is stored.
  */
 void parseFile(FileStat *const pfile) {
-	// all NULL and invalid objects should have been filtered out by now
-	assert(isValidFS(pfile));
+	assert(isValidFS(pfile), "all NULL and invalid objects should have been filtered out by now");
 
 	const struct stat *const pstat = pfile->s;
 	FileStatFields	  *const pfsf  = pfile->f;
 
-	// there should never be a case in which the stat object has been initiliased, and the FSF object hasn't, &vv
-	//	i.e. either both should be initiliased, or neither should
-	assert((pstat == NULL) == (pfsf == NULL));
+	#define XOR ==
+
+	// there should never be a case in which the stat object has been initialised, and the FSF object hasn't, &vv
+	assert((pstat == NULL) XOR (pfsf == NULL), "either both `pstat` and `pfsf` are initialised, or neither are");
 
 	// if the processing step was able to get the `dirent` object of the file, but wasn't able to `stat` it,
 	//	then we don't have any more information to get from the file, so just return
