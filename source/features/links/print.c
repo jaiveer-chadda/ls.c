@@ -13,24 +13,23 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 static inline void print_link_internal(
-	const TargetInfo *const target, const suff_t suffix, const error_t err_no,
+	const TargetInfo *const file, const suff_t suffix, const error_t err_no,
 	const lines_t lines, const uint8_t depth, size_t *const line_len
 ) {
-	if (target == NULL && suffix != SYMLINK_SUFFIX) return;
+	if (file == NULL && suffix != SYMLINK_SUFFIX) return;
 
 	/* —— Print Vertical Tree ————————————————————————————————— */
 
-	// if we're printing links vertically, then print a newline and reset the line length
-	if (VERTICAL_LINKS()) {
-		putchar('\n');
-		*line_len = getTotalLen(); // resetting the line len due to the newline
+	if (VERTICAL_LINKS()) { // if we're printing links vertically ...
+		putchar('\n'); // firstly, start a new line
+		*line_len = getTotalLen(); // since we've just printed a newline, reset the line length
 
-		const bool is_last_branch = (
-			(target			== NULL			) || // if there's an error
-			(target->suffix	== INVALID_LINK	) || // or this is an invalid target
+		const bool is_last_branch = ( // it's the last branch on the tree if ...
+			file		 == NULL		 || // there was an error when finding this file
+			file->suffix == INVALID_LINK || // or this is an invalid file
 			!(
-				target->target != NULL		  || // or `target` isn't a link
-				target->targ_err				 // or `target` is an invalid link
+				file->target   != NULL || // or it's the last file in the chain (`file` isn't a link)
+				file->targ_err != 0		  // or `file` _is_ a link, but there was an error while finding its target
 			)
 		);
 
@@ -39,14 +38,17 @@ static inline void print_link_internal(
 
 	/* —— Target Error ———————————————————————————————————————— */
 
-	if (target == NULL) {
+	if (file == NULL) {
 		const char
 			*const arrow_ansi = getcol(INVALID_ARROW_COLOUR	),
 			*const punct_ansi = getcol(LINK_ERR_PUNCT_COL	),
 			*const error_ansi = getcol(LINK_ERR_MSG_COL		);
 
 		assert(0 <= err_no && err_no <= ELAST);
+		_Static_assert(ELAST < 1000, "ELAST >= 1000");
 
+		// this length calculation will work so long as `err_no` isn't negative,
+		//	and is less than ELAST, which is less than 1000, hence the assertions above
 		const size_t errno_len = (
 			err_no <  10 ?	1 :
 			err_no < 100 ?	2 :
@@ -71,13 +73,13 @@ static inline void print_link_internal(
 
 	/* —— Invalid Target —————————————————————————————————————— */
 
-	const char *const arrow = target->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
-	const char *const path  = target->abspath + target->path_off;
+	const char *const arrow = file->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
+	const char *const path  = file->abspath + file->path_off;
 
 	*line_len += ARROW_LEN;
 
-	// if this is an invalid link
-	if (target->suffix == INVALID_LINK) {
+	// if this is an invalid target file (i.e. the previous link points to an invalid file)
+	if (file->suffix == INVALID_LINK) {
 		const char *const arrow_ansi = getcol(INVALID_ARROW_COLOUR);
 
 		printf("%s%s", arrow_ansi, arrow);
@@ -90,7 +92,7 @@ static inline void print_link_internal(
 
 	const char *const basename = getBasename(path);
 
-	// print the arrow - different based on whether it's an apple link or normal symlink
+	// print the arrow differently based on whether it's an apple link or normal symlink
 	printf("%s%s", getcol(VALID_ARROW_COLOUR), arrow);
 
 	// if we found a basename, then print the dirname and basname sequentially
@@ -100,31 +102,31 @@ static inline void print_link_internal(
 		strncpy(dirname, path, (basename + 1) - path);
 
 		printEscdNameLen(dirname, LINK_PATH_COLOUR, false, line_len);
-		printEscdNameLen(basename + 1, file_colour_esc[target->colour], false, line_len);
+		printEscdNameLen(basename + 1, file_colour_esc[file->colour], false, line_len);
 
 	} else {
 		// if we didn't find a basename, then the path is relative, and we should just print it all at once
-		printEscdNameLen(path, file_colour_esc[target->colour], false, line_len);
+		printEscdNameLen(path, file_colour_esc[file->colour], false, line_len);
 	}
 
 	/* —— Print Suffix & Mount Info ——————————————————————————— */
 
 	// if the path should have a suffix, then reset colours and print the suffix
-	if (do_suffix() && target->suffix != '\0') {
-		printf("%s%c", getcol(RESET_ALL), target->suffix);
+	if (do_suffix() && file->suffix != '\0') {
+		printf("%s%c", getcol(RESET_ALL), file->suffix);
 		(*line_len)++;
 	}
 
-	// print info about the target's mount device / mounted filesystems
-	print_mount(target->mount, line_len);
+	// print info about the file's mount device / mounted filesystems
+	print_mount(file->mount, line_len);
 
 	/* —— Recurse ————————————————————————————————————————————— */
 
 	if (LINKS_TO_LINKS()) {
 		// note: the `depth` doesn't change between recurses,
 		//	since the subsequent links will all be printed on the same level
-		print_link_internal(target->target, target->suffix, target->targ_err, lines, depth, line_len);
-		efree(target->target);
+		print_link_internal(file->target, file->suffix, file->targ_err, lines, depth, line_len);
+		efree(file->target);
 	}
 }
 
