@@ -70,32 +70,6 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define T		DIMS("├─")
-#define I		DIMS("│ ")
-#define O		DIMS("└─")
-
-#define p		 "\33[96m*"			RESET
-#define S		" \33[96m* "		RESET
-#define E		" \33[94m= "		RESET
-
-#define null	" \33[91m(null)"	RESET
-#define STRUCT	" \33[95mstruct "	RESET
-#define CHAR	" \33[95mchar "		RESET
-#define BOOL	" \33[34mbool "		RESET
-
-#define PTR				"%s"
-#define STR		"\33[92m%s%s%s"		RESET
-#define CHR		"\33[92m'%c'"		RESET
-#define LCR		"\33[92m'%lc'"		RESET
-
-#define ENM(idx) "\33[38;5;116m" DIMS("[")	#idx DIMS("]")	RESET
-#define IDX(idx) "\33[38;5;216m" DIMS("[")	#idx DIMS("]")	RESET
-#define NUM(fmt) "\33[38;5;216m"			#fmt		""	RESET
-#define OCT(fmt) "\33[94m"					#fmt		""	RESET
-#define   V(typ) "\33[93m"					#typ		""	RESET
-
-/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
 #define ptr(ptr) tostr((void*)(ptr))
 #define ifn(q, do, else) ((q) == NULL ? (do) : (else))
 #define str(fld) ifn(fld,"","\""), ifn(fld, "\b" null, fld), ifn(fld,"","\"")
@@ -109,3 +83,5 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #endif /* !DEBUGGING__DEFS_H_ */
+
+// spell:ignore LNNO

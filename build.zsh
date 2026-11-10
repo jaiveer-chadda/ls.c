@@ -13,7 +13,7 @@ function -- () {
 
   # dev mode is supposed to be halfway between the debug and production modes
   local mode=dev
-  local -i 2 print_cmd=0 do_time=0 do_dump=0 alloc_dbg=1 run_cmd=1 do_clear=1
+  local -i 2 print_cmd=0 do_time=0 alloc_dbg=1 run_cmd=1 do_clear=1
 
   # I know there's a better way to do this, but this is simple, and it works
   while [[ -n "$1" ]] { #
@@ -23,7 +23,6 @@ function -- () {
       ( --compile        ) ;&
       ( --no-run         ) run_cmd=0   ;;
       ( --time           ) do_time=1   ;;
-      ( --dump           ) do_dump=1   ;;
 
       ( --no-alloc-debug | -x ) alloc_dbg=0 ;;
       ( --debug          | -d ) mode=debug  ;;
@@ -151,8 +150,6 @@ function -- () {
   if (( $#NO_WARN )) WARNINGS+=( "no-${(@)^NO_WARN}" )
 
   # —— $DEFINITIONS ———————————————————————————————————— #
-
-  if (( do_dump )) DEFINITIONS+=( DUMP );
 
   # note: `NDEBUG` disables the `assert` macro
   if [[ "$mode" == 'debug' ]] {

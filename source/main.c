@@ -87,10 +87,6 @@ int main(const int argc, char *argv[]) {
 	//	this should hopefully lead to the smoothest output
 	clearScreen();
 
-	#if defined(DEBUG_MODE) && defined(DUMP)
-		dump(&inputs[0]);
-	#endif
-
 	if (DO_HEADER()) printHeaders();
 
 	// print each of the inputs in the order they were given
