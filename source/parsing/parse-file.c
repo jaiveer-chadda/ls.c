@@ -1,19 +1,17 @@
 /// @file parsing/parse-file.c
 
-#include <assert.h>
 #include <string.h>
 
 #include "malloc.h"
 #include "debugging.h"
-#include "parse-file.h"
 
+#include "parse-file.h"
 #include "model/types.h"
 #include "options/options.h"
 
 #include "icons/icons.h"
 #include "form/formatting.h"
 #include "features/features.h"
-#include "processing/process-input.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

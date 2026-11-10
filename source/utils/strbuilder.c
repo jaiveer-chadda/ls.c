@@ -1,11 +1,11 @@
 /// @file utils/strbuilder.c
 
 #include <stdio.h>
-#include <assert.h>
 #include <string.h>
 #include <stdbool.h>
 
 #include "malloc.h"
+#include "debugging.h"
 #include "strbuilder.h"
 
 /* —— Definitions —————————————————————————————————————————————————————————————————————————————————————————————————— */

@@ -1,13 +1,13 @@
 /// @file options/options.c
 
 #include <stdio.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
 #include "strings.h"
 #include "options.h"
+#include "debugging.h"
 #include "model/global.h"
 
 static inline void allOptsOn(void), allFieldsOn(void);

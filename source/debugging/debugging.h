@@ -15,9 +15,10 @@
 	X(WARNING	, 33) \
 	X(ERROR		, 31) \
 	X(FATAL		, 41) \
+/**/
 
-#define X(name, ...) L_##name,
-typedef enum LogLevelIdx { LOG_LEVEL_TABLE L_COUNT } LogLevelIdx;
+#define X(name, ...) LL_##name,
+	typedef enum LogLevelIdx { LOG_LEVEL_TABLE LL_COUNT } LogLevelIdx;
 #undef X
 
 typedef struct LogLevel {
@@ -27,36 +28,69 @@ typedef struct LogLevel {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void d__stacktrace(void);
-void d__line(const uint8_t len);
-void d__debug(
-	const LogLevelIdx level_,
-	const char *const time, const int lineno,
-	const char *const file, const char *const func,
-	const char *const fmt, ...
-);
+#if (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 202300L) && !defined(static_assert)
+#	define st_as__arg2(expr, msg) _Static_assert((expr), msg)
+#	define st_as__arg1(expr		)	 st_as__arg2( expr , ""	)
+
+#	define st_as__dispatch(_1, _2, NAME, ...) NAME
+#	define static_assert(expr, ...) \
+		st_as__dispatch(expr __VA_OPT__(,) __VA_ARGS__, st_as__arg2, st_as__arg1)(expr __VA_OPT__(,) __VA_ARGS__)
+#endif /* !__STDC_VERSION__ */
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #ifdef DEBUG_MODE
+
+	void d__stacktrace(void);
+	void d__line(const uint8_t len);
+
+	bool d__assert(
+		const int expr, const char *const expr_str, const char *const message_,
+		const int line, const char *const funcname, const char *const filepath
+	);
+
+	void d__debug(
+		const LogLevelIdx level_,
+		const char *const time, const int lineno,
+		const char *const file, const char *const func,
+		const char *const fmt, ...
+	);
+
 #	define IN_DEBUG_MODE true
 #	define IF_DEBUG(expr) expr
 
 #	define stacktrace() d__stacktrace()
-#	define debug(log_level, ...) d__debug(L_##log_level, __TIME__, __LINE__, __FILE__, __func__, __VA_ARGS__)
+#	define debug(log_level, ...) d__debug(LL_##log_level, __TIME__, __LINE__, __FILE__, __func__, __VA_ARGS__)
 
 /* ————————————————————————————————————————————————————— */
 
 #	define DEFAULT_DLINE_LEN 150
 
-#	ifdef TTYCOLUMNS
-#		define arg1__dline(len)	d__line((uint8_t)(((len) * TTYCOLUMNS) / DEFAULT_DLINE_LEN))
-#		define arg0__dline()	d__line((uint8_t)(TTYCOLUMNS))
-#	else
+#	ifndef TTYCOLUMNS
 #		define arg1__dline(len)	d__line((uint8_t)(len))
 #		define arg0__dline()	d__line((uint8_t)(DEFAULT_DLINE_LEN))
-#	endif
+#	else
+#		define arg1__dline(len)	d__line((uint8_t)(((len) * TTYCOLUMNS) / DEFAULT_DLINE_LEN))
+#		define arg0__dline()	d__line((uint8_t)(TTYCOLUMNS))
+#	endif /* !TTYCOLUMNS */
 
 #	define dline__DISPATCH(_1, NAME, ...) NAME
 #	define dline(...) dline__DISPATCH(__VA_ARGS__ __VA_OPT__(,) arg1__dline, arg0__dline)(__VA_ARGS__)
+
+/* ————————————————————————————————————————————————————— */
+
+#	ifdef assert
+#		pragma message "`assert` macro is already defined"
+#		undef assert
+#	endif /* assert */
+
+#	define assert__arg2(expr, e_str, msg) d__assert((expr), (e_str), (msg), __LINE__, __FILE__, __func__)
+#	define assert__arg1(expr, e_str)	assert__arg2(expr ,	 e_str , NULL)
+
+#	define assert__dispatch(_1, _2, NAME, ...) NAME
+#	define assert(expr, ...) \
+		assert__dispatch(expr, __VA_ARGS__ __VA_OPT__(,) assert__arg2, assert__arg1) \
+			(expr, #expr __VA_OPT__(,) __VA_ARGS__)
 
 /* ————————————————————————————————————————————————————— */
 
@@ -106,9 +140,10 @@ void d__debug(
 #	define stacktrace()
 #	define debug(log_level, ...)
 #	define dline(...)
+#	define assert(expr, ...) true
 #	define seestr(str, len)
-#	define initDebugging(argv1)
-#endif
+#	define initDebugging(argv)
+#endif /* DEBUG_MODE */
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

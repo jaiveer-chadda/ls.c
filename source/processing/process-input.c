@@ -2,11 +2,11 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <assert.h>
 #include <string.h>
 
 #include "malloc.h"
 #include "debugging.h"
+
 #include "options/options.h"
 #include "features/features.h"
 #include "parsing/parse-file.h"

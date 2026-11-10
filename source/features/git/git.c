@@ -2,14 +2,13 @@
 
 #include <git2.h>
 #include <stdio.h>
-#include <assert.h>
 #include <string.h>
 #include <stdbool.h>
 
 #include "malloc.h"
 #include "debugging.h"
-#include "form/formatting.h"
 #include "model/types.h"
+#include "form/formatting.h"
 #include "features/features.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -201,7 +200,7 @@ public const GitInfo *getGitInfo(const FileStat *const pFS) {
 		else if	(ahead >  0 && behind == 0) brn_status = GBR_AHEAD	 ;
 		else if	(ahead == 0 && behind >  0) brn_status = GBR_BEHIND	 ;
 		else if	(ahead >  0 && behind >  0) brn_status = GBR_DIVERGED;
-		else assert(false && "impossible case - all options exhausted");
+		else __builtin_unreachable();
 
 		*git_info_obj->branch = (GitBranchInfo){
 			.branchname = abbr_bname,

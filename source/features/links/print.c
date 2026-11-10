@@ -1,7 +1,6 @@
 /// @file features/links/print.c
 
 #include <stdio.h>
-#include <assert.h>
 #include <string.h> // strerror(), strncpy(), strlen()
 
 #include "malloc.h"
@@ -44,8 +43,8 @@ static inline void print_link_internal(
 			*const punct_ansi = getcol(LINK_ERR_PUNCT_COL	),
 			*const error_ansi = getcol(LINK_ERR_MSG_COL		);
 
-		assert(0 <= err_no && err_no <= ELAST);
-		_Static_assert(ELAST < 1000, "ELAST >= 1000");
+		assert(0 <= err_no && err_no <= ELAST, "errno is out of range");
+		static_assert(ELAST < 1000, "ELAST is unreasonably large");
 
 		// this length calculation will work so long as `err_no` isn't negative,
 		//	and is less than ELAST, which is less than 1000, hence the assertions above

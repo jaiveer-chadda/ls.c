@@ -2,7 +2,6 @@
 
 #include <errno.h>
 #include <fcntl.h> // AT_FDCWD, AT_SYMLINK_NOFOLLOW
-#include <assert.h>
 #include <unistd.h> // faccessat(), F_OK
 #include <string.h> // strlcpy(), strrchr(), strlen(), memcpy(), memmove()
 

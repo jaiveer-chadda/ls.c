@@ -1,8 +1,8 @@
 /// @file debugging/debugging.c
 
+#include <stdio.h>
 #include <wchar.h>
 #include <stdarg.h>
-#include <stdbool.h>
 #include <execinfo.h>
 
 #include "_defs.h"
@@ -10,7 +10,7 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #ifdef LOG_LEVEL_TABLE
-#	define X(name, ...) [L_##name] = { #name, __VA_ARGS__ },
+#	define X(name, ...) [LL_##name] = { #name, __VA_ARGS__ },
 	static const LogLevel LOG_LEVELS[] = { LOG_LEVEL_TABLE };
 #	undef X
 #	undef LOG_LEVEL_TABLE
@@ -24,7 +24,7 @@ void d__debug(
 	const char *const file, const char *const func,
 	const char *const fmt, ...
 ) {
-	const LogLevel level = LOG_LEVELS[level_ < L_COUNT ? level_ : L_DEBUG];
+	const LogLevel level = LOG_LEVELS[level_ < LL_COUNT ? level_ : LL_DEBUG];
 
 	/* ———————————————————————————————————————————————————————————————————— */
 

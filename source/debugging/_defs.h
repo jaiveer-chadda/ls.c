@@ -5,9 +5,7 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <string.h> // strstr()
 
 #define DEBUGGING_IMPLEMENTATION
 #include "debugging.h"
@@ -37,7 +35,10 @@
 #define LPA DIMS("(")
 #define RPA DIMS(")")
 
-#define REL_PATH(file) (char *)(strstr((char *)(file), "source/") + (int)(sizeof("source/") - 1))
+#define REL_PATH(abspath) ((char*)(			\
+	strstr(((char*)(abspath)), "source/")	\
+		+ ((int)(sizeof("source/") - 1))	\
+))
 
 #define STACK_MAX 128
 
@@ -70,14 +71,14 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define ptr(ptr) tostr((void*)(ptr))
-#define ifn(q, do, else) ((q) == NULL ? (do) : (else))
-#define str(fld) ifn(fld,"","\""), ifn(fld, "\b" null, fld), ifn(fld,"","\"")
+#define	RESET	"\33[m"		// reset colours
 
-#define ter(...) fprintf(stderr, __VA_ARGS__);
-#define err(fmt, ...) do { fprintf(stderr, (fmt "\n"), __VA_ARGS__); fflush(stderr); } while (0)
-#define ERR(str_) fputs(str_ "\n", stderr);
-#define pbool(val) ((val) ? "\33[32m✓ true\33[m" : "\33[31m× false\33[m")
+#define	NRED	"\33[31m"	// normal red
+#define	BRED	"\33[91m"	// bright red
+#define	BMAG	"\33[95m"	// bright magenta
+#define	NBLUE	"\33[34m"	// normal blue
+#define	BBLUE	"\33[94m"	// bright blue
+#define	GREEN	"\33[92m"	// normal green
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

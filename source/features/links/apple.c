@@ -5,6 +5,7 @@
 #include <string.h> // strlen(), strcasestr()
 
 #include <CoreFoundation/CoreFoundation.h>
+#undef assert // CoreFoundation includes `<assert.h>` for some reason
 
 #include "malloc.h"
 #include "debugging.h"
