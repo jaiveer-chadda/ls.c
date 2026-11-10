@@ -8,6 +8,7 @@
 /** The icon displayed when the value of an icon is `NO_ICON`/`((icon_t)L'\0')`. */
 #define IC_ERROR			L''
 #define IC_ELOOP			L''
+#define IC_DIR_ERROR		L'󱧸'
 
 /* —— Generic —————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -29,7 +30,7 @@
 #define IC_LANG_RUST		L''
 #define IC_LOCK				L''
 #define IC_OS_APPLE			L''
-#define IC_SHELL_CMD		L''
+#define IC_SHELL_CMD		L'󰆍'
 #define IC_VIM				L''
 
 /* —— Dir Names & File Extensions —————————————————————————————————————————————————————————————————————————————————— */
@@ -84,8 +85,9 @@
 /* —— Directory Extensions ————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define IC_APP				L''
-#define IC_BACKUP_DIR		L'󰴋'
+#define IC_BACKUP_DIR		L'󰝉'
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Directory Names —————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define IC_APPLICATIONS		L''
@@ -107,10 +109,11 @@
 #define IC_EXERCISM			L''
 #define IC_EZA				L'󰉻'
 #define IC_FAVORITES		L'󰚝'
-#define IC_FILEPATHS		L''
+#define IC_FILEPATHS		L'󰙅'
 #define IC_FISH				L''
 #define IC_FOLDER_BUILD		L'󱧼'
 #define IC_FOLDER_CONFIG	L''
+#define IC_FOLDER_ETC		L'󱧶'
 #define IC_FOLDER_GIT		L''
 #define IC_FOLDER_GITHUB	L''
 #define IC_FOLDER_HIDDEN	L'󱞞'
@@ -122,6 +125,7 @@
 #define IC_GEM				L''
 #define IC_GRAD_CAP			L''
 #define IC_HAMMER			L'󰣪'
+#define IC_HASH_DIR			L'󰴉'
 #define IC_HOME				L'󱂵'
 #define IC_ITERM2			L''
 #define IC_JUPYTER			L''
@@ -130,6 +134,7 @@
 #define IC_LANG_SHELL		L''
 #define IC_LAPTOP			L''
 #define IC_LINEARMOUSE		L'󰍽'
+#define IC_LOG_DIR			L'󰲂'
 #define IC_MAIL				L'󰇰'
 #define IC_MAN_PAGES		L'󰺄'
 #define IC_MOVIES			L'󰿎'
@@ -141,11 +146,11 @@
 #define IC_OPT				L''
 #define IC_PICTURES			L'󰉏'
 #define IC_PIP				L''
-#define IC_PIPES			L'󰟥'
+#define IC_PIPES			L'󰟦'
 #define IC_PUBLIC			L'󰛍'
 #define IC_RAYCAST			L''
 #define IC_RESOLVE			L'󰕟'
-#define IC_RESOURCES		L'󱂷'
+#define IC_RESOURCES		L'󱧶'
 #define IC_ROSE				L'󰧲'
 #define IC_SHARED			L'󱒃'
 #define IC_SHIP				L''
@@ -153,11 +158,12 @@
 #define IC_SRC				L'󰣞'
 #define IC_SVN				L''
 #define IC_SYSTEM			L'󰡀'
-#define IC_TEMP				L'󰔛'
+#define IC_TEMP				L'󰪺'
+#define IC_TEST_DIR			L'󰙨'
 #define IC_TOP				L'󰨇'
 #define IC_TRASH			L''
 #define IC_USER				L''
-#define IC_USERS			L''
+#define IC_USERS			L'󰉌'
 #define IC_VAR				L'󰫧'
 #define IC_VPN				L'󰲝'
 #define IC_VSC_SHARED		L''
@@ -170,7 +176,7 @@
 #define IC_AI				L''
 #define IC_ASP				L''
 #define IC_AUDIO			L''
-#define IC_BACKUP_FILE		L'󰁯'
+#define IC_BACKUP_FILE		L'󰤘'
 #define IC_BLEND			L'󰂫'
 #define IC_BOOK				L''
 #define IC_CAD				L'󰻫'
@@ -190,7 +196,7 @@
 #define IC_DEB				L''
 #define IC_DESKTOP_EXT		L''
 #define IC_DIFF				L''
-#define IC_DISK_IMAGE		L''
+#define IC_DISK_IMAGE		L''
 #define IC_DOCUMENT			L''
 #define IC_DOWNLOAD			L'󰇚'
 #define IC_DRAWIO			L''
@@ -213,6 +219,7 @@
 #define IC_GTK				L''
 #define IC_HAML				L''
 #define IC_HEX				L'󱊧'
+#define IC_HIDDEN_FILE		L'󰘓'
 #define IC_HTML5			L''
 #define IC_INFO				L''
 #define IC_JL				L''
@@ -311,6 +318,7 @@
 #define IC_XPI				L''
 #define IC_YAML				L''
 
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— File Names ——————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define IC_ARCHBTW			L''
@@ -367,7 +375,6 @@
 #define IC_YARN				L''
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-
 
 #endif /* !DEFINITIONS_H_ */
 

@@ -15,12 +15,13 @@ const icon_t DEFAULT_DIR_ICON  = IC_FOLDER;
 /// An array containing the basenames of directories, and their associated icons.
 /// This array should contain all the directories that have custom icons.
 const Icon DIRNAME_ICONS[] = {
+	{ "/"				, IC_HASH_DIR 		}, // 󰴉
 	{ "__filepaths__"	, IC_FILEPATHS 		}, // 
 	{ ".archive"		, IC_ARCHIVE 		}, // 󱝏
 	{ ".cache"			, IC_CACHE 			}, // 
 	{ ".config"			, IC_GEAR			}, // 
 	{ ".exercism"		, IC_EXERCISM		}, // 
-	{ ".git"			, IC_FOLDER_GIT		}, // 󰊢
+	{ ".git"			, IC_FOLDER_GIT		}, // 
 	{ ".github"			, IC_FOLDER_GITHUB	}, // 
 	{ ".history"		, IC_CLOCK 			}, // 
 	{ ".idea"			, IC_INTELLIJ		}, // 
@@ -70,7 +71,7 @@ const Icon DIRNAME_ICONS[] = {
 	{ "discord"			, IC_DISCORD 		}, // 
 	{ "documents"		, IC_DOCUMENTS		}, // 󰲂
 	{ "downloads"		, IC_DOWNLOADS		}, // 󰉍
-	{ "etc"				, IC_FOLDER_CONFIG	}, // 
+	{ "etc"				, IC_FOLDER_ETC		}, // 󱧶
 	{ "expressvpn"		, IC_VPN 			}, // 󰲝
 	{ "ey"				, IC_BUILDING 		}, // 󱔟
 	{ "eza"				, IC_EZA 			}, // 󰉻
@@ -100,6 +101,7 @@ const Icon DIRNAME_ICONS[] = {
 	{ "lib"				, IC_LIBRARY 		}, // 
 	{ "library"			, IC_LIBRARY 		}, // 
 	{ "linearmouse"		, IC_LINEARMOUSE 	}, // 󰍽
+	{ "logs"			, IC_LOG_DIR 		}, // 󰲂
 	{ "mail"			, IC_MAIL			}, // 󰇰
 	{ "man pages"		, IC_MAN_PAGES 		}, // 󰺄
 	{ "mclaren"			, IC_CAR 			}, // 󰞬
@@ -119,7 +121,7 @@ const Icon DIRNAME_ICONS[] = {
 	{ "pam.d"			, IC_FOLDER_KEY		}, // 󰢬
 	{ "pictures"		, IC_PICTURES		}, // 󰉏
 	{ "pip"				, IC_PIP 			}, // 
-	{ "pipes-rs"		, IC_PIPES 			}, // 󰟥
+	{ "pipes-rs"		, IC_PIPES 			}, // 󰟦
 	{ "powershell"		, IC_POWERSHELL 	}, // 
 	{ "private"			, IC_LOCK			}, // 
 	{ "public"			, IC_PUBLIC 		}, // 󰛍
@@ -145,9 +147,10 @@ const Icon DIRNAME_ICONS[] = {
 	{ "svn"				, IC_SVN 			}, // 
 	{ "swift"			, IC_SWIFT 			}, // 
 	{ "system"			, IC_SYSTEM 		}, // 󰡀
-	{ "tmp"				, IC_TEMP 			}, // 󰔛
+	{ "tests"			, IC_TEST_DIR		}, // 󰙨
+	{ "tmp"				, IC_TEMP 			}, // 󰪺
 	{ "university work"	, IC_GRAD_CAP 		}, // 
-	{ "users"			, IC_USERS 			}, // 
+	{ "users"			, IC_USERS 			}, // 󰉌
 	{ "usr"				, IC_USER 			}, // 
 	{ "var"				, IC_VAR 			}, // 󰫧
 	{ "videos"			, IC_VIDEOS			}, // 
@@ -161,7 +164,7 @@ const Icon DIRNAME_ICONS[] = {
 	{ "xorg.conf.d"		, IC_FOLDER_CONFIG	}, // 
 	{ "y_settings_etc"	, IC_GEAR 			}, // 
 	{ "z_other"			, IC_ARCHIVE 		}, // 󱝏
-	{ "zsh"				, IC_SHELL_CMD 		}, // 
+	{ "zsh"				, IC_SHELL_CMD 		}, // 󰆍
 	END_OF_ICONS
 };
 
@@ -258,7 +261,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".zshrc"						, IC_SHELL				}, // 󱆃
 	{ "_gvimrc"						, IC_VIM				}, // 
 	{ "_vimrc"						, IC_VIM				}, // 
-	{ "a.out"						, IC_SHELL_CMD			}, // 
+	{ "a.out"						, IC_SHELL_CMD			}, // 󰆍
 	{ "authorized_keys"				, IC_SSH_LOGO			}, // 󰣀
 	{ "authors"						, IC_PEOPLE				}, // 
 	{ "authors.txt"					, IC_PEOPLE				}, // 
@@ -494,11 +497,11 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "avi"				, IC_VIDEOS			}, // 
 	{ "avif"			, IC_IMAGE			}, // 
 	{ "avro"			, IC_JSON			}, // 
-	{ "awk"				, IC_SHELL_CMD		}, // 
+	{ "awk"				, IC_SHELL_CMD		}, // 󰆍
 	{ "bak"				, IC_BACKUP_FILE	}, // 󰁯
-	{ "bash"			, IC_SHELL_CMD		}, // 
+	{ "bash"			, IC_SHELL_CMD		}, // 󰆍
 	{ "bat"				, IC_OS_WINDOWS_CMD	}, // 
-	{ "bats"			, IC_SHELL_CMD		}, // 
+	{ "bats"			, IC_SHELL_CMD		}, // 󰆍
 	{ "bdf"				, IC_FONT			}, // 
 	{ "bib"				, IC_LANG_TEX		}, // 
 	{ "bin"				, IC_BINARY			}, // 
@@ -546,7 +549,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "crdownload"		, IC_DOWNLOAD		}, // 󰇚
 	{ "crt"				, IC_GIST_SECRET	}, // 
 	{ "cs"				, IC_LANG_CSHARP	}, // 󰌛
-	{ "csh"				, IC_SHELL_CMD		}, // 
+	{ "csh"				, IC_SHELL_CMD		}, // 󰆍
 	{ "cshtml"			, IC_RAZOR			}, // 
 	{ "csproj"			, IC_LANG_CSHARP	}, // 󰌛
 	{ "css"				, IC_CSS3			}, // 
@@ -568,7 +571,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "djv"				, IC_DOCUMENT		}, // 
 	{ "djvu"			, IC_DOCUMENT		}, // 
 	{ "dll"				, IC_LIBRARY		}, // 
-	{ "dmg"				, IC_DISK_IMAGE		}, // 
+	{ "dmg"				, IC_DISK_IMAGE		}, // 
 	{ "doc"				, IC_DOCUMENT		}, // 
 	{ "dockerfile"		, IC_DOCKER			}, // 
 	{ "dockerignore"	, IC_DOCKER			}, // 
@@ -618,7 +621,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "fctb"			, IC_FREECAD		}, // 
 	{ "fctl"			, IC_FREECAD		}, // 
 	{ "fdmdownload"		, IC_DOWNLOAD		}, // 󰇚
-	{ "fish"			, IC_SHELL_CMD		}, // 
+	{ "fish"			, IC_SHELL_CMD		}, // 󰆍
 	{ "flac"			, IC_AUDIO			}, // 
 	{ "flc"				, IC_FONT			}, // 
 	{ "flf"				, IC_FONT			}, // 
@@ -701,8 +704,8 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "ige"				, IC_CAD			}, // 󰻫
 	{ "iges"			, IC_CAD			}, // 󰻫
 	{ "igs"				, IC_CAD			}, // 󰻫
-	{ "image"			, IC_DISK_IMAGE		}, // 
-	{ "img"				, IC_DISK_IMAGE		}, // 
+	{ "image"			, IC_DISK_IMAGE		}, // 
+	{ "img"				, IC_DISK_IMAGE		}, // 
 	{ "iml"				, IC_INTELLIJ		}, // 
 	{ "info"			, IC_INFO			}, // 
 	{ "ini"				, IC_CONFIG			}, // 󱁻
@@ -710,7 +713,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "ino"				, IC_LANG_ARDUINO	}, // 
 	{ "ipt"				, IC_CAD			}, // 󰻫
 	{ "ipynb"			, IC_NOTEBOOK		}, // 
-	{ "iso"				, IC_DISK_IMAGE		}, // 
+	{ "iso"				, IC_DISK_IMAGE		}, // 
 	{ "j2c"				, IC_IMAGE			}, // 
 	{ "j2k"				, IC_IMAGE			}, // 
 	{ "jad"				, IC_LANG_JAVA		}, // 
@@ -752,7 +755,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "kpp"				, IC_KRITA			}, // 
 	{ "kra"				, IC_KRITA			}, // 
 	{ "krz"				, IC_KRITA			}, // 
-	{ "ksh"				, IC_SHELL_CMD		}, // 
+	{ "ksh"				, IC_SHELL_CMD		}, // 󰆍
 	{ "kt"				, IC_LANG_KOTLIN	}, // 
 	{ "kts"				, IC_LANG_KOTLIN	}, // 
 	{ "latex"			, IC_LANG_TEX		}, // 
@@ -826,7 +829,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "node"			, IC_NODEJS			}, // 
 	{ "norg"			, IC_NORG			}, // 
 	{ "nsp"				, IC_SWITCH			}, // 󰟡
-	{ "nu"				, IC_SHELL_CMD		}, // 
+	{ "nu"				, IC_SHELL_CMD		}, // 󰆍
 	{ "o"				, IC_BINARY			}, // 
 	{ "obj"				, IC_FILE_3D		}, // 󰆧
 	{ "odb"				, IC_DATABASE		}, // 
@@ -899,8 +902,8 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "pyo"				, IC_LANG_PYTHON	}, // 
 	{ "pyw"				, IC_LANG_PYTHON	}, // 
 	{ "pyx"				, IC_LANG_PYTHON	}, // 
-	{ "qcow"			, IC_DISK_IMAGE		}, // 
-	{ "qcow2"			, IC_DISK_IMAGE		}, // 
+	{ "qcow"			, IC_DISK_IMAGE		}, // 
+	{ "qcow2"			, IC_DISK_IMAGE		}, // 
 	{ "qm"				, IC_TRANSLATION	}, // 󰗊
 	{ "qml"				, IC_QT				}, // 
 	{ "qrc"				, IC_QT				}, // 
@@ -945,13 +948,13 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "service"			, IC_SERVICE		}, // 
 	{ "sf2"				, IC_TREB_CLEF		}, // 󰽰
 	{ "sfz"				, IC_TREB_CLEF		}, // 󰽰
-	{ "sh"				, IC_SHELL_CMD		}, // 
+	{ "sh"				, IC_SHELL_CMD		}, // 󰆍
 	{ "sha1"			, IC_SHIELD_CHECK	}, // 󰕥
 	{ "sha224"			, IC_SHIELD_CHECK	}, // 󰕥
 	{ "sha256"			, IC_SHIELD_CHECK	}, // 󰕥
 	{ "sha384"			, IC_SHIELD_CHECK	}, // 󰕥
 	{ "sha512"			, IC_SHIELD_CHECK	}, // 󰕥
-	{ "shell"			, IC_SHELL_CMD		}, // 
+	{ "shell"			, IC_SHELL_CMD		}, // 󰆍
 	{ "shtml"			, IC_HTML5			}, // 
 	{ "sig"				, IC_SIGNED_FILE	}, // 󱧃
 	{ "signature"		, IC_SIGNED_FILE	}, // 󱧃
@@ -1002,7 +1005,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "tbc"				, IC_TCL			}, // 󰛓
 	{ "tbz"				, IC_COMPRESSED		}, // 
 	{ "tbz2"			, IC_COMPRESSED		}, // 
-	{ "tc"				, IC_DISK_IMAGE		}, // 
+	{ "tc"				, IC_DISK_IMAGE		}, // 
 	{ "tcl"				, IC_TCL			}, // 󰛓
 	{ "tex"				, IC_LANG_TEX		}, // 
 	{ "tf"				, IC_TERRAFORM		}, // 󱁢
@@ -1013,6 +1016,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "tiff"			, IC_IMAGE			}, // 
 	{ "tlz"				, IC_COMPRESSED		}, // 
 	{ "tml"				, IC_CONFIG			}, // 󱁻
+	{ "tmp"				, IC_HIDDEN_FILE	}, // 󰘓
 	{ "tmux"			, IC_TMUX			}, // 
 	{ "toml"			, IC_TOML			}, // 
 	{ "torrent"			, IC_TORRENT		}, // 
@@ -1034,14 +1038,14 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "unity3d"			, IC_UNITY			}, // 
 	{ "v"				, IC_LANG_V			}, // 
 	{ "vala"			, IC_VALA			}, // 
-	{ "vdi"				, IC_DISK_IMAGE		}, // 
-	{ "vhd"				, IC_DISK_IMAGE		}, // 
+	{ "vdi"				, IC_DISK_IMAGE		}, // 
+	{ "vhd"				, IC_DISK_IMAGE		}, // 
 	{ "vhdl"			, IC_LANG_HDL		}, // 󰍛
 	{ "vhs"				, IC_VHS			}, // 󰨛
 	{ "vi"				, IC_VI				}, // 
 	{ "video"			, IC_VIDEOS			}, // 
 	{ "vim"				, IC_VIM			}, // 
-	{ "vmdk"			, IC_DISK_IMAGE		}, // 
+	{ "vmdk"			, IC_DISK_IMAGE		}, // 
 	{ "vob"				, IC_VIDEOS			}, // 
 	{ "vsix"			, IC_VSIX			}, // 
 	{ "vue"				, IC_VUE			}, // 󰡄
@@ -1082,7 +1086,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "zig"				, IC_ZIG			}, // 
 	{ "zip"				, IC_COMPRESSED		}, // 
 	{ "zsh-theme"		, IC_SHELL			}, // 󱆃
-	{ "zsh"				, IC_SHELL_CMD		}, // 
+	{ "zsh"				, IC_SHELL_CMD		}, // 󰆍
 	{ "zst"				, IC_COMPRESSED		}, // 
 	END_OF_ICONS
 };
