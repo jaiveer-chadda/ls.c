@@ -49,9 +49,10 @@ void initTime(void) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define RETURN_ERROR() do {										\
-	debug(WARNING, "parseTime: %s", strerror(errno));			\
+#define RETURN_ZERO(col) do {									\
 	memcpy(timeobj->str, TIME_ERR_STR, sizeof(TIME_ERR_STR));	\
+	timeobj->colour = (col);									\
+	\
 	*b_writ = sizeof(TIME_ERR_STR) - 1;							\
 	return timeobj;												\
 } while (0)
@@ -65,7 +66,7 @@ void initTime(void) {
 /* —————————————————————————————————————————————————————————————— */
 
 TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *const b_writ) {
-	if (file_time == 0) RETURN_ERROR();
+	if (file_time == 0) RETURN_ZERO(TC_EPOCH);
 
 	initTime(); // initialise the current time, seconds since midnight, etc.
 
@@ -91,7 +92,7 @@ TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *con
 	else if	(t_diff < diff_year	)			{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_THIS_YR	; }
 	else									{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_OTHER	; }
 
-	if ((int)*b_writ == -1 || *b_writ >= sizeof(timestr)) RETURN_ERROR();
+	if ((int)*b_writ == -1 || *b_writ >= sizeof(timestr)) RETURN_ZERO(TC_ERROR);
 	return timeobj;
 }
 
