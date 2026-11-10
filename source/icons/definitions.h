@@ -18,6 +18,17 @@
 #define IC_FOLDER			L'󰉋' //   󰝰
 #define IC_FOLDER_OPEN		L'󰝰'
 
+/* —— File Types ——————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define IC_PIPE				L'󰢪' // or   󰤼  󰟥  󰞘  ⇌  ⇆  ⇉  ↔
+#define IC_CHRDEV			L'󰥛' // or 󰬊  󰈍  
+#define IC_BLKDEV			L'' // or 󰬉      
+#define IC_SYMLINK			L'󰪹' // or 󱚂  󱪓      󱅷
+#define IC_SYMLINK_DIR		L'󰉒' // or 󱧮  󱧯    
+#define IC_SOCKET			L'󱇰' // or 󱇰  󰟨
+#define IC_WHITEOUT			L'󰟢' // or 󰉘  󰮘
+#define IC_MOUNT_POINT		L'󱋤' // or 󰉉  󱇰  󱊞  󱛟    󰡰
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Dir Names, File Names, & File Extensions ————————————————————————————————————————————————————————————————————— */
 

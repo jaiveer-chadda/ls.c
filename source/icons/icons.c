@@ -2,11 +2,11 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "icons.h"
 #include "strings.h"
+#include "definitions.h"
 
 #include "options/options.h"
 #include "features/features.h"
@@ -31,6 +31,41 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+static inline icon_t getGenericIcon(const FileStat *const pFS, const bool is_dir, const bool has_ext) {
+
+	const TargetInfo *target = pFS->f ? pFS->f->target : NULL;
+
+	if (target != NULL) {
+		while (target != NULL) {
+			if (target->targ_err == ELOOP) return IC_ELOOP; // 
+			if (target->target	 == NULL ) break;
+			target = target->target;
+		}
+
+		if (target->suffix == DIR_SUFFIX) return IC_SYMLINK_DIR; // 󱧮
+		return IC_SYMLINK; // 󱪓
+	}
+
+	if (is_dir) {
+		if (pFS->f != NULL && pFS->f->mount != NULL) return IC_MOUNT_POINT; // 
+		if (pFS->err_no != 0) return IC_DIR_ERROR; // 󱧸
+
+		return DEFAULT_DIR_ICON; // 󰉋
+	}
+
+	switch (pFS->mode & TYPE_MASK) {
+		case S_IFIFO: return IC_PIPE	; // 󰟦
+		case S_IFCHR: return IC_CHRDEV	; // 󰥛
+		case S_IFBLK: return IC_BLKDEV	; // 
+		case S_IFSOC: return IC_SOCKET	; // 󱇰
+		case S_IFWHT: return IC_WHITEOUT; // 󰟢
+	}
+
+	return has_ext ? UNKNOWN_EXT_ICON : DEFAULT_FILE_ICON; // 󰡯 / 
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 static inline icon_t findIconMatch(const char *const check_str, const Icon icon_arr[]) {
 	Icon icon = icon_arr[0];
 	for (int i = 0; !REACHED_END_OF_ICONS(icon); icon = icon_arr[i++] ) {
@@ -38,6 +73,8 @@ static inline icon_t findIconMatch(const char *const check_str, const Icon icon_
 	}
 	return NO_ICON;
 }
+
+/* ——————————————————————————————————————————————————————————————————— */
 
 icon_t getIcon(const FileStat *const pFS) {
 	// determine which name we'll be using to find the icon
@@ -54,6 +91,8 @@ icon_t getIcon(const FileStat *const pFS) {
 	//	if there _is_ a `/`, then move the pointer over by one, so the `/` isn't included
 	name = (name != NULL) ? name + 1 : name_buf;
 
+	/* ——————————————————————————————————————————————————————————————— */
+
 	// which array we should search in when looking for icons
 	const Icon *const NAME_ARRAY = (Icon *)(is_dir ? &DIRNAME_ICONS : &FILENAME_ICONS);
 	// see if the filename matches any of the names in `NAME_ARRAY`
@@ -61,10 +100,12 @@ icon_t getIcon(const FileStat *const pFS) {
 	// if it matches, then it was a success - return that icon
 	if (icon != NO_ICON) return icon;
 
+	/* ——————————————————————————————————————————————————————————————— */
+
 	// if it didn't match any exact names, then check if it has an extension by finding the last full stop
 	const char *const extension = strrchr(name + 1, '.'); // the +1 stops it from trying to match dotfiles
 	// if it doesn't have an extension, return one of the default icons
-	if (extension == NULL) return is_dir ? DEFAULT_DIR_ICON : DEFAULT_FILE_ICON; //  / 
+	if (extension == NULL) return getGenericIcon(pFS, is_dir, false); //  / 
 
 	// once again, find the appropriate icon array for dirs/files
 	const Icon *const EXT_ARRAY = (Icon *)(is_dir ? &DIR_EXT_ICONS : &FILE_EXT_ICONS);
@@ -73,10 +114,10 @@ icon_t getIcon(const FileStat *const pFS) {
 	icon = findIconMatch(extension + 1, EXT_ARRAY); // note: +1 so we don't include the literal '.'
 	if (icon != NO_ICON) return icon;
 
-	// if it no match was found, and the file isn't a directory, return the 'unknown' icon.
+	// if no match was found, and the file isn't a directory, return the 'unknown' icon.
 	//	this way, the unknown file icon 󰡯 will only be used in the case of an _unknown_ extension,
 	// 	rather than, as eza does it, for _all_ files without extensions
-	return is_dir ? DEFAULT_DIR_ICON : UNKNOWN_EXT_ICON; //  / 󰡯
+	return getGenericIcon(pFS, is_dir, true); //  / 󰡯
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

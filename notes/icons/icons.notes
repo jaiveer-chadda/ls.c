@@ -1,0 +1,287 @@
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+# ── ───── Folders ───── ──────────────────────────────────────────────────────────────────────────────────────────── #
+
+cod
+‾‾‾
+folder                  U+EA83      
+open                    U+EAF7      
+
+active                  U+EAF6      
+library                 U+EBDF      
+new                     U+EA80      
+root                    U+EB46      
+root_opened             U+EB45      
+symlink                 U+EAED      
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+custom
+‾‾‾‾‾‾
+folder                  U+E5FF      
+open                    U+E5FE      
+config                  U+E5FC      
+git                     U+E5FB      
+git_branch              U+E5FB      
+github                  U+E5FD      
+npm                     U+E5FA      
+oct                     U+E6AD      
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+fa
+‾‾
+folder                  U+F07B             │   folder                  U+F114      
+open                    U+F07C             │   open                    U+F115      
+minus                   U+EEC6             │
+plus                    U+EEC7             │
+tree                    U+EF81             │
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+oct
+‾‾‾
+folder                  U+F4D3             │   folder                  U+F413      
+symlink                 U+F482      
+open                    U+F4D4      
+submodule               U+F414      
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+seti
+‾‾‾‾
+folder                  U+E613      
+git                     U+E65D      
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+md
+‾‾
+
+folder                  U+F024B     󰉋       │   folder                  U+F0256     󰉖
+open                    U+F0770     󰝰       │   open                    U+F0DCF     󰷏
+
+account                 U+F024C     󰉌       │   account                 U+F0B9C     󰮜
+alert                   U+F0DCC     󰷌       │   alert                   U+F0DCD     󰷍
+arrow_down              U+F19E8     󱧨       │   arrow_down              U+F19E9     󱧩
+arrow_left              U+F19EA     󱧪       │   arrow_left              U+F19EB     󱧫
+arrow_left_right        U+F19EC     󱧬       │   arrow_left_right        U+F19ED     󱧭
+arrow_right             U+F19EE     󱧮       │   arrow_right             U+F19EF     󱧯
+arrow_up                U+F19F0     󱧰       │   arrow_up                U+F19F3     󱧳
+arrow_up_down           U+F19F1     󱧱       │   arrow_up_down           U+F19F2     󱧲
+cancel                  U+F19F4     󱧴       │   cancel                  U+F19F5     󱧵
+check                   U+F197E     󱥾       │   check                   U+F197F     󱥿
+clock                   U+F0ABA     󰪺       │   clock                   U+F0ABB     󰪻
+cog                     U+F107F     󱁿       │   cog                     U+F1080     󱂀
+download                U+F024D     󰉍       │   download                U+F10E9     󱃩
+edit                    U+F08DE     󰣞       │   edit                    U+F0DCE     󰷎
+eye                     U+F178A     󱞊       │   eye                     U+F178B     󱞋
+file                    U+F19F6     󱧶       │   file                    U+F19F7     󱧷
+google_drive            U+F024E     󰉎       │
+heart                   U+F10EA     󱃪       │   heart                   U+F10EB     󱃫
+hidden                  U+F179E     󱞞       │   hidden                  U+F179E     󱞞
+home                    U+F10B5     󱂵       │   home                    U+F10B6     󱂶
+image                   U+F024F     󰉏       │
+information             U+F10B7     󱂷       │   information             U+F10B8     󱂸
+key                     U+F08AC     󰢬       │   key                     U+F10EC     󱃬
+key_network             U+F08AD     󰢭       │   key_network             U+F0C80     󰲀
+lock                    U+F0250     󰉐       │   lock                    U+F1AA8     󱪨
+lock_open               U+F0251     󰉑       │   lock_open               U+F1AA7     󱪧
+marker                  U+F126D     󱉭       │   marker                  U+F126E     󱉮
+move                    U+F0252     󰉒       │   move                    U+F1246     󱉆
+multiple                U+F0253     󰉓       │   multiple                U+F0255     󰉕
+multiple_image          U+F0254     󰉔       │
+multiple_plus           U+F147E     󱑾       │   multiple_plus           U+F147F     󱑿
+music                   U+F1359     󱍙       │   music                   U+F135A     󱍚
+network                 U+F0870     󰡰       │   network                 U+F0C81     󰲁
+off                     U+F19F8     󱧸       │   off                     U+F19F9     󱧹
+play                    U+F19FA     󱧺       │   play                    U+F19FB     󱧻
+plus                    U+F0257     󰉗       │   plus                    U+F0B9D     󰮝
+pound                   U+F0D09     󰴉       │   pound                   U+F0D0A     󰴊
+question                U+F19CA     󱧊       │   question                U+F19CB     󱧋
+refresh                 U+F0749     󰝉       │   refresh                 U+F0542     󰕂
+remove                  U+F0258     󰉘       │   remove                  U+F0B9E     󰮞
+search                  U+F0968     󰥨       │   search                  U+F0969     󰥩
+settings                U+F107D     󱁽       │   settings                U+F107E     󱁾
+star                    U+F069D     󰚝       │   star                    U+F0B9F     󰮟
+star_multiple           U+F13D3     󱏓       │   star_multiple           U+F13D4     󱏔
+swap                    U+F0FB6     󰾶       │   swap                    U+F0FB7     󰾷
+sync                    U+F0D0B     󰴋       │   sync                    U+F0D0C     󰴌
+table                   U+F12E3     󱋣       │   table                   U+F12E4     󱋤
+text                    U+F0C82     󰲂       │   text                    U+F0C83     󰲃
+upload                  U+F0259     󰉙       │   upload                  U+F10ED     󱃭
+wrench                  U+F19FC     󱧼       │   wrench                  U+F19FD     󱧽
+zip                     U+F06EB     󰛫       │   zip                     U+F07B9     󰞹
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+# ── ───── Files ───── ────────────────────────────────────────────────────────────────────────────────────────────── #
+
+cod
+‾‾‾
+file                    U+EA7B      
+files                   U+EAF0      
+
+binary                  U+EAE8      
+code                    U+EAE9      
+go_to                   U+EA94      
+media                   U+EAEA      
+new                     U+EA7F      
+pdf                     U+EAEB      
+submodule               U+EAEC      
+symbol                  U+EB60      
+symlink_file            U+EAEE      
+text                    U+EC5E      
+zip                     U+EAEF      
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+fa
+‾‾
+
+file                    U+F15B             │   file                    U+F016      
+                                            │   files                   U+F0C5      
+                                            │   archive                 U+F1C6      
+arrow_down              U+EE36             │
+arrow_up                U+EE3D             │
+                                            │   audio                   U+F1C7      
+                                            │   code                    U+F1C9      
+contract                U+EE35             │
+csv                     U+EEFC             │
+                                            │   excel                   U+F1C3      
+export                  U+EE37             │
+                                            │   image                   U+F1C5      
+import                  U+EE38             │
+invoice                 U+EE39             │
+invoice_dollar          U+EE3A             │
+lines                   U+F15C             │
+medical                 U+ED80             │
+                                            │   movie                   U+F1C8      
+                                            │   pdf                     U+F1C1      
+pen                     U+F05F             │
+                                            │   photo                   U+F1C5      
+                                            │   picture                 U+F1C5      
+                                            │   powerpoint              U+F1C4      
+prescription            U+EE3B             │
+signature               U+EE3C             │
+                                            │   sound                   U+F1C7      
+text                    U+F15C             │   text                    U+F0F6      
+                                            │   video                   U+F1C8      
+waveform                U+ED81             │
+                                            │   word                    U+F1C2      
+                                            │   zip                     U+F1C6      
+                                            │   zipper                  U+F1C6      
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+oct
+‾‾‾
+file                    U+F4A5      
+
+added                   U+F4D0      
+badge                   U+F4D1      
+binary                  U+F471      
+code                    U+F40D      
+diff                    U+F4D2      
+media                   U+F40F      
+moved                   U+F4D5      
+removed                 U+F4D6      
+symlink_file            U+F481      
+zip                     U+F410      
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+seti
+‾‾‾‾
+new_file                U+E676      
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
+
+md
+‾‾
+
+file                    U+F0214     󰈔       │   file                    U+F0224     󰈤
+account                 U+F073B     󰜻       │   account                 U+F1028     󱀨
+alert                   U+F0A4B     󰩋       │   alert                   U+F0A4C     󰩌
+arrow_left_right        U+F1A93     󱪓       │   arrow_left_right        U+F1A94     󱪔
+arrow_up_down           U+F1A95     󱪕       │   arrow_up_down           U+F1A96     󱪖
+                                            │   cabinet                 U+F0AB6     󰪶
+cad                     U+F0EEB     󰻫       │
+cad_box                 U+F0EEC     󰻬       │
+cancel                  U+F0DC6     󰷆       │   cancel                  U+F0DC7     󰷇
+certificate             U+F1186     󱆆       │   certificate             U+F1187     󱆇
+chart                   U+F0215     󰈕       │   chart                   U+F1029     󱀩
+chart_check             U+F19C6     󱧆       │   chart_check             U+F19C7     󱧇
+check                   U+F0216     󰈖       │   check                   U+F0E29     󰸩
+clipboard               U+F1265     󱉥       │   clipboard               U+F1266     󱉦
+clock                   U+F12E1     󱋡       │   clock                   U+F12E2     󱋢
+cloud                   U+F0217     󰈗       │   cloud                   U+F102A     󱀪
+code                    U+F022E     󰈮       │   code                    U+F102B     󱀫
+cog                     U+F107B     󱁻       │   cog                     U+F107C     󱁼
+compare                 U+F08AA     󰢪       │   compare                 U+F08AA     󰢪
+delimited               U+F0218     󰈘       │   delimited               U+F0EA5     󰺥
+document                U+F0219     󰈙       │   document                U+F09EE     󰧮
+document_alert          U+F1A97     󱪗       │   document_alert          U+F1A98     󱪘
+document_check          U+F1A99     󱪙       │   document_check          U+F1A9A     󱪚
+document_edit           U+F0DC8     󰷈       │   document_edit           U+F0DC9     󰷉
+document_minus          U+F1A9B     󱪛       │   document_minus          U+F1A9C     󱪜
+document_multiple       U+F1517     󱔗       │   document_multiple       U+F1518     󱔘
+document_plus           U+F1A9D     󱪝       │   document_plus           U+F1A9E     󱪞
+document_remove         U+F1A9F     󱪟       │   document_remove         U+F1AA0     󱪠
+download                U+F0965     󰥥       │   download                U+F0966     󰥦
+edit                    U+F11E7     󱇧       │   edit                    U+F11E8     󱇨
+excel                   U+F021B     󰈛       │   excel                   U+F102D     󱀭
+excel_box               U+F021C     󰈜       │   excel_box               U+F102C     󱀬
+export                  U+F021D     󰈝       │   export                  U+F102E     󱀮
+eye                     U+F0DCA     󰷊       │   eye                     U+F0DCB     󰷋
+find                    U+F021E     󰈞       │   find                    U+F0B97     󰮗
+gif_box                 U+F0D78     󰵸       │
+hidden                  U+F0613     󰘓       │   hidden                  U+F0613     󰘓
+image                   U+F021F     󰈟       │   image                   U+F0EB0     󰺰
+image_marker            U+F1772     󱝲       │   image_marker            U+F1773     󱝳
+image_minus             U+F193B     󱤻       │   image_minus             U+F193C     󱤼
+image_plus              U+F193D     󱤽       │   image_plus              U+F193E     󱤾
+image_remove            U+F193F     󱤿       │   image_remove            U+F1940     󱥀
+import                  U+F0220     󰈠       │   import                  U+F102F     󱀯
+jpg_box                 U+F0225     󰈥       │
+key                     U+F1184     󱆄       │   key                     U+F1185     󱆅
+link                    U+F1177     󱅷       │   link                    U+F1178     󱅸
+lock                    U+F0221     󰈡       │   lock                    U+F1030     󱀰
+lock_open               U+F19C8     󱧈       │   lock_open               U+F19C9     󱧉
+marker                  U+F1774     󱝴       │   marker                  U+F1775     󱝵
+minus                   U+F1AA1     󱪡       │   minus                   U+F1AA2     󱪢
+move                    U+F0AB9     󰪹       │   move                    U+F1031     󱀱
+multiple                U+F0222     󰈢       │   multiple                U+F1032     󱀲
+music                   U+F0223     󰈣       │   music                   U+F0E2A     󰸪
+pdf_box                 U+F0226     󰈦       │
+percent                 U+F081E     󰠞       │   percent                 U+F1033     󱀳
+phone                   U+F1179     󱅹       │   phone                   U+F117A     󱅺
+plus                    U+F0752     󰝒       │   plus                    U+F0EED     󰻭
+png_box                 U+F0E2D     󰸭       │
+powerpoint              U+F0227     󰈧       │   powerpoint              U+F1035     󱀵
+powerpoint_box          U+F0228     󰈨       │   powerpoint_box          U+F1034     󱀴
+presentation_box        U+F0229     󰈩       │
+question                U+F086F     󰡯       │   question                U+F1036     󱀶
+refresh                 U+F0918     󰤘       │   refresh                 U+F0541     󰕁
+remove                  U+F0B98     󰮘       │   remove                  U+F1037     󱀷
+replace                 U+F0B32     󰬲       │   replace                 U+F0B33     󰬳
+restore                 U+F0670     󰙰       │   restore                 U+F1038     󱀸
+rotate_left             U+F1A3B     󱨻       │   rotate_left             U+F1A3C     󱨼
+rotate_right            U+F1A3D     󱨽       │   rotate_right            U+F1A3E     󱨾
+search                  U+F0C7C     󰱼       │   search                  U+F0C7D     󰱽
+send                    U+F022A     󰈪       │   send                    U+F1039     󱀹
+settings                U+F1079     󱁹       │   settings                U+F107A     󱁺
+                                            │   sign                    U+F19C3     󱧃
+star                    U+F103A     󱀺       │   star                    U+F103B     󱀻
+swap                    U+F0FB4     󰾴       │   swap                    U+F0FB5     󰾵
+sync                    U+F1216     󱈖       │   sync                    U+F1217     󱈗
+table                   U+F0C7E     󰱾       │   table                   U+F0C7F     󰱿
+table_box               U+F10E1     󱃡       │   table_box               U+F10E4     󱃤
+table_box_multiple      U+F10E2     󱃢       │   table_box_multiple      U+F10E3     󱃣
+tree                    U+F0645     󰙅       │   tree                    U+F13D2     󱏒
+undo                    U+F08DC     󰣜       │   undo                    U+F103C     󱀼
+upload                  U+F0A4D     󰩍       │   upload                  U+F0A4E     󰩎
+video                   U+F022B     󰈫       │   video                   U+F0E2C     󰸬
+word                    U+F022C     󰈬       │   word                    U+F103E     󱀾
+word_box                U+F022D     󰈭       │   word_box                U+F103D     󱀽
+
+# ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————— #

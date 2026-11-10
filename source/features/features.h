@@ -59,6 +59,8 @@ TargetInfo *getLink(FileStat *const pFS);
 #define PERM_MASK 0007777 /// A mask to keep just the permission info. from the Unix octal mode - (`0o007777`).
 #define EXEC_MASK 0000111 /// A mask to tell whether a file is an executable or not - (`0o000111`).
 
+#define S_IFSOC	S_IFSOCK
+
 void getMode(modestr mode_str, const mode_t oct_mode);
 char getTypeSuffix(const mode_t mode);
 bool checkXattr(const path_t path);

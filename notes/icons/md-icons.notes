@@ -1,0 +1,135 @@
+
+# ── ───── Folders ───── ─────────────────────────────── #
+
+folder                󰉋     │   folder                󰉖
+open                  󰝰     │   open                  󰷏
+account               󰉌     │   account               󰮜
+alert                 󰷌     │   alert                 󰷍
+arrow_down            󱧨     │   arrow_down            󱧩
+arrow_left            󱧪     │   arrow_left            󱧫
+arrow_left_right      󱧬     │   arrow_left_right      󱧭
+arrow_right           󱧮     │   arrow_right           󱧯
+arrow_up              󱧰     │   arrow_up              󱧳
+arrow_up_down         󱧱     │   arrow_up_down         󱧲
+cancel                󱧴     │   cancel                󱧵
+check                 󱥾     │   check                 󱥿
+clock                 󰪺     │   clock                 󰪻
+cog                   󱁿     │   cog                   󱂀
+download              󰉍     │   download              󱃩
+edit                  󰣞     │   edit                  󰷎
+eye                   󱞊     │   eye                   󱞋
+file                  󱧶     │   file                  󱧷
+google_drive          󰉎     │
+heart                 󱃪     │   heart                 󱃫
+hidden                󱞞     │   hidden                󱞞
+home                  󱂵     │   home                  󱂶
+image                 󰉏     │
+information           󱂷     │   information           󱂸
+key                   󰢬     │   key                   󱃬
+key_network           󰢭     │   key_network           󰲀
+lock                  󰉐     │   lock                  󱪨
+lock_open             󰉑     │   lock_open             󱪧
+marker                󱉭     │   marker                󱉮
+move                  󰉒     │   move                  󱉆
+multiple              󰉓     │   multiple              󰉕
+multiple_image        󰉔     │
+multiple_plus         󱑾     │   multiple_plus         󱑿
+music                 󱍙     │   music                 󱍚
+network               󰡰     │   network               󰲁
+off                   󱧸     │   off                   󱧹
+play                  󱧺     │   play                  󱧻
+plus                  󰉗     │   plus                  󰮝
+pound                 󰴉     │   pound                 󰴊
+question              󱧊     │   question              󱧋
+refresh               󰝉     │   refresh               󰕂
+remove                󰉘     │   remove                󰮞
+search                󰥨     │   search                󰥩
+settings              󱁽     │   settings              󱁾
+star                  󰚝     │   star                  󰮟
+star_multiple         󱏓     │   star_multiple         󱏔
+swap                  󰾶     │   swap                  󰾷
+sync                  󰴋     │   sync                  󰴌
+table                 󱋣     │   table                 󱋤
+text                  󰲂     │   text                  󰲃
+upload                󰉙     │   upload                󱃭
+wrench                󱧼     │   wrench                󱧽
+zip                   󰛫     │   zip                   󰞹
+
+# ── ───── Files ───── ───────────────────────────────── #
+
+file                  󰈔     │   file                  󰈤
+
+account               󰜻     │   account               󱀨
+alert                 󰩋     │   alert                 󰩌
+arrow_left_right      󱪓     │   arrow_left_right      󱪔
+arrow_up_down         󱪕     │   arrow_up_down         󱪖
+                            │   cabinet               󰪶
+cad                   󰻫     │
+cancel                󰷆     │   cancel                󰷇
+certificate           󱆆     │   certificate           󱆇
+chart                 󰈕     │   chart                 󱀩
+chart_check           󱧆     │   chart_check           󱧇
+check                 󰈖     │   check                 󰸩
+clipboard             󱉥     │   clipboard             󱉦
+clock                 󱋡     │   clock                 󱋢
+cloud                 󰈗     │   cloud                 󱀪
+code                  󰈮     │   code                  󱀫
+cog                   󱁻     │   cog                   󱁼
+compare               󰢪     │   compare               󰢪
+delimited             󰈘     │   delimited             󰺥
+document              󰈙     │   document              󰧮
+document_alert        󱪗     │   document_alert        󱪘
+document_check        󱪙     │   document_check        󱪚
+document_edit         󰷈     │   document_edit         󰷉
+document_minus        󱪛     │   document_minus        󱪜
+document_multiple     󱔗     │   document_multiple     󱔘
+document_plus         󱪝     │   document_plus         󱪞
+document_remove       󱪟     │   document_remove       󱪠
+download              󰥥     │   download              󰥦
+edit                  󱇧     │   edit                  󱇨
+excel                 󰈛     │   excel                 󱀭
+export                󰈝     │   export                󱀮
+eye                   󰷊     │   eye                   󰷋
+find                  󰈞     │   find                  󰮗
+hidden                󰘓     │   hidden                󰘓
+image                 󰈟     │   image                 󰺰
+image_marker          󱝲     │   image_marker          󱝳
+image_minus           󱤻     │   image_minus           󱤼
+image_plus            󱤽     │   image_plus            󱤾
+image_remove          󱤿     │   image_remove          󱥀
+import                󰈠     │   import                󱀯
+key                   󱆄     │   key                   󱆅
+link                  󱅷     │   link                  󱅸
+lock                  󰈡     │   lock                  󱀰
+lock_open             󱧈     │   lock_open             󱧉
+marker                󱝴     │   marker                󱝵
+minus                 󱪡     │   minus                 󱪢
+move                  󰪹     │   move                  󱀱
+multiple              󰈢     │   multiple              󱀲
+music                 󰈣     │   music                 󰸪
+percent               󰠞     │   percent               󱀳
+phone                 󱅹     │   phone                 󱅺
+plus                  󰝒     │   plus                  󰻭
+powerpoint            󰈧     │   powerpoint            󱀵
+question              󰡯     │   question              󱀶
+refresh               󰤘     │   refresh               󰕁
+remove                󰮘     │   remove                󱀷
+replace               󰬲     │   replace               󰬳
+restore               󰙰     │   restore               󱀸
+rotate_left           󱨻     │   rotate_left           󱨼
+rotate_right          󱨽     │   rotate_right          󱨾
+search                󰱼     │   search                󰱽
+send                  󰈪     │   send                  󱀹
+settings              󱁹     │   settings              󱁺
+                            │   sign                  󱧃
+star                  󱀺     │   star                  󱀻
+swap                  󰾴     │   swap                  󰾵
+sync                  󱈖     │   sync                  󱈗
+table                 󰱾     │   table                 󰱿
+tree                  󰙅     │   tree                  󱏒
+undo                  󰣜     │   undo                  󱀼
+upload                󰩍     │   upload                󰩎
+video                 󰈫     │   video                 󰸬
+word                  󰈬     │   word                  󱀾
+
+# —————————————————————————————————————————————————————— #
