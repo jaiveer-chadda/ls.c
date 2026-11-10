@@ -1,4 +1,5 @@
 /// @file debugging/_defs.h
+/// @note this file is used to define macros for `assert.c` and `debugging.c` - it shouldn't be included anywhere else
 
 #ifndef DEBUGGING__DEFS_H_
 #define DEBUGGING__DEFS_H_
@@ -6,9 +7,6 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #include <string.h> // strstr()
-
-#define DEBUGGING_IMPLEMENTATION
-#include "debugging.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -85,4 +83,4 @@
 
 #endif /* !DEBUGGING__DEFS_H_ */
 
-// spell:ignore LNNO
+// spell:ignore lnno bmag

@@ -87,7 +87,7 @@ function -- () {
   local -ra LDLIBS=( git2 )
   local -ra LIBPATHS=( '/opt/homebrew/opt/libgit2/lib' )
   local -ra INCLUDES=(
-    "$_source/"{{utils,debugging}{/**,},}
+    "$_source/"{{utils{/**,},debugging},}
     '/opt/homebrew/opt/libgit2/include'
   )
 

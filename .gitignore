@@ -9,11 +9,12 @@ logs/
 archive/
 *.tmp*
 
+# ignore all dirs/files starting with an underscore,
 _*
-[ab]
+# except those in a subdir of `source/`
+!source/**/_*
 
-!**/_defs.h
-!**/git/_*
+[ab]
 
 Icon[^s]
 *_chrdv*

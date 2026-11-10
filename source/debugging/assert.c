@@ -7,7 +7,7 @@
 #	include <stdbool.h> // bool, true
 #endif
 
-#include "_defs.h" // REL_PATH()
+#include "_defs.h" // REL_PATH(), [colours]
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

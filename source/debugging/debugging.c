@@ -5,16 +5,20 @@
 #include <stdarg.h>
 #include <execinfo.h>
 
+#define DEBUGGING_IMPLEMENTATION
+#include "debugging.h"
 #include "_defs.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#ifdef LOG_LEVEL_TABLE
-#	define X(name, ...) [LL_##name] = { #name, __VA_ARGS__ },
+typedef struct LogLevel {
+	char name[10];
+	uint16_t colour;
+} LogLevel;
+
+#define X(name, ...) [LL_##name] = { #name, __VA_ARGS__ },
 	static const LogLevel LOG_LEVELS[] = { LOG_LEVEL_TABLE };
-#	undef X
-#	undef LOG_LEVEL_TABLE
-#endif
+#undef X
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -67,8 +71,6 @@ void d__line(const uint8_t len) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define ST_LINE L"────────"
-
 void d__stacktrace(void) {
 	void *stack_buffer[STACK_MAX];
 	// get the current stack return addresses, putting them into the `stack_buffer` array
@@ -84,10 +86,7 @@ void d__stacktrace(void) {
 		return;
 	}
 
-	// note: `ST_LINE` can't be passed directly to `printf`'s format string, since it's a multibyte (wchar_t) string
-	toStderr("%ls function call stack (depth: %d) %ls\n",
-		ST_LINE, stack_count, ST_LINE
-	);
+	toStderr("──────── function call stack (depth: %d) ────────\n", stack_count);
 
 	// starting at `i = 1` avoids the stacktrace listing `d__stacktrace` in the stack
 	for (int i = 1; i < stack_count; i++) {
