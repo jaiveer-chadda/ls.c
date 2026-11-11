@@ -416,7 +416,7 @@ typedef enum GitFileStatus {
 	X(TC_THIS_YR, toColour( .fg = RGB( 35, 106, 204)					)) \
 	X(TC_OTHER	, toColour( .fg = RGB(  4,  65, 145)					)) \
 	\
-	X(TC_EPOCH	, toColour( .fg = RGB( 61,  77, 170)					)) \
+	X(TC_EPOCH	, toColour( .fg = RGB(  4,  65, 145)					)) \
 	X(TC_ERROR	, toColour( .fg = 9										)) /* \e[91m */ \
 	\
 	X(TC_FUTURE	, toColour( .fg = 1										)) /* \e[31m */

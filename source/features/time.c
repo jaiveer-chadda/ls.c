@@ -35,13 +35,14 @@ void initTime(void) {
 	if (time_initialised) return;
 	time_initialised = true;
 
-	current_time = time(NULL);
-	const struct tm *time_tm = localtime(&current_time);
+	current_time = /* 1794338022l */ time(NULL);
+	const struct tm *const time_tm = localtime(&current_time);
 
-	diff_midn =
+	diff_midn = (
 		time_tm->tm_hour * HOUR	+
 		time_tm->tm_min	 * MIN	+
-		time_tm->tm_sec	 * SEC	;
+		time_tm->tm_sec	 * SEC
+	);
 
 	diff_month	= diff_midn + (time_tm->tm_mday - 1) * DAY;
 	diff_year	= diff_midn + (time_tm->tm_yday - 1) * DAY;
@@ -50,50 +51,58 @@ void initTime(void) {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define RETURN_ZERO(col) do {									\
-	memcpy(timeobj->str, TIME_ERR_STR, sizeof(TIME_ERR_STR));	\
-	timeobj->colour = (col);									\
+	memcpy(time_info->str, TIME_ERR_STR, sizeof(TIME_ERR_STR));	\
+	time_info->colour = (col);									\
 	\
-	*b_writ = sizeof(TIME_ERR_STR) - 1;							\
-	return timeobj;												\
+	*bytes_written = sizeof(TIME_ERR_STR) - 1;					\
+	return time_info;											\
 } while (0)
 
 /* —————————————————————————————————————————————————————————————— */
 
-#define SET_TIME_RELA(u, t) *b_writ = snprintf(timeobj->str, sizeof(timestr), ("%ld " t), (long)(t_diff/(u)))
-#define SET_DATE_TEXT(text) *b_writ = strftime(timeobj->str, sizeof(timestr), (text TIME_FMT), pTime)
-#define SET_TIME_TEXT(text)	*b_writ = sizeof(text) - 1; strncpy(timeobj->str, (text), sizeof(timestr))
+#define SET_DT(col, size, ...) do {	\
+	time_info->colour = (col);		\
+	*bytes_written = (size);		\
+	__VA_OPT__((__VA_ARGS__);)		\
+} while (0)
+
+// u = unit, t = text, c = colour
+#define SET_TIME_RELA(u, t, c) SET_DT(c, snprintf(time_info->str, sizeof(timestr), ( "%ld " t ), (long)(t_diff/(u))	))
+#define SET_DATE_TEXT(	 t, c) SET_DT(c, strftime(time_info->str, sizeof(timestr), (t TIME_FMT), file_time_obj		))
+#define SET_TIME_TEXT(	 t, c) SET_DT(c, sizeof(t) - 1, strncpy(time_info->str, (t), sizeof(timestr)				))
 
 /* —————————————————————————————————————————————————————————————— */
 
-TimeInfo *parseTime(TimeInfo *const timeobj, const time_t file_time, size_t *const b_writ) {
+TimeInfo *parseTime(TimeInfo *const time_info, const time_t file_time, size_t *const bytes_written) {
+
 	if (file_time == 0) RETURN_ZERO(TC_EPOCH);
 
 	initTime(); // initialise the current time, seconds since midnight, etc.
 
 	/// How many seconds ago the file was modified.
 	const time_t t_diff = current_time - file_time;
-	const struct tm *const pTime = localtime(&file_time);
+	const struct tm *const file_time_obj = localtime(&file_time);
 
-	*b_writ = 0; // bytes written
+	*bytes_written = 0;
 
-	if		(t_diff < -2 * SEC)				{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_FUTURE	; }
+	if		(t_diff < -2 * SEC)				SET_DATE_TEXT(DATE_FMT		, TC_FUTURE	 );
 
-	else if	(t_diff <  5 * SEC)				{ SET_TIME_TEXT("Now"			); timeobj->colour = TC_NOW		; }
-	else if	(t_diff <  1 * MIN)				{ SET_TIME_RELA(SEC, "secs"		); timeobj->colour = TC_MIN		; }
+	else if	(t_diff <  5 * SEC)				SET_TIME_TEXT("Now"			, TC_NOW	 );
+	else if	(t_diff <  1 * MIN)				SET_TIME_RELA(SEC,"secs"	, TC_MIN	 );
 
-	else if	(t_diff <  2 * MIN)				{ SET_TIME_TEXT("1 " "min. ago"	); timeobj->colour = TC_MIN		; }
-	else if	(t_diff < 11 * MIN)				{ SET_TIME_RELA(MIN, "mins ago"	); timeobj->colour = TC_MIN		; }
+	else if	(t_diff <  2 * MIN)				SET_TIME_TEXT("1 ""min. ago", TC_MIN	 );
+	else if	(t_diff < 11 * MIN)				SET_TIME_RELA(MIN,"mins ago", TC_MIN	 );
 
-	else if	(t_diff < diff_midn			 )	{ SET_DATE_TEXT("Today"			); timeobj->colour = TC_TODAY	; }
-	else if	(t_diff < diff_midn + 1 * DAY)	{ SET_DATE_TEXT("Yesterday"		); timeobj->colour = TC_YESTD	; }
-	else if	(t_diff < diff_midn + 2 * DAY)	{ SET_DATE_TEXT("2 Days Ago"	); timeobj->colour = TC_2DAYS	; }
+	else if	(t_diff < diff_midn			 )	SET_DATE_TEXT("Today"		, TC_TODAY	 );
+	else if	(t_diff < diff_midn + 1 * DAY)	SET_DATE_TEXT("Yesterday"	, TC_YESTD	 );
+	else if	(t_diff < diff_midn + 2 * DAY)	SET_DATE_TEXT("2 Days Ago"	, TC_2DAYS	 );
 
-	else if	(t_diff < diff_month)			{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_THIS_MO	; }
-	else if	(t_diff < diff_year	)			{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_THIS_YR	; }
-	else									{ SET_DATE_TEXT(DATE_FMT		); timeobj->colour = TC_OTHER	; }
+	else if	(t_diff < diff_month)			SET_DATE_TEXT(DATE_FMT		, TC_THIS_MO );
+	else if	(t_diff < diff_year	)			SET_DATE_TEXT(DATE_FMT		, TC_THIS_YR );
+	else									SET_DATE_TEXT(DATE_FMT		, TC_OTHER	 );
 
-	if ((int)*b_writ == -1 || *b_writ >= sizeof(timestr)) RETURN_ZERO(TC_ERROR);
-	return timeobj;
+	if ((int)*bytes_written == -1 || *bytes_written >= sizeof(timestr)) RETURN_ZERO(TC_ERROR);
+	return time_info;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

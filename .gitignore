@@ -7,7 +7,7 @@
 out/
 logs/
 archive/
-*.tmp*
+tests/times/
 
 # ignore all dirs/files starting with an underscore,
 _*
@@ -15,6 +15,7 @@ _*
 !source/**/_*
 
 [ab]
+*.tmp*
 
 Icon[^s]
 *_chrdv*
