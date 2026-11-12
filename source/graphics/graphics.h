@@ -406,9 +406,15 @@ typedef enum GitFileStatus {
 #define DATE_FMT		"%a %e %b %y"
 #define TIME_FMT		DATETIME_SPACE "%R"
 
+#define DATETIME_FMT	DATE_FMT TIME_FMT
+
+#define TODAY_FMT		"Today"		 TIME_FMT
+#define YESTERDAY_FMT	"Yesterday"	 TIME_FMT
+#define DAY_BEFORE_FMT	"2 Days Ago" TIME_FMT
+
 #define TIME_COLOUR_TABLE \
 	X(TC_NOW	, toColour( .fg = RGB(203, 210, 242), .style = G_BOLD	)) \
-	X(TC_SEC	, toColour( .fg = 2										)) \
+	X(TC_SEC	, toColour( .fg = 13									)) \
 	X(TC_MIN	, toColour( .fg = RGB(200, 208, 241)					)) \
 	\
 	X(TC_THIS_HR, toColour( .fg = 2										)) \
@@ -418,14 +424,14 @@ typedef enum GitFileStatus {
 	X(TC_YESTD	, toColour( .fg = RGB(133, 161, 228)					)) \
 	X(TC_2DAYS	, toColour( .fg = RGB(100, 145, 225)					)) \
 	\
-	X(TC_THIS_WK, toColour( .fg = 2										)) \
-	X(TC_LAST_WK, toColour( .fg = 2										)) \
+	X(TC_THIS_WK, toColour( .fg = 4										)) \
+	X(TC_LAST_WK, toColour( .fg = 5										)) \
 	\
 	X(TC_THIS_MO, toColour( .fg = RGB( 70, 132, 230)					)) \
-	X(TC_LAST_MO, toColour( .fg = 2										)) \
+	X(TC_LAST_MO, toColour( .fg = 6										)) \
 	\
 	X(TC_THIS_YR, toColour( .fg = RGB( 35, 106, 204)					)) \
-	X(TC_LAST_YR, toColour( .fg = 2										)) \
+	X(TC_LAST_YR, toColour( .fg = 10									)) \
 	\
 	X(TC_OLDER	, toColour( .fg = RGB(  4,  65, 145)					)) \
 	X(TC_EPOCH	, toColour( .fg = RGB(  4,  65, 145)					)) \
