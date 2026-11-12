@@ -424,14 +424,14 @@ typedef enum GitFileStatus {
 	X(TC_YESTD	, toColour( .fg = RGB(133, 161, 228)					)) \
 	X(TC_2DAYS	, toColour( .fg = RGB(100, 145, 225)					)) \
 	\
-	X(TC_THIS_WK, toColour( .fg = 4										)) \
-	X(TC_LAST_WK, toColour( .fg = 5										)) \
+	X(TC_THIS_WK, toColour( .fg = 10									)) \
+	X(TC_LAST_WK, toColour( .fg = 11									)) \
 	\
 	X(TC_THIS_MO, toColour( .fg = RGB( 70, 132, 230)					)) \
 	X(TC_LAST_MO, toColour( .fg = 6										)) \
 	\
 	X(TC_THIS_YR, toColour( .fg = RGB( 35, 106, 204)					)) \
-	X(TC_LAST_YR, toColour( .fg = 10									)) \
+	X(TC_LAST_YR, toColour( .fg = 34									)) \
 	\
 	X(TC_OLDER	, toColour( .fg = RGB(  4,  65, 145)					)) \
 	X(TC_EPOCH	, toColour( .fg = RGB(  4,  65, 145)					)) \
