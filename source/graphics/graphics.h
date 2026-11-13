@@ -406,38 +406,37 @@ typedef enum GitFileStatus {
 #define DATE_FMT		"%a %e %b %y"
 #define TIME_FMT		DATETIME_SPACE "%R"
 
-#define DATETIME_FMT	DATE_FMT TIME_FMT
+#define DATETIME_FMT	DATE_FMT	 TIME_FMT
 
 #define TODAY_FMT		"Today"		 TIME_FMT
 #define YESTERDAY_FMT	"Yesterday"	 TIME_FMT
 #define DAY_BEFORE_FMT	"2 Days Ago" TIME_FMT
 
 #define TIME_COLOUR_TABLE \
-	X(TC_NOW	, toColour( .fg = RGB(203, 210, 242), .style = G_BOLD	)) \
-	X(TC_SEC	, toColour( .fg = 13									)) \
-	X(TC_MIN	, toColour( .fg = RGB(200, 208, 241)					)) \
+	X(TC_NOW	, toColour( .fg = 15, .style = G_BOLD  )) /* \e[97m \e[1m */ \
+	X(TC_SEC	, toColour( .fg = RGB( 230, 235, 254 ) )) \
+	X(TC_MIN	, toColour( .fg = RGB( 212, 218, 250 ) )) \
 	\
-	X(TC_THIS_HR, toColour( .fg = 2										)) \
-	X(TC_LAST_HR, toColour( .fg = 3										)) \
+	X(TC_THIS_HR, toColour( .fg = RGB( 194, 202, 245 ) )) \
+	X(TC_LAST_HR, toColour( .fg = RGB( 184, 194, 243 ) )) \
+	X(TC_TODAY	, toColour( .fg = RGB( 166, 179, 238 ) )) \
 	\
-	X(TC_TODAY	, toColour( .fg = RGB(165, 183, 236)					)) \
-	X(TC_YESTD	, toColour( .fg = RGB(133, 161, 228)					)) \
-	X(TC_2DAYS	, toColour( .fg = RGB(100, 145, 225)					)) \
+	X(TC_YESTD	, toColour( .fg = RGB( 150, 164, 232 ) )) \
+	X(TC_2DAYS	, toColour( .fg = RGB( 140, 155, 230 ) )) \
+	X(TC_THIS_WK, toColour( .fg = RGB( 124, 142, 224 ) )) \
 	\
-	X(TC_THIS_WK, toColour( .fg = 10									)) \
-	X(TC_LAST_WK, toColour( .fg = 11									)) \
+	X(TC_LAST_WK, toColour( .fg = RGB( 106, 127, 219 ) )) \
+	X(TC_THIS_MO, toColour( .fg = RGB(  90, 113, 214 ) )) \
+	X(TC_LAST_MO, toColour( .fg = RGB(  67,  99, 214 ) )) \
 	\
-	X(TC_THIS_MO, toColour( .fg = RGB( 70, 132, 230)					)) \
-	X(TC_LAST_MO, toColour( .fg = 6										)) \
+	X(TC_THIS_YR, toColour( .fg = RGB(  43,  84, 216 ) )) \
+	X(TC_LAST_YR, toColour( .fg = RGB(  18,  68, 185 ) )) \
 	\
-	X(TC_THIS_YR, toColour( .fg = RGB( 35, 106, 204)					)) \
-	X(TC_LAST_YR, toColour( .fg = 34									)) \
+	X(TC_OLDER	, toColour( .fg = RGB(   8,  48, 128 ) )) \
+	X(TC_EPOCH	, toColour( .fg = RGB(   8,  48, 128 ) )) \
 	\
-	X(TC_OLDER	, toColour( .fg = RGB(  4,  65, 145)					)) \
-	X(TC_EPOCH	, toColour( .fg = RGB(  4,  65, 145)					)) \
-	\
-	X(TC_ERROR	, toColour( .fg = 9										)) /* \e[91m */ \
-	X(TC_FUTURE	, toColour( .fg = 1										)) /* \e[31m */
+	X(TC_ERROR	, toColour( .fg = 9					   )) /* \e[91m */ \
+	X(TC_FUTURE	, toColour( .fg = 1					   )) /* \e[31m */
 
 /* —— File Sizes ———————————————————————————————————————————————————————————— */
 

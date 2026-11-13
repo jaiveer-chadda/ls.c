@@ -35,7 +35,7 @@ static const DayOTWeek FIRST_DAY_OTW = DOTW_MON;
 #define DAY_OF_THE_WEEK(day) \
 	((((day) - FIRST_DAY_OTW) + DAYS_IN_WEEK) % DAYS_IN_WEEK)
 
-#define DATE_NAME_FMT() ( \
+#define GET_TIME_FMT() ( \
 	(t_diff < diff_midn + 0 * DAYS)	? TODAY_FMT		 :	\
 	(t_diff < diff_midn + 1 * DAYS)	? YESTERDAY_FMT	 :	\
 	(t_diff < diff_midn + 2 * DAYS)	? DAY_BEFORE_FMT :	\
@@ -98,7 +98,7 @@ static const DayOTWeek FIRST_DAY_OTW = DOTW_MON;
 } while (0)
 
 // u = unit, t = text, c = colour
-#define SET_RELATIVE(u, t, c) SET_DT(c, snprintf(time_info->str, sizeof(timestr), ( "%ld " t ), (long)(t_diff/(u))	))
+#define SET_RELATIVE(u,	t, c) SET_DT(c, snprintf(time_info->str, sizeof(timestr), ( "%ld " t ), (long)(t_diff/(u))	))
 #define SET_DATETIME(	t, c) SET_DT(c, strftime(time_info->str, sizeof(timestr), (t), file_tm						))
 #define SET_TIME_TXT(	t, c) SET_DT(c, (sizeof(t) - 1), strncpy(time_info->str , (t), sizeof(timestr)				))
 
@@ -225,31 +225,25 @@ TimeInfo *parseTime(TimeInfo *const time_info, const time_t file_time_secs, size
 
 	*bytes_written = 0;
 
-	if		(t_diff < -2 * SECS)			SET_DATETIME(DATETIME_FMT	, TC_FUTURE	 ); // future		- (243 139 168)
+	if		(t_diff < -2 * SECS)			SET_DATETIME(DATETIME_FMT	, TC_FUTURE	 ); // future		- \e[31m
+	else if	(t_diff <  5 * SECS)			SET_TIME_TXT("Now"			, TC_NOW	 ); // now			- \e[97m
+	else if	(t_diff <  1 * MINS)			SET_RELATIVE(SECS,"secs"	, TC_SEC	 ); // secs			- (230 235 254)
+	else if	(t_diff <  2 * MINS)			SET_TIME_TXT("1 " "min. ago", TC_MIN	 ); // mins (1)		- (212 218 250)
+	else if	(t_diff < 11 * MINS)			SET_RELATIVE(MINS,"mins ago", TC_MIN	 ); // mins			- (212 218 250)
 
-	else if	(t_diff <  5 * SECS)			SET_TIME_TXT("Now"			, TC_NOW	 ); // now			- (203 210 242)
+	else if	(FILE_TIME_IS_THIS_HOUR())		SET_DATETIME(TODAY_FMT		, TC_THIS_HR ); // this hour	- (194 202 245)
+	else if	(FILE_TIME_IS_PREV_HOUR())		SET_DATETIME(GET_TIME_FMT()	, TC_LAST_HR ); // last hour	- (184 194 243)
+	else if	(t_diff < diff_midn			  )	SET_DATETIME(TODAY_FMT		, TC_TODAY	 ); // today		- (166 179 238)
+	else if	(t_diff < diff_midn + 1 * DAYS)	SET_DATETIME(YESTERDAY_FMT	, TC_YESTD	 ); // yesterday	- (150 164 232)
+	else if	(t_diff < diff_midn + 2 * DAYS)	SET_DATETIME(DAY_BEFORE_FMT , TC_2DAYS	 ); // 2 days ago	- (140 155 230)
 
-	else if	(t_diff <  1 * MINS)			SET_RELATIVE(SECS,"secs"	, TC_SEC	 ); // secs			- (200 208 241)
-	else if	(t_diff <  2 * MINS)			SET_TIME_TXT("1 " "min. ago", TC_MIN	 ); // mins (1)		- (200 208 241)
-	else if	(t_diff < 11 * MINS)			SET_RELATIVE(MINS,"mins ago", TC_MIN	 ); // mins			- (200 208 241)
-
-	else if	(FILE_TIME_IS_THIS_HOUR())		SET_DATETIME(TODAY_FMT		, TC_THIS_HR ); // this hour
-	else if	(FILE_TIME_IS_PREV_HOUR())		SET_DATETIME(DATE_NAME_FMT(), TC_LAST_HR ); // last hour
-
-	else if	(t_diff < diff_midn			  )	SET_DATETIME(TODAY_FMT		, TC_TODAY	 ); // today		- (165 183 236)
-	else if	(t_diff < diff_midn + 1 * DAYS)	SET_DATETIME(YESTERDAY_FMT	, TC_YESTD	 ); // yesterday	- (133 161 228)
-	else if	(t_diff < diff_midn + 2 * DAYS)	SET_DATETIME(DAY_BEFORE_FMT , TC_2DAYS	 ); // 2 days ago	- (100 145 225)
-
-	else if	(FILE_TIME_IS_THIS_WEEK())		SET_DATETIME(DATETIME_FMT	, TC_THIS_WK ); // this week
-	else if	(FILE_TIME_IS_LAST_WEEK())		SET_DATETIME(DATETIME_FMT	, TC_LAST_WK ); // last week
-
-	else if	(t_diff < diff_month)			SET_DATETIME(DATETIME_FMT	, TC_THIS_MO ); // this month	- ( 70 132 230)
-	else if	(FILE_TIME_IS_LAST_MONTH())		SET_DATETIME(DATETIME_FMT	, TC_LAST_MO ); // last month
-
-	else if	(t_diff < diff_year)			SET_DATETIME(DATETIME_FMT	, TC_THIS_YR ); // this year	- ( 35 106 204)
-	else if	(FILE_TIME_IS_LAST_YEAR())		SET_DATETIME(DATETIME_FMT	, TC_LAST_YR ); // last year
-
-	else									SET_DATETIME(DATETIME_FMT	, TC_OLDER	 ); // older		- (  4  65 145)
+	else if	(FILE_TIME_IS_THIS_WEEK())		SET_DATETIME(DATETIME_FMT	, TC_THIS_WK ); // this week	- (124 142 224)
+	else if	(FILE_TIME_IS_LAST_WEEK())		SET_DATETIME(DATETIME_FMT	, TC_LAST_WK ); // last week	- (106 127 219)
+	else if	(t_diff < diff_month)			SET_DATETIME(DATETIME_FMT	, TC_THIS_MO ); // this month	- ( 90 113 214)
+	else if	(FILE_TIME_IS_LAST_MONTH())		SET_DATETIME(DATETIME_FMT	, TC_LAST_MO ); // last month	- ( 67  99 214)
+	else if	(t_diff < diff_year)			SET_DATETIME(DATETIME_FMT	, TC_THIS_YR ); // this year	- ( 43  84 216)
+	else if	(FILE_TIME_IS_LAST_YEAR())		SET_DATETIME(DATETIME_FMT	, TC_LAST_YR ); // last year	- ( 18  68 185)
+	else									SET_DATETIME(DATETIME_FMT	, TC_OLDER	 ); // older		- (  8  48 128)
 
 	// check that the various datetime-setting macros above, actually returned a valid string
 	if ((int)*bytes_written <= 0 || *bytes_written >= sizeof(timestr)) RETURN_ZERO(TC_ERROR);
