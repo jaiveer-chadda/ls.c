@@ -1,4 +1,4 @@
-/// @file features/links/print.c
+/// @file features/links/print-link.c
 
 #include <stdio.h>
 #include <string.h> // strerror(), strncpy(), strlen()
@@ -75,7 +75,7 @@ static inline void print_link_internal(
 
 	const char *const path = file->abspath + file->path_off;
 
-	const wchar_t *const arrow = file->is_apple ? APPLE_ARROW  : SYMLINK_ARROW;
+	const wchar_t *const arrow = file->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
 	*line_len += file->is_apple ? STRLEN(APPLE_ARROW) : STRLEN(SYMLINK_ARROW);
 
 	// if this is an invalid target file (i.e. the previous link points to an invalid file)
