@@ -414,26 +414,26 @@ typedef enum GitFileStatus {
 
 #define TIME_COLOUR_TABLE \
 	X(TC_NOW	, toColour( .fg = 15, .style = G_BOLD  )) /* \e[97m \e[1m */ \
-	X(TC_SEC	, toColour( .fg = RGB( 230, 235, 254 ) )) \
-	X(TC_MIN	, toColour( .fg = RGB( 212, 218, 250 ) )) \
+	X(TC_SEC	, toColour( .fg = RGB( 255, 255, 255 ) )) \
+	X(TC_MIN	, toColour( .fg = RGB( 255, 255, 255 ) )) \
 	\
-	X(TC_THIS_HR, toColour( .fg = RGB( 194, 202, 245 ) )) \
-	X(TC_LAST_HR, toColour( .fg = RGB( 184, 194, 243 ) )) \
-	X(TC_TODAY	, toColour( .fg = RGB( 166, 179, 238 ) )) \
+	X(TC_THIS_HR, toColour( .fg = RGB( 235, 246, 255 ) )) \
+	X(TC_LAST_HR, toColour( .fg = RGB( 219, 238, 255 ) )) \
+	X(TC_TODAY	, toColour( .fg = RGB( 199, 227, 255 ) )) \
 	\
-	X(TC_YESTD	, toColour( .fg = RGB( 150, 164, 232 ) )) \
-	X(TC_2DAYS	, toColour( .fg = RGB( 140, 155, 230 ) )) \
-	X(TC_THIS_WK, toColour( .fg = RGB( 124, 142, 224 ) )) \
+	X(TC_YESTD	, toColour( .fg = RGB( 173, 211, 255 ) )) \
+	X(TC_2DAYS	, toColour( .fg = RGB( 140, 185, 255 ) )) \
+	X(TC_THIS_WK, toColour( .fg = RGB( 140, 185, 255 ) )) \
 	\
-	X(TC_LAST_WK, toColour( .fg = RGB( 106, 127, 219 ) )) \
-	X(TC_THIS_MO, toColour( .fg = RGB(  90, 113, 214 ) )) \
-	X(TC_LAST_MO, toColour( .fg = RGB(  67,  99, 214 ) )) \
+	X(TC_LAST_WK, toColour( .fg = RGB( 117, 167, 255 ) )) \
+	X(TC_THIS_MO, toColour( .fg = RGB(  97, 150, 255 ) )) \
+	X(TC_LAST_MO, toColour( .fg = RGB(  77, 130, 255 ) )) \
 	\
-	X(TC_THIS_YR, toColour( .fg = RGB(  43,  84, 216 ) )) \
-	X(TC_LAST_YR, toColour( .fg = RGB(  18,  68, 185 ) )) \
+	X(TC_THIS_YR, toColour( .fg = RGB(  56, 109, 255 ) )) \
+	X(TC_LAST_YR, toColour( .fg = RGB(   0,  58, 250 ) )) \
 	\
-	X(TC_OLDER	, toColour( .fg = RGB(   8,  48, 128 ) )) \
-	X(TC_EPOCH	, toColour( .fg = RGB(   8,  48, 128 ) )) \
+	X(TC_OLDER	, toColour( .fg = RGB(   0,  27, 133 ) )) \
+	X(TC_EPOCH	, toColour( .fg = RGB(   0,  27, 133 ) )) \
 	\
 	X(TC_ERROR	, toColour( .fg = 9					   )) /* \e[91m */ \
 	X(TC_FUTURE	, toColour( .fg = 1					   )) /* \e[31m */
