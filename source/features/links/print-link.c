@@ -71,9 +71,11 @@ static inline void print_link_internal(
 		return;
 	}
 
-	/* —— Invalid Target —————————————————————————————————————— */
+	/* —— Get Path —————————————————————————————————————————————————————————————— */
 
-	const char *const path = file->abspath + file->path_off;
+	const char *const path = DO_ABS() ? file->abspath : file->abspath + file->path_off;
+
+	/* —— Invalid Target —————————————————————————————————————— */
 
 	const wchar_t *const arrow = file->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
 	*line_len += file->is_apple ? STRLEN(APPLE_ARROW) : STRLEN(SYMLINK_ARROW);

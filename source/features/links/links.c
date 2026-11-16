@@ -19,6 +19,18 @@ bool resolveAppleAlias(
 
 #define FILE_EXISTS(path) (faccessat(AT_FDCWD, (path), F_OK, AT_SYMLINK_NOFOLLOW) == 0)
 
+#define PATH_IS_RELATIVE(path, pathlen) (				\
+	(path)[0] == '.' && (								\
+		(pathlen) == 1		||	/* path == .		*/	\
+		(path)[1] == '/'	||	/* path == ./file	*/	\
+		\
+		(path)[1] == '.' && (							\
+			(pathlen) == 2	||	/* path == ..		*/	\
+			(path)[2] == '/'	/* path == ../file	*/	\
+		)												\
+	)													\
+)
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── getLinkTargetPath() ── ──────────────────────────────────────────────────────────────────────────────────── */
 
@@ -33,8 +45,9 @@ static inline bool getLinkTargetPath(
 
 	if (S_ISREG(mode)) {
 		// if the file's a regular file, then check if it's an apple alias - if not, then return
+		//	note that reading an apple alias always gives an absolute path, so there's no need to format it
 		if (!resolveAppleAlias(*target_path, target_len, is_valid, abspath)) return false;
-		*is_apple = true; // if we're here, we've successfully parsed the apple alias
+		*is_apple = true;
 		return true;
 	}
 
@@ -68,23 +81,29 @@ static inline bool getLinkTargetPath(
 	// we now know that the path is a relative path
 
 	const char *parent_path;
-	namlen_t parent_len;
+	namlen_t parent_len = getPathLen(parent);
 
-	// if the link file doesn't have a parent, then we have to figure it out manually
-	if (parent == NULL) {
+	// if the link file doesn't have a parent, or the parent starts with `.`,
+	//	then we have to figure out the paren't absolute path manually
+	if (parent == NULL || PATH_IS_RELATIVE(parent->path, parent_len)) {
+		// extract just the filename from the target path
 		const char *const basename = strrchr(abspath, '/');
 
+		// if there's no basename, we'll have to let the parent be empty -
+		//	we'll just have to deal with whatever consequences that follow
 		if (basename == NULL) {
+			debug(WARNING, "couldn't find basename of %s", abspath);
 			parent_path = "";
 			parent_len = 0;
 		} else {
+			// if we managed to find a basename, then set the barent path
+			//	as the full `abspath`, but with the basename chopped off
 			parent_path = abspath;
 			parent_len = (namlen_t)(basename - abspath);
 		}
 
 	} else {
 		parent_path = parent->path;
-		parent_len = getPathLen(parent);
 	}
 
 	/* —— Construct Absolute Path ————————————————————————————— */
@@ -199,17 +218,6 @@ TargetInfo *getLink(FileStat *const pFS) {
 	);
 
 	if (pFS->f != NULL) pFS->f->targ_err = targ_err;
-
-	/* —— Set Abspath if Apple ———————————————————————————————— */
-
-	// if this link is an apple alias, then we have to update its absolute path
-	//	otherwise we won't be able to recurse into it if we need to
-	/// @todo make sure this doesn't interfere with any other processing that uses a file's `abspath`
-	if (is_apple) {
-		efree((void*)pFS->abspath); // free the old path so we don't have a memory leak
-		// the length of `target->abspath` is only needed once - here - so it's fine that we use `strlen` on it
-		getPureAbsPath(&pFS->abspath, &pFS->abs_len, target->abspath, strlen(target->abspath));
-	}
 
 	/* —— Return —————————————————————————————————————————————— */
 

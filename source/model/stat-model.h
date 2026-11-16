@@ -250,6 +250,14 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36 B
 	)											\
 ))
 
+
+#define isAppleAlias(p_fs) ((bool)(	\
+	(p_fs)				!= NULL &&	\
+	(p_fs)->f			!= NULL &&	\
+	(p_fs)->f->target	!= NULL &&	\
+	(p_fs)->f->target->is_apple		\
+))
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #endif /* !STAT_MODEL_H */

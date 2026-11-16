@@ -276,13 +276,25 @@ const char *getAbsPath(FileStat *const pFS) {
 
 	/* ——————————————————————————————————————————————— */
 
-	// recursively get the parent's path, if need be
-	const char *const parent_path = ( pFS->parent->abspath = getAbsPath(pFS->parent) );
-	const namlen_t parent_len = pFS->parent->abs_len;
+	const char *parent_path;
+	namlen_t parent_len;
+
+	// if the parent was an apple alias, then use the alias' target as the parent path instead - this means that any
+	//	operations done on the abspath will use its actual path, rather than failing when it encounters a non-dir
+	if (isAppleAlias(pFS->parent)) {
+		parent_path	= pFS->parent->f->target->abspath;
+		parent_len	= strlen(parent_path);
+
+	} else {
+		// otherwise, recursively get the parent's path
+		parent_path	= ( pFS->parent->abspath = getAbsPath(pFS->parent) );
+		parent_len	= pFS->parent->abs_len;
+	}
 
 	//					parent_len + / + pFS->name_len + \0
 	namlen_t path_len = parent_len + 1 + pFS->name_len + 1;
 
+	assert(parent_path != NULL, "I actually don't know how this would be triggered, so this is just here as a catch");
 	assert(path_len <= INT16_MAX, "the path shouldn't be larger than what can be held in `namlen_t`");
 
 	char *path;

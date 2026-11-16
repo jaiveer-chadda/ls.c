@@ -118,12 +118,14 @@ bool resolveAppleAlias(
 
 	// if that's successful, then everything worked correctly
 	if (conversion_success) {
+		assert(target_buffer[0] == '/', "the path held by an apple alias should always be an absolute path");
 		// finally, check whether the target file actually exists
 		*is_valid_alias = FILE_EXISTS(target_buffer);
 		// whether it does or it doesn't, clean up and return success
 		goto return_1;
 	}
 
+	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 	/* —— On Failure - Check Why ————————————————————————————————— */
 
 	// check if the target path was too long to fit in the buffer
@@ -170,6 +172,7 @@ bool resolveAppleAlias(
 		/* maxBufLen */ sizeof(path_t)
 	);
 
+	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 	/* —— Cleanup & Return ——————————————————————————————————————— */
 
 	return_4: CFRelease(trunc_t_path);
@@ -179,6 +182,8 @@ bool resolveAppleAlias(
 
 	*target_len = target_path_len;
 	return FILE_IS_APPLE_ALIAS;
+
+	/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
