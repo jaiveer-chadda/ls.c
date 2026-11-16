@@ -141,6 +141,9 @@
 #define TREE_BRANCH				"├"
 #define TREE_CORNER				"└" // └ or ╰
 
+// ╭─╮ ┌─┐
+// ╰─╯ └─┘
+
 /* —— Punctuation ——————————————————————————————————————————————————————————— */
 
 #define PUNCT					toColour( .fg = G_BRT_BLACK ) // \e[90m
@@ -157,10 +160,10 @@
 /* —— Links ————————————————————————————————————————————————————————————————— */
 
 #define ARROW_LEN				5
-#define SYMLINK_ARROW			" --> " // - - >
-//#define SYMLINK_ARROW			" ——→ " // — — →
-#define APPLE_ARROW				" —a→ " // — a →
-#define EACCES_ARROW			" —×→ " // — × →
+#define SYMLINK_ARROW			" --> " // " -> " // " --> " // " --─▶ " // " --▶ " // " --▷ " // - - >
+//#define SYMLINK_ARROW			" ——→ " // " —→ " // " ——→ " // " ───▶ " // " ──▶ " // " ──▷ " // — — →
+#define APPLE_ARROW				" ==> " // " => " // " —a→ " // " ─a─▶ " // " ─a▶ " // " ─a▷ " // — a →
+#define EACCES_ARROW			" ~~> " // " ~> " // " —×→ " // " ─✕─▶ " // " ─✕▶ " // " ─✕▷ " // — × →
 
 #define	  VALID_ARROW_COLOUR	PUNCT											// \e[90m
 #define INVALID_ARROW_COLOUR	toColour( .fg = G_RED )							// \e[31m
