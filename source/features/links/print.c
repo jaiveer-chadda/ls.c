@@ -53,10 +53,11 @@ static inline void print_link_internal(
 			err_no < 100 ?	2 :
 			/**/			3
 		);
+
 		const char *const errstr = strerror(err_no);
 		const size_t errstr_len	 = strlen(errstr);
 
-		printf("%s%s%s[ "
+		printf("%s%ls%s[ "
 			/**/		"%serror %"ERROR_T_FMT"%s:"
 			/**/								  "%s %s %s]",
 			arrow_ansi, EACCES_ARROW, punct_ansi,
@@ -64,7 +65,7 @@ static inline void print_link_internal(
 			error_ansi, errstr		, punct_ansi
 		);
 
-		*line_len += STRLEN("[ error :  ]") + ARROW_LEN + errno_len + errstr_len;
+		*line_len += STRLEN("[ error :  ]") + STRLEN(EACCES_ARROW) + errno_len + errstr_len;
 
 		setActive(LINK_ERR_PUNCT_COL);
 		return;
@@ -72,16 +73,16 @@ static inline void print_link_internal(
 
 	/* —— Invalid Target —————————————————————————————————————— */
 
-	const char *const arrow = file->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
-	const char *const path  = file->abspath + file->path_off;
+	const char *const path = file->abspath + file->path_off;
 
-	*line_len += ARROW_LEN;
+	const wchar_t *const arrow = file->is_apple ? APPLE_ARROW  : SYMLINK_ARROW;
+	*line_len += file->is_apple ? STRLEN(APPLE_ARROW) : STRLEN(SYMLINK_ARROW);
 
 	// if this is an invalid target file (i.e. the previous link points to an invalid file)
 	if (file->suffix == INVALID_LINK) {
 		const char *const arrow_ansi = getcol(INVALID_ARROW_COLOUR);
 
-		printf("%s%s", arrow_ansi, arrow);
+		printf("%s%ls", arrow_ansi, arrow);
 		printEscdNameLen(path, INVALID_LINK_COLOUR, false, line_len);
 
 		return;
@@ -92,7 +93,7 @@ static inline void print_link_internal(
 	const char *const basename = getBasename(path);
 
 	// print the arrow differently based on whether it's an apple link or normal symlink
-	printf("%s%s", getcol(VALID_ARROW_COLOUR), arrow);
+	printf("%s%ls", getcol(VALID_ARROW_COLOUR), arrow);
 
 	// if we found a basename, then print the dirname and basname sequentially
 	if (basename != NULL) {

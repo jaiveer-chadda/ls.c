@@ -7,6 +7,10 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/* —— —— Helper Macros —— ——————————————————————————————————————————————————— */
+
+#define STRLEN(str) ((size_t)((sizeof((str)) / sizeof((str)[0])) - 1))
+
 /* —— —— Chars & Strings —— ————————————————————————————————————————————————— */
 
 #define FIELD_PAD	L" " /// The spacing between each of the fields/columns listed in long (`-l`) mode.
@@ -136,10 +140,10 @@
 #define TREE_PAD				2
 #define TREE_LV1_PAD			1
 
-#define TREE_HORI				"─"
-#define TREE_VERT				"│"
-#define TREE_BRANCH				"├"
-#define TREE_CORNER				"└" // └ or ╰
+#define TREE_HORI				L"─" // ─ or ──
+#define TREE_VERT				L"│"
+#define TREE_BRANCH				L"├"
+#define TREE_CORNER				L"└" // └ or ╰
 
 // ╭─╮ ┌─┐
 // ╰─╯ └─┘
@@ -159,11 +163,9 @@
 
 /* —— Links ————————————————————————————————————————————————————————————————— */
 
-#define ARROW_LEN				5
-#define SYMLINK_ARROW			" --> " // " -> " // " --> " // " --─▶ " // " --▶ " // " --▷ " // - - >
-//#define SYMLINK_ARROW			" ——→ " // " —→ " // " ——→ " // " ───▶ " // " ──▶ " // " ──▷ " // — — →
-#define APPLE_ARROW				" ==> " // " => " // " —a→ " // " ─a─▶ " // " ─a▶ " // " ─a▷ " // — a →
-#define EACCES_ARROW			" ~~> " // " ~> " // " —×→ " // " ─✕─▶ " // " ─✕▶ " // " ─✕▷ " // — × →
+#define SYMLINK_ARROW			L" --> " // L" -> " // L" --> " // L" ───▶ " // L" ──▶ " // L" ──▷ " // - - > / ─ ─ >
+#define EACCES_ARROW			L" ~~> " // L" ~> " // L" —×→ " // L" ─✕─▶ " // L" ─✕▶ " // L" ─✕▷ " // — × →
+#define APPLE_ARROW				L" ==> " // L" => " // L" —a→ " // L" ─a─▶ " // L" ─a▶ " // L" ─a▷ " // — a →
 
 #define	  VALID_ARROW_COLOUR	PUNCT											// \e[90m
 #define INVALID_ARROW_COLOUR	toColour( .fg = G_RED )							// \e[31m
