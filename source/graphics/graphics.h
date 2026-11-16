@@ -377,26 +377,25 @@ typedef enum GitFileStatus {
 #define ACL_COLOUR	  toColour( .fg = 39	)
 
 #define PERM_COLOUR_TABLE \
-	X(PC_NONE		, PUNCT			) /* 00 0000 .--------- \e[90m  */ \
+	X(PC_NONE		, PUNCT			) /* -- 0000 .--------- \e[90m  */ \
 	\
-	X(PC_READ		, HL_READ		) /* 00 0000 .r--r--r-- \e[92m  */ \
-	X(PC_W_UG		, HL_W_UG		) /* 00 0000 .-w--w---- \e[93m  */ \
-	X(PC_W_OTH		, HL_W_OTH		) /* 00 0000 .------w-- \e[42m  */ \
-	X(PC_X_REG		, HL_X_REG		) /* 00 0000 .--x--x--x \e[31m  */ \
-	X(PC_X_NRG		, HL_X_NRG		) /* 00 0000 d--x--x--x \e[91m  */ \
+	X(PC_READ		, HL_READ		) /* -- 0444 .r--r--r-- \e[092m */ \
+	X(PC_W_UG		, HL_W_UG		) /* -- 0220 .-w--w---- \e[093m */ \
+	X(PC_W_OTH		, HL_W_OTH		) /* -- 0002 .------w-- \e[042m */ \
+	X(PC_X_REG		, HL_X_REG		) /* 10 0111 .--x--x--x \e[031m */ \
+	X(PC_X_NRG		, HL_X_NRG		) /* 04 0111 d--x--x--x \e[091m */ \
 	\
-	X(PC_SUID_X		, HL_SUID_X		) /* 00 0000 .--s------ \e[41m  */ \
-	X(PC_SUID_N		, HL_SUID_N		) /* 00 0000 .--S------ \e[101m */ \
-	X(PC_SGID_X		, HL_SGID_X		) /* 00 0000 .-----s--- \e[45m  */ \
-	X(PC_SGID_N		, HL_SGID_N		) /* 00 0000 .-----S--- \e[105m */ \
-	X(PC_STIC_X		, HL_STIC_X		) /* 00 0000 .--------t \e[44m  */ \
-	X(PC_STIC_N		, HL_STIC_N		) /* 00 0000 .--------T \e[104m */ \
+	X(PC_SUID_X		, HL_SUID_X		) /* -- 4100 .--s------ \e[041m */ \
+	X(PC_SUID_N		, HL_SUID_N		) /* -- 4000 .--S------ \e[101m */ \
+	X(PC_SGID_X		, HL_SGID_X		) /* -- 2010 .-----s--- \e[045m */ \
+	X(PC_SGID_N		, HL_SGID_N		) /* -- 2000 .-----S--- \e[105m */ \
+	X(PC_STIC_X		, HL_STIC_X		) /* -- 1001 .--------t \e[044m */ \
+	X(PC_STIC_N		, HL_STIC_N		) /* -- 1000 .--------T \e[104m */ \
 	\
-	X(PC_NON_EXT	, DARK_PUNCT	) /* 00 0000 .--------- \e[30m  */ \
-	X(PC_REA_EXE	, HL_REA_EXE	) /* 00 0000 .r-xr-xr-x #E48256 */ \
-	X(PC_WRT_EXE	, HL_WRT_EXE	) /* 00 0000 .-wx-wx--x #DFAD81 */ \
-	X(PC_REA_WRT	, HL_REA_WRT	) /* 00 0000 .rw-rw-r-- \e[94m  */ \
-	X(PC_RWX_ALL	, HL_RWX_ALL	) /* 00 0000 .rwxrwxr-x \e[34m  */ \
+	X(PC_REA_EXE	, HL_REA_EXE	) /* -- 0555 .r-xr-xr-x #E48256 */ \
+	X(PC_WRT_EXE	, HL_WRT_EXE	) /* -- 0331 .-wx-wx--x #DFAD81 */ \
+	X(PC_REA_WRT	, HL_REA_WRT	) /* -- 0664 .rw-rw-r-- \e[094m */ \
+	X(PC_RWX_ALL	, HL_RWX_ALL	) /* -- 0775 .rwxrwxr-x \e[034m */ \
 
 /* —— Time —————————————————————————————————————————————————————————————————— */
 
