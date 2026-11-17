@@ -78,6 +78,8 @@ static inline icon_t findIconMatch(const char *const check_str, const Icon icon_
 
 icon_t getIcon(const FileStat *const pFS) {
 	// determine which name we'll be using to find the icon
+	// note: we use the `abspath`, so that, e.g. if we're in the dir `/path/to/source`,
+	//  the function will match `source`, instead of trying to match `.`
 	const char *filename = pFS->abspath != NULL ? pFS->abspath : pFS->name;
 	const bool is_dir = isFSDir(pFS);
 

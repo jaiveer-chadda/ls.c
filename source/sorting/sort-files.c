@@ -245,7 +245,7 @@ void sortFiles(const uint8_t depth, void *const arr, const int arr_count) {
 
 	/* —————————————————————————————————————————————————— */
 
-	// this is a special case, since the decision to sort inputs is taken seperately to whether to sort children
+	// this is a special case, since the decision to sort inputs is taken separately to whether to sort children
 	if (depth == 0) return;
 	if (depth >= MAX_DEPTH) return;
 
