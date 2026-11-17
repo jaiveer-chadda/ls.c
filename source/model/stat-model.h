@@ -54,6 +54,7 @@ struct FileStat {
 	namlen_t	name_len; // 2 /** Length of the string pointed to by the `name` field (exc. `\0`). */
 	namlen_t	abs_len	; // 2 /** Length of the string pointed to by the `abspath` field (exc. `\0`). */
 	mode_t		mode	; // 2 /** The filetype and permissions (if `stat` worked) of the file. */
+	bool		is_dir	; // 1 /** Whether the file should be interpreted as a directory or not. */
 
 	// the following are fields which can be derived from just the information from `struct dirent`
 	bool		has_xat	; // 1 /** Whether this file has extended attributes. */
@@ -64,8 +65,8 @@ struct FileStat {
 	FileColour	file_col; // 4 /** The colour which the file should be printed in. */
 	icon_t		icon	; // 4 /** The icon to be shown before a filename. */
 
-	modestr		mode_str; // 12 /** A string repr of the file's mode (type & permissions). */
-}; // 84 + 4 pad = 88 B
+	modestr		mode_str; // 12 /** A string representation of the file's mode (type & permissions). */
+}; // 85 + 3 pad = 88 B
 
 /* —— FileStatFields ——————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -240,16 +241,9 @@ struct TimeInfo { timestr str; TimeColour colour; }; // 36 + 0 pad = 36 B
  *
  * @warning `isFSDir` will segfault if `p_fs == NULL`.
  */
-#define isFSDir(p_fs) ((bool)(					\
-	!DIRS_AS_FILES() &&							\
-	S_ISDIR((p_fs)->mode) || (					\
-		LINKS_AS_DIRS()					  &&	\
-		(p_fs)->f				  != NULL &&	\
-		(p_fs)->f->target		  != NULL &&	\
-		(p_fs)->f->target->suffix == DIR_SUFFIX	\
-	)											\
+#define isFSDir(p_fs) ((bool)(			\
+	!DIRS_AS_FILES() && (p_fs)->is_dir	\
 ))
-
 
 #define isAppleAlias(p_fs) ((bool)(	\
 	(p_fs)				!= NULL &&	\

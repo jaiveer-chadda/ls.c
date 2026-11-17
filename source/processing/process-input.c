@@ -37,6 +37,7 @@ static inline void processChild(FileStat *const pFS_child, const struct dirent *
 		.inum		= pDT_child->d_ino,
 		// make sure to copy the parent over too, so that it's not set to `NULL`
 		.parent		= pFS_child->parent,
+		.is_dir		= pFS_child->is_dir,
 	};
 
 	// copy the name from `dirent` to `FileStat`
@@ -172,6 +173,7 @@ static inline FileStat *processDir(FileStat *const pFS_dir, const uint8_t depth)
 
 		// assign this directory as the child's parent
 		pFS_child->parent = pFS_dir;
+		pFS_child->is_dir = (pDT_child->d_type == DT_DIR);
 
 		// then send the child off for processing
 		processChild(pFS_child, pDT_child);
@@ -275,6 +277,9 @@ FileStat *processInput(char *const path) {
 	}
 
 	FileStat *output = pFS;
+
+	// before any other processing, figure out if the file is a directory or not
+	pFS->is_dir |= S_ISDIR(pFS->s->st_mode);
 
 	// parse the info in `pFS`, so we know whether its a link to a directory or not
 	//	but don't recurse into it, since we won't have any of the information from `processChild`

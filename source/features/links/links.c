@@ -133,7 +133,7 @@ static inline bool getLinkTargetPath(
 /* ── ── getLink_internal() ── ───────────────────────────────────────────────────────────────────────────────────── */
 
 static inline TargetInfo *getLink_internal(
-	error_t *const err_no, bool *const is_apple,
+	error_t *const err_no, bool *const is_apple, bool *const is_dir,
 	const mode_t mode, const flag_t flags, const FileStat *const parent, const char *const abspath, const uint8_t depth
 ) {
 
@@ -177,8 +177,12 @@ static inline TargetInfo *getLink_internal(
 	if (lstat(targ_abspath, &targ_stat) == -1) return target;
 
 	target->mount  = getMountPoint(targ_abspath, S_ISDIR(targ_stat.st_mode));
-	target->suffix = getTypeSuffix(targ_stat.st_mode);
 	target->colour = setFileColour(target->abspath, targ_stat.st_mode, target->mount, &targ_stat);
+	target->suffix = getTypeSuffix(targ_stat.st_mode);
+
+	// if any of the files encountered while recursing (usually the last one) is a directory,
+	//	then set `pFS->is_dir` to `true`
+	*is_dir |= S_ISDIR(targ_stat.st_mode) & LINKS_AS_DIRS();
 
 	/* —— Recurse ————————————————————————————————————————————— */
 
@@ -188,7 +192,7 @@ static inline TargetInfo *getLink_internal(
 			bool r_is_apple = false;
 
 			target->target = getLink_internal(
-				&target->targ_err, &r_is_apple,
+				&target->targ_err, &r_is_apple, is_dir,
 				targ_stat.st_mode, targ_stat.st_flags, /*parent*/ NULL, targ_abspath, depth + 1
 			);
 		} else {
@@ -213,7 +217,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 	const flag_t flags = pFS->s ? pFS->s->st_flags : 0;
 
 	TargetInfo *const target = getLink_internal(
-		&targ_err, &is_apple,
+		&targ_err, &is_apple, &pFS->is_dir,
 		pFS->mode, flags, pFS->parent, pFS->abspath, /*depth*/ 1
 	);
 
