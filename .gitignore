@@ -14,7 +14,8 @@ _*
 # except those in a subdir of `source/`
 !source/**/_*
 
-[ab]
+# anything that's only one character long
+?
 *.tmp*
 
 Icon[^s]

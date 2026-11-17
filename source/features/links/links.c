@@ -32,9 +32,9 @@ bool resolveAppleAlias(
 )
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
-/* ── ── getLinkTargetPath() ── ──────────────────────────────────────────────────────────────────────────────────── */
+/* ── ── getTargetAbsPath() ── ────────────────────────────────────────────────────────────────────────────────────— */
 
-static inline bool getLinkTargetPath(
+static inline bool getTargetAbsPath(
 	bool *const is_valid, bool *const is_apple, error_t *const err_no,
 	char **const target_path, ssize_t *const target_len,
 	const mode_t mode, const char *const abspath, const FileStat *const parent
@@ -151,7 +151,7 @@ static inline TargetInfo *getLink_internal(
 	ssize_t target_len;
 	bool is_valid;
 
-	if (!getLinkTargetPath(
+	if (!getTargetAbsPath(
 		&is_valid, is_apple, err_no,
 		&target_path, &target_len,
 		mode, abspath, parent
@@ -184,21 +184,28 @@ static inline TargetInfo *getLink_internal(
 	//	then set `pFS->is_dir` to `true`
 	*is_dir |= S_ISDIR(targ_stat.st_mode) & LINKS_AS_DIRS();
 
+	/* —— Verify Recursion ———————————————————————————————————— */
+
+	// if link recursion is turned off
+	if (!LINKS_TO_LINKS()) return target;
+
+	// or we've reached the link recursion limit
+	//	note that `MAX_LINKS` is usually equal to `MAXSYMLINKS`
+	if (depth >= MAX_LINKS()) {
+		target->targ_err = (error_t)ELOOP;
+		return target;
+	}
+
 	/* —— Recurse ————————————————————————————————————————————— */
 
-	if (LINKS_TO_LINKS()) {
-		// `MAX_LINKS` is usually equivalent to `MAXSYMLINKS`
-		if (depth < MAX_LINKS()) {
 			bool r_is_apple = false;
 
+	/// @todo pass `target->target` by reference, so it can be set in the called function
+	///			the function would then return `target`, allowing the implementation of tail call optimisation
 			target->target = getLink_internal(
 				&target->targ_err, &r_is_apple, is_dir,
 				targ_stat.st_mode, targ_stat.st_flags, /*parent*/ NULL, targ_abspath, depth + 1
 			);
-		} else {
-			target->targ_err = (error_t)ELOOP;
-		}
-	}
 
 	/* —— Return —————————————————————————————————————————————— */
 
