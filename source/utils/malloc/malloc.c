@@ -20,14 +20,14 @@
 #	define REL_PATH(file)	((char *)(strstr((char *)(file), "source/") + (int)(sizeof("source/") - 1)))
 
 #	define DIFF				(L'Δ'), ((ssize_t)(alloc_count - freed_count))
-#	define DIFF_FMT(chr)	" [" #chr "=%3zu %lc=%3zd] "
+#	define DIFF_FMT(chr)	" [" #chr "=%4zu %lc=%3zd] "
 
 #	define tolog(fpath, mode, fmt, ...) do {							\
 		const error_t err_no = errno;									\
 		FILE *const log_file = fopen(fpath, first_write ? "w" : mode);	\
 		first_write = false;											\
 		\
-		fprintf(log_file, fmt "  %-26s @ %-14s (%3d)\n",				\
+		fprintf(log_file, fmt "  %-27s @ %-19s (%3d)\n",				\
 			__VA_ARGS__, REL_PATH(file), func, line						\
 		);																\
 		fclose(log_file);												\
@@ -72,11 +72,11 @@
 	static inline void *log_realloc(void *oldptr, void *newptr DEBUG_ARGS) {
 		if (oldptr == NULL) {
 			alloc_count++;
-			tologfile("[alloc]" DIFF_FMT(a) "%12lX --> %12lX", alloc_count, DIFF, PTR(oldptr), PTR(newptr));
-			tologpipe(						"%12lX --> %12lX",					  PTR(oldptr), PTR(newptr));
+			tologfile("[alloc]" DIFF_FMT(a)  "%12lX --> %12lX", alloc_count, DIFF,	PTR(oldptr), PTR(newptr));
+			tologpipe(						 "%12lX --> %12lX",						PTR(oldptr), PTR(newptr));
 		} else {
-			tologfile("[reall]  -- -- -- --  %12lX --> %12lX",					  PTR(oldptr), PTR(newptr));
-			tologpipe(						"%12lX --> %12lX",					  PTR(oldptr), PTR(newptr));
+			tologfile("[reall]  -- --- -- --  %12lX --> %12lX",						PTR(oldptr), PTR(newptr));
+			tologpipe(						 "%12lX --> %12lX",						PTR(oldptr), PTR(newptr));
 		}
 
 		return newptr;
