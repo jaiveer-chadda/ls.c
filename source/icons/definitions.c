@@ -185,6 +185,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".clang-tidy"					, IC_CONFIG				}, // 󱁻
 	{ ".codespellrc"				, IC_CODESPELL			}, // 󰓆
 	{ ".condarc"					, IC_CONDA				}, // 
+	{ ".coveragerc"					, IC_COVERAGE			}, // 
 	{ ".cshrc"						, IC_SHELL				}, // 󱆃
 	{ ".ds_store"					, IC_OS_APPLE			}, // 
 	{ ".editorconfig"				, IC_EDITORCONFIG		}, // 
@@ -259,6 +260,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".zsh_sessions"				, IC_SHELL				}, // 󱆃
 	{ ".zshenv"						, IC_SHELL				}, // 󱆃
 	{ ".zshrc"						, IC_SHELL				}, // 󱆃
+	{ "__init__.py"					, IC_INIT_PY			}, // 
 	{ "_gvimrc"						, IC_VIM				}, // 
 	{ "_vimrc"						, IC_VIM				}, // 
 	{ "a.out"						, IC_SHELL_CMD			}, // 󰆍
@@ -266,6 +268,7 @@ const Icon FILENAME_ICONS[] = {
 	{ "authors"						, IC_PEOPLE				}, // 
 	{ "authors.txt"					, IC_PEOPLE				}, // 
 	{ "bashrc"						, IC_SHELL				}, // 󱆃
+	{ "bookmark"					, IC_BOOKMARK			}, // 󰃀
 	{ "brewfile"					, IC_HOMEBREW			}, // 󱄖
 	{ "brewfile.lock.json"			, IC_HOMEBREW			}, // 󱄖
 	{ "bspwmrc"						, IC_BSPWM				}, // 
@@ -431,6 +434,7 @@ const Icon FILENAME_ICONS[] = {
 	{ "tmux.conf.local"				, IC_TMUX				}, // 
 	{ "todo"						, IC_TODO				}, // 
 	{ "todo.md"						, IC_TODO				}, // 
+	{ "translators"					, IC_TRANSLATION		}, // 󰗊
 	{ "tsconfig.json"				, IC_LANG_TSCPT			}, // 
 	{ "vagrantfile"					, IC_VAGRANT			}, // ⍱
 	{ "vlcrc"						, IC_VLC				}, // 󰕼
@@ -494,6 +498,8 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "asm"				, IC_LANG_ASSEMBLY	}, // 
 	{ "asp"				, IC_ASP			}, // 
 	{ "ass"				, IC_SUBTITLE		}, // 󰨖
+	{ "aup"				, IC_AUDIO_FILE		}, // 󰈣
+	{ "aup3"			, IC_AUDIO_FILE		}, // 󰈣
 	{ "avi"				, IC_VIDEOS			}, // 
 	{ "avif"			, IC_IMAGE			}, // 
 	{ "avro"			, IC_JSON			}, // 
@@ -505,6 +511,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "bdf"				, IC_FONT			}, // 
 	{ "bib"				, IC_LANG_TEX		}, // 
 	{ "bin"				, IC_BINARY			}, // 
+	{ "bkp"				, IC_BACKUP_FILE	}, // 󰁯
 	{ "blend"			, IC_BLEND			}, // 󰂫
 	{ "bmp"				, IC_IMAGE			}, // 
 	{ "br"				, IC_COMPRESSED		}, // 
@@ -561,12 +568,14 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "cxx"				, IC_LANG_CPP		}, // 
 	{ "d"				, IC_LANG_D			}, // 
 	{ "dart"			, IC_DART			}, // 
+	{ "dat"				, IC_DATA			}, // 󱔼
 	{ "db"				, IC_DATABASE		}, // 
 	{ "db3"				, IC_SQLITE			}, // 
 	{ "dconf"			, IC_DATABASE		}, // 
 	{ "deb"				, IC_DEB			}, // 
 	{ "desktop"			, IC_DESKTOP_EXT	}, // 
 	{ "di"				, IC_LANG_D			}, // 
+	{ "dic"				, IC_BOOK			}, // 
 	{ "diff"			, IC_DIFF			}, // 
 	{ "djv"				, IC_DOCUMENT		}, // 
 	{ "djvu"			, IC_DOCUMENT		}, // 
@@ -598,11 +607,12 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "eml"				, IC_EML			}, // 
 	{ "env"				, IC_ENV			}, // 
 	{ "eot"				, IC_FONT			}, // 
-	{ "eps"				, IC_VECTOR			}, // 󰕙
+	{ "eps"				, IC_VECTOR			}, // 󰜡
 	{ "epub"			, IC_BOOK			}, // 
 	{ "erb"				, IC_LANG_RBRAILS	}, // 
 	{ "erl"				, IC_ERLANG			}, // 
 	{ "ex"				, IC_LANG_ELIXIR	}, // 
+	{ "exc"				, IC_EXTRACT		}, // 󰆸
 	{ "exe"				, IC_OS_WINDOWS_CMD	}, // 
 	{ "exs"				, IC_LANG_ELIXIR	}, // 
 	{ "f"				, IC_LANG_FORTRAN	}, // 󱈚
@@ -655,17 +665,20 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "gform"			, IC_GFORM			}, // 
 	{ "gif"				, IC_IMAGE			}, // 
 	{ "git"				, IC_GIT			}, // 󰊢
+	{ "glade"			, IC_UI_GLADE		}, // 󰹑
 	{ "gleam"			, IC_LANG_GLEAM		}, // 󰦥
 	{ "gm1"				, IC_EDA_PCB		}, // 
 	{ "gml"				, IC_EDA_PCB		}, // 
 	{ "go"				, IC_LANG_GO		}, // 
 	{ "godot"			, IC_GODOT			}, // 
 	{ "gpg"				, IC_SHIELD_LOCK	}, // 󰦝
+	{ "gpl"				, IC_PALETTE		}, // 󰏘
 	{ "gql"				, IC_GRAPHQL		}, // 
 	{ "gradle"			, IC_GRADLE			}, // 
 	{ "graphql"			, IC_GRAPHQL		}, // 
 	{ "gresource"		, IC_GTK			}, // 
 	{ "groovy"			, IC_LANG_GROOVY	}, // 
+	{ "gs2"				, IC_FONTFORGE		}, // 
 	{ "gsheet"			, IC_SHEET			}, // 
 	{ "gslides"			, IC_SLIDE			}, // 
 	{ "gtl"				, IC_EDA_PCB		}, // 
@@ -697,6 +710,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "iam"				, IC_CAD			}, // 󰻫
 	{ "ical"			, IC_CALENDAR		}, // 
 	{ "icalendar"		, IC_CALENDAR		}, // 
+	{ "icns"			, IC_ICNS			}, // 
 	{ "ico"				, IC_IMAGE			}, // 
 	{ "ics"				, IC_CALENDAR		}, // 
 	{ "ifb"				, IC_CALENDAR		}, // 
@@ -711,6 +725,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "ini"				, IC_CONFIG			}, // 󱁻
 	{ "inl"				, IC_LANG_C			}, // 
 	{ "ino"				, IC_LANG_ARDUINO	}, // 
+	{ "inx"				, IC_XPI			}, // 
 	{ "ipt"				, IC_CAD			}, // 󰻫
 	{ "ipynb"			, IC_NOTEBOOK		}, // 
 	{ "iso"				, IC_DISK_IMAGE		}, // 
@@ -751,6 +766,8 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "kicad_sch"		, IC_KICAD			}, // 
 	{ "kicad_sym"		, IC_KICAD			}, // 
 	{ "kicad_wks"		, IC_KICAD			}, // 
+	{ "kml"				, IC_KML			}, // 
+	{ "kmz"				, IC_KMZ			}, // 
 	{ "ko"				, IC_OS_LINUX		}, // 
 	{ "kpp"				, IC_KRITA			}, // 
 	{ "kra"				, IC_KRITA			}, // 
@@ -758,6 +775,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "ksh"				, IC_SHELL_CMD		}, // 󰆍
 	{ "kt"				, IC_LANG_KOTLIN	}, // 
 	{ "kts"				, IC_LANG_KOTLIN	}, // 
+	{ "lang"			, IC_TRANSLATION	}, // 󰗊
 	{ "latex"			, IC_LANG_TEX		}, // 
 	{ "lbr"				, IC_LIBRARY		}, // 
 	{ "lck"				, IC_LOCK			}, // 
@@ -815,8 +833,10 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "mp4"				, IC_VIDEOS			}, // 
 	{ "mpeg"			, IC_VIDEOS			}, // 
 	{ "mpg"				, IC_VIDEOS			}, // 
+	{ "mscz"			, IC_AUDIO_FILE		}, // 󰈣
 	{ "msf"				, IC_MSF			}, // 
 	{ "msi"				, IC_OS_WINDOWS		}, // 
+	{ "mss"				, IC_MUSIC_STYLE	}, // 󰽻
 	{ "mts"				, IC_LANG_TSCPT		}, // 
 	{ "mustache"		, IC_MUSTACHE		}, // 
 	{ "nef"				, IC_IMAGE			}, // 
@@ -844,6 +864,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "opam"			, IC_OPAM			}, // 󰘧
 	{ "opml"			, IC_XML			}, // 󰗀
 	{ "opus"			, IC_AUDIO			}, // 
+	{ "ordering"		, IC_ORDER			}, // 󰈍
 	{ "orf"				, IC_IMAGE			}, // 
 	{ "org"				, IC_ORG			}, // 
 	{ "otf"				, IC_FONT			}, // 
@@ -873,7 +894,9 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "po"				, IC_TRANSLATION	}, // 󰗊
 	{ "pod"				, IC_LANG_PERL		}, // 
 	{ "pot"				, IC_TRANSLATION	}, // 󰗊
+	{ "pov"				, IC_RAYTRACE		}, // 󱒄
 	{ "pp"				, IC_PP				}, // 
+	{ "ppd"				, IC_PRINTER		}, // 󰐪
 	{ "ppm"				, IC_IMAGE			}, // 
 	{ "pps"				, IC_SLIDE			}, // 
 	{ "ppsx"			, IC_SLIDE			}, // 
@@ -883,7 +906,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "procfile"		, IC_LANG_RUBY		}, // 
 	{ "properties"		, IC_JSON			}, // 
 	{ "prql"			, IC_DATABASE		}, // 
-	{ "ps"				, IC_VECTOR			}, // 󰕙
+	{ "ps"				, IC_VECTOR			}, // 󰜡
 	{ "ps1"				, IC_POWERSHELL		}, // 
 	{ "psb"				, IC_PHOTOSHOP		}, // 
 	{ "psd"				, IC_PHOTOSHOP		}, // 
@@ -938,6 +961,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "s3db"			, IC_SQLITE			}, // 
 	{ "sal"				, IC_SQ_WAVE		}, // 󱑻
 	{ "sass"			, IC_LANG_SASS		}, // 
+	{ "sav"				, IC_SAVE			}, // 󰉉
 	{ "sbt"				, IC_SUBTITLE		}, // 󰨖
 	{ "scad"			, IC_SCAD			}, // 
 	{ "scala"			, IC_SCALA			}, // 
@@ -995,7 +1019,8 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "suo"				, IC_VSCODE			}, // 󰨞
 	{ "sv"				, IC_LANG_HDL		}, // 󰍛
 	{ "svelte"			, IC_SVELTE			}, // 
-	{ "svg"				, IC_VECTOR			}, // 󰕙
+	{ "svg"				, IC_VECTOR			}, // 󰜡
+	{ "svgz"			, IC_VECTOR_COMP	}, // 󰕙
 	{ "svh"				, IC_LANG_HDL		}, // 󰍛
 	{ "swf"				, IC_AUDIO			}, // 
 	{ "swift"			, IC_SWIFT			}, // 
@@ -1031,11 +1056,14 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "txt"				, IC_TEXT			}, // 
 	{ "txz"				, IC_COMPRESSED		}, // 
 	{ "typ"				, IC_TYPST			}, // 
+	{ "typed"			, IC_KEYBOARD		}, // 
 	{ "tz"				, IC_COMPRESSED		}, // 
 	{ "tzo"				, IC_COMPRESSED		}, // 
 	{ "ui"				, IC_UI				}, // 
 	{ "unity"			, IC_UNITY			}, // 
 	{ "unity3d"			, IC_UNITY			}, // 
+	{ "upp"				, IC_PRINTER		}, // 󰐪
+	{ "url"				, IC_URL			}, // 󱅷
 	{ "v"				, IC_LANG_V			}, // 
 	{ "vala"			, IC_VALA			}, // 
 	{ "vdi"				, IC_DISK_IMAGE		}, // 
@@ -1077,6 +1105,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "xml"				, IC_XML			}, // 󰗀
 	{ "xpi"				, IC_XPI			}, // 
 	{ "xpm"				, IC_IMAGE			}, // 
+	{ "xsl"				, IC_XML			}, // 󰗀
 	{ "xul"				, IC_XML			}, // 󰗀
 	{ "xz"				, IC_COMPRESSED		}, // 
 	{ "yaml"			, IC_YAML			}, // 
