@@ -132,8 +132,15 @@ static inline bool getTargetAbsPath(
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ── ── getLink_internal() ── ───────────────────────────────────────────────────────────────────────────────────── */
 
+#define RETURN_TARGET do {			\
+	efree((void*)clean_abs_path);	\
+	return target;					\
+} while (0)
+
+/* ——————————————————————————————————————————————————————————————— */
+
 static inline TargetInfo *getLink_internal(
-	error_t *const err_no, bool *const is_apple, bool *const is_dir,
+	error_t *const err_no, bool *const is_apple, bool *const is_dir, const char **const link_paths,
 	const mode_t mode, const flag_t flags, const FileStat *const parent, const char *const abspath, const uint8_t depth
 ) {
 
@@ -157,6 +164,23 @@ static inline TargetInfo *getLink_internal(
 		mode, abspath, parent
 	)) return NULL;
 
+	const char *clean_abs_path = NULL;
+	namlen_t clean_abs_len = 0;
+
+	// resolve . .. //
+	getPureAbsPath(&clean_abs_path, &clean_abs_len, targ_abspath, strlen(targ_abspath));
+
+	int8_t loop_to = -1;
+
+	for (uint8_t path_i = 0; link_paths[path_i] != NULL; path_i++) {
+		if (strcmp(link_paths[path_i], clean_abs_path) != 0) continue;
+
+		loop_to = path_i;
+		break;
+	}
+
+	link_paths[depth] = clean_abs_path;
+
 	/* —— Create Target Object & Validate ————————————————————— */
 
 	// this memory is freed once the target is printed
@@ -166,15 +190,16 @@ static inline TargetInfo *getLink_internal(
 	target->path_off = (namlen_t)(target_path - targ_abspath);
 
 	target->is_apple = *is_apple;
+	target->loop_to = loop_to;
 	target->suffix = INVALID_LINK;
 
-	if (!is_valid) return target;
+	if (!is_valid) RETURN_TARGET;
 
 	/* —— `lstat` Target Path ————————————————————————————————— */
 
 	struct stat targ_stat = {0};
 	// when statting the file, use the absolute target path - we won't be able to guarantee the information otherwise
-	if (lstat(targ_abspath, &targ_stat) == -1) return target;
+	if (lstat(targ_abspath, &targ_stat) == -1) RETURN_TARGET;
 
 	target->mount  = getMountPoint(targ_abspath, S_ISDIR(targ_stat.st_mode));
 	target->colour = setFileColour(target->abspath, targ_stat.st_mode, target->mount, &targ_stat);
@@ -187,29 +212,32 @@ static inline TargetInfo *getLink_internal(
 	/* —— Verify Recursion ———————————————————————————————————— */
 
 	// if link recursion is turned off
-	if (!LINKS_TO_LINKS()) return target;
+	if (!LINKS_TO_LINKS()) RETURN_TARGET;
+
+	// if we found a loop
+	if (loop_to != -1) RETURN_TARGET;
 
 	// or we've reached the link recursion limit
 	//	note that `MAX_LINKS` is usually equal to `MAXSYMLINKS`
 	if (depth >= MAX_LINKS()) {
 		target->targ_err = (error_t)ELOOP;
-		return target;
+		RETURN_TARGET;
 	}
 
 	/* —— Recurse ————————————————————————————————————————————— */
 
-			bool r_is_apple = false;
+	bool r_is_apple = false;
 
 	/// @todo pass `target->target` by reference, so it can be set in the called function
 	///			the function would then return `target`, allowing the implementation of tail call optimisation
-			target->target = getLink_internal(
-				&target->targ_err, &r_is_apple, is_dir,
-				targ_stat.st_mode, targ_stat.st_flags, /*parent*/ NULL, targ_abspath, depth + 1
-			);
+	target->target = getLink_internal(
+		&target->targ_err, &r_is_apple, is_dir, link_paths,
+		targ_stat.st_mode, targ_stat.st_flags, /*parent*/ NULL, targ_abspath, depth + 1
+	);
 
 	/* —— Return —————————————————————————————————————————————— */
 
-	return target;
+	RETURN_TARGET;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -222,9 +250,12 @@ TargetInfo *getLink(FileStat *const pFS) {
 	bool is_apple = false;
 	error_t targ_err = ( errno = 0 );
 	const flag_t flags = pFS->s ? pFS->s->st_flags : 0;
+	const char **link_paths = ecalloc(MAX_LINKS() + 1, sizeof(char *));
+
+	link_paths[0] = pFS->abspath;
 
 	TargetInfo *const target = getLink_internal(
-		&targ_err, &is_apple, &pFS->is_dir,
+		&targ_err, &is_apple, &pFS->is_dir, link_paths,
 		pFS->mode, flags, pFS->parent, pFS->abspath, /*depth*/ 1
 	);
 
@@ -232,6 +263,7 @@ TargetInfo *getLink(FileStat *const pFS) {
 
 	/* —— Return —————————————————————————————————————————————— */
 
+	efree(link_paths);
 	return target;
 }
 

@@ -115,9 +115,13 @@ struct FileStatFields {
 struct TargetInfo {
 	path_t			abspath	; // 1024	/** The absolute path to the target file. */
 	TargetInfo		*target	; // 8		/** If the target is itself a link, then a pointer to _that_ link's target. */
+
 	const MountInfo	*mount	; // 8		/** Information about a mount point. NULL if target isn't a mount point. */
 	FileColour		colour	; // 4		/** The colour that the file should be displayed in. */
+
 	namlen_t		path_off; // 2		/** The point in `abspath` where the raw `readlink`ed name begins. */
+	int8_t			loop_to	; // 1		/** If the */
+
 	error_t			targ_err; // 1		/** The errno from reading `TargetInfo::target` (not this target itself). */
 	suff_t			suffix	; // 1		/** The symbol to be shown after the target's name. */
 	bool			is_apple; // 1		/** Whether the link that pointed to this target was an apple alias. */
