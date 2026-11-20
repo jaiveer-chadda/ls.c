@@ -385,6 +385,7 @@
 #define IC_PLATFORMIO		L''
 #define IC_POM				L''
 #define IC_PRETTIER			L''
+#define IC_DEV_TREE_BLOB	L'󰚗'
 #define IC_PRIVATE_KEY		L'󰌆'
 #define IC_PRUSASLICER		L''
 #define IC_RENOVATE			L'󰉼'

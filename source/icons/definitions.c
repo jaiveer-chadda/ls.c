@@ -570,6 +570,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "dart"			, IC_DART			}, // 
 	{ "dat"				, IC_DATA			}, // 󱔼
 	{ "db"				, IC_DATABASE		}, // 
+	{ "dtb"				, IC_DEV_TREE_BLOB	}, // 󰚗
 	{ "db3"				, IC_SQLITE			}, // 
 	{ "dconf"			, IC_DATABASE		}, // 
 	{ "deb"				, IC_DEB			}, // 
