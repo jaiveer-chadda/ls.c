@@ -13,7 +13,7 @@
 
 static inline void print_link_internal(
 	const TargetInfo *const file, const suff_t suffix, const error_t err_no,
-	const lines_t lines, const uint8_t depth, size_t *const line_len
+	const lines_t lines, const uint8_t level, size_t *const line_len
 ) {
 	if (file == NULL && suffix != SYMLINK_SUFFIX) return;
 
@@ -32,7 +32,7 @@ static inline void print_link_internal(
 			)
 		);
 
-		print_empty_tree_addlen(lines, depth, is_last_branch, line_len);
+		print_empty_tree_addlen(lines, level, is_last_branch, line_len);
 	}
 
 	/* —— Target Error ———————————————————————————————————————— */
@@ -125,18 +125,18 @@ static inline void print_link_internal(
 	/* —— Recurse ————————————————————————————————————————————— */
 
 	if (LINKS_TO_LINKS()) {
-		// note: the `depth` doesn't change between recurses,
+		// note: the `level` doesn't change between recurses,
 		//	since the subsequent links will all be printed on the same level
-		print_link_internal(file->target, file->suffix, file->targ_err, lines, depth, line_len);
+		print_link_internal(file->target, file->suffix, file->targ_err, lines, level, line_len);
 		efree(file->target);
 	}
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void print_link(const FileStat *const pFS, const lines_t lines, const uint8_t depth, size_t *const line_len) {
+void print_link(const FileStat *const pFS, const lines_t lines, const uint8_t level, size_t *const line_len) {
 	if (pFS->f != NULL) print_link_internal(
-		pFS->f->target, pFS->suffix, pFS->f->targ_err, lines, depth + 1, line_len
+		pFS->f->target, pFS->suffix, pFS->f->targ_err, lines, level + 1, line_len
 	);
 }
 
