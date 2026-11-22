@@ -57,7 +57,7 @@ void print_tree(
 
 	} else {
 		printf("%ls", vert_str);
-		if (line_len != NULL) *line_len += vert_str_len;
+		if (line_len != NULL) *line_len += tree_pad + vert_str_len;
 	}
 
 	/* ——————————————————————————————————————————————————————————————— */
