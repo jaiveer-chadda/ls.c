@@ -141,6 +141,31 @@
 #define TREE_BRANCH				L"├"
 #define TREE_CORNER				L"└" // └ or ╰
 
+/* —————————————————————————————————————— */
+
+#define PRE_LOOP_PAD			L" "
+
+#define LOOP_HORI				L"─"
+#define LOOP_ARROW				L"◀"
+
+#define LOOP_TOP_RGT			PRE_LOOP_PAD L"╮"
+#define LOOP_BOT_RGT			L"╯"
+#define LOOP_BOT_LFT			L"╰" LOOP_HORI LOOP_ARROW
+
+/* —————————————————————————————————————— */
+
+#define STRLEN_(str) ((sizeof((str)) / sizeof((str)[0])) - 1)
+
+_Static_assert(STRLEN_(LOOP_HORI) == 1, "`LOOP_HORI` must be a single character.");
+_Static_assert(STRLEN_(LOOP_BOT_RGT) <= STRLEN_(LOOP_TOP_RGT),
+	"LOOP_BOT_RGT must be shorter than, or equal in length to, LOOP_TOP_RGT.\n"
+	"Otherwise, there won't be enough characters for the intermediate `LOOP_HORI`s to be printed."
+);
+
+#undef STRLEN_
+
+/* —————————————————————————————————————— */
+
 // ╭─╮ ┌─┐
 // ╰─╯ └─┘
 

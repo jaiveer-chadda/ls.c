@@ -1,6 +1,7 @@
 /// @file features/links/print-link.c
 
 #include <stdio.h>
+#include <wchar.h>
 #include <string.h> // strerror(), strncpy(), strlen()
 
 #include "malloc.h"
@@ -73,9 +74,44 @@ static inline void print_link_internal(
 
 	/* —— Looping Symlinks ———————————————————————————————————— */
 
+	// ├─ 󰪹 xx@ --> yyy@ --> zz@ ─╮
+	// │			╰◀────────────╯
+
 	// if there's a loop
 	if (file->loop_to != -1) {
-		printf(" (loops to %hhu)", file->loop_to); // temp
+		static const int
+			TOP_RGT_LEN = STRLEN(LOOP_TOP_RGT),
+			BOT_LFT_LEN = STRLEN(LOOP_BOT_LFT),
+			BOT_RGT_LEN = STRLEN(LOOP_BOT_RGT);
+
+		printf("%s%ls\n", getcol(PUNCT), LOOP_TOP_RGT);
+
+		size_t tree_width = 0;
+		print_empty_tree_addlen(lines, level - 1, NULL, NO_PRINT_BRANCH, &tree_width);
+
+		const int tree_arrow_pad = (
+			name_posits[file->loop_to]
+				- tree_width
+				- 1 // I have absolutely no idea where this -1 comes from
+		);
+
+		// the length of the body of the arrow
+		const int arrow_len = (
+			*line_len
+				+ TOP_RGT_LEN
+				+ 1 // I also don't know why this +1 needs to be here
+				- name_posits[file->loop_to]
+				- BOT_LFT_LEN
+				- BOT_RGT_LEN
+		);
+
+		putspaces(tree_arrow_pad);
+		printf("%s%ls", getcol(PUNCT), LOOP_BOT_LFT);
+
+		// note that `LOOP_HORI` is guaranteed to be 1 char, so the `[0]` just converts into a wchar
+		for (int i = 0; i < arrow_len; i++) putwchar(LOOP_HORI[0]);
+
+		printf("%ls", LOOP_BOT_RGT);
 		return;
 	}
 

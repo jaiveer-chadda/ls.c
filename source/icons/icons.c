@@ -37,8 +37,9 @@ static inline icon_t getGenericIcon(const FileStat *const pFS, const bool is_dir
 
 	if (target != NULL) {
 		while (target != NULL) {
-			if (target->targ_err == ELOOP) return IC_ELOOP; // 
-			if (target->target	 == NULL ) break;
+			if (target->loop_to != -1) return IC_ELOOP; // 
+			if (target->target == NULL) break;
+
 			target = target->target;
 		}
 
