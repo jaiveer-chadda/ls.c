@@ -29,25 +29,25 @@ typedef struct flagset {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #define FLAG_TABLE \
-	/* Mask / Base 	│ Long			│ Short  │ Tiny │	*/ \
-	X( UF_NODUMP	, "nodump"		, "nodmp", "nd"	)	/* do not dump file								*/ \
-	X( UF_IMMUTABLE	, "uimmutable"	, "uimut", "ui"	)	/* file may not be changed						*/ \
-	X( UF_APPEND	, "uappend"		, "uapnd", "ua"	)	/* writes to file may only append				*/ \
-	X( UF_OPAQUE	, "opaque"		, "opque", "op"	)	/* directory is opaque wrt. union				*/ \
-	/* UF_NOUNLINK	, "unounlink"	, "unoul", "uu"	*/	/* [BSD only]									*/ \
-	X( UF_COMPRESSED, "compressed"	, "cmprs", "cm"	)	/* file is compressed (some file-systems)		*/ \
-	X( UF_TRACKED	, "tracked"		, "track", "tr"	)	/* used for dealing with document IDs			*/ \
-	X( UF_DATAVAULT	, "datavault"	, "dtvlt", "dv"	)	/* entitlement needed for reading & writing		*/ \
-	X( UF_HIDDEN	, "hidden"		, "hiddn", "hd"	)	/* this item shouldn't be displayed in a GUI	*/ \
+	/* Mask / Base 	│ Long			│ Short  │ Tiny │	  [!] = settable by `/usr/bin/chflags`			*/ \
+	X( UF_NODUMP	, "nodump"		, "nodmp", "nd"	)	/* ! do not dump file							*/ \
+	X( UF_IMMUTABLE	, "uimmutable"	, "uimut", "ui"	)	/* ! file may not be changed					*/ \
+	X( UF_APPEND	, "uappend"		, "uapnd", "ua"	)	/* ! writes to file may only append				*/ \
+	X( UF_OPAQUE	, "opaque"		, "opque", "op"	)	/* ! directory is opaque wrt. union				*/ \
+	/* UF_NOUNLINK	, "unounlink"	, "uunln", "uu"	*/	/*	 [BSD only]									*/ \
+	X( UF_COMPRESSED, "compressed"	, "cmprs", "cm"	)	/*	 file is compressed (some file-systems)		*/ \
+	X( UF_TRACKED	, "tracked"		, "track", "tr"	)	/*	 used for dealing with document IDs			*/ \
+	X( UF_DATAVAULT	, "datavault"	, "dtvlt", "dv"	)	/*	 entitlement needed for reading & writing	*/ \
+	X( UF_HIDDEN	, "hidden"		, "hiddn", "hd"	)	/* ! this item shouldn't be displayed in a GUI	*/ \
 	\
-	X( SF_ARCHIVED	, "archived"	, "archv", "ar"	)	/* file is archived								*/ \
-	X( SF_IMMUTABLE	, "simmutable"	, "simut", "si"	)	/* file may not be changed						*/ \
-	X( SF_APPEND	, "sappend"		, "sapnd", "sa"	)	/* writes to file may only append				*/ \
-	X( SF_RESTRICTED, "restricted"	, "restr", "rs"	)	/* entitlement required for writing				*/ \
-	X( SF_NOUNLINK	, "snounlink"	, "sunln", "su"	)	/* may not be removed, renamed or mounted on	*/ \
-	/* SF_SNAPSHOT	, "snapshot"	, "snaps", "sn"	*/	/* [BSD only]									*/ \
-	X( SF_FIRMLINK	, "firmlink"	, "firml", "fl"	)	/* directory is a firmlink						*/ \
-	X( SF_DATALESS	, "dataless"	, "dtles", "dl"	)	/* file is dataless object						*/ \
+	X( SF_ARCHIVED	, "archived"	, "archv", "ar"	)	/* ! file is archived							*/ \
+	X( SF_IMMUTABLE	, "simmutable"	, "simut", "si"	)	/* ! file may not be changed					*/ \
+	X( SF_APPEND	, "sappend"		, "sapnd", "sa"	)	/* ! writes to file may only append				*/ \
+	X( SF_RESTRICTED, "restricted"	, "restr", "rs"	)	/*	 entitlement required for writing			*/ \
+	X( SF_NOUNLINK	, "snounlink"	, "sunln", "su"	)	/*	 may not be removed, renamed or mounted on	*/ \
+	/* SF_SNAPSHOT	, "snapshot"	, "snaps", "sn"	*/	/*	 [BSD only]									*/ \
+	X( SF_FIRMLINK	, "firmlink"	, "firml", "fl"	)	/*	 directory is a firmlink					*/ \
+	X( SF_DATALESS	, "dataless"	, "dtles", "dl"	)	/*	 file is dataless object					*/ \
 /**/
 
 #define X(name, ...) ((flagset){ .mask = name, .colour = FLC_##name, .base_name = #name, __VA_ARGS__ }),
