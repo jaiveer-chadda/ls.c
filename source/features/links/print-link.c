@@ -13,7 +13,7 @@
 
 static inline void print_link_internal(
 	const TargetInfo *const file, const suff_t suffix, const error_t err_no,
-	const lines_t lines, const uint8_t level, size_t *const line_len
+	const lines_t lines, const uint8_t level, const uint8_t depth, size_t *const line_len, size_t *const name_posits
 ) {
 	if (file == NULL && suffix != SYMLINK_SUFFIX) return;
 
@@ -71,6 +71,14 @@ static inline void print_link_internal(
 		return;
 	}
 
+	/* —— Looping Symlinks ———————————————————————————————————— */
+
+	// if there's a loop
+	if (file->loop_to != -1) {
+		printf(" (loops to %hhu)", file->loop_to); // temp
+		return;
+	}
+
 	/* —— Get Path —————————————————————————————————————————————————————————————— */
 
 	const char *const path = DO_ABS() ? file->abspath : file->abspath + file->path_off;
@@ -79,6 +87,10 @@ static inline void print_link_internal(
 
 	const wchar_t *const arrow = file->is_apple ? APPLE_ARROW : SYMLINK_ARROW;
 	*line_len += file->is_apple ? STRLEN(APPLE_ARROW) : STRLEN(SYMLINK_ARROW);
+
+	// just after printing the arrow, but before the name, note down where the name is about to be printed from
+	//	`+1` so we start at the name's first char, rather than before it
+	name_posits[depth] = *line_len + 1;
 
 	// if this is an invalid target file (i.e. the previous link points to an invalid file)
 	if (file->suffix == INVALID_LINK) {
@@ -127,17 +139,38 @@ static inline void print_link_internal(
 	if (LINKS_TO_LINKS()) {
 		// note: the `level` doesn't change between recurses,
 		//	since the subsequent links will all be printed on the same level
-		print_link_internal(file->target, file->suffix, file->targ_err, lines, level, line_len);
-		efree(file->target);
+		print_link_internal(
+			file->target, file->suffix, file->targ_err,
+			lines, level, depth + 1, line_len, name_posits
+		);
 	}
+
+	efree(file->target);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-void print_link(const FileStat *const pFS, const lines_t lines, const uint8_t level, size_t *const line_len) {
-	if (pFS->f != NULL) print_link_internal(
-		pFS->f->target, pFS->suffix, pFS->f->targ_err, lines, level + 1, line_len
+void print_link(
+	const FileStat *const pFS, const lines_t lines, const uint8_t level, size_t *const line_len, size_t name_pos
+) {
+	if (pFS->f == NULL || pFS->f->target == NULL) return;
+
+	/// Name Positions.
+	size_t *const name_posits = ecalloc(MAX_LINKS() + 1, sizeof(size_t));
+	memset(name_posits, ((int)(size_t)(-1)), (MAX_LINKS() + 1) * sizeof(size_t));
+	name_posits[0] = name_pos;
+
+	print_link_internal(
+		pFS->f->target, pFS->suffix, pFS->f->targ_err,
+		lines, level + 1, /*depth*/ 1, line_len, name_posits
 	);
+
+	// puts("\33[m");
+	// for (uint8_t i = 0; name_posits[i] != (size_t)(-1); i++) {
+	// 	printf("%*s↑", (int)(name_posits[i] - (i ? name_posits[i-1] : 0)) - 1, "");
+	// }
+
+	efree((void*)name_posits);
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

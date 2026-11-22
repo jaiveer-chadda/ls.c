@@ -173,8 +173,10 @@ static inline TargetInfo *getLink_internal(
 	int8_t loop_to = -1;
 
 	for (uint8_t path_i = 0; link_paths[path_i] != NULL; path_i++) {
+		// compare the current absolute path to all others before it
 		if (strcmp(link_paths[path_i], clean_abs_path) != 0) continue;
 
+		// if it matches any of them, then set that depth as the loop target
 		loop_to = path_i;
 		break;
 	}
@@ -211,11 +213,8 @@ static inline TargetInfo *getLink_internal(
 
 	/* —— Verify Recursion ———————————————————————————————————— */
 
-	// if link recursion is turned off
-	if (!LINKS_TO_LINKS()) RETURN_TARGET;
-
-	// if we found a loop
-	if (loop_to != -1) RETURN_TARGET;
+	// if link recursion is turned off, or we found a loop
+	if (!LINKS_TO_LINKS() || loop_to != -1) RETURN_TARGET;
 
 	// or we've reached the link recursion limit
 	//	note that `MAX_LINKS` is usually equal to `MAXSYMLINKS`

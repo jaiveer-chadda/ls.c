@@ -28,16 +28,21 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 
 	printFields(pFS); // print all "feature" fields (i.e. fields which are defined in `features.h`)
 
-	size_t line_len = getTotalLen() + (do_icon() ? 2 : 0);
+	size_t line_len = getTotalLen() + (do_icon() ? (/*icon*/ 1 + STRLEN(PRE_ICON_PAD)) : 0);
 
 	// after the fields, print the tree stucture
 	print_tree(new_lines, lines, depth, is_last, &line_len);
+
+	// before printing the name, note down the current line length, so we know where the name started
+	//	`+1` so we start at the name's first char, rather than before it
+	const size_t name_pos = line_len + STRLEN(PRE_NAME_PAD) + 1;
+
 	// then print the file's icon, name, and suffix
 	print_icon(pFS);
 	print_name(pFS, &line_len);
 	print_suff(pFS, &line_len);
 
-	print_link(pFS, new_lines, depth, &line_len); // print targets of links
+	print_link(pFS, new_lines, depth, &line_len, name_pos); // print targets of links
 	if (pFS->f != NULL) print_mount(pFS->f->mount, &line_len); // print info about mounted filesystems
 
 	// make sure that no colours leak past the end of the line

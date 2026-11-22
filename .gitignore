@@ -16,6 +16,8 @@ _*
 
 # anything that's only one character long
 ?
+,*
+
 *.tmp*
 
 Icon[^s]
