@@ -19,11 +19,11 @@ typedef struct flagset {
 	flag_t mask;
 	Colour colour;
 
-	char
-	/* FN_BASE */ base_name[STRLEN("SF_RESTRICTED") + 1],	// FLAG_BASE_NAME_MAX
-	/* FN_LONG */ long_name[MAX_FLAG_LEN],					// FLAG_LONG_NAME_MAX
-	/* FN_SHRT */ shrt_name[6],								// FLAG_SHRT_NAME_LEN
-	/* FN_TINY */ tiny_name[3];								// FLAG_TINY_NAME_LEN
+	char /** @note `+1` for the nullbyte. */
+		base_name[FLAG_BASE_NAME_MAX + 1],
+		long_name[FLAG_LONG_NAME_MAX + 1],
+		shrt_name[FLAG_SHRT_NAME_LEN + 1],
+		tiny_name[FLAG_TINY_NAME_LEN + 1];
 } flagset;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -56,7 +56,7 @@ static const flagset ALL_FLAGS[] = { FLAG_TABLE };
 
 #define FLAG_COUNT ((int)(sizeof(ALL_FLAGS) / sizeof(ALL_FLAGS[0])))
 
-static_assert(FLAG_COUNT <= MAX_FLAG_NUM);
+static_assert(FLAG_COUNT <= MAX_FLAG_COUNT);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -205,7 +205,7 @@ char *parseFlags(FileStat *const pFS) {
 	StringBuilder flag_str = sb_init();
 	bool is_first = true;
 
-	for (int i = 0; i < MAX_FLAG_NUM; i++) {
+	for (int i = 0; i < FLAG_COUNT; i++) {
 		const flagset flag = ALL_FLAGS[i];
 
 		if (!(pFS->s->st_flags & flag.mask)) continue;

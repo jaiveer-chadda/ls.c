@@ -52,8 +52,17 @@
 #define MAX_PATH_LEN MAXPATHLEN
 
 #define MNT_TYPE_LEN MFSTYPENAMELEN	/** @brief The maximum number of characters that a mount point's type can be. */
-#define MAX_FLAG_NUM 15				/** @brief The maximum number of possible user and super-user flags on macOS. */
-#define MAX_FLAG_LEN 11				/** @brief The longest flag name on macOS ("uimmutable") + 1. */
+
+/* —————————————————————————————————————————————————————— */
+
+#define MAX_FLAG_COUNT 15	/** The maximum number of possible user and super-user flags on macOS. */
+
+#define FLAG_BASE_NAME_MAX	STRLEN("SF_RESTRICTED")	/** The max len	of a base  flag name (exc `\0`) = `13`. */
+#define FLAG_LONG_NAME_MAX 	STRLEN("restricted")	/** The max len	of a long  flag name (exc `\0`) = `10`. */
+#define FLAG_SHRT_NAME_LEN	STRLEN("restr")			/** The length	of a short flag name (exc `\0`) =  `5`. */
+#define FLAG_TINY_NAME_LEN	STRLEN("rs")			/** The length	of a tiny  flag name (exc `\0`) =  `2`. */
+
+#define FLAG_NAME_MAX_LEN	FLAG_BASE_NAME_MAX		/** The longest flag name len (`SF_RESTRICTED`	= `13`). */
 
 /* —————————————————————————————————————————————————————— */
 

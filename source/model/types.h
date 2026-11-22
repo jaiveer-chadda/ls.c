@@ -140,10 +140,13 @@ typedef char mttyp_t[MNT_TYPE_LEN];		/** `char mttyp_t[MNT_TYPE_LEN]` = 16 */
 typedef char timestr[MAX_TIME_LEN];		/** `char timestr[MAX_TIME_LEN]` = `(1 << 5)` = 32 */
 typedef char ugidstr[MAX_UGID_LEN];		/** `char ugidstr[MAX_UGID_LEN]` = `(1 << 5)` = 32 */
 typedef bool lines_t[RECURSION_LIMIT];	/** `bool lines_t[RECURSION_LIMIT]` = 16 */
-typedef char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]; /** `char flagstr[(MAX_FLAG_LEN + 1) * MAX_FLAG_NUM]` = 180 */
 
-/** `char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")]` = `20 + 6` = 26 */
-typedef char CLIFlag_t[MAX_OPT_FLAG_LEN + sizeof("--do-")];
+/** `char flagstr[(FLAG_NAME_MAX_LEN + 1) * MAX_FLAG_COUNT]` = 210
+ * @note The `+1` is for each of the intermediate commas, and then one more for the nullbyte. */
+typedef char flagstr[(FLAG_NAME_MAX_LEN + 1) * MAX_FLAG_COUNT];
+
+/** `char CLIFlag_t[MAX_OPT_FLAG_LEN + STRLEN("--do-") + 1]` = `20 + 6` = 26 */
+typedef char CLIFlag_t[MAX_OPT_FLAG_LEN + STRLEN("--do-") + 1];
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
