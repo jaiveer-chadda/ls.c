@@ -8,7 +8,8 @@
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_tree(
-	lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last, size_t *const line_len
+	lines_t new_lines, const lines_t lines, const uint8_t depth,
+	const bool is_last, const bool do_branch, size_t *const line_len
 ) {
 	// for depth 0 (the original inputs), there aren't any tree levels to print
 	if (depth == 0) return;
@@ -17,14 +18,14 @@ void print_tree(
 
 	/* ——————————————————————————————————————————————————————————————— */
 
+	static const wchar_t *const vert_str = TREE_VERT;
+	static const size_t vert_str_len = STRLEN(TREE_VERT);
+
 	// print all leading lines
 	for (int level = 0; level < depth - 1; level++) {
 		// add 2 spaces of padding on every level except the 1ˢᵗ one, in which case, add 1
 		const int leading_pad = (level == 0 ? TREE_LV1_PAD : TREE_PAD);
 		putspaces(leading_pad);
-
-		static const wchar_t *const vert_str = TREE_VERT;
-		static const size_t vert_str_len = STRLEN(TREE_VERT);
 
 		if (lines[level] == true) {
 			printf("%ls", vert_str); // print a line if this level needs one
@@ -41,17 +42,23 @@ void print_tree(
 	const int tree_pad = (depth == 1 ? TREE_LV1_PAD : TREE_PAD);
 	putspaces(tree_pad);
 
-	// print `├─` before every file, except the last one, where we print `└─`
-	const wchar_t *const branch_str	= is_last ?		   TREE_CORNER	:		 TREE_BRANCH;
-	const size_t branch_str_len		= is_last ? STRLEN(TREE_CORNER) : STRLEN(TREE_BRANCH);
+	if (do_branch) {
+		// print `├─` before every file, except the last one, where we print `└─`
+		const wchar_t *const branch_str	= is_last ?		   TREE_CORNER	:		 TREE_BRANCH;
+		const size_t branch_str_len		= is_last ? STRLEN(TREE_CORNER) : STRLEN(TREE_BRANCH);
+	
+		static const wchar_t *const horiz_str = TREE_HORI;
+		static const size_t horiz_str_len = STRLEN(TREE_HORI);
+	
+		printf("%ls%ls", branch_str, horiz_str);
+	
+		// incrememt line length
+		if (line_len != NULL) *line_len += tree_pad + branch_str_len + horiz_str_len;
 
-	static const wchar_t *const horiz_str = TREE_HORI;
-	static const size_t horiz_str_len = STRLEN(TREE_HORI);
-
-	printf("%ls%ls", branch_str, horiz_str);
-
-	// incrememt line length
-	if (line_len != NULL) *line_len += tree_pad + branch_str_len + horiz_str_len;
+	} else {
+		printf("%ls", vert_str);
+		if (line_len != NULL) *line_len += vert_str_len;
+	}
 
 	/* ——————————————————————————————————————————————————————————————— */
 

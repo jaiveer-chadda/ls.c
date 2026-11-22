@@ -31,7 +31,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	size_t line_len = getTotalLen() + (do_icon() ? (/*icon*/ 1 + STRLEN(PRE_ICON_PAD)) : 0);
 
 	// after the fields, print the tree stucture
-	print_tree(new_lines, lines, depth, is_last, &line_len);
+	print_tree(new_lines, lines, depth, is_last, PRINT_BRANCH, &line_len);
 
 	// before printing the name, note down the current line length, so we know where the name started
 	//	`+1` so we start at the name's first char, rather than before it

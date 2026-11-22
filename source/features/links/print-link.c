@@ -32,7 +32,7 @@ static inline void print_link_internal(
 			)
 		);
 
-		print_empty_tree_addlen(lines, level, is_last_branch, line_len);
+		print_empty_tree_addlen(lines, level, is_last_branch, PRINT_BRANCH, line_len);
 	}
 
 	/* —— Target Error ———————————————————————————————————————— */

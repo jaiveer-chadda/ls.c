@@ -13,7 +13,7 @@
 bool fileError(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines) {
 	if (pFS->err_no == 0) return false;
 
-	print_empty_tree(new_lines, depth + 1, LAST_TREE_BRANCH);
+	print_empty_tree(new_lines, depth + 1, PRINT_BRANCH, LAST_TREE_BRANCH);
 
 	printf("%s%s[ "
 		/**/	  "%s%s "
@@ -44,7 +44,7 @@ bool fileError(const FileStat *const pFS, const uint8_t depth, const lines_t new
 bool dirEmpty(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines) {
 	if (pFS->f->child_count != 0) return false;
 
-	print_empty_tree(new_lines, depth + 1, LAST_TREE_BRANCH);
+	print_empty_tree(new_lines, depth + 1, PRINT_BRANCH, LAST_TREE_BRANCH);
 
 	printf("%s%s( "
 		/**/	  "%s%s "

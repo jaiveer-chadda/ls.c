@@ -14,16 +14,19 @@
 #define LAST_TREE_BRANCH	 true
 #define NOT_LAST_TREE_BRANCH false
 
+#define PRINT_BRANCH		 true
+#define NO_PRINT_BRANCH		 false
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define print_empty_tree_addlen(lines, depth, is_last, line_len) do {	\
-	putspaces(getTotalLen());											\
-	if ((line_len) != NULL) (*(size_t*)(line_len)) = getTotalLen();		\
-	print_tree(NULL, (lines), (depth), (is_last), (line_len));			\
+#define print_empty_tree_addlen(lines, depth, is_last, do_branch, line_len) do {	\
+	putspaces(getTotalLen());														\
+	if ((line_len) != NULL) (*(size_t*)(line_len)) = getTotalLen();					\
+	print_tree(NULL, (lines), (depth), (is_last), (do_branch), (line_len));			\
 } while (0)
 
-#define print_empty_tree(lines, depth, is_last) \
-	print_empty_tree_addlen(lines, depth, is_last, NULL)
+#define print_empty_tree(lines, depth, is_last, do_branch) \
+	print_empty_tree_addlen(lines, depth, is_last, do_branch, NULL)
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -35,7 +38,8 @@ void printEscdNameLen(const char *const name, const Colour colour, const bool do
 
 void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_last, const lines_t lines);
 void print_tree(
-	lines_t new_lines, const lines_t lines, const uint8_t depth, const bool is_last, size_t *const line_len
+	lines_t new_lines, const lines_t lines, const uint8_t depth,
+	const bool is_last, const bool do_branch, size_t *const line_len
 );
 
 bool  dirEmpty(const FileStat *const pFS, const uint8_t depth, const lines_t new_lines);
