@@ -187,10 +187,12 @@ static inline void checkFirmlink(FileStat *const pFS) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define GET_FLAG_NAME(flag) \
-	(DO_TINY_FLAGS() ? (flag).tiny_name : ( \
-		DO_SHORT_FLAGS() ? (flag).shrt_name : (flag).long_name \
-	))
+#define GET_FLAG_NAME(flag) ( \
+	FLAG_TYPE() == FT_BASE ? (flag).base_name :	\
+	FLAG_TYPE() == FT_LONG ? (flag).long_name :	\
+	FLAG_TYPE() == FT_SHRT ? (flag).shrt_name :	\
+	/**/					 (flag).tiny_name	\
+)
 
 char *parseFlags(FileStat *const pFS) {
 	if (DO_FIRMLINKS()) checkFirmlink(pFS);

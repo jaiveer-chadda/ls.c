@@ -122,11 +122,10 @@ I just assigned flags to them cos there was one available - not cos I want it to
 //							   default		│ short	│ long				│ options
 //							  ──────────────┼───────┼───────────────────┼──────────────────────────
 SortByField SORT_BY (void);	// name			│ 's'	│ "sort"  "sort-by"	│ [see `SortByField`]
+FlagType FLAG_TYPE	(void); // FT_SHRT		│ NSF	│ "flags"			│ "raw", "long", "short", "tiny"
 uint8_t MAX_LINKS	(void);	// MAXSYMLINKS	│ NSF	│ "max-links"		│ 1 -> MAXSYMLINKS
 uint8_t O__DEPTH	(void);	// 1			│ 'L'	│ "depth" "level"	│ 0 -> 16
 bool DO_COLOUR		(void);	// auto			│ NSF	│ "color" "colour"	│ "", "always", "never"
-/**/						// short		│ NSF	│ "flags"			│ "long", "tiny", "short"
-bool DO_TINY_FLAGS(void), DO_SHORT_FLAGS(void); // funcs handled by `--flags`
 
 #define MAX_DEPTH O__DEPTH()
 

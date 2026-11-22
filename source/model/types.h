@@ -171,6 +171,16 @@ typedef enum TimeType {
 
 /* ——————————————————————————————————————————————————— */
 
+typedef enum FlagType {
+	FT_BASE, /** `--flags=raw`	 - Print flags as C-defined raw names	- e.g. `"SF_NOUNLINK"`	- max 13 chars long. */
+	FT_LONG, /** `--flags=long`	 - Print flags as long names			- e.g. `"snounlink"`	- max 10 chars long. */
+	FT_SHRT, /** `--flags=short` - Print flags as short abbreviations	- e.g. `"sunln"`		- all  5 chars long. */
+	FT_TINY, /** `--flags=tiny`	 - Print flags as tiny, 2-char abbrs	- e.g. `"su"`			- all  2 chars long. */
+	FT_COUNT
+} FlagType;
+
+/* ——————————————————————————————————————————————————— */
+
 /**
  * @enum SortByField
  * @brief The fields by which outputs can be sorted, using the `--sort`/`--sort-by` flag.
@@ -196,3 +206,5 @@ typedef enum SortByField {
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 #endif /* !TYPES_H */
+
+// spell:ignore snounlink sunln

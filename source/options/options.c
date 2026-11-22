@@ -15,11 +15,14 @@ static inline void allOptsOn(void), allFieldsOn(void);
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Initialise Options ——————————————————————————————————————————————————————————————————————————————————————————— */
 
-// `U_DO_COLOUR` doesn't need a default - it's the only option that'll will _always_ be set by `setOptions`
-static bool U_DO_COLOUR, U_DO_TINY_FLAGS = false, U_DO_SHORT_FLAGS = true;
-static uint8_t U_DEPTH = 1, U_MAX_LINKS = MAXSYMLINKS;
-static TimeType U_SB_TIME = M_TIME;
-static SortByField U_SORT_BY = SB_DEFAULT;
+/// @note `U_DO_COLOUR` doesn't need a default - it's the only option that'll will _always_ be set by `setOptions`.
+static bool			U_DO_COLOUR;
+
+static uint8_t		U_DEPTH		= 1;
+static uint8_t		U_MAX_LINKS	= MAXSYMLINKS;
+static TimeType		U_SB_TIME	= M_TIME;
+static FlagType		U_FLAG_TYPE	= FT_SHRT;
+static SortByField	U_SORT_BY	= SB_DEFAULT;
 
 #define X(name, default, isfield, setall, s_flag, ...)	\
 	[(BO_ ## name)] = (binopt_t){		\
@@ -319,10 +322,13 @@ int setOptions(const int argc, char *const *const argv) {
 		/* —— --flags ———————————————————————————————————————————————————— */
 
 		if (OPTION_IS("--flags")) {
-			if (OPTARG_IS("long" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = false; CONSUME_ARG; continue; }
-			if (OPTARG_IS("short")) { U_DO_SHORT_FLAGS = true , U_DO_TINY_FLAGS = false; CONSUME_ARG; continue; }
-			if (OPTARG_IS("tiny" )) { U_DO_SHORT_FLAGS = false, U_DO_TINY_FLAGS = true ; CONSUME_ARG; continue; }
-			if (HAS_ARG) ERR_BAD_ARG("long, short, tiny");
+			if (OPTARG_IS("base" ) || OPTARG_IS("raw")) { U_FLAG_TYPE = FT_BASE; CONSUME_ARG; continue; }
+			if (OPTARG_IS("long" )					  ) { U_FLAG_TYPE = FT_LONG; CONSUME_ARG; continue; }
+			if (OPTARG_IS("short")					  ) { U_FLAG_TYPE = FT_SHRT; CONSUME_ARG; continue; }
+			if (OPTARG_IS("tiny" )					  ) { U_FLAG_TYPE = FT_TINY; CONSUME_ARG; continue; }
+
+			if (HAS_ARG) ERR_BAD_ARG("base/raw, long, short (default), tiny");
+
 			// if there's no arg, then match the rest of the other field options, and turn the `flags` field on
 			//	this is similar to `--colour`, except that it changes a binary field instead
 			VALUE_OF(do_flags) = true; continue;
@@ -446,9 +452,7 @@ static inline void allOptsOn(void) {
 	for (binoptidx_t opt_i = 0; opt_i < BINOPT_COUNT; opt_i++) {
 		BINARY_OPTS[opt_i].value = BINARY_OPTS[opt_i].set_all;
 	}
-
-	U_DO_TINY_FLAGS	 = false,
-	U_DO_SHORT_FLAGS = false;
+	U_FLAG_TYPE = FT_BASE;
 }
 
 static inline void allFieldsOn(void) {
@@ -463,11 +467,10 @@ static inline void allFieldsOn(void) {
 
 SortByField SORT_BY	(void) { return U_SORT_BY		; }
 TimeType SORT_TIME	(void) { return U_SB_TIME		; }
+FlagType FLAG_TYPE	(void) { return U_FLAG_TYPE		; }
 uint8_t MAX_LINKS	(void) { return U_MAX_LINKS		; }
 uint8_t O__DEPTH	(void) { return U_DEPTH			; }
 bool DO_COLOUR		(void) { return U_DO_COLOUR		; }
-bool DO_TINY_FLAGS	(void) { return U_DO_TINY_FLAGS	; }
-bool DO_SHORT_FLAGS	(void) { return U_DO_SHORT_FLAGS; }
 
 // create very basic getter functions for each of the binary options
 #define X(name, ...) inline bool name(void) { return VALUE_OF(name); }
