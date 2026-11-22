@@ -260,21 +260,22 @@
 #define NO_FLAG_STR				"-"			/// The string to display if the file doesn't have any flags.
 #define FLAG_SEP_CHR			','			/// The character to display between a file's flags.
 
-#define FL_U_NODUMP				toColour( .fg = G_BRT_GREEN		) // \e[92m
-#define FL_U_IMMUTABLE			toColour( .fg = G_BRT_BLUE		) // \e[94m
-#define FL_U_APPEND				toColour( .fg = G_BRT_YELLOW	) // \e[93m
-#define FL_U_OPAQUE				toColour( .fg = G_BRT_WHITE		) // \e[97m
-#define FL_U_COMPRESSED			toColour( .fg = G_BRT_MAGENTA	) // \e[95m
-#define FL_U_TRACKED			toColour( .fg = G_BRT_RED		) // \e[91m
-#define FL_U_DATAVAULT			toColour( .ST = G_BOLD | G_REV	) // \e[07m
-#define FL_U_HIDDEN				toColour( .ST = G_DIM			) // \e[02m
-#define FL_S_ARCHIVED			toColour( .fg = G_GREEN			) // \e[32m
-#define FL_S_IMMUTABLE			toColour( .fg = G_BLUE			) // \e[34m
-#define FL_S_APPEND				toColour( .fg = G_YELLOW		) // \e[33m
-#define FL_S_RESTRICTED			toColour( .fg = G_RED			) // \e[31m
-#define FL_S_NOUNLINK			toColour( .fg = G_CYAN			) // \e[36m
-#define FL_S_FIRMLINK			toColour( .fg = G_MAGENTA		) // \e[35m
-#define FL_S_DATALESS			HL_DATALESS						  // \e[47m
+#define FLC_UF_NODUMP			toColour( .fg = G_BRT_GREEN		) // \e[92m
+#define FLC_UF_IMMUTABLE		toColour( .fg = G_BRT_BLUE		) // \e[94m
+#define FLC_UF_APPEND			toColour( .fg = G_BRT_YELLOW	) // \e[93m
+#define FLC_UF_OPAQUE			toColour( .fg = G_BRT_WHITE		) // \e[97m
+#define FLC_UF_COMPRESSED		toColour( .fg = G_BRT_MAGENTA	) // \e[95m
+#define FLC_UF_TRACKED			toColour( .fg = G_BRT_RED		) // \e[91m
+#define FLC_UF_DATAVAULT		toColour( .ST = G_BOLD | G_REV	) // \e[07m
+#define FLC_UF_HIDDEN			toColour( .ST = G_DIM			) // \e[02m
+
+#define FLC_SF_ARCHIVED			toColour( .fg = G_GREEN			) // \e[32m
+#define FLC_SF_IMMUTABLE		toColour( .fg = G_BLUE			) // \e[34m
+#define FLC_SF_APPEND			toColour( .fg = G_YELLOW		) // \e[33m
+#define FLC_SF_RESTRICTED		toColour( .fg = G_RED			) // \e[31m
+#define FLC_SF_NOUNLINK			toColour( .fg = G_CYAN			) // \e[36m
+#define FLC_SF_FIRMLINK			toColour( .fg = G_MAGENTA		) // \e[35m
+#define FLC_SF_DATALESS			HL_DATALESS						  // \e[47m
 
 /* —— GitInfo ——————————————————————————————————————————————————————————————— */
 
