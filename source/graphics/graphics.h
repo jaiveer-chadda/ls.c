@@ -7,10 +7,6 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-/* —— —— Helper Macros —— ——————————————————————————————————————————————————— */
-
-#define STRLEN(str) ((size_t)((sizeof((str)) / sizeof((str)[0])) - 1))
-
 /* —— —— Chars & Strings —— ————————————————————————————————————————————————— */
 
 #define FIELD_PAD	L" " /// The spacing between each of the fields/columns listed in long (`-l`) mode.

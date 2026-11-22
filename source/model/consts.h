@@ -9,6 +9,10 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define STRLEN(str) ((size_t)((sizeof((str)) / sizeof((str)[0])) - 1))
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 /** The name of this program - used to print error messages as a fallback, when `argv[0]` can't be parsed correctly. */
 #define PROGRAM_NAME "lk"
 #define DOTDIR "." /** An abbreviation representing the current directory being referenced by the program. */
