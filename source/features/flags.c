@@ -2,7 +2,6 @@
 
 #include <wchar.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "malloc.h"
@@ -18,35 +17,49 @@
 
 typedef struct flagset {
 	flag_t mask;
-	char name[MAX_FLAG_LEN], short_name[6], tiny_name[3];
+
+	char
+	/* FN_BASE */ base_name[STRLEN("SF_RESTRICTED") + 1],	// FLAG_BASE_NAME_MAX
+	/* FN_LONG */ long_name[MAX_FLAG_LEN],					// FLAG_LONG_NAME_MAX
+	/* FN_SHRT */ shrt_name[6],								// FLAG_SHRT_NAME_LEN
+	/* FN_TINY */ tiny_name[3];								// FLAG_TINY_NAME_LEN
+
 	Colour colour;
 } flagset;
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+#define FLAG_TABLE \
+	\
+	X( UF_NODUMP	, "nodump"		, "nodmp", "nd", FL_U_NODUMP	 ), /* do not dump file						 */ \
+	X( UF_IMMUTABLE	, "uimmutable"	, "uimut", "ui", FL_U_IMMUTABLE	 ), /* file may not be changed				 */ \
+	X( UF_APPEND	, "uappend"		, "uapnd", "ua", FL_U_APPEND	 ), /* writes to file may only append		 */ \
+	X( UF_OPAQUE	, "opaque"		, "opque", "op", FL_U_OPAQUE	 ), /* directory is opaque wrt. union		 */ \
+	/* UF_NOUNLINK	, "unounlink"	, "unoul", "uu", FL_U_NOUNLINK	 */ /* [BSD only]							 */ \
+	X( UF_COMPRESSED, "compressed"	, "cmprs", "cm", FL_U_COMPRESSED ), /* file is compressed (some filesystems) */ \
+	X( UF_TRACKED	, "tracked"		, "track", "tr", FL_U_TRACKED	 ), /* used for dealing with document IDs	 */ \
+	X( UF_DATAVAULT	, "datavault"	, "dtvlt", "dv", FL_U_DATAVAULT	 ), /* entitlement req for reading & writing */ \
+	X( UF_HIDDEN	, "hidden"		, "hiddn", "hd", FL_U_HIDDEN	 ), /* this item shouldn't be shown in a GUI */ \
+	\
+	X( SF_ARCHIVED	, "archived"	, "archv", "ar", FL_S_ARCHIVED	 ), /* file is archived						 */ \
+	X( SF_IMMUTABLE	, "simmutable"	, "simut", "si", FL_S_IMMUTABLE	 ), /* file may not be changed				 */ \
+	X( SF_APPEND	, "sappend"		, "sapnd", "sa", FL_S_APPEND	 ), /* writes to file may only append		 */ \
+	X( SF_RESTRICTED, "restricted"	, "restr", "rs", FL_S_RESTRICTED ), /* entitlement required for writing		 */ \
+	X( SF_NOUNLINK	, "snounlink"	, "sunln", "su", FL_S_NOUNLINK	 ), /* can't be rmed, renamed or mounted on	 */ \
+	/* SF_SNAPSHOT	, "snapshot"	, "snaps", "sn", FL_S_SNAPSHOT	 */ /* [BSD only]							 */ \
+	X( SF_FIRMLINK	, "firmlink"	, "firml", "fl", FL_S_FIRMLINK	 ), /* directory is a firmlink				 */ \
+	X( SF_DATALESS	, "dataless"	, "dtles", "dl", FL_S_DATALESS	 ), /* file is dataless object				 */ \
+/**/
+
+#define X(name, ...) { name, #name, __VA_ARGS__ }
 static const flagset ALL_FLAGS[] = {
-	{ UF_NODUMP		, "nodump"		, "nodmp", "nd", FL_U_NODUMP	 }, // do not dump file
-	{ UF_IMMUTABLE	, "uimmutable"	, "uimut", "ui", FL_U_IMMUTABLE	 }, // file may not be changed
-	{ UF_APPEND		, "uappend"		, "uapnd", "ua", FL_U_APPEND	 }, // writes to file may only append
-	{ UF_OPAQUE		, "opaque"		, "opque", "op", FL_U_OPAQUE	 }, // directory is opaque wrt. union
-	{ UF_COMPRESSED	, "compressed"	, "cmprs", "cm", FL_U_COMPRESSED }, // file is compressed (some file-systems)
-	{ UF_TRACKED	, "tracked"		, "track", "tr", FL_U_TRACKED	 }, // used for dealing with document IDs
-	{ UF_DATAVAULT	, "datavault"	, "dtvlt", "dv", FL_U_DATAVAULT	 }, // entitlement needed for reading & writing
-	{ UF_HIDDEN		, "hidden"		, "hiddn", "hd", FL_U_HIDDEN	 }, // this item shouldn't be displayed in a GUI
-
-	{ SF_ARCHIVED	, "archived"	, "archv", "ar", FL_S_ARCHIVED	 }, // file is archived
-	{ SF_IMMUTABLE	, "simmutable"	, "simut", "si", FL_S_IMMUTABLE	 }, // file may not be changed
-	{ SF_APPEND		, "sappend"		, "sapnd", "sa", FL_S_APPEND	 }, // writes to file may only append
-	{ SF_RESTRICTED	, "restricted"	, "restr", "rs", FL_S_RESTRICTED }, // entitlement required for writing
-	{ SF_NOUNLINK	, "snounlink"	, "sunln", "su", FL_S_NOUNLINK	 }, // may not be removed, renamed or mounted on
-	{ SF_FIRMLINK	, "firmlink"	, "firml", "fl", FL_S_FIRMLINK	 }, // directory is a firmlink
-	{ SF_DATALESS	, "dataless"	, "dtles", "dl", FL_S_DATALESS	 }, // file is dataless object
-
-	//UF_NOUNLINK	, "unounlink"	, "unoul", "uu", FL_U_NOUNLINK	 }, // [BSD only]
-	//SF_SNAPSHOT	, "snapshot"	, "snaps", "sn", FL_S_SNAPSHOT	 }, // [BSD only]
+	FLAG_TABLE
 };
+#undef X
 
 #define FLAG_COUNT ((int)(sizeof(ALL_FLAGS) / sizeof(ALL_FLAGS[0])))
+
+static_assert(FLAG_COUNT <= MAX_FLAG_NUM);
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -179,7 +192,7 @@ static inline void checkFirmlink(FileStat *const pFS) {
 
 #define GET_FLAG_NAME(flag) \
 	(DO_TINY_FLAGS() ? (flag).tiny_name : ( \
-		DO_SHORT_FLAGS() ? (flag).short_name : (flag).name \
+		DO_SHORT_FLAGS() ? (flag).shrt_name : (flag).long_name \
 	))
 
 char *parseFlags(FileStat *const pFS) {
