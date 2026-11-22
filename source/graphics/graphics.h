@@ -148,7 +148,7 @@
 #define LOOP_HORI				L"─"
 #define LOOP_ARROW				L"◀"
 
-#define LOOP_TOP_RGT			PRE_LOOP_PAD L"╮"
+#define LOOP_TOP_RGT			PRE_LOOP_PAD L"╮" // ` ╮` or ` ─╮`
 #define LOOP_BOT_RGT			L"╯"
 #define LOOP_BOT_LFT			L"╰" LOOP_HORI LOOP_ARROW
 
@@ -163,11 +163,6 @@ _Static_assert(STRLEN_(LOOP_BOT_RGT) <= STRLEN_(LOOP_TOP_RGT),
 );
 
 #undef STRLEN_
-
-/* —————————————————————————————————————— */
-
-// ╭─╮ ┌─┐
-// ╰─╯ └─┘
 
 /* —— Punctuation ——————————————————————————————————————————————————————————— */
 

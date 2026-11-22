@@ -189,22 +189,15 @@ static inline void print_link_internal(
 void print_link(
 	const FileStat *const pFS, const lines_t lines, const uint8_t level, size_t *const line_len, size_t name_pos
 ) {
-	if (pFS->f == NULL || pFS->f->target == NULL) return;
+	if (pFS->f == NULL) return;
 
-	/// Name Positions.
 	size_t *const name_posits = ecalloc(MAX_LINKS() + 1, sizeof(size_t));
-	memset(name_posits, ((int)(size_t)(-1)), (MAX_LINKS() + 1) * sizeof(size_t));
 	name_posits[0] = name_pos;
 
 	print_link_internal(
 		pFS->f->target, pFS->suffix, pFS->f->targ_err,
 		lines, level + 1, /*depth*/ 1, line_len, name_posits
 	);
-
-	// puts("\33[m");
-	// for (uint8_t i = 0; name_posits[i] != (size_t)(-1); i++) {
-	// 	printf("%*s↑", (int)(name_posits[i] - (i ? name_posits[i-1] : 0)) - 1, "");
-	// }
 
 	efree((void*)name_posits);
 }
