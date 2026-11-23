@@ -14,7 +14,8 @@
 
 static inline void print_link_internal(
 	const TargetInfo *const file, const suff_t suffix, const error_t err_no,
-	const lines_t lines, const uint8_t level, const uint8_t depth, size_t *const line_len, size_t *const name_posits
+	const lines_t lines, const uint8_t level, const uint8_t depth, const bool parent_is_last,
+	size_t *const name_posits, size_t *const line_len
 ) {
 	if (file == NULL && suffix != SYMLINK_SUFFIX) return;
 
@@ -87,7 +88,7 @@ static inline void print_link_internal(
 		printf("%s%ls\n", getcol(PUNCT), LOOP_TOP_RGT);
 
 		size_t tree_width = 0;
-		print_empty_tree_addlen(lines, level - 1, NULL, NO_PRINT_BRANCH, &tree_width);
+		print_empty_tree_addlen(lines, level - 1, parent_is_last, NO_PRINT_BRANCH, &tree_width);
 
 		const int tree_arrow_pad = (
 			name_posits[file->loop_to]
@@ -177,7 +178,8 @@ static inline void print_link_internal(
 		//	since the subsequent links will all be printed on the same level
 		print_link_internal(
 			file->target, file->suffix, file->targ_err,
-			lines, level, depth + 1, line_len, name_posits
+			lines, level, depth + 1, parent_is_last,
+			name_posits, line_len
 		);
 	}
 
@@ -187,7 +189,9 @@ static inline void print_link_internal(
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 void print_link(
-	const FileStat *const pFS, const lines_t lines, const uint8_t level, size_t *const line_len, size_t name_pos
+	const FileStat *const pFS,
+	const lines_t lines, const uint8_t level, const bool parent_is_last,
+	const size_t name_pos, size_t *const line_len
 ) {
 	if (pFS->f == NULL) return;
 
@@ -196,7 +200,8 @@ void print_link(
 
 	print_link_internal(
 		pFS->f->target, pFS->suffix, pFS->f->targ_err,
-		lines, level + 1, /*depth*/ 1, line_len, name_posits
+		lines, level + 1, /*depth*/ 1, parent_is_last,
+		name_posits, line_len
 	);
 
 	efree((void*)name_posits);

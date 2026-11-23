@@ -30,7 +30,9 @@ void print_name	(const	FileStat *const pFS	 , size_t *const line_len);
 void print_mount(const MountInfo *const mount, size_t *const line_len);
 
 void print_link(
-	const FileStat *const pFS, const lines_t lines, const uint8_t depth, size_t *const line_len, const size_t name_pos
+	const FileStat *const pFS,
+	const lines_t lines, const uint8_t level, const bool parent_is_last,
+	const size_t name_pos, size_t *const line_len
 );
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */

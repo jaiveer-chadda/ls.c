@@ -56,7 +56,9 @@ void print_tree(
 		if (line_len != NULL) *line_len += tree_pad + branch_str_len + horiz_str_len;
 
 	} else {
-		printf("%ls", vert_str);
+		if (!is_last) printf("%ls", vert_str);
+		else putspaces(vert_str_len);
+
 		if (line_len != NULL) *line_len += tree_pad + vert_str_len;
 	}
 

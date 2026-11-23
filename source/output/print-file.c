@@ -42,7 +42,7 @@ void printFile(const FileStat *const pFS, const uint8_t depth, const bool is_las
 	print_name(pFS, &line_len);
 	print_suff(pFS, &line_len);
 
-	print_link(pFS, new_lines, depth, &line_len, name_pos); // print targets of links
+	print_link(pFS, new_lines, depth, is_last, name_pos, &line_len); // print targets of links
 	if (pFS->f != NULL) print_mount(pFS->f->mount, &line_len); // print info about mounted filesystems
 
 	// make sure that no colours leak past the end of the line
