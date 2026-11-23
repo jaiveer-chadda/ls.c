@@ -46,9 +46,7 @@
 
 	void checkMemLeak(void) {
 		if (freed_count == alloc_count) {
-			debug(SUCCESS, "likely no memory leak - times alloced = %zu, times freed = %zu (%lc = %zd)",
-				alloc_count, freed_count, DIFF
-			);
+			debug(SUCCESS, "no mem leak - count = %zu", alloc_count);
 			return;
 		}
 
