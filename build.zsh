@@ -155,7 +155,10 @@ function -- () {
   if [[ "$mode" == 'debug' ]] {
     if (( alloc_dbg )) DEFINITIONS+=( DEBUG_ALLOCATIONS )
 
-    DEFINITIONS+=( DEBUG_MODE )
+    DEFINITIONS+=(
+      PROJ_ROOT="\"$_proj_root\""
+      DEBUG_MODE
+    )
     UNDEFINE+=( NDEBUG )
 
   } elif [[ "$mode" == 'prod' ]] {
