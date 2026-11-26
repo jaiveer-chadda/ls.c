@@ -11,6 +11,7 @@
 //		- _ underscores
 //		- _. both
 //	- have a way to specify escape codes (\n, \r, \x1b, etc.)
+//	- [maybe] add the ability to define glob patterns
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Default Icons ———————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -69,7 +70,7 @@ const Icon DIRNAME_ICONS[] = {
 	{ "apps"			, IC_APPLICATIONS	}, // 
 	{ "archive"			, IC_ARCHIVE		}, // 󱝏
 	{ "archives"		, IC_ARCHIVE		}, // 󱝏
-	{ "bash"			, IC_BASH 			}, // 
+	{ "bash"			, IC_LANG_BASH			}, // 
 	{ "bin"				, IC_BINARY			}, // 
 	{ "bottom"			, IC_TOP 			}, // 󰨇
 	{ "bpytop"			, IC_TOP 			}, // 󰨇
@@ -192,7 +193,7 @@ const Icon DIRNAME_ICONS[] = {
 	{ "xorg.conf.d"		, IC_FOLDER_CONFIG	}, // 
 	{ "y_settings_etc"	, IC_GEAR 			}, // 
 	{ "z_other"			, IC_ARCHIVE 		}, // 󱝏
-	{ "zsh"				, IC_ZSH	 		}, // 
+	{ "zsh"				, IC_LANG_ZSH 		}, // 
 
 	END_OF_ICONS
 };
@@ -220,11 +221,11 @@ const Icon FILENAME_ICONS[] = {
 
 	{ ".aliases"					, IC_SHELL				}, // 󱆃
 	{ ".atom"						, IC_ATOM				}, // 
-	{ ".bash_aliases"				, IC_BASH				}, // 
-	{ ".bash_history"				, IC_BASH				}, // 
-	{ ".bash_logout"				, IC_BASH				}, // 
-	{ ".bash_profile"				, IC_BASH				}, // 
-	{ ".bashrc"						, IC_BASH				}, // 
+	{ ".bash_aliases"				, IC_LANG_BASH			}, // 
+	{ ".bash_history"				, IC_LANG_BASH			}, // 
+	{ ".bash_logout"				, IC_LANG_BASH			}, // 
+	{ ".bash_profile"				, IC_LANG_BASH			}, // 
+	{ ".bashrc"						, IC_LANG_BASH			}, // 
 	{ ".cfusertextencoding"			, IC_TRANSLATION		}, // 󰗊
 	{ ".clang-format"				, IC_CONFIG				}, // 󱁻
 	{ ".clang-tidy"					, IC_CONFIG				}, // 󱁻
@@ -248,8 +249,8 @@ const Icon FILENAME_ICONS[] = {
 	{ ".git-blame-ignore-revs"		, IC_GIT				}, // 󰊢
 	{ ".gitattributes"				, IC_GIT				}, // 󰊢
 	{ ".gitconfig"					, IC_GIT				}, // 󰊢
-	{ ".gitignore"					, IC_GIT				}, // 󰊢
 	{ ".gitignore_global"			, IC_GIT				}, // 󰊢
+	{ ".gitignore"					, IC_GIT				}, // 󰊢
 	{ ".gitlab-ci.yml"				, IC_GITLAB				}, // 
 	{ ".gitmodules"					, IC_GIT				}, // 󰊢
 	{ ".gtkrc-2.0"					, IC_GRUNT				}, // 
@@ -260,6 +261,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".ideavimrc"					, IC_VIM				}, // 
 	{ ".inputrc"					, IC_CONFIG				}, // 󱁻
 	{ ".kshrc"						, IC_KORN				}, // 󰞸
+	{ ".lesshst"					, IC_LESS				}, // 
 	{ ".localized"					, IC_TRANSLATION		}, // 󰗊
 	{ ".login"						, IC_SHELL				}, // 󱆃
 	{ ".logout"						, IC_SHELL				}, // 󱆃
@@ -275,18 +277,19 @@ const Icon FILENAME_ICONS[] = {
 	{ ".parentlock"					, IC_LOCK				}, // 
 	{ ".pre-commit-config.yaml"		, IC_HOOK				}, // 󰛢
 	{ ".prettierignore"				, IC_PRETTIER			}, // 
-	{ ".prettierrc"					, IC_PRETTIER			}, // 
 	{ ".prettierrc.json"			, IC_PRETTIER			}, // 
 	{ ".prettierrc.json5"			, IC_PRETTIER			}, // 
 	{ ".prettierrc.toml"			, IC_PRETTIER			}, // 
 	{ ".prettierrc.yaml"			, IC_PRETTIER			}, // 
 	{ ".prettierrc.yml"				, IC_PRETTIER			}, // 
+	{ ".prettierrc"					, IC_PRETTIER			}, // 
 	{ ".profile"					, IC_SHELL				}, // 󱆃
 	{ ".pylintrc"					, IC_CONFIG				}, // 󱁻
 	{ ".python_history"				, IC_LANG_PYTHON		}, // 
 	{ ".rustfmt.toml"				, IC_LANG_RUST			}, // 
 	{ ".rvm"						, IC_LANG_RUBY			}, // 
 	{ ".rvmrc"						, IC_LANG_RUBY			}, // 
+	{ ".sh_history"					, IC_SHELL				}, // 󱆃
 	{ ".srcinfo"					, IC_ARCHBTW			}, // 
 	{ ".stowrc"						, IC_STOW				}, // 
 	{ ".tcshrc"						, IC_SHELL				}, // 󱆃
@@ -298,14 +301,13 @@ const Icon FILENAME_ICONS[] = {
 	{ ".xresources"					, IC_XORG				}, // 
 	{ ".xsession"					, IC_XORG				}, // 
 	{ ".yarnrc"						, IC_YARN				}, // 
-	{ ".zlogin"						, IC_ZSH				}, // 
-	{ ".zlogout"					, IC_ZSH				}, // 
-	{ ".zprofile"					, IC_ZSH				}, // 
-	{ ".zsh_history"				, IC_ZSH				}, // 
-	{ ".zsh_sessions"				, IC_ZSH				}, // 
-	{ ".zshenv"						, IC_ZSH				}, // 
-	{ ".zshrc"						, IC_ZSH				}, // 
-	{ ".sh_history"					, IC_SHELL				}, // 󱆃
+	{ ".zlogin"						, IC_LANG_ZSH			}, // 
+	{ ".zlogout"					, IC_LANG_ZSH			}, // 
+	{ ".zprofile"					, IC_LANG_ZSH			}, // 
+	{ ".zsh_history"				, IC_LANG_ZSH			}, // 
+	{ ".zsh_sessions"				, IC_LANG_ZSH			}, // 
+	{ ".zshenv"						, IC_LANG_ZSH			}, // 
+	{ ".zshrc"						, IC_LANG_ZSH			}, // 
 
 	{ "__init__.py"					, IC_INIT_PY			}, // 
 	{ "_gvimrc"						, IC_VIM				}, // 
@@ -315,13 +317,13 @@ const Icon FILENAME_ICONS[] = {
 	{ "authorized_keys"				, IC_SSH_LOGO			}, // 󰣀
 	{ "authors"						, IC_PEOPLE				}, // 
 	{ "authors.txt"					, IC_PEOPLE				}, // 
-	{ "bashrc"						, IC_BASH				}, // 
+	{ "bashrc"						, IC_LANG_BASH			}, // 
 	{ "bookmark"					, IC_BOOKMARK			}, // 󰃀
 	{ "brewfile"					, IC_HOMEBREW			}, // 󱄖
 	{ "brewfile.lock.json"			, IC_HOMEBREW			}, // 󱄖
 	{ "bspwmrc"						, IC_BSPWM				}, // 
 	{ "build.gradle.kts"			, IC_GRADLE				}, // 
-	{ "build.zig.zon"				, IC_ZIG				}, // 
+	{ "build.zig.zon"				, IC_LANG_ZIG			}, // 
 	{ "bun.lockb"					, IC_BUN				}, // 
 	{ "cantorrc"					, IC_KDE				}, // 
 	{ "cargo.lock"					, IC_LANG_RUST			}, // 
@@ -494,11 +496,11 @@ const Icon FILENAME_ICONS[] = {
 	{ "xorg.conf"					, IC_XORG				}, // 
 	{ "xsettingsd.conf"				, IC_XORG				}, // 
 	{ "yarn.lock"					, IC_YARN				}, // 
-	{ "zlogin"						, IC_ZSH				}, // 
-	{ "zlogout"						, IC_ZSH				}, // 
-	{ "zprofile"					, IC_ZSH				}, // 
-	{ "zshenv"						, IC_ZSH				}, // 
-	{ "zshrc"						, IC_ZSH				}, // 
+	{ "zlogin"						, IC_LANG_ZSH			}, // 
+	{ "zlogout"						, IC_LANG_ZSH			}, // 
+	{ "zprofile"					, IC_LANG_ZSH			}, // 
+	{ "zshenv"						, IC_LANG_ZSH			}, // 
+	{ "zshrc"						, IC_LANG_ZSH			}, // 
 
 	END_OF_ICONS
 };
@@ -557,6 +559,133 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "3mf"				, IC_FILE_3D		}, // 󰆧
 	{ "7z"				, IC_COMPRESSED		}, // 
 
+	{ "asm"				, IC_LANG_ASSEMBLY	}, // 
+	{ "bash"			, IC_LANG_BASH		}, // 
+	{ "bib"				, IC_LANG_TEX		}, // 
+	{ "bst"				, IC_LANG_TEX		}, // 
+	{ "c"				, IC_LANG_C			}, // 
+	{ "c++"				, IC_LANG_CPP		}, // 
+	{ "cc"				, IC_LANG_CPP		}, // 
+	{ "cjs"				, IC_LANG_JSCPT		}, // 
+	{ "class"			, IC_LANG_JAVA		}, // 
+	{ "cls"				, IC_LANG_TEX		}, // 
+	{ "cp"				, IC_LANG_CPP		}, // 
+	{ "cpp"				, IC_LANG_CPP		}, // 
+	{ "cs"				, IC_LANG_CSHARP	}, // 󰌛
+	{ "csproj"			, IC_LANG_CSHARP	}, // 󰌛
+	{ "csx"				, IC_LANG_CSHARP	}, // 󰌛
+	{ "cts"				, IC_LANG_TSCPT		}, // 
+	{ "cxx"				, IC_LANG_CPP		}, // 
+	{ "d"				, IC_LANG_D			}, // 
+	{ "di"				, IC_LANG_D			}, // 
+	{ "eex"				, IC_LANG_ELIXIR	}, // 
+	{ "erb"				, IC_LANG_RBRAILS	}, // 
+	{ "ex"				, IC_LANG_ELIXIR	}, // 
+	{ "exs"				, IC_LANG_ELIXIR	}, // 
+	{ "f"				, IC_LANG_FORTRAN	}, // 󱈚
+	{ "f#"				, IC_LANG_FSHARP	}, // 
+	{ "f90"				, IC_LANG_FORTRAN	}, // 󱈚
+	{ "fnl"				, IC_LANG_FENNEL	}, // 
+	{ "for"				, IC_LANG_FORTRAN	}, // 󱈚
+	{ "fs"				, IC_LANG_FSHARP	}, // 
+	{ "fsi"				, IC_LANG_FSHARP	}, // 
+	{ "fsproj"			, IC_LANG_FSHARP	}, // 
+	{ "fsscript"		, IC_LANG_FSHARP	}, // 
+	{ "fsx"				, IC_LANG_FSHARP	}, // 
+	{ "gem"				, IC_LANG_RUBY		}, // 
+	{ "gemfile"			, IC_LANG_RUBY		}, // 
+	{ "gemspec"			, IC_LANG_RUBY		}, // 
+	{ "gleam"			, IC_LANG_GLEAM		}, // 󰦥
+	{ "go"				, IC_LANG_GO		}, // 
+	{ "groovy"			, IC_LANG_GROOVY	}, // 
+	{ "guardfile"		, IC_LANG_RUBY		}, // 
+	{ "gvy"				, IC_LANG_GROOVY	}, // 
+	{ "h"				, IC_LANG_C_HEADER	}, // 
+	{ "h++"				, IC_LANG_CPP		}, // 
+	{ "hc"				, IC_LANG_HOLYC		}, // 󰂢
+	{ "hh"				, IC_LANG_CPP		}, // 
+	{ "hpp"				, IC_LANG_CPP		}, // 
+	{ "hs"				, IC_LANG_HASKELL	}, // 
+	{ "hxx"				, IC_LANG_CPP		}, // 
+	{ "inl"				, IC_LANG_C			}, // 
+	{ "ino"				, IC_LANG_ARDUINO	}, // 
+	{ "jad"				, IC_LANG_JAVA		}, // 
+	{ "jar"				, IC_LANG_JAVA		}, // 
+	{ "java"			, IC_LANG_JAVA		}, // 
+	{ "js"				, IC_LANG_JSCPT		}, // 
+	{ "kt"				, IC_LANG_KOTLIN	}, // 
+	{ "kts"				, IC_LANG_KOTLIN	}, // 
+	{ "latex"			, IC_LANG_TEX		}, // 
+	{ "leex"			, IC_LANG_ELIXIR	}, // 
+	{ "lhs"				, IC_LANG_HASKELL	}, // 
+	{ "ltx"				, IC_LANG_TEX		}, // 
+	{ "lua"				, IC_LANG_LUA		}, // 
+	{ "luac"			, IC_LANG_LUA		}, // 
+	{ "luau"			, IC_LANG_LUA		}, // 
+	{ "m"				, IC_LANG_C			}, // 
+	{ "mjs"				, IC_LANG_JSCPT		}, // 
+	{ "ml"				, IC_LANG_OCAML		}, // 
+	{ "mli"				, IC_LANG_OCAML		}, // 
+	{ "mll"				, IC_LANG_OCAML		}, // 
+	{ "mly"				, IC_LANG_OCAML		}, // 
+	{ "mm"				, IC_LANG_CPP		}, // 
+	{ "mts"				, IC_LANG_TSCPT		}, // 
+	{ "nim"				, IC_LANG_NIM		}, // 
+	{ "nimble"			, IC_LANG_NIM		}, // 
+	{ "nims"			, IC_LANG_NIM		}, // 
+	{ "phar"			, IC_LANG_PHP		}, // 
+	{ "php"				, IC_LANG_PHP		}, // 
+	{ "pl"				, IC_LANG_PERL		}, // 
+	{ "plx"				, IC_LANG_PERL		}, // 
+	{ "pm"				, IC_LANG_PERL		}, // 
+	{ "pod"				, IC_LANG_PERL		}, // 
+	{ "procfile"		, IC_LANG_RUBY		}, // 
+	{ "pxd"				, IC_LANG_PYTHON	}, // 
+	{ "py"				, IC_LANG_PYTHON	}, // 
+	{ "pyc"				, IC_LANG_PYTHON	}, // 
+	{ "pyd"				, IC_LANG_PYTHON	}, // 
+	{ "pyi"				, IC_LANG_PYTHON	}, // 
+	{ "pyo"				, IC_LANG_PYTHON	}, // 
+	{ "pyw"				, IC_LANG_PYTHON	}, // 
+	{ "pyx"				, IC_LANG_PYTHON	}, // 
+	{ "r"				, IC_LANG_R			}, // 
+	{ "rake"			, IC_LANG_RUBY		}, // 
+	{ "rakefile"		, IC_LANG_RUBY		}, // 
+	{ "rb"				, IC_LANG_RUBY		}, // 
+	{ "rdata"			, IC_LANG_R			}, // 
+	{ "rds"				, IC_LANG_R			}, // 
+	{ "rkt"				, IC_LANG_SCHEME	}, // 
+	{ "rlib"			, IC_LANG_RUST		}, // 
+	{ "rmeta"			, IC_LANG_RUST		}, // 
+	{ "rs"				, IC_LANG_RUST		}, // 
+	{ "rspec_parallel"	, IC_LANG_RUBY		}, // 
+	{ "rspec_status"	, IC_LANG_RUBY		}, // 
+	{ "rspec"			, IC_LANG_RUBY		}, // 
+	{ "ru"				, IC_LANG_RUBY		}, // 
+	{ "rubydoc"			, IC_LANG_RBRAILS	}, // 
+	{ "s"				, IC_LANG_ASSEMBLY	}, // 
+	{ "sass"			, IC_LANG_SASS		}, // 
+	{ "scm"				, IC_LANG_SCHEME	}, // 
+	{ "scss"			, IC_LANG_SASS		}, // 
+	{ "sld"				, IC_LANG_SCHEME	}, // 
+	{ "slim"			, IC_LANG_RBRAILS	}, // 
+	{ "ss"				, IC_LANG_SCHEME	}, // 
+	{ "sty"				, IC_LANG_TEX		}, // 
+	{ "styl"			, IC_LANG_STYLUS	}, // 
+	{ "stylus"			, IC_LANG_STYLUS	}, // 
+	{ "sv"				, IC_LANG_HDL		}, // 󰍛
+	{ "svh"				, IC_LANG_HDL		}, // 󰍛
+	{ "t"				, IC_LANG_PERL		}, // 
+	{ "tex"				, IC_LANG_TEX		}, // 
+	{ "ts"				, IC_LANG_TSCPT		}, // 
+	{ "v"				, IC_LANG_V			}, // 
+	{ "vhdl"			, IC_LANG_HDL		}, // 󰍛
+	{ "war"				, IC_LANG_JAVA		}, // 
+	{ "whl"				, IC_LANG_PYTHON	}, // 
+	{ "zig"				, IC_LANG_ZIG		}, // 
+	{ "zsh-theme"		, IC_LANG_ZSH		}, // 
+	{ "zsh"				, IC_LANG_ZSH		}, // 
+
 	{ "a"				, IC_OS_LINUX		}, // 
 	{ "aac"				, IC_AUDIO			}, // 
 	{ "acf"				, IC_ACF			}, // 
@@ -576,7 +705,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "arj"				, IC_COMPRESSED		}, // 
 	{ "arw"				, IC_IMAGE			}, // 
 	{ "asc"				, IC_SHIELD_LOCK	}, // 󰦝
-	{ "asm"				, IC_LANG_ASSEMBLY	}, // 
 	{ "asp"				, IC_ASP			}, // 
 	{ "ass"				, IC_SUBTITLE		}, // 󰨖
 	{ "aup"				, IC_AUDIO_FILE		}, // 󰈣
@@ -586,11 +714,9 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "avro"			, IC_JSON			}, // 
 	{ "awk"				, IC_SHELL_CMD		}, // 󰆍
 	{ "bak"				, IC_BACKUP_FILE	}, // 󰁯
-	{ "bash"			, IC_BASH			}, // 
 	{ "bat"				, IC_OS_WINDOWS_CMD	}, // 
 	{ "bats"			, IC_SHELL_CMD		}, // 󰆍
 	{ "bdf"				, IC_FONT			}, // 
-	{ "bib"				, IC_LANG_TEX		}, // 
 	{ "bin"				, IC_BINARY			}, // 
 	{ "bkp"				, IC_BACKUP_FILE	}, // 󰁯
 	{ "blend"			, IC_BLEND			}, // 󰂫
@@ -598,13 +724,10 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "br"				, IC_COMPRESSED		}, // 
 	{ "brd"				, IC_EDA_PCB		}, // 
 	{ "brep"			, IC_CAD			}, // 󰻫
-	{ "bst"				, IC_LANG_TEX		}, // 
 	{ "bundle"			, IC_OS_APPLE		}, // 
 	{ "bz"				, IC_COMPRESSED		}, // 
 	{ "bz2"				, IC_COMPRESSED		}, // 
 	{ "bz3"				, IC_COMPRESSED		}, // 
-	{ "c"				, IC_LANG_C			}, // 
-	{ "c++"				, IC_LANG_CPP		}, // 
 	{ "cab"				, IC_OS_WINDOWS		}, // 
 	{ "cache"			, IC_CACHE			}, // 
 	{ "cast"			, IC_VIDEOS			}, // 
@@ -612,15 +735,11 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "catproduct"		, IC_CAD			}, // 󰻫
 	{ "cbr"				, IC_IMAGE			}, // 
 	{ "cbz"				, IC_IMAGE			}, // 
-	{ "cc"				, IC_LANG_CPP		}, // 
 	{ "cert"			, IC_GIST_SECRET	}, // 
 	{ "cfg"				, IC_CONFIG			}, // 󱁻
-	{ "cjs"				, IC_LANG_JSCPT		}, // 
-	{ "class"			, IC_LANG_JAVA		}, // 
 	{ "clj"				, IC_CLOJURE_1		}, // 
 	{ "cljc"			, IC_CLOJURE_1		}, // 
 	{ "cljs"			, IC_CLOJURE_2		}, // 
-	{ "cls"				, IC_LANG_TEX		}, // 
 	{ "cmake"			, IC_CMAKE			}, // 
 	{ "cmd"				, IC_OS_WINDOWS		}, // 
 	{ "coffee"			, IC_COFFEE			}, // 
@@ -629,25 +748,17 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "conf"			, IC_CONFIG			}, // 󱁻
 	{ "config"			, IC_CONFIG			}, // 󱁻
 	{ "cow"				, IC_COW			}, // 󰆚
-	{ "cp"				, IC_LANG_CPP		}, // 
 	{ "cpio"			, IC_COMPRESSED		}, // 
-	{ "cpp"				, IC_LANG_CPP		}, // 
 	{ "cr"				, IC_CR				}, // 
 	{ "cr2"				, IC_IMAGE			}, // 
 	{ "crdownload"		, IC_DOWNLOAD		}, // 󰇚
 	{ "crt"				, IC_GIST_SECRET	}, // 
-	{ "cs"				, IC_LANG_CSHARP	}, // 󰌛
 	{ "csh"				, IC_SHELL_CMD		}, // 󰆍
 	{ "cshtml"			, IC_RAZOR			}, // 
-	{ "csproj"			, IC_LANG_CSHARP	}, // 󰌛
 	{ "css"				, IC_CSS3			}, // 
 	{ "csv"				, IC_CSV			}, // 
-	{ "csx"				, IC_LANG_CSHARP	}, // 󰌛
-	{ "cts"				, IC_LANG_TSCPT		}, // 
 	{ "cu"				, IC_CU				}, // 
 	{ "cue"				, IC_PLAYLIST		}, // 󰲹
-	{ "cxx"				, IC_LANG_CPP		}, // 
-	{ "d"				, IC_LANG_D			}, // 
 	{ "dart"			, IC_DART			}, // 
 	{ "dat"				, IC_DATA			}, // 󱔼
 	{ "db"				, IC_DATABASE		}, // 
@@ -655,7 +766,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "dconf"			, IC_DATABASE		}, // 
 	{ "deb"				, IC_DEB			}, // 
 	{ "desktop"			, IC_DESKTOP_EXT	}, // 
-	{ "di"				, IC_LANG_D			}, // 
 	{ "dic"				, IC_BOOK			}, // 
 	{ "diff"			, IC_DIFF			}, // 
 	{ "djv"				, IC_DOCUMENT		}, // 
@@ -680,7 +790,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "ebuild"			, IC_EBUILD			}, // 
 	{ "editorconfig"	, IC_EDITORCONFIG	}, // 
 	{ "edn"				, IC_CLOJURE_2		}, // 
-	{ "eex"				, IC_LANG_ELIXIR	}, // 
 	{ "ejs"				, IC_EJS			}, // 
 	{ "el"				, IC_EMACS			}, // 
 	{ "elc"				, IC_EMACS			}, // 
@@ -691,17 +800,11 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "eot"				, IC_FONT			}, // 
 	{ "eps"				, IC_VECTOR			}, // 󰜡
 	{ "epub"			, IC_BOOK			}, // 
-	{ "erb"				, IC_LANG_RBRAILS	}, // 
 	{ "erl"				, IC_ERLANG			}, // 
-	{ "ex"				, IC_LANG_ELIXIR	}, // 
 	{ "exc"				, IC_EXTRACT		}, // 󰆸
 	{ "exe"				, IC_OS_WINDOWS_CMD	}, // 
-	{ "exs"				, IC_LANG_ELIXIR	}, // 
-	{ "f"				, IC_LANG_FORTRAN	}, // 󱈚
-	{ "f#"				, IC_LANG_FSHARP	}, // 
 	{ "f3d"				, IC_CAD			}, // 󰻫
 	{ "f3z"				, IC_CAD			}, // 󰻫
-	{ "f90"				, IC_LANG_FORTRAN	}, // 󱈚
 	{ "fbx"				, IC_FILE_3D		}, // 󰆧
 	{ "fcbak"			, IC_FREECAD		}, // 
 	{ "fcmacro"			, IC_FREECAD		}, // 
@@ -719,7 +822,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "flc"				, IC_FONT			}, // 
 	{ "flf"				, IC_FONT			}, // 
 	{ "flv"				, IC_VIDEOS			}, // 
-	{ "fnl"				, IC_LANG_FENNEL	}, // 
 	{ "fnt"				, IC_FONT			}, // 
 	{ "fodg"			, IC_ODG			}, // 
 	{ "fodp"			, IC_ODP			}, // 
@@ -727,12 +829,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "fodt"			, IC_ODT			}, // 
 	{ "fon"				, IC_FONT			}, // 
 	{ "font"			, IC_FONT			}, // 
-	{ "for"				, IC_LANG_FORTRAN	}, // 󱈚
-	{ "fs"				, IC_LANG_FSHARP	}, // 
-	{ "fsi"				, IC_LANG_FSHARP	}, // 
-	{ "fsproj"			, IC_LANG_FSHARP	}, // 
-	{ "fsscript"		, IC_LANG_FSHARP	}, // 
-	{ "fsx"				, IC_LANG_FSHARP	}, // 
 	{ "gba"				, IC_GBA			}, // 󱎓
 	{ "gbl"				, IC_EDA_PCB		}, // 
 	{ "gbo"				, IC_EDA_PCB		}, // 
@@ -742,17 +838,12 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "gcode"			, IC_GCODE			}, // 󰫴
 	{ "gd"				, IC_GODOT			}, // 
 	{ "gdoc"			, IC_DOCUMENT		}, // 
-	{ "gem"				, IC_LANG_RUBY		}, // 
-	{ "gemfile"			, IC_LANG_RUBY		}, // 
-	{ "gemspec"			, IC_LANG_RUBY		}, // 
 	{ "gform"			, IC_GFORM			}, // 
 	{ "gif"				, IC_IMAGE			}, // 
 	{ "git"				, IC_GIT			}, // 󰊢
 	{ "glade"			, IC_UI_GLADE		}, // 󰹑
-	{ "gleam"			, IC_LANG_GLEAM		}, // 󰦥
 	{ "gm1"				, IC_EDA_PCB		}, // 
 	{ "gml"				, IC_EDA_PCB		}, // 
-	{ "go"				, IC_LANG_GO		}, // 
 	{ "godot"			, IC_GODOT			}, // 
 	{ "gpg"				, IC_SHIELD_LOCK	}, // 󰦝
 	{ "gpl"				, IC_PALETTE		}, // 󰏘
@@ -760,7 +851,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "gradle"			, IC_GRADLE			}, // 
 	{ "graphql"			, IC_GRAPHQL		}, // 
 	{ "gresource"		, IC_GTK			}, // 
-	{ "groovy"			, IC_LANG_GROOVY	}, // 
 	{ "gs2"				, IC_FONTFORGE		}, // 
 	{ "gsheet"			, IC_SHEET			}, // 
 	{ "gslides"			, IC_SLIDE			}, // 
@@ -768,28 +858,19 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "gto"				, IC_EDA_PCB		}, // 
 	{ "gtp"				, IC_EDA_PCB		}, // 
 	{ "gts"				, IC_EDA_PCB		}, // 
-	{ "guardfile"		, IC_LANG_RUBY		}, // 
 	{ "gv"				, IC_GRAPH			}, // 󱁉
-	{ "gvy"				, IC_LANG_GROOVY	}, // 
 	{ "gz"				, IC_COMPRESSED		}, // 
-	{ "h"				, IC_LANG_C_HEADER	}, // 
-	{ "h++"				, IC_LANG_CPP		}, // 
 	{ "h264"			, IC_VIDEOS			}, // 
 	{ "haml"			, IC_HAML			}, // 
 	{ "hbs"				, IC_MUSTACHE		}, // 
-	{ "hc"				, IC_LANG_HOLYC		}, // 󰂢
 	{ "heic"			, IC_IMAGE			}, // 
 	{ "heics"			, IC_VIDEOS			}, // 
 	{ "heif"			, IC_IMAGE			}, // 
 	{ "hex"				, IC_HEX			}, // 󱊧
-	{ "hh"				, IC_LANG_CPP		}, // 
 	{ "hi"				, IC_BINARY			}, // 
-	{ "hpp"				, IC_LANG_CPP		}, // 
 	{ "hrl"				, IC_ERLANG			}, // 
-	{ "hs"				, IC_LANG_HASKELL	}, // 
 	{ "htm"				, IC_HTML5			}, // 
 	{ "html"			, IC_HTML5			}, // 
-	{ "hxx"				, IC_LANG_CPP		}, // 
 	{ "iam"				, IC_CAD			}, // 󰻫
 	{ "ical"			, IC_CALENDAR		}, // 
 	{ "icalendar"		, IC_CALENDAR		}, // 
@@ -807,17 +888,12 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "in"				, IC_FIFO_EXT		}, // 󰟥
 	{ "info"			, IC_INFO			}, // 
 	{ "ini"				, IC_CONFIG			}, // 󱁻
-	{ "inl"				, IC_LANG_C			}, // 
-	{ "ino"				, IC_LANG_ARDUINO	}, // 
 	{ "inx"				, IC_XPI			}, // 
 	{ "ipt"				, IC_CAD			}, // 󰻫
 	{ "ipynb"			, IC_NOTEBOOK		}, // 
 	{ "iso"				, IC_DISK_IMAGE		}, // 
 	{ "j2c"				, IC_IMAGE			}, // 
 	{ "j2k"				, IC_IMAGE			}, // 
-	{ "jad"				, IC_LANG_JAVA		}, // 
-	{ "jar"				, IC_LANG_JAVA		}, // 
-	{ "java"			, IC_LANG_JAVA		}, // 
 	{ "jfi"				, IC_IMAGE			}, // 
 	{ "jfif"			, IC_IMAGE			}, // 
 	{ "jif"				, IC_IMAGE			}, // 
@@ -829,7 +905,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "jpf"				, IC_IMAGE			}, // 
 	{ "jpg"				, IC_IMAGE			}, // 
 	{ "jpx"				, IC_IMAGE			}, // 
-	{ "js"				, IC_LANG_JSCPT		}, // 
 	{ "json"			, IC_JSON			}, // 
 	{ "json5"			, IC_JSON			}, // 
 	{ "jsonc"			, IC_JSON			}, // 
@@ -857,17 +932,12 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "kra"				, IC_KRITA			}, // 
 	{ "krz"				, IC_KRITA			}, // 
 	{ "ksh"				, IC_KORN			}, // 󰞸
-	{ "kt"				, IC_LANG_KOTLIN	}, // 
-	{ "kts"				, IC_LANG_KOTLIN	}, // 
 	{ "lang"			, IC_TRANSLATION	}, // 󰗊
-	{ "latex"			, IC_LANG_TEX		}, // 
 	{ "lbr"				, IC_LIBRARY		}, // 
 	{ "lck"				, IC_LOCK			}, // 
 	{ "ldb"				, IC_DATABASE		}, // 
-	{ "leex"			, IC_LANG_ELIXIR	}, // 
 	{ "less"			, IC_LESS			}, // 
 	{ "lff"				, IC_FONT			}, // 
-	{ "lhs"				, IC_LANG_HASKELL	}, // 
 	{ "lib"				, IC_LIBRARY		}, // 
 	{ "license"			, IC_LICENSE		}, // 
 	{ "lisp"			, IC_LISP			}, // 󰅲
@@ -876,16 +946,11 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "log"				, IC_LOG			}, // 
 	{ "lpp"				, IC_EDA_PCB		}, // 
 	{ "lrc"				, IC_SUBTITLE		}, // 󰨖
-	{ "ltx"				, IC_LANG_TEX		}, // 
-	{ "lua"				, IC_LANG_LUA		}, // 
-	{ "luac"			, IC_LANG_LUA		}, // 
-	{ "luau"			, IC_LANG_LUA		}, // 
 	{ "lz"				, IC_COMPRESSED		}, // 
 	{ "lz4"				, IC_COMPRESSED		}, // 
 	{ "lzh"				, IC_COMPRESSED		}, // 
 	{ "lzma"			, IC_COMPRESSED		}, // 
 	{ "lzo"				, IC_COMPRESSED		}, // 
-	{ "m"				, IC_LANG_C			}, // 
 	{ "m2ts"			, IC_VIDEOS			}, // 
 	{ "m2v"				, IC_VIDEOS			}, // 
 	{ "m3u"				, IC_PLAYLIST		}, // 󰲹
@@ -899,16 +964,10 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "mdb"				, IC_DATABASE		}, // 
 	{ "mdx"				, IC_MARKDOWN		}, // 
 	{ "mid"				, IC_MID			}, // 󰣲
-	{ "mjs"				, IC_LANG_JSCPT		}, // 
 	{ "mk"				, IC_MAKE			}, // 
 	{ "mka"				, IC_AUDIO			}, // 
 	{ "mkd"				, IC_MARKDOWN		}, // 
 	{ "mkv"				, IC_VIDEOS			}, // 
-	{ "ml"				, IC_LANG_OCAML		}, // 
-	{ "mli"				, IC_LANG_OCAML		}, // 
-	{ "mll"				, IC_LANG_OCAML		}, // 
-	{ "mly"				, IC_LANG_OCAML		}, // 
-	{ "mm"				, IC_LANG_CPP		}, // 
 	{ "mo"				, IC_TRANSLATION	}, // 󰗊
 	{ "mobi"			, IC_BOOK			}, // 
 	{ "mov"				, IC_VIDEOS			}, // 
@@ -921,13 +980,9 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "msf"				, IC_MSF			}, // 
 	{ "msi"				, IC_OS_WINDOWS		}, // 
 	{ "mss"				, IC_MUSIC_STYLE	}, // 󰽻
-	{ "mts"				, IC_LANG_TSCPT		}, // 
 	{ "mustache"		, IC_MUSTACHE		}, // 
 	{ "nef"				, IC_IMAGE			}, // 
 	{ "nfo"				, IC_INFO			}, // 
-	{ "nim"				, IC_LANG_NIM		}, // 
-	{ "nimble"			, IC_LANG_NIM		}, // 
-	{ "nims"			, IC_LANG_NIM		}, // 
 	{ "ninja"			, IC_NINJA			}, // 󰝴
 	{ "nix"				, IC_FLAKE			}, // 
 	{ "node"			, IC_NODEJS			}, // 
@@ -964,20 +1019,14 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "pem"				, IC_KEY			}, // 
 	{ "pfx"				, IC_KEY			}, // 
 	{ "pgm"				, IC_IMAGE			}, // 
-	{ "phar"			, IC_LANG_PHP		}, // 
-	{ "php"				, IC_LANG_PHP		}, // 
 	{ "pipe"			, IC_FIFO_EXT		}, // 󰟥
 	{ "pkg"				, IC_PKG			}, // 
-	{ "pl"				, IC_LANG_PERL		}, // 
 	{ "plist"			, IC_OS_APPLE		}, // 
 	{ "pls"				, IC_PLAYLIST		}, // 󰲹
-	{ "plx"				, IC_LANG_PERL		}, // 
 	{ "ply"				, IC_FILE_3D		}, // 󰆧
-	{ "pm"				, IC_LANG_PERL		}, // 
 	{ "png"				, IC_IMAGE			}, // 
 	{ "pnm"				, IC_IMAGE			}, // 
 	{ "po"				, IC_TRANSLATION	}, // 󰗊
-	{ "pod"				, IC_LANG_PERL		}, // 
 	{ "pot"				, IC_TRANSLATION	}, // 󰗊
 	{ "pov"				, IC_RAYTRACE		}, // 󱒄
 	{ "pp"				, IC_PP				}, // 
@@ -988,7 +1037,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "ppt"				, IC_SLIDE			}, // 
 	{ "pptx"			, IC_SLIDE			}, // 
 	{ "prjpcb"			, IC_EDA_PCB		}, // 
-	{ "procfile"		, IC_LANG_RUBY		}, // 
 	{ "properties"		, IC_JSON			}, // 
 	{ "prql"			, IC_DATABASE		}, // 
 	{ "ps"				, IC_VECTOR			}, // 󰜡
@@ -1001,61 +1049,34 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "psm1"			, IC_POWERSHELL		}, // 
 	{ "pub"				, IC_PUBLIC_KEY		}, // 󰷖
 	{ "purs"			, IC_PURS			}, // 
-	{ "pxd"				, IC_LANG_PYTHON	}, // 
 	{ "pxm"				, IC_IMAGE			}, // 
-	{ "py"				, IC_LANG_PYTHON	}, // 
-	{ "pyc"				, IC_LANG_PYTHON	}, // 
-	{ "pyd"				, IC_LANG_PYTHON	}, // 
-	{ "pyi"				, IC_LANG_PYTHON	}, // 
-	{ "pyo"				, IC_LANG_PYTHON	}, // 
-	{ "pyw"				, IC_LANG_PYTHON	}, // 
-	{ "pyx"				, IC_LANG_PYTHON	}, // 
 	{ "qcow"			, IC_DISK_IMAGE		}, // 
 	{ "qcow2"			, IC_DISK_IMAGE		}, // 
 	{ "qm"				, IC_TRANSLATION	}, // 󰗊
 	{ "qml"				, IC_QT				}, // 
 	{ "qrc"				, IC_QT				}, // 
 	{ "qss"				, IC_QT				}, // 
-	{ "r"				, IC_LANG_R			}, // 
-	{ "rake"			, IC_LANG_RUBY		}, // 
-	{ "rakefile"		, IC_LANG_RUBY		}, // 
 	{ "rar"				, IC_COMPRESSED		}, // 
 	{ "raw"				, IC_IMAGE			}, // 
 	{ "razor"			, IC_RAZOR			}, // 
-	{ "rb"				, IC_LANG_RUBY		}, // 
-	{ "rdata"			, IC_LANG_R			}, // 
 	{ "rdb"				, IC_RDB			}, // 
 	{ "rdoc"			, IC_MARKDOWN		}, // 
-	{ "rds"				, IC_LANG_R			}, // 
 	{ "re"				, IC_REGEX			}, // 󰑑
 	{ "readme"			, IC_README			}, // 󰂺
 	{ "regex"			, IC_REGEX			}, // 󰑑
-	{ "rkt"				, IC_LANG_SCHEME	}, // 
-	{ "rlib"			, IC_LANG_RUST		}, // 
 	{ "rmd"				, IC_MARKDOWN		}, // 
-	{ "rmeta"			, IC_LANG_RUST		}, // 
 	{ "rpm"				, IC_RPM			}, // 
-	{ "rs"				, IC_LANG_RUST		}, // 
-	{ "rspec_parallel"	, IC_LANG_RUBY		}, // 
-	{ "rspec_status"	, IC_LANG_RUBY		}, // 
-	{ "rspec"			, IC_LANG_RUBY		}, // 
 	{ "rss"				, IC_RSS			}, // 
 	{ "rst"				, IC_TEXT			}, // 
 	{ "rtf"				, IC_TEXT			}, // 
-	{ "ru"				, IC_LANG_RUBY		}, // 
-	{ "rubydoc"			, IC_LANG_RBRAILS	}, // 
-	{ "s"				, IC_LANG_ASSEMBLY	}, // 
 	{ "s3db"			, IC_SQLITE			}, // 
 	{ "sal"				, IC_SQ_WAVE		}, // 󱑻
-	{ "sass"			, IC_LANG_SASS		}, // 
 	{ "sav"				, IC_SAVE			}, // 󰉉
 	{ "sbt"				, IC_SUBTITLE		}, // 󰨖
 	{ "scad"			, IC_SCAD			}, // 
 	{ "scala"			, IC_SCALA			}, // 
 	{ "sch"				, IC_EDA_SCH		}, // 󰭅
 	{ "schdoc"			, IC_EDA_SCH		}, // 󰭅
-	{ "scm"				, IC_LANG_SCHEME	}, // 
-	{ "scss"			, IC_LANG_SASS		}, // 
 	{ "service"			, IC_SERVICE		}, // 
 	{ "sf2"				, IC_TREB_CLEF		}, // 󰽰
 	{ "sfz"				, IC_TREB_CLEF		}, // 󰽰
@@ -1071,10 +1092,8 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "signature"		, IC_SIGNED_FILE	}, // 󱧃
 	{ "skp"				, IC_CAD			}, // 󰻫
 	{ "sl3"				, IC_SQLITE			}, // 
-	{ "sld"				, IC_LANG_SCHEME	}, // 
 	{ "sldasm"			, IC_CAD			}, // 󰻫
 	{ "sldprt"			, IC_CAD			}, // 󰻫
-	{ "slim"			, IC_LANG_RBRAILS	}, // 
 	{ "sln"				, IC_VSCODE			}, // 󰨞
 	{ "slvs"			, IC_CAD			}, // 󰻫
 	{ "so"				, IC_OS_LINUX		}, // 
@@ -1083,15 +1102,11 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "sqlite3"			, IC_SQLITE			}, // 
 	{ "sr"				, IC_SQ_WAVE		}, // 󱑻
 	{ "srt"				, IC_SUBTITLE		}, // 󰨖
-	{ "ss"				, IC_LANG_SCHEME	}, // 
 	{ "ssa"				, IC_SUBTITLE		}, // 󰨖
 	{ "ste"				, IC_CAD			}, // 󰻫
 	{ "step"			, IC_CAD			}, // 󰻫
 	{ "stl"				, IC_FILE_3D		}, // 󰆧
 	{ "stp"				, IC_CAD			}, // 󰻫
-	{ "sty"				, IC_LANG_TEX		}, // 
-	{ "styl"			, IC_LANG_STYLUS	}, // 
-	{ "stylus"			, IC_LANG_STYLUS	}, // 
 	{ "sub"				, IC_SUBTITLE		}, // 󰨖
 	{ "sublime-build"	, IC_SUBLIME		}, // 
 	{ "sublime-keymap"	, IC_SUBLIME		}, // 
@@ -1104,14 +1119,11 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "sublime-snippet"	, IC_SUBLIME		}, // 
 	{ "sublime-theme"	, IC_SUBLIME		}, // 
 	{ "suo"				, IC_VSCODE			}, // 󰨞
-	{ "sv"				, IC_LANG_HDL		}, // 󰍛
 	{ "svelte"			, IC_SVELTE			}, // 
 	{ "svg"				, IC_VECTOR			}, // 󰜡
 	{ "svgz"			, IC_VECTOR_COMP	}, // 󰕙
-	{ "svh"				, IC_LANG_HDL		}, // 󰍛
 	{ "swf"				, IC_AUDIO			}, // 
 	{ "swift"			, IC_SWIFT			}, // 
-	{ "t"				, IC_LANG_PERL		}, // 
 	{ "tar"				, IC_COMPRESSED		}, // 
 	{ "taz"				, IC_COMPRESSED		}, // 
 	{ "tbc"				, IC_TCL			}, // 󰛓
@@ -1119,7 +1131,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "tbz2"			, IC_COMPRESSED		}, // 
 	{ "tc"				, IC_DISK_IMAGE		}, // 
 	{ "tcl"				, IC_TCL			}, // 󰛓
-	{ "tex"				, IC_LANG_TEX		}, // 
 	{ "tf"				, IC_TERRAFORM		}, // 󱁢
 	{ "tfstate"			, IC_TERRAFORM		}, // 󱁢
 	{ "tfvars"			, IC_TERRAFORM		}, // 󱁢
@@ -1133,7 +1144,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "toml"			, IC_TOML			}, // 
 	{ "torrent"			, IC_TORRENT		}, // 
 	{ "tres"			, IC_GODOT			}, // 
-	{ "ts"				, IC_LANG_TSCPT		}, // 
 	{ "tscn"			, IC_GODOT			}, // 
 	{ "tsv"				, IC_SHEET			}, // 
 	{ "tsx"				, IC_REACT			}, // 
@@ -1151,11 +1161,9 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "unity3d"			, IC_UNITY			}, // 
 	{ "upp"				, IC_PRINTER		}, // 󰐪
 	{ "url"				, IC_URL			}, // 󱅷
-	{ "v"				, IC_LANG_V			}, // 
 	{ "vala"			, IC_VALA			}, // 
 	{ "vdi"				, IC_DISK_IMAGE		}, // 
 	{ "vhd"				, IC_DISK_IMAGE		}, // 
-	{ "vhdl"			, IC_LANG_HDL		}, // 󰍛
 	{ "vhs"				, IC_VHS			}, // 󰨛
 	{ "vi"				, IC_VI				}, // 
 	{ "video"			, IC_VIDEOS			}, // 
@@ -1164,12 +1172,10 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "vob"				, IC_VIDEOS			}, // 
 	{ "vsix"			, IC_VSIX			}, // 
 	{ "vue"				, IC_VUE			}, // 󰡄
-	{ "war"				, IC_LANG_JAVA		}, // 
 	{ "wav"				, IC_AUDIO			}, // 
 	{ "webm"			, IC_VIDEOS			}, // 
 	{ "webmanifest"		, IC_JSON			}, // 
 	{ "webp"			, IC_IMAGE			}, // 
-	{ "whl"				, IC_LANG_PYTHON	}, // 
 	{ "windows"			, IC_OS_WINDOWS		}, // 
 	{ "wma"				, IC_AUDIO			}, // 
 	{ "wmv"				, IC_VIDEOS			}, // 
@@ -1199,10 +1205,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "yml"				, IC_YAML			}, // 
 	{ "z"				, IC_COMPRESSED		}, // 
 	{ "z64"				, IC_GBA			}, // 󱎓
-	{ "zig"				, IC_ZIG			}, // 
 	{ "zip"				, IC_COMPRESSED		}, // 
-	{ "zsh-theme"		, IC_ZSH			}, // 
-	{ "zsh"				, IC_ZSH			}, // 
 	{ "zst"				, IC_COMPRESSED		}, // 
 
 	END_OF_ICONS
