@@ -3,6 +3,15 @@
 #include "icons.h"
 #include "definitions.h"
 
+// TODO: implement a way to ignore a leading dot or underscore when testing for a name's match
+
+// for the config implementation:
+//	- have a way to turn on/off checking for leading
+//		- . dots
+//		- _ underscores
+//		- _. both
+//	- have a way to specify escape codes (\n, \r, \x1b, etc.)
+
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Default Icons ———————————————————————————————————————————————————————————————————————————————————————————————— */
 
@@ -15,8 +24,23 @@ const icon_t DEFAULT_DIR_ICON  = IC_FOLDER;
 /// An array containing the basenames of directories, and their associated icons.
 /// This array should contain all the directories that have custom icons.
 const Icon DIRNAME_ICONS[] = {
+
+	{ "-1"				, IC_N1				}, // 󱁒
+	{  "0"				, IC_00				}, // 󰬹
+	{  "1"				, IC_01				}, // 󰬺
+	{  "2"				, IC_02				}, // 󰬻
+	{  "3"				, IC_03				}, // 󰬼
+	{  "4"				, IC_04				}, // 󰬽
+	{  "5"				, IC_05				}, // 󰬾
+	{  "6"				, IC_06				}, // 󰬿
+	{  "7"				, IC_07				}, // 󰭀
+	{  "8"				, IC_08				}, // 󰭁
+	{  "9"				, IC_09				}, // 󰭂
+	{  "9+"				, IC_9P				}, // 󰿮
+	{ "10"				, IC_10				}, // 󰿩
+
 	{ "/"				, IC_HASH_DIR 		}, // 󰴉
-	{ "__filepaths__"	, IC_FILEPATHS 		}, // 
+
 	{ ".archive"		, IC_ARCHIVE 		}, // 󱝏
 	{ ".cache"			, IC_CACHE 			}, // 
 	{ ".config"			, IC_GEAR			}, // 
@@ -34,8 +58,11 @@ const Icon DIRNAME_ICONS[] = {
 	{ ".swiftpm"		, IC_SWIFT 			}, // 
 	{ ".trash"			, IC_TRASH			}, // 
 	{ ".vol"			, IC_VOLUME 		}, // 󰥠
-	{ ".vscode-shared"	, IC_VSC_SHARED 	}, // 
 	{ ".vscode"			, IC_VSCODE 		}, // 󰨞
+	{ ".vscode-shared"	, IC_VSC_SHARED 	}, // 
+
+	{ "__filepaths__"	, IC_FILEPATHS 		}, // 
+
 	{ "anaconda"		, IC_CONDA 			}, // 
 	{ "applescript"		, IC_OS_APPLE 		}, // 
 	{ "applications"	, IC_APPLICATIONS	}, // 
@@ -110,9 +137,9 @@ const Icon DIRNAME_ICONS[] = {
 	{ "neofetch"		, IC_NEOFETCH 		}, // 󱥈
 	{ "node_modules"	, IC_FOLDER_NPM		}, // 
 	{ "notes"			, IC_NOTES 			}, // 
-	{ "npm_cache"		, IC_FOLDER_NPM		}, // 
 	{ "npm"				, IC_FOLDER_NPM 	}, // 
-	{ "nvim"			, IC_VIM 			}, // 
+	{ "npm_cache"		, IC_FOLDER_NPM		}, // 
+	{ "nvim"			, IC_NEOVIM			}, // 
 	{ "nvm"				, IC_NVM 			}, // 
 	{ "old desktop"		, IC_DESKTOP 		}, // 
 	{ "opt"				, IC_OPT 			}, // 
@@ -129,6 +156,7 @@ const Icon DIRNAME_ICONS[] = {
 	{ "ra"				, IC_HAMMER 		}, // 󰣪
 	{ "raycast"			, IC_RAYCAST 		}, // 
 	{ "rdoc"			, IC_LANG_RUBY 		}, // 
+	{ "regex"			, IC_REGEX	 		}, // 󰑑
 	{ "resources"		, IC_RESOURCES		}, // 󱂸
 	{ "rn"				, IC_SHIP 			}, // 
 	{ "rust"			, IC_LANG_RUST 		}, // 
@@ -164,7 +192,8 @@ const Icon DIRNAME_ICONS[] = {
 	{ "xorg.conf.d"		, IC_FOLDER_CONFIG	}, // 
 	{ "y_settings_etc"	, IC_GEAR 			}, // 
 	{ "z_other"			, IC_ARCHIVE 		}, // 󱝏
-	{ "zsh"				, IC_SHELL_CMD 		}, // 󰆍
+	{ "zsh"				, IC_ZSH	 		}, // 
+
 	END_OF_ICONS
 };
 
@@ -172,14 +201,30 @@ const Icon DIRNAME_ICONS[] = {
 
 /// Array containing full filenames & their icons.
 const Icon FILENAME_ICONS[] = {
+
+	{ "-1"							, IC_N1					}, // 󱁒
+	{  "0"							, IC_00					}, // 󰬹
+	{  "1"							, IC_01					}, // 󰬺
+	{  "2"							, IC_02					}, // 󰬻
+	{  "3"							, IC_03					}, // 󰬼
+	{  "4"							, IC_04					}, // 󰬽
+	{  "5"							, IC_05					}, // 󰬾
+	{  "6"							, IC_06					}, // 󰬿
+	{  "7"							, IC_07					}, // 󰭀
+	{  "8"							, IC_08					}, // 󰭁
+	{  "9"							, IC_09					}, // 󰭂
+	{  "9+"							, IC_9P					}, // 󰿮
+	{ "10"							, IC_10					}, // 󰿩
+
 	{ "._ds_store"					, IC_OS_APPLE			}, // 
+
 	{ ".aliases"					, IC_SHELL				}, // 󱆃
 	{ ".atom"						, IC_ATOM				}, // 
-	{ ".bash_aliases"				, IC_SHELL				}, // 󱆃
-	{ ".bash_history"				, IC_SHELL				}, // 󱆃
-	{ ".bash_logout"				, IC_SHELL				}, // 󱆃
-	{ ".bash_profile"				, IC_SHELL				}, // 󱆃
-	{ ".bashrc"						, IC_SHELL				}, // 󱆃
+	{ ".bash_aliases"				, IC_BASH				}, // 
+	{ ".bash_history"				, IC_BASH				}, // 
+	{ ".bash_logout"				, IC_BASH				}, // 
+	{ ".bash_profile"				, IC_BASH				}, // 
+	{ ".bashrc"						, IC_BASH				}, // 
 	{ ".cfusertextencoding"			, IC_TRANSLATION		}, // 󰗊
 	{ ".clang-format"				, IC_CONFIG				}, // 󱁻
 	{ ".clang-tidy"					, IC_CONFIG				}, // 󱁻
@@ -214,7 +259,7 @@ const Icon FILENAME_ICONS[] = {
 	{ ".idea"						, IC_INTELLIJ			}, // 
 	{ ".ideavimrc"					, IC_VIM				}, // 
 	{ ".inputrc"					, IC_CONFIG				}, // 󱁻
-	{ ".kshrc"						, IC_SHELL				}, // 󱆃
+	{ ".kshrc"						, IC_KORN				}, // 󰞸
 	{ ".localized"					, IC_TRANSLATION		}, // 󰗊
 	{ ".login"						, IC_SHELL				}, // 󱆃
 	{ ".logout"						, IC_SHELL				}, // 󱆃
@@ -253,21 +298,24 @@ const Icon FILENAME_ICONS[] = {
 	{ ".xresources"					, IC_XORG				}, // 
 	{ ".xsession"					, IC_XORG				}, // 
 	{ ".yarnrc"						, IC_YARN				}, // 
-	{ ".zlogin"						, IC_SHELL				}, // 󱆃
-	{ ".zlogout"					, IC_SHELL				}, // 󱆃
-	{ ".zprofile"					, IC_SHELL				}, // 󱆃
-	{ ".zsh_history"				, IC_SHELL				}, // 󱆃
-	{ ".zsh_sessions"				, IC_SHELL				}, // 󱆃
-	{ ".zshenv"						, IC_SHELL				}, // 󱆃
-	{ ".zshrc"						, IC_SHELL				}, // 󱆃
+	{ ".zlogin"						, IC_ZSH				}, // 
+	{ ".zlogout"					, IC_ZSH				}, // 
+	{ ".zprofile"					, IC_ZSH				}, // 
+	{ ".zsh_history"				, IC_ZSH				}, // 
+	{ ".zsh_sessions"				, IC_ZSH				}, // 
+	{ ".zshenv"						, IC_ZSH				}, // 
+	{ ".zshrc"						, IC_ZSH				}, // 
+	{ ".sh_history"					, IC_SHELL				}, // 󱆃
+
 	{ "__init__.py"					, IC_INIT_PY			}, // 
 	{ "_gvimrc"						, IC_VIM				}, // 
 	{ "_vimrc"						, IC_VIM				}, // 
+
 	{ "a.out"						, IC_SHELL_CMD			}, // 󰆍
 	{ "authorized_keys"				, IC_SSH_LOGO			}, // 󰣀
 	{ "authors"						, IC_PEOPLE				}, // 
 	{ "authors.txt"					, IC_PEOPLE				}, // 
-	{ "bashrc"						, IC_SHELL				}, // 󱆃
+	{ "bashrc"						, IC_BASH				}, // 
 	{ "bookmark"					, IC_BOOKMARK			}, // 󰃀
 	{ "brewfile"					, IC_HOMEBREW			}, // 󱄖
 	{ "brewfile.lock.json"			, IC_HOMEBREW			}, // 󱄖
@@ -446,11 +494,12 @@ const Icon FILENAME_ICONS[] = {
 	{ "xorg.conf"					, IC_XORG				}, // 
 	{ "xsettingsd.conf"				, IC_XORG				}, // 
 	{ "yarn.lock"					, IC_YARN				}, // 
-	{ "zlogin"						, IC_SHELL				}, // 󱆃
-	{ "zlogout"						, IC_SHELL				}, // 󱆃
-	{ "zprofile"					, IC_SHELL				}, // 󱆃
-	{ "zshenv"						, IC_SHELL				}, // 󱆃
-	{ "zshrc"						, IC_SHELL				}, // 󱆃
+	{ "zlogin"						, IC_ZSH				}, // 
+	{ "zlogout"						, IC_ZSH				}, // 
+	{ "zprofile"					, IC_ZSH				}, // 
+	{ "zshenv"						, IC_ZSH				}, // 
+	{ "zshrc"						, IC_ZSH				}, // 
+
 	END_OF_ICONS
 };
 
@@ -458,8 +507,24 @@ const Icon FILENAME_ICONS[] = {
 
 /// Array of lowercase file extensions and their icons.
 const Icon DIR_EXT_ICONS[] = {
+
+	{ "-1"				, IC_N1				}, // 󱁒
+	{  "0"				, IC_00				}, // 󰬹
+	{  "1"				, IC_01				}, // 󰬺
+	{  "2"				, IC_02				}, // 󰬻
+	{  "3"				, IC_03				}, // 󰬼
+	{  "4"				, IC_04				}, // 󰬽
+	{  "5"				, IC_05				}, // 󰬾
+	{  "6"				, IC_06				}, // 󰬿
+	{  "7"				, IC_07				}, // 󰭀
+	{  "8"				, IC_08				}, // 󰭁
+	{  "9"				, IC_09				}, // 󰭂
+	{  "9+"				, IC_9P				}, // 󰿮
+	{ "10"				, IC_10				}, // 󰿩
+
 	{ "bak"				, IC_BACKUP_DIR		}, // 󰴋
 	{ "app"				, IC_APP			}, // 
+
 	END_OF_ICONS
 };
 
@@ -467,6 +532,21 @@ const Icon DIR_EXT_ICONS[] = {
 
 /// Array of lowercase file extensions and their icons.
 const Icon FILE_EXT_ICONS[] = {
+
+	{ "-1"				, IC_N1				}, // 󱁒
+	{  "0"				, IC_00				}, // 󰬹
+	{  "1"				, IC_01				}, // 󰬺
+	{  "2"				, IC_02				}, // 󰬻
+	{  "3"				, IC_03				}, // 󰬼
+	{  "4"				, IC_04				}, // 󰬽
+	{  "5"				, IC_05				}, // 󰬾
+	{  "6"				, IC_06				}, // 󰬿
+	{  "7"				, IC_07				}, // 󰭀
+	{  "8"				, IC_08				}, // 󰭁
+	{  "9"				, IC_09				}, // 󰭂
+	{  "9+"				, IC_9P				}, // 󰿮
+	{ "10"				, IC_10				}, // 󰿩
+
 	{ "123dx"			, IC_CAD			}, // 󰻫
 	{ "3dm"				, IC_CAD			}, // 󰻫
 	{ "3g2"				, IC_VIDEOS			}, // 
@@ -476,6 +556,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "3gpp2"			, IC_VIDEOS			}, // 
 	{ "3mf"				, IC_FILE_3D		}, // 󰆧
 	{ "7z"				, IC_COMPRESSED		}, // 
+
 	{ "a"				, IC_OS_LINUX		}, // 
 	{ "aac"				, IC_AUDIO			}, // 
 	{ "acf"				, IC_ACF			}, // 
@@ -505,7 +586,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "avro"			, IC_JSON			}, // 
 	{ "awk"				, IC_SHELL_CMD		}, // 󰆍
 	{ "bak"				, IC_BACKUP_FILE	}, // 󰁯
-	{ "bash"			, IC_SHELL_CMD		}, // 󰆍
+	{ "bash"			, IC_BASH			}, // 
 	{ "bat"				, IC_OS_WINDOWS_CMD	}, // 
 	{ "bats"			, IC_SHELL_CMD		}, // 󰆍
 	{ "bdf"				, IC_FONT			}, // 
@@ -570,7 +651,6 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "dart"			, IC_DART			}, // 
 	{ "dat"				, IC_DATA			}, // 󱔼
 	{ "db"				, IC_DATABASE		}, // 
-	{ "dtb"				, IC_DEV_TREE_BLOB	}, // 󰚗
 	{ "db3"				, IC_SQLITE			}, // 
 	{ "dconf"			, IC_DATABASE		}, // 
 	{ "deb"				, IC_DEB			}, // 
@@ -590,6 +670,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "dot"				, IC_GRAPH			}, // 󱁉
 	{ "download"		, IC_DOWNLOAD		}, // 󰇚
 	{ "drawio"			, IC_DRAWIO			}, // 
+	{ "dtb"				, IC_DEV_TREE_BLOB	}, // 󰚗
 	{ "dump"			, IC_DATABASE		}, // 
 	{ "dvi"				, IC_IMAGE			}, // 
 	{ "dwg"				, IC_CAD			}, // 󰻫
@@ -632,7 +713,8 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "fctb"			, IC_FREECAD		}, // 
 	{ "fctl"			, IC_FREECAD		}, // 
 	{ "fdmdownload"		, IC_DOWNLOAD		}, // 󰇚
-	{ "fish"			, IC_SHELL_CMD		}, // 󰆍
+	{ "fifo"			, IC_FIFO_EXT		}, // 󰟥
+	{ "fish"			, IC_FISH 			}, // 
 	{ "flac"			, IC_AUDIO			}, // 
 	{ "flc"				, IC_FONT			}, // 
 	{ "flf"				, IC_FONT			}, // 
@@ -722,6 +804,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "image"			, IC_DISK_IMAGE		}, // 
 	{ "img"				, IC_DISK_IMAGE		}, // 
 	{ "iml"				, IC_INTELLIJ		}, // 
+	{ "in"				, IC_FIFO_EXT		}, // 󰟥
 	{ "info"			, IC_INFO			}, // 
 	{ "ini"				, IC_CONFIG			}, // 󱁻
 	{ "inl"				, IC_LANG_C			}, // 
@@ -773,7 +856,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "kpp"				, IC_KRITA			}, // 
 	{ "kra"				, IC_KRITA			}, // 
 	{ "krz"				, IC_KRITA			}, // 
-	{ "ksh"				, IC_SHELL_CMD		}, // 󰆍
+	{ "ksh"				, IC_KORN			}, // 󰞸
 	{ "kt"				, IC_LANG_KOTLIN	}, // 
 	{ "kts"				, IC_LANG_KOTLIN	}, // 
 	{ "lang"			, IC_TRANSLATION	}, // 󰗊
@@ -869,7 +952,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "orf"				, IC_IMAGE			}, // 
 	{ "org"				, IC_ORG			}, // 
 	{ "otf"				, IC_FONT			}, // 
-	{ "out"				, IC_OUT			}, // 
+	{ "out"				, IC_FIFO_EXT		}, // 󰟥
 	{ "p12"				, IC_KEY			}, // 
 	{ "par"				, IC_COMPRESSED		}, // 
 	{ "part"			, IC_DOWNLOAD		}, // 󰇚
@@ -883,6 +966,7 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "pgm"				, IC_IMAGE			}, // 
 	{ "phar"			, IC_LANG_PHP		}, // 
 	{ "php"				, IC_LANG_PHP		}, // 
+	{ "pipe"			, IC_FIFO_EXT		}, // 󰟥
 	{ "pkg"				, IC_PKG			}, // 
 	{ "pl"				, IC_LANG_PERL		}, // 
 	{ "plist"			, IC_OS_APPLE		}, // 
@@ -943,7 +1027,9 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "rdb"				, IC_RDB			}, // 
 	{ "rdoc"			, IC_MARKDOWN		}, // 
 	{ "rds"				, IC_LANG_R			}, // 
+	{ "re"				, IC_REGEX			}, // 󰑑
 	{ "readme"			, IC_README			}, // 󰂺
+	{ "regex"			, IC_REGEX			}, // 󰑑
 	{ "rkt"				, IC_LANG_SCHEME	}, // 
 	{ "rlib"			, IC_LANG_RUST		}, // 
 	{ "rmd"				, IC_MARKDOWN		}, // 
@@ -1115,9 +1201,10 @@ const Icon FILE_EXT_ICONS[] = {
 	{ "z64"				, IC_GBA			}, // 󱎓
 	{ "zig"				, IC_ZIG			}, // 
 	{ "zip"				, IC_COMPRESSED		}, // 
-	{ "zsh-theme"		, IC_SHELL			}, // 󱆃
-	{ "zsh"				, IC_SHELL_CMD		}, // 󰆍
+	{ "zsh-theme"		, IC_ZSH			}, // 
+	{ "zsh"				, IC_ZSH			}, // 
 	{ "zst"				, IC_COMPRESSED		}, // 
+
 	END_OF_ICONS
 };
 

@@ -15,7 +15,7 @@
 #define IC_FILE				L''
 #define IC_FILE_UNKNOWN		L'󰡯'
 
-#define IC_FOLDER			L'󰉋' //   󰝰
+#define IC_FOLDER			L'󰉋' // or 
 #define IC_FOLDER_OPEN		L'󰝰'
 
 /* —— File Types ——————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -30,6 +30,22 @@
 #define IC_MOUNT_POINT		L'󱋤' // or 󰉉  󱇰  󱊞  󱛟    󰡰
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* —— Universal ———————————————————————————————————————————————————————————————————————————————————————————————————— */
+
+#define IC_N1				L'󱁒' // 󱁒
+#define IC_00				L'󰬹' // 󰬹 󰲞 󰎡 󰼎 󰲟 󰎣 󰎢
+#define IC_01				L'󰬺' // 󰬺 󰲠 󰎤 󰼏 󰲡 󰎦 󰎥
+#define IC_02				L'󰬻' // 󰬻 󰲢 󰎧 󰼐 󰲣 󰎩 󰎨
+#define IC_03				L'󰬼' // 󰬼 󰲤 󰎪 󰼑 󰲥 󰎬 󰎫
+#define IC_04				L'󰬽' // 󰬽 󰲦 󰎭 󰼒 󰲧 󰎮 󰎲
+#define IC_05				L'󰬾' // 󰬾 󰲨 󰎱 󰼓 󰲩 󰎰 󰎯
+#define IC_06				L'󰬿' // 󰬿 󰲪 󰎳 󰼔 󰲫 󰎵 󰎴
+#define IC_07				L'󰭀' // 󰭀 󰲬 󰎶 󰼕 󰲭 󰎸 󰎷
+#define IC_08				L'󰭁' // 󰭁 󰲮 󰎹 󰼖 󰲯 󰎻 󰎺
+#define IC_09				L'󰭂' // 󰭂 󰲰 󰎼 󰼗 󰲱 󰎾 󰎽
+#define IC_9P				L'󰿮' // 󰿮 󰲲 󰎿 󰼘 󰲳 󰏁 󰏀
+#define IC_10				L'󰿩' // 󰿩 󰿬 󰽽 󰿪 󰿭 󰽾 󰿫
+
 /* —— Dir Names, File Names, & File Extensions ————————————————————————————————————————————————————————————————————— */
 
 #define IC_CONDA			L''
@@ -54,6 +70,7 @@
 #define IC_LANG_JAVA		L''
 #define IC_LIBRARY			L''
 #define IC_POWERSHELL		L''
+#define IC_REGEX			L'󰑑'
 #define IC_SWIFT			L''
 #define IC_VIDEOS			L''
 #define IC_VSCODE			L'󰨞'
@@ -73,6 +90,7 @@
 #define IC_IMAGE			L''
 #define IC_KDENLIVE			L''
 #define IC_KICAD			L''
+#define IC_KORN				L'󰞸'
 #define IC_KRITA			L''
 #define IC_LANG_ELIXIR		L''
 #define IC_LANG_FENNEL		L''
@@ -91,6 +109,7 @@
 #define IC_TMUX				L''
 #define IC_TRANSLATION		L'󰗊'
 #define IC_ZIG				L''
+#define IC_ZSH				L''
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 /* —— Directory Extensions ————————————————————————————————————————————————————————————————————————————————————————— */
@@ -151,6 +170,7 @@
 #define IC_MOVIES			L'󰿎'
 #define IC_MUSIC			L'󱍙'
 #define IC_NEOFETCH			L'󱥈'
+#define IC_NEOVIM			L''
 #define IC_NOFOLLOW			L''
 #define IC_NOTES			L''
 #define IC_NVM				L''
@@ -221,6 +241,7 @@
 #define IC_EML				L''
 #define IC_ERLANG			L''
 #define IC_EXTRACT			L'󰆸'
+#define IC_FIFO_EXT			L'󰟥'
 #define IC_FILE_3D			L'󰆧'
 #define IC_GBA				L'󱎓'
 #define IC_GCODE			L'󰫴'
