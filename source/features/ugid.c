@@ -12,6 +12,28 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+/// Just a small wrapper function which caches the uid of the user running this program.
+uid_t get_user_uid(void) {
+	static uid_t user_uid;
+	static bool did_init = false;
+
+	if (!did_init) {
+		user_uid = getuid();
+		did_init = true;
+	}
+	return user_uid;
+}
+
+/* ——————————————————————————————————————————————————————————————— */
+
+const struct passwd *get_user_pw(void) {
+	// note: if `getpwuid` fails, each subsequent call will try again
+	static const struct passwd *user_pw = NULL;
+	return user_pw ? user_pw : ( user_pw = getpwuid(get_user_uid()) );
+}
+
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+
 char *getUser(const uid_t uid, const bool do_set_len) {
 	const struct passwd *pw = getpwuid(uid);
 	if (pw == NULL) return (char*)NULL;
@@ -35,9 +57,14 @@ char *getGroup(const gid_t gid) {
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#define ROOT_GRP_GID ((uid_t)0)
+#define ROOT_GRP_GID ((gid_t)0)
 #define ROOT_USR_UID ((uid_t)0)
 
+/// @todo add a caching system for each of the users / groups
+///		cos if we know a user is in a group, we don't need to check again
+
+// the `getgrnam` function ends up misaligning the memory, which throws a runtime warning,
+//	but it shouldn't be an issue on macOS
 __attribute__((no_sanitize("alignment")))
 static inline bool is_user_in_group(
 	const ugidstr usr_name, const gid_t usr_main_gid,
@@ -45,8 +72,6 @@ static inline bool is_user_in_group(
 ) {
 	if (usr_main_gid == file_gid) return true;
 
-	// the `getgrnam` function ends up misaligning the memory. this throws a runtime warning,
-	//	but it shouldn't be an issue on macOS
 	const struct group *const grp = getgrnam(grp_name);
 	if (grp == NULL) return false;
 
@@ -58,20 +83,10 @@ static inline bool is_user_in_group(
 
 /* ———————————————————————————————————————————————————————— */
 
-/// Just a small wrapper function to be able to cache the uid of the user running this program.
-static inline uid_t get_user_uid(void) {
-	static long user_uid = -1;
-	if (user_uid == -1) user_uid = (long)getuid();
-
-	return (uid_t)user_uid;
-}
-
-/* ———————————————————————————————————————————————————————— */
-
 #define get_uid_colour get_usr_colour
 Colour get_usr_colour(const uid_t uid) {
 	if (uid == ROOT_USR_UID  ) return USR_ROOT_COL;
-	if (uid == get_user_uid()) return USR_YOU_COL;
+	if (uid == get_user_uid()) return USR_YOU_COL ;
 	return USR_OTH_COL;
 }
 
@@ -79,15 +94,18 @@ Colour get_usr_colour(const uid_t uid) {
 static inline Colour get_grp_colour(const FileStat *const pFS) {
 	if (pFS->s == NULL) return PUNCT;
 
-	static const struct passwd *pw = NULL;
-	if (pw == NULL) pw = getpwuid(get_user_uid());
+	const struct passwd *const pw = get_user_pw();
 
-	const bool in_user_grp = is_user_in_group(pw->pw_name, pw->pw_gid, pFS->f->grp_name, pFS->s->st_gid);
 	const bool in_root_grp = pFS->s->st_gid == ROOT_GRP_GID;
+	const bool in_user_grp = is_user_in_group(
+		pw->pw_name		, pw->pw_gid,
+		pFS->f->grp_name, pFS->s->st_gid
+	);
 
-	if (in_user_grp) return GRP_YOU_COL;
+	// note: if running as the root user, the program will consider `root` to be _you_
+	if (in_user_grp) return GRP_YOU_COL	;
 	if (in_root_grp) return GRP_ROOT_COL;
-	return GRP_OTH_COL;
+	/**/			 return GRP_OTH_COL	;
 }
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
