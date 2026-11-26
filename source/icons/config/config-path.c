@@ -1,15 +1,14 @@
-/// @file icons/icon-config.c
+/// @file icons/config/config-path.c
 
 #if defined(DEBUG_MODE) && defined(PROJ_ROOT)
 	const char *getIconConfigPath(void) { return PROJ_ROOT "/store/icons.conf"; }
 #else
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-#include <string.h>
-
-#include "debugging.h"
-#include "features/features.h"
+#include <string.h> // strlcpy()
+#include "features/features.h" // getHOME()
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 

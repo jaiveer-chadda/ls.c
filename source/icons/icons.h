@@ -22,6 +22,8 @@
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
+void initIconConfig(void);
+
 icon_t getIcon(const FileStat *const pFS);
 void print_icon(const FileStat *const pFS);
 
