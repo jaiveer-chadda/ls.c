@@ -1,11 +1,13 @@
 /// @file output/escape-name.c
 
+#include <pwd.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "malloc.h"
 #include "strbuilder.h"
 #include "options/options.h"
+#include "features/features.h"
 #include "graphics/graphics.h"
 
 /* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
@@ -66,16 +68,29 @@ static inline uint8_t escapeCharacter(char *esc, const char chr) {
 
 /* —— getHOME() ———————————————————————————————————————————————————————————————————————————————————————————————————— */
 
-static inline const char *getHOME(size_t *const size) {
-	static const char *HOME = NULL;
-	static size_t home_size = 0;
+const char *getHOME(size_t *const size) {
+	static const char *HOME;
+	static size_t home_size;
+
+	static bool did_init = false;
+
+	/* ——————————————————————————————————————— */
 
 	// if we don't have a value for `$HOME` stored in the cache...
-	if (HOME == NULL) {
-		HOME = getenv("HOME");
-		if (HOME != NULL) home_size = strlen(HOME);
+	if (!did_init) {
+		did_init = true;
+
+		if (( HOME = getenv("HOME") )) home_size = strlen(HOME);
+
+		if (HOME == NULL || home_size == 0) {
+			if (( HOME = get_user_pw()->pw_dir )) home_size = strlen(HOME);
+		}
 	}
 
+	/* ——————————————————————————————————————— */
+
+	// only set `size` if a value was given
+	//	i.e. this makes getting the size of `$HOME` optional
 	if (size != NULL) *size = home_size;
 	return HOME;
 }
