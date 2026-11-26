@@ -1,6 +1,5 @@
 /// @file output/escape-name.c
 
-#include <pwd.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -64,35 +63,6 @@ static inline uint8_t escapeCharacter(char *esc, const char chr) {
 
 	*esc = chr;	// nothing to escape - push the inputted char back onto the buffer
 	return 1;	// length = 1
-}
-
-/* —— getHOME() ———————————————————————————————————————————————————————————————————————————————————————————————————— */
-
-const char *getHOME(size_t *const size) {
-	static const char *HOME;
-	static size_t home_size;
-
-	static bool did_init = false;
-
-	/* ——————————————————————————————————————— */
-
-	// if we don't have a value for `$HOME` stored in the cache...
-	if (!did_init) {
-		did_init = true;
-
-		if (( HOME = getenv("HOME") )) home_size = strlen(HOME);
-
-		if (HOME == NULL || home_size == 0) {
-			if (( HOME = get_user_pw()->pw_dir )) home_size = strlen(HOME);
-		}
-	}
-
-	/* ——————————————————————————————————————— */
-
-	// only set `size` if a value was given
-	//	i.e. this makes getting the size of `$HOME` optional
-	if (size != NULL) *size = home_size;
-	return HOME;
 }
 
 /* —— printEscdName() —————————————————————————————————————————————————————————————————————————————————————————————— */
