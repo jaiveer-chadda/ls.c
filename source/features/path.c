@@ -26,20 +26,19 @@ const char *getHOME(size_t *const size) {
 
 	static bool did_init = false;
 
-	/* ——————————————————————————————————————— */
+	/* ——————————————————————————————————————————————— */
 
-	// if we don't have a value for `$HOME` stored in the cache...
-	if (!did_init) {
-		did_init = true;
+	if (did_init) goto return_success;
+	did_init = true;
 
-		if (( HOME = getenv("HOME") )) home_size = strlen(HOME);
+	if (( HOME = getenv("HOME")			) && ( home_size = strlen(HOME) )) goto return_success;
+	if (( HOME = get_user_pw()->pw_dir	) && ( home_size = strlen(HOME) )) goto return_success;
 
-		if (HOME == NULL || home_size == 0) {
-			if (( HOME = get_user_pw()->pw_dir )) home_size = strlen(HOME);
-		}
-	}
+	/* —— return failure ————————————————————————————— */
 
-	/* ——————————————————————————————————————— */
+	HOME = NULL, home_size = 0;
+
+	/* —— */ return_success: /* —————————————————————— */
 
 	// only set `size` if a value was given
 	//	i.e. this makes getting the size of `$HOME` optional
@@ -54,55 +53,41 @@ const char *getHOME(size_t *const size) {
  */
 static inline const char *getPWD(size_t *const len) {
 	/**
-	 * The `PWD_buffer` is here in case we need to use `getwd`,
+	 * The `buffer` is here in case we need to use `getwd`,
 	 *	which writes to a buffer directly, rather than returning a pointer
 	 */
-	static char PWD_buffer[MAX_PATH_LEN];
-	static bool did_init = false;
+	static path_t buffer = {0};
+	static_assert(sizeof(buffer) >= MAXPATHLEN, "this requirement needs to be met for `getwd` to work");
 
-	static char *PWD = NULL;
-	static size_t PWD_len = 0;
-	static error_t PWD_errno = 0;
+	static char *PWD;
+	static size_t PWD_len;
+	static error_t PWD_errno;
+
+	static bool did_init = false;
 
 	/* —— return cached data ————————————————————————— */
 
-	if (did_init) {
-		errno = PWD_errno;
-		if (len != NULL) *len = PWD_len;
-		return PWD;
-	}
-
+	if (did_init) goto return_success;
 	did_init = true;
 
 	/* —— try getenv & getwd ———————————————————————— */
 
-	PWD = getenv("PWD");
+	// first, try `getenv` - if it fails for some reason, then fall back to using `getwd`
+	//	note: the reason we try `getenv("PWD")` first, is because the `$PWD` environment variable
+	//		preserves symlinks, whereas `getwd` will resolve symlinks when retrieving `$PWD`
+	if (( PWD = getenv("PWD") ) && ( PWD_len = strlen(PWD) )) goto return_success;
+	if (( PWD = getwd(buffer) ) && ( PWD_len = strlen(PWD) )) goto return_success;
 
-	if (PWD == NULL) { // if `getenv` fails for some reason, then fall back to using `getwd`
-		// unlike `getenv`, `getwd` fills the path buffer directly
-		//	note: the reason we use `getenv("PWD")` first, is because the `$PWD` environment variable
-		//		preserves symlinks, whereas `getwd` will resolve symlinks when getting `$PWD`
-		PWD = getwd(PWD_buffer);
+	/* —— return failure ————————————————————————————— */
 
-		// if `getwd` also doesn't work, then there's nothing we can really do - return failure
-		if (PWD == NULL) {
-			if (len != NULL) *len = 0;
+	// if `getwd` also doesn't work, then there's nothing we can really do - return failure
+	PWD_errno = errno, PWD_len = 0, PWD = NULL;
 
-			PWD_errno = errno,
-			PWD_len = 0;
+	/* —— */ return_success: /* —————————————————————— */
 
-			return NULL;
-		}
-	}
+	if (len != NULL) *len = PWD_len;
 
-	/* —— return ————————————————————————————————————— */
-
-	// if `getwd` succeeds, then to avoid really complex checks later, get its `strlen` now
-	if (len != NULL) *len = strlen(PWD);
-
-	errno = PWD_errno = 0,
-	PWD_len = *len;
-
+	errno = PWD_errno;
 	return PWD;
 }
 
